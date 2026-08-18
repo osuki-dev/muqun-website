@@ -1,0 +1,179 @@
+---
+/**
+ * The privacy policy — every locale, one file.
+ *
+ * ── The bug this route exists to fix ────────────────────────────────────────
+ * On the old site the policy was `src/pages/muqun/privacy.md`, and there was no
+ * `src/pages/[lang]/muqun/privacy` beside it. Both Muqun pages linked to it
+ * through `localizedPathForLocale('/muqun/privacy', locale)`, which happily
+ * produced `/ja/muqun/privacy`, `/de/muqun/privacy` and seven more addresses
+ * that had never existed. Nine of the ten locales rendered a link to a 404 —
+ * from the promise block, whose whole argument is that this app can be trusted
+ * with your machine, and from the support page's safe-reporting notice. It is
+ * fixed here by construction: this route enumerates the same locale list as the
+ * two pages that link to it, so a locale cannot have one without the other.
+ * ────────────────────────────────────────────────────────────────────────────
+ *
+ * The body stays in English in every locale. It is the document Apple and
+ * Google review and the one a reader would take a dispute to, so it has one
+ * authoritative text rather than eight that can drift apart at a clause. The
+ * frame around it — title, revision date, and the sentence saying which text
+ * governs — is translated, because that sentence is the one that has to be
+ * understood by someone who cannot read the rest.
+ */
+import Layout from '@/layouts/Layout.astro';
+import Band from '@/components/Band.astro';
+import Display from '@/components/Display.astro';
+import Prose from '@/components/Prose.astro';
+import { getChrome } from '@/i18n/chrome';
+import { getMuqunCopy } from '@/i18n/muqun';
+import { supportEmail } from '@/lib/muqun-links';
+import { siteLocaleCodes, defaultLocale } from '@/lib/locales';
+
+export function getStaticPaths() {
+  return siteLocaleCodes.map((code) => ({
+    params: { lang: code === defaultLocale ? undefined : code },
+    props: { locale: code },
+  }));
+}
+
+/**
+ * `locale` is inferred from `getStaticPaths` above rather than declared as a
+ * `Props` interface: with both, the interface is the one TypeScript ignores,
+ * so it is a second declaration of the same fact that nothing checks.
+ */
+const { locale } = Astro.props;
+const chrome = getChrome(locale);
+
+/**
+ * Edited by hand when the policy is. Not a build date: a page that claims to
+ * have been revised every time the site is deployed is telling the reader
+ * nothing, and telling a reviewer something false.
+ */
+const lastUpdated = 'August 4, 2026';
+
+/**
+ * The description is the app's own, not a summary of this page: this is the
+ * document that says Muqun has no account and no relay, and the app's meta
+ * description is the shortest true statement of that already in eight
+ * languages.
+ */
+const description = getMuqunCopy(locale).meta.description;
+---
+
+<Layout lang={locale} title={`${chrome.privacy.title} — ${chrome.site.name}`} description={description}>
+  {/* Narrow, because this is the one page on the site that is read rather
+      than scanned: 34em of measure and nothing beside it. */}
+  <Band tone="cream" contain="narrow">
+    <header class="mq-policy-head">
+      <p class="mq-mono-label">{chrome.site.name}</p>
+      <Display level={1} size="display-sm" lines={1}>{chrome.privacy.title}</Display>
+      <Prose size="small">{chrome.privacy.lastUpdatedLabel}: {lastUpdated}</Prose>
+      {
+        /* Only rendered where it is true. On the English page it would be a
+           sentence explaining that English is in English. */
+        locale === defaultLocale ? null : (
+          <Prose size="small" lang={locale}>
+            {chrome.privacy.sourceNote}
+          </Prose>
+        )
+      }
+    </header>
+
+    <!-- `lang="en"` on the body, because it is English inside a page whose
+         document language is not: without it a screen reader reads the whole
+         policy in the reader's own phonology and it is unintelligible. -->
+    <Prose as="article" full lang="en">
+      <p>
+        Muqun is a mobile client for Gateway instances that you control, running on tmux or
+        Herdr. It has no Muqun account, advertising, analytics, or tracking SDKs.
+      </p>
+
+      <h2>Data stored on your device</h2>
+      <p>Muqun stores the information needed to provide its features:</p>
+      <ul>
+        <li>Gateway names, addresses, pairing times, and access tokens.</li>
+        <li>App preferences and your custom quick commands.</li>
+        <li>The currently selected Gateway.</li>
+      </ul>
+      <p>
+        Gateway records are encrypted and stored using the operating system's secure credential
+        storage. They are marked as device-only so they do not sync to another device or restore
+        from a backup.
+      </p>
+
+      <h2>Gateway connections</h2>
+      <p>
+        Terminal sessions go directly between Muqun and the Gateway address you pair. Osuki does
+        not relay, receive, or store terminal output, commands, source code, conversations,
+        Gateway addresses, or access tokens.
+      </p>
+      <p>
+        Requests to your Gateway may contain the access token, workspace and pane identifiers,
+        terminal input, commands, and agent output required for the feature you use. If
+        notifications are enabled, Muqun also sends the Gateway a device notification token,
+        device name, and platform.
+      </p>
+      <p>
+        You control the Gateway and its network. We strongly recommend running Muqun and the
+        Gateway on the same <a href="https://tailscale.com/">Tailscale</a>
+        tailnet, preferably with Tailscale Serve providing a private HTTPS address. Muqun supports
+        HTTP on user-managed private networks, but HTTP itself does not encrypt traffic; only use
+        it inside a trusted encrypted network such as Tailscale.
+      </p>
+
+      <h2>Camera and App Lock</h2>
+      <p>
+        Camera access is requested only when you open the QR scanner. Frames are processed on the
+        device to read a pairing code and are not saved or uploaded. You can pair by entering a
+        Gateway address manually instead.
+      </p>
+      <p>
+        If App Lock is enabled, the operating system performs Face ID, Touch ID, fingerprint, face
+        unlock, or passcode authentication. Muqun receives only whether authentication succeeded
+        and never receives or stores biometric data or your passcode.
+      </p>
+
+      <h2>Notifications</h2>
+      <p>
+        Gateway notifications are optional. When enabled, the notification service processes the
+        device notification token, platform, minimal notification content, and delivery metadata
+        needed to deliver the alert. This information is used only for app functionality, not
+        advertising or tracking. Turning notifications off unregisters the device from the paired
+        Gateway.
+      </p>
+
+      <h2>Retention and deletion</h2>
+      <p>
+        Local Gateway data remains until you remove that Gateway or uninstall Muqun. App
+        preferences and quick commands remain until changed or the app is uninstalled.
+        Gateway-side data is controlled by the Gateway operator; revoke a device from the Gateway
+        to invalidate its token.
+      </p>
+      <p>
+        If you contact Osuki for support, we use the information you provide only to respond to
+        your request.
+      </p>
+
+      <h2>Changes and contact</h2>
+      <p>
+        We may update this policy when Muqun's features or service providers change. The current
+        version and revision date will remain available at this URL.
+      </p>
+      <p>
+        Questions about this policy may be sent to
+        <a href={`mailto:${supportEmail}`}>{supportEmail}</a>.
+      </p>
+    </Prose>
+  </Band>
+</Layout>
+
+<style>
+  .mq-policy-head {
+    display: grid;
+    gap: var(--mq-space-4);
+    margin-block-end: var(--mq-space-12);
+    padding-block-end: var(--mq-space-8);
+    border-block-end: 1px solid var(--mq-hairline);
+  }
+</style>

@@ -1,0 +1,73 @@
+---
+/**
+ * A section's opening: an optional mono eyebrow, then the heading, then an
+ * optional lead paragraph.
+ *
+ * The eyebrow is uppercase and letter-spaced, which is only safe because it
+ * is mono and mono is the machine register -- an untranslated ASCII string.
+ * Pass it a command, a path, a flag, a version. Do not pass it a translated
+ * word; that belongs in the heading, which is proportional and has no
+ * transform on it.
+ */
+import type { HTMLAttributes } from 'astro/types';
+
+interface Props extends Omit<HTMLAttributes<'header'>, 'title'> {
+  /** Mono, uppercase, ASCII. Machine register. Optional. */
+  eyebrow?: string;
+  /** Proportional, translated. */
+  title: string;
+  /** Heading level. The page owns the outline; this only renders it. */
+  level?: 2 | 3 | 4;
+  /** Used by the status line to scroll here. */
+  id?: string;
+  /** Reduce to the smaller display step. */
+  size?: 'heading' | 'display';
+  class?: string;
+}
+
+const {
+  eyebrow,
+  title,
+  level = 2,
+  id,
+  size = 'heading',
+  class: className,
+  ...rest
+} = Astro.props;
+
+const Tag = `h${level}` as 'h2' | 'h3' | 'h4';
+const titleClass = size === 'display' ? 'mq-display mq-display--sm' : 'mq-heading';
+---
+
+<header class:list={['mq-section-heading', className]} {...rest}>
+  {eyebrow && <p class="mq-mono-label mq-section-heading__eyebrow">{eyebrow}</p>}
+  <Tag class={titleClass} id={id}>{title}</Tag>
+  {
+    Astro.slots.has('default') && (
+      <div class="mq-lead mq-section-heading__lead">
+        <slot />
+      </div>
+    )
+  }
+</header>
+
+<style>
+  .mq-section-heading {
+    display: flex;
+    flex-direction: column;
+    gap: var(--mq-space-4);
+    margin-block-end: var(--mq-space-10);
+  }
+
+  .mq-section-heading__eyebrow {
+    /* Sits on the baseline grid with the heading rather than floating; the
+       hairline under it is the only decoration in the block. */
+    padding-block-end: var(--mq-space-3);
+    border-block-end: 1px solid var(--mq-hairline);
+    margin-block-end: var(--mq-space-1);
+  }
+
+  .mq-section-heading__lead {
+    margin-block-start: var(--mq-space-1);
+  }
+</style>

@@ -1,0 +1,156 @@
+---
+/**
+ * "While you were away", drawn.
+ *
+ * The app's own card, from `lib/away-digest.ts` and `away-digest-card.tsx` in
+ * the app repo: reopen a machine you last looked at more than fifteen minutes
+ * ago and the server screen leads with what moved. One row per pane -- where
+ * that agent ended up, how many times it stopped to ask while nobody was
+ * watching, and when it last moved.
+ *
+ * The two rules worth keeping faithful, because they are what makes the
+ * feature rather than the drawing: the row reports where an agent ENDED UP,
+ * not what it did on the way (a pane that went blocked, was answered and
+ * finished reads as finished), and the "asked" count is dropped on a row that
+ * is still blocked, because "Blocked · asked twice" says the same thing twice
+ * and buries the half that needs answering.
+ *
+ * Drawn rather than captured, for the reason `PushNotice` gives: a capture
+ * would carry one machine's agent names and one afternoon's clock, and none
+ * of that is the claim.
+ */
+interface Props {
+  /** One row per pane. ASCII: these are agent names as the machine has them. */
+  rows: readonly {
+    agent: string;
+    /** The app's own status word. ASCII. */
+    status: string;
+    /** `blocked` | `working` | `idle` | `done` -- picks the dot and the word's colour. */
+    tone: 'blocked' | 'working' | 'idle' | 'done';
+    /** How many times it stopped to ask. Omitted on a row that is still blocked. */
+    asked?: number;
+    /** When it last moved. ASCII, e.g. "12m ago". */
+    when: string;
+  }[];
+  /** ASCII. How many agents did not make the cut. */
+  more?: string;
+  /** Translated. Describes the picture. */
+  ariaLabel: string;
+  class?: string;
+}
+
+const { rows, more, ariaLabel, class: className } = Astro.props;
+---
+
+<div class:list={['mq-card', 'mq-away', className]} role="img" aria-label={ariaLabel}>
+  <p class="mq-mono-label mq-away__title">While you were away</p>
+
+  <ul class="mq-away__rows">
+    {
+      rows.map((row) => (
+        <li class="mq-away__row" data-tone={row.tone}>
+          <span class="mq-away__dot" aria-hidden="true" />
+          <span class="mq-away__agent">{row.agent}</span>
+          <span class="mq-away__status">{row.status}</span>
+          {/* The count is the caller's decision, not this component's -- see
+              the note above about a row that is still blocked. */}
+          <span class="mq-away__asked">{row.asked ? `· asked ${row.asked} times` : ''}</span>
+          <span class="mq-away__when">{row.when}</span>
+        </li>
+      ))
+    }
+  </ul>
+
+  {more && <p class="mq-away__more">{more}</p>}
+</div>
+
+<style>
+  .mq-away {
+    display: grid;
+    gap: var(--mq-space-3);
+    padding: var(--mq-space-5);
+    box-shadow: var(--mq-shadow-raised);
+  }
+
+  .mq-away__title {
+    color: var(--mq-text);
+  }
+
+  .mq-away__rows {
+    display: grid;
+    gap: var(--mq-space-1);
+    margin: 0;
+    padding-block-start: var(--mq-space-2);
+    border-block-start: 1px solid var(--mq-hairline);
+  }
+
+  /*
+   * `auto` for the agent and a `1fr` spacer before the timestamp, so the name
+   * and its status stay together on the left and the time stays pinned right
+   * however long the name is -- which is how the app lays the row out, and
+   * the reason a rename does not shove the clock off the card.
+   */
+  .mq-away__row {
+    display: grid;
+    grid-template-columns: 7px auto auto minmax(0, 1fr) auto;
+    align-items: baseline;
+    gap: var(--mq-space-2);
+    font-family: var(--mq-font-mono);
+    font-size: var(--mq-size-mono-sm);
+    letter-spacing: var(--mq-tracking-mono);
+    padding-block: var(--mq-space-1);
+  }
+
+  .mq-away__dot {
+    inline-size: 7px;
+    block-size: 7px;
+    border-radius: var(--mq-radius-full);
+    background: var(--mq-text-muted);
+    transform: translateY(-1px);
+  }
+
+  .mq-away__agent {
+    color: var(--mq-text);
+  }
+
+  .mq-away__status,
+  .mq-away__asked,
+  .mq-away__when {
+    color: var(--mq-text-muted);
+    /* The row is one line in the app and has to be one line here. Left to
+       wrap, "· asked 2 times" broke after the count and the row grew a
+       second line for two words. */
+    white-space: nowrap;
+  }
+
+  /* Status colour is the app's: coral for a pane that is still asking, green
+     for one that got there, quiet for the rest. */
+  [data-tone='blocked'] .mq-away__dot,
+  [data-tone='blocked'] .mq-away__status {
+    background: var(--mq-accent);
+    color: var(--mq-text-accent);
+  }
+
+  [data-tone='blocked'] .mq-away__status {
+    background: none;
+  }
+
+  [data-tone='done'] .mq-away__dot {
+    background: var(--mq-verified);
+  }
+
+  [data-tone='done'] .mq-away__status {
+    color: var(--mq-verified);
+  }
+
+  [data-tone='working'] .mq-away__dot {
+    background: var(--mq-text);
+  }
+
+  .mq-away__more {
+    font-family: var(--mq-font-mono);
+    font-size: var(--mq-size-mono-sm);
+    letter-spacing: var(--mq-tracking-mono);
+    color: var(--mq-text-muted);
+  }
+</style>

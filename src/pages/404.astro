@@ -1,0 +1,46 @@
+---
+/**
+ * The 404, in English, once.
+ *
+ * `wrangler.jsonc` sets `not_found_handling: "404-page"`, which serves the
+ * `404.html` this file emits. That is a single file for the whole site, so it
+ * cannot be in the reader's language: nothing about a request for a page that
+ * does not exist tells us which of the eight they wanted, and the eight
+ * catalogues exist to translate pages, not to guess.
+ *
+ * So it is deliberately almost wordless. Two lines and a way home — and the
+ * header's language switcher, which is the control someone who landed here from
+ * a stale `/ja/muqun/privacy` actually wants. If a localized 404 is worth it
+ * later, the way to get one is Cloudflare's directory walk (`/ja/404.html`
+ * serves `/ja/*`), not a script in this page.
+ */
+import Layout from '@/layouts/Layout.astro';
+import Band from '@/components/Band.astro';
+import Button from '@/components/Button.astro';
+import Display from '@/components/Display.astro';
+import Prose from '@/components/Prose.astro';
+import { getChrome, getSiteDescription } from '@/i18n/chrome';
+import { defaultLocale } from '@/lib/locales';
+
+const chrome = getChrome(defaultLocale);
+---
+
+<Layout
+  lang={defaultLocale}
+  title={`${chrome.error.notFound.title} — ${chrome.site.name}`}
+  description={getSiteDescription(defaultLocale)}
+  noindex
+>
+  <Band tone="cream" contain="narrow">
+    <p class="mq-mono-label">404</p>
+    <Display level={1} size="display-sm" lines={1}>{chrome.error.notFound.title}</Display>
+    <div class="mq-error-body"><Prose size="lead">{chrome.error.notFound.body}</Prose></div>
+    <Button href="/" variant="primary" size="lg" arrow>{chrome.error.home}</Button>
+  </Band>
+</Layout>
+
+<style>
+  .mq-error-body {
+    margin-block: var(--mq-space-5) var(--mq-space-8);
+  }
+</style>

@@ -1,0 +1,141 @@
+---
+/**
+ * The theme rail.
+ *
+ * There is no gallery of static screenshots on this site. There is one
+ * aperture, and this rail recolours it in place. Nothing around it moves --
+ * the terminal is the only thing that changes, which is exactly the claim
+ * the section is making about the app.
+ *
+ * A real `<fieldset>` of real radios. Arrow keys move between options, Home
+ * and End jump to the ends, the group has one tab stop, and the selected
+ * option is announced -- all of it from the platform, none of it
+ * reimplemented. The recolouring is `:has()` plus custom properties, so no
+ * JavaScript is involved and the rail works before, during and after
+ * hydration (there is none).
+ *
+ * Pack names are proper nouns and stay in the machine register: mono,
+ * untranslated, ASCII. "Catppuccin" is "Catppuccin" in eight languages.
+ */
+import type { ThemePack } from './themes';
+
+interface Props {
+  /** Must equal the id of the element the generated CSS scopes to. */
+  scope: string;
+  packs: readonly ThemePack[];
+  /** The pack checked on load. */
+  value: string;
+  /** Translated. The group's accessible name. */
+  legend: string;
+  class?: string;
+}
+
+const { scope, packs, value, legend, class: className } = Astro.props;
+const name = `${scope}-theme`;
+---
+
+<fieldset class:list={['mq-rail', className]}>
+  <legend class="mq-rail__legend mq-visually-hidden">{legend}</legend>
+  <div class="mq-rail__track">
+    {
+      packs.map((pack) => (
+        <div class="mq-rail__item">
+          <input
+            class="mq-rail__input"
+            type="radio"
+            id={`${scope}-${pack.id}`}
+            name={name}
+            value={pack.id}
+            checked={pack.id === value}
+          />
+          <label class="mq-rail__label" for={`${scope}-${pack.id}`}>
+            {pack.label}
+          </label>
+        </div>
+      ))
+    }
+  </div>
+</fieldset>
+
+<style>
+  .mq-rail {
+    inline-size: 100%;
+  }
+
+  .mq-rail__track {
+    display: flex;
+    gap: var(--mq-space-2);
+    overflow-x: auto;
+    padding-block: var(--mq-space-2);
+    padding-inline: var(--mq-space-1);
+    scrollbar-width: thin;
+    /* A horizontally scrolling list is keyboard-scrollable and shows its
+       ends, rather than fading them out and hiding that there is more. */
+    scroll-snap-type: x proximity;
+  }
+
+  /*
+   * Positioned, because the radio inside it is. An absolutely positioned
+   * input with no positioned ancestor resolves against the nearest one it can
+   * find -- which is the band -- so on a phone the hidden radios for the packs
+   * that have scrolled out of view sat *outside the viewport* and gave the
+   * whole page a horizontal scrollbar.
+   */
+  .mq-rail__item {
+    position: relative;
+    scroll-snap-align: start;
+    flex: 0 0 auto;
+  }
+
+  /*
+   * The input is moved under its label rather than removed. `display:none`
+   * and `visibility:hidden` take a radio out of the tab order and out of the
+   * accessibility tree; this keeps both and just makes it invisible.
+   */
+  .mq-rail__input {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .mq-rail__label {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: var(--mq-control-height-sm);
+    padding-inline: var(--mq-space-4);
+    border-radius: var(--mq-radius-full);
+    /* A control edge, so `--mq-rule` and not a hairline. */
+    border: 1px solid var(--mq-rule);
+    font-family: var(--mq-font-mono);
+    font-size: var(--mq-size-mono-sm);
+    letter-spacing: var(--mq-tracking-mono);
+    text-transform: uppercase;
+    white-space: nowrap;
+    cursor: pointer;
+    color: var(--mq-text);
+    transition:
+      background-color var(--mq-duration-fast) var(--mq-ease-standard),
+      color var(--mq-duration-fast) var(--mq-ease-standard),
+      border-color var(--mq-duration-fast) var(--mq-ease-standard);
+  }
+
+  .mq-rail__label:hover {
+    background: color-mix(in srgb, var(--mq-text) 8%, transparent);
+  }
+
+  /* Selected is weight plus fill plus the checked state itself -- never
+     colour alone, and the coral fill takes an ink label. */
+  .mq-rail__input:checked + .mq-rail__label {
+    background: var(--mq-accent);
+    border-color: var(--mq-accent);
+    color: var(--mq-on-accent);
+    font-weight: var(--mq-weight-strong);
+  }
+
+  .mq-rail__input:focus-visible + .mq-rail__label {
+    outline: var(--mq-focus-width) solid var(--mq-focus);
+    outline-offset: var(--mq-focus-offset-width);
+  }
+</style>

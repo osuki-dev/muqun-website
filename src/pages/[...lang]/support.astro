@@ -1,0 +1,156 @@
+---
+/**
+ * The support page — every locale, one file, same arrangement as the product
+ * page beside it.
+ *
+ * This is reference material and not part of the pitch: someone arrives here
+ * because something did not connect, so the network recommendation comes
+ * before the checks — it is the answer to most of them — the checks come
+ * before the apology, and the way to reach a person is at the top, where
+ * someone who has already tried everything will look for it. Nothing on this
+ * page asks for a token, a log or a pairing QR, and the last block says so.
+ *
+ * Bands, as on the product page: cream where Muqun speaks, recessed for the
+ * parts that are procedure.
+ */
+import Layout from '@/layouts/Layout.astro';
+import Band from '@/components/Band.astro';
+import Button from '@/components/Button.astro';
+import Display from '@/components/Display.astro';
+import Grid from '@/components/Grid.astro';
+import Prose from '@/components/Prose.astro';
+import SectionHeading from '@/components/SectionHeading.astro';
+import { getMuqunCopy } from '@/i18n/muqun';
+import { feedbackIssueUrl, supportEmail } from '@/lib/muqun-links';
+import { localizedPath, siteLocaleCodes, defaultLocale } from '@/lib/locales';
+
+export function getStaticPaths() {
+  return siteLocaleCodes.map((code) => ({
+    params: { lang: code === defaultLocale ? undefined : code },
+    props: { locale: code },
+  }));
+}
+
+/**
+ * `locale` is inferred from `getStaticPaths` above rather than declared as a
+ * `Props` interface: with both, the interface is the one TypeScript ignores,
+ * so it is a second declaration of the same fact that nothing checks.
+ */
+const { locale } = Astro.props;
+const copy = getMuqunCopy(locale).support;
+
+const privacyPath = localizedPath('/privacy', locale);
+const mailto = `mailto:${supportEmail}?subject=Muqun%20support`;
+---
+
+<Layout lang={locale} title={copy.metaTitle} description={copy.metaDescription}>
+  <Band tone="cream">
+    {/* `eyebrow` is translated — 「牧群 · サポート」in Japanese — so it is
+        proportional text and not a mono, letter-spaced label. */}
+    <div class="mq-support-eyebrow"><Prose size="small">{copy.eyebrow}</Prose></div>
+
+    <Display level={1} size="display-sm">{copy.heading}</Display>
+
+    <div class="mq-support-lead"><Prose size="lead">{copy.lead}</Prose></div>
+
+    <div class="mq-support-actions">
+      <Button href={mailto} variant="primary" size="lg">{copy.emailCta}</Button>
+      <Button href={feedbackIssueUrl} variant="secondary" size="lg">{copy.issueCta}</Button>
+    </div>
+
+    <Prose size="small">
+      {copy.contactBefore}
+      {' '}<a href={`mailto:${supportEmail}`}>{supportEmail}</a>
+      {' · '}{copy.contactAfter}
+    </Prose>
+  </Band>
+
+  {/* The network recommendation sits above the checks because it is the
+      answer to most of them: a Gateway that cannot be reached is nearly
+      always a Gateway on the wrong side of a router. */}
+  <Band tone="recessed">
+    {/* "Recommended network" is translated, so it sits above the heading as
+        ordinary small text rather than in the mono eyebrow, which is reserved
+        for untranslated ASCII. This section has no ASCII of its own to put
+        there -- "Tailscale" is a product name in the heading already -- so it
+        has no eyebrow rather than a translated one. */}
+    <div class="mq-support-eyebrow"><Prose size="small">{copy.networkEyebrow}</Prose></div>
+
+    <SectionHeading title={copy.networkHeading} level={2}>
+      {/* The badge is a translated phrase with an arrow in it, so it stays
+          proportional; only its shape is borrowed from the machine register. */}
+      <p class="mq-support-badge">{copy.networkBadge}</p>
+    </SectionHeading>
+
+    <Prose>{copy.networkBody}</Prose>
+
+    <div class="mq-support-link">
+      <Button
+        href="https://tailscale.com/docs/features/tailscale-serve"
+        variant="quiet"
+        arrow
+        target="_blank"
+        rel="noreferrer"
+      >
+        {copy.networkLink}
+      </Button>
+    </div>
+  </Band>
+
+  <Band tone="cream">
+    <SectionHeading title={copy.checksHeading} level={2} />
+
+    <Grid min="24rem">
+      {
+        copy.topics.map((topic) => (
+          <article class="mq-stack">
+            <h3 class="mq-subheading">{topic.title}</h3>
+            <Prose>{topic.body}</Prose>
+          </article>
+        ))
+      }
+    </Grid>
+  </Band>
+
+  <Band tone="recessed" tight>
+    <SectionHeading title={copy.safetyHeading} level={2} />
+    <Prose>{copy.safetyBody}</Prose>
+    <div class="mq-support-link">
+      <Button href={privacyPath} variant="quiet" arrow>{copy.safetyLink}</Button>
+    </div>
+  </Band>
+</Layout>
+
+<style>
+  /* Rhythm only; everything with a look of its own is a component. */
+  .mq-support-eyebrow {
+    margin-block-end: var(--mq-space-4);
+  }
+
+  .mq-support-lead {
+    margin-block-start: var(--mq-space-6);
+  }
+
+  .mq-support-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--mq-space-3);
+    margin-block: var(--mq-space-8) var(--mq-space-6);
+  }
+
+  .mq-support-badge {
+    display: inline-flex;
+    margin-block-start: var(--mq-space-2);
+    align-items: center;
+    min-block-size: var(--mq-control-height-sm);
+    padding-inline: var(--mq-space-4);
+    border: 1px solid var(--mq-rule);
+    border-radius: var(--mq-radius-full);
+    font-size: var(--mq-size-small);
+    font-weight: var(--mq-weight-medium);
+  }
+
+  .mq-support-link {
+    margin-block-start: var(--mq-space-5);
+  }
+</style>

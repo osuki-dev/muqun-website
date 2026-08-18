@@ -1,0 +1,50 @@
+---
+/**
+ * A procedure. Belongs on the recessed band.
+ *
+ * Numbered because the content genuinely is a sequence -- you cannot pair
+ * before you install -- and the number is information the reader needs, not
+ * an ornament. A set of unordered claims must not use this component.
+ *
+ * Renders a real `<ol>`, so a screen reader says "3 items" and "item 2 of 3"
+ * without any ARIA.
+ */
+interface Props {
+  class?: string;
+}
+const { class: className } = Astro.props;
+---
+
+<ol class:list={['mq-steps', className]}>
+  <slot />
+</ol>
+
+<style>
+  .mq-steps {
+    display: grid;
+    /* See `Step`: an implicit `auto` track is sized by max-content and will
+       happily grow past its container. */
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--mq-space-8);
+    counter-reset: mq-step;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* The connecting line between markers. A hairline, because it is
+     decoration -- the numbers carry the sequence, not the rule. */
+  @media (min-width: 640px) {
+    .mq-steps {
+      position: relative;
+    }
+
+    .mq-steps::before {
+      content: '';
+      position: absolute;
+      inset-block: 14px 14px;
+      inset-inline-start: 15px;
+      inline-size: 1px;
+      background: var(--mq-hairline);
+    }
+  }
+</style>

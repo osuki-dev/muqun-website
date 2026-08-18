@@ -1,0 +1,167 @@
+---
+/**
+ * The one control the page has.
+ *
+ * A primary button is coral with an INK label. Not white -- white on
+ * #FF5A4A measures 3.08:1 and fails at every size, ink measures 6.17:1. The
+ * token is `--mq-on-accent` and there is no white variant defined anywhere
+ * in the system, which is the point: the mistake is not available.
+ *
+ * Renders an `<a>` when given `href` and a `<button>` otherwise, so a link
+ * is a link and gets the browser's own middle-click, open-in-new-tab and
+ * "copy link" behaviour rather than a JS reimplementation of them.
+ */
+import type { HTMLAttributes } from 'astro/types';
+
+type Variant = 'primary' | 'secondary' | 'quiet';
+
+type Props = {
+  variant?: Variant;
+  size?: 'md' | 'lg';
+  href?: string;
+  /** Renders a trailing mono arrow. The token set's `→`, never an emoji. */
+  arrow?: boolean;
+  class?: string;
+} & Omit<HTMLAttributes<'a'>, 'href'> &
+  Omit<HTMLAttributes<'button'>, 'type'> & { type?: 'button' | 'submit' | 'reset' };
+
+const {
+  variant = 'secondary',
+  size = 'md',
+  href,
+  arrow = false,
+  class: className,
+  type,
+  ...rest
+} = Astro.props;
+
+const classes = [
+  'mq-btn',
+  `mq-btn--${variant}`,
+  size === 'lg' && 'mq-btn--lg',
+  className,
+]
+  .filter(Boolean)
+  .join(' ');
+---
+
+{
+  href ? (
+    <a class={classes} href={href} {...rest}>
+      <span class="mq-btn__label">
+        <slot />
+      </span>
+      {arrow && (
+        <span class="mq-btn__arrow" aria-hidden="true">
+          →
+        </span>
+      )}
+    </a>
+  ) : (
+    <button class={classes} type={type ?? 'button'} {...rest}>
+      <span class="mq-btn__label">
+        <slot />
+      </span>
+      {arrow && (
+        <span class="mq-btn__arrow" aria-hidden="true">
+          →
+        </span>
+      )}
+    </button>
+  )
+}
+
+<style>
+  .mq-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--mq-space-2);
+    min-block-size: var(--mq-control-height);
+    padding-inline: var(--mq-control-padding-x);
+    border-radius: var(--mq-control-radius);
+    border: 1px solid transparent;
+    font-weight: var(--mq-weight-strong);
+    font-size: var(--mq-size-small);
+    line-height: 1.2;
+    text-decoration: none;
+    cursor: pointer;
+    background: transparent;
+    transition:
+      background-color var(--mq-duration-fast) var(--mq-ease-standard),
+      border-color var(--mq-duration-fast) var(--mq-ease-standard),
+      color var(--mq-duration-fast) var(--mq-ease-standard);
+  }
+
+  .mq-btn--lg {
+    min-block-size: 52px;
+    padding-inline: var(--mq-space-8);
+    font-size: var(--mq-size-body);
+  }
+
+  .mq-btn--primary {
+    background: var(--mq-accent);
+    color: var(--mq-on-accent);
+  }
+
+  .mq-btn--primary:hover {
+    background: color-mix(in srgb, var(--mq-accent) 92%, var(--mq-on-accent));
+  }
+
+  .mq-btn--primary:active {
+    background: var(--mq-accent-pressed);
+  }
+
+  /* A control edge is not a hairline. #E0DAD1 on cream is 1.20:1 and
+     disappears; --mq-rule is 3.36:1 and clears the non-text bar. */
+  .mq-btn--secondary {
+    border-color: var(--mq-rule);
+    color: var(--mq-text);
+  }
+
+  .mq-btn--secondary:hover {
+    background: color-mix(in srgb, var(--mq-text) 6%, transparent);
+  }
+
+  .mq-btn--secondary:active {
+    background: color-mix(in srgb, var(--mq-text) 12%, transparent);
+  }
+
+  .mq-btn--quiet {
+    color: var(--mq-text-accent);
+    padding-inline: var(--mq-space-2);
+    min-block-size: var(--mq-control-height-sm);
+  }
+
+  .mq-btn--quiet:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  /* A label may carry a glyph beside its words -- a store mark, a platform
+     logo. It stays a flex row so the glyph sits on the text's centre line
+     rather than breaking to its own line, which is what a block-level `svg`
+     inside a plain `span` would do. */
+  .mq-btn__label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--mq-space-2);
+  }
+
+  .mq-btn__arrow {
+    font-family: var(--mq-font-mono);
+    font-size: 0.95em;
+    translate: 0 -0.02em;
+    transition: translate var(--mq-duration-fast) var(--mq-ease-standard);
+  }
+
+  .mq-btn:hover .mq-btn__arrow {
+    translate: 2px -0.02em;
+  }
+
+  .mq-btn[aria-disabled='true'],
+  .mq-btn:disabled {
+    opacity: var(--mq-alpha-disabled);
+    pointer-events: none;
+  }
+</style>

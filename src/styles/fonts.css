@@ -1,0 +1,204 @@
+/*
+ * Faces
+ * =====
+ *
+ * Three roles, one family, self-hosted:
+ *
+ *   IBM Plex Sans Condensed 600  display  -- headlines
+ *   IBM Plex Sans 400/500/600    body     -- everything Muqun says
+ *   IBM Plex Mono 400/600        machine  -- everything the machine says
+ *
+ * Files live beside this stylesheet in `./fonts/` rather than in `public/`,
+ * so Vite fingerprints them and they get an immutable cache header for free.
+ *
+ * SUBSETTING
+ * ----------
+ * The eight locales are en, zh-TW, ja, ko, de, fr, es, pt. Every Latin
+ * character any of them needs -- ä ö ü ß, é è ê ç à, ñ á í ó ú, ã õ -- is
+ * inside U+00C0-00FF, which the `latin` subset already carries. `latin-ext`
+ * is loaded for the sans faces anyway (proper nouns, theme-pack authors'
+ * names) but it is a separate file behind its own `unicode-range`, so a
+ * reader who never hits one of those codepoints never downloads it.
+ *
+ * Mono ships `latin` ONLY, and that is the register rule paying rent: mono
+ * carries machine output, machine output is ASCII, so there is nothing past
+ * U+00FF to draw. 30KB for the whole machine voice.
+ *
+ * CJK IS NOT SELF-HOSTED
+ * ----------------------
+ * A subset CJK face is megabytes and a dynamically subset one is a runtime
+ * dependency on someone else's CDN. The system stack is better on every axis
+ * here. What matters is the ORDER, and that it is set per `:lang()`:
+ *
+ *   Han unification means one codepoint, several correct regional shapes.
+ *   A single global stack `PingFang TC, Hiragino Sans, ...` hands a Japanese
+ *   reader Traditional Chinese forms for roughly a third of shared kanji.
+ *   The differences are small per glyph -- a stroke that hooks instead of
+ *   stopping, a component drawn with four strokes instead of three -- and
+ *   large in aggregate: the page reads as foreign rather than as broken,
+ *   which is worse, because nobody files a bug about it. So each language
+ *   gets its own ordering below and no locale can inherit another's.
+ */
+
+/* --------------------------------------------------------------- display -- */
+
+@font-face {
+  font-family: 'IBM Plex Sans Condensed';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('./fonts/plex-sans-condensed-latin-600.woff2') format('woff2');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191,
+    U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'IBM Plex Sans Condensed';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('./fonts/plex-sans-condensed-latin-ext-600.woff2') format('woff2');
+  unicode-range:
+    U+0100-02AF, U+0304, U+0308, U+0329, U+1E00-1E9F, U+1EF2-1EFF, U+2020,
+    U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+/* ------------------------------------------------------------------ body -- */
+
+@font-face {
+  font-family: 'IBM Plex Sans';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./fonts/plex-sans-latin-400.woff2') format('woff2');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191,
+    U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'IBM Plex Sans';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./fonts/plex-sans-latin-ext-400.woff2') format('woff2');
+  unicode-range:
+    U+0100-02AF, U+0304, U+0308, U+0329, U+1E00-1E9F, U+1EF2-1EFF, U+2020,
+    U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: 'IBM Plex Sans';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('./fonts/plex-sans-latin-500.woff2') format('woff2');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191,
+    U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'IBM Plex Sans';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('./fonts/plex-sans-latin-ext-500.woff2') format('woff2');
+  unicode-range:
+    U+0100-02AF, U+0304, U+0308, U+0329, U+1E00-1E9F, U+1EF2-1EFF, U+2020,
+    U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: 'IBM Plex Sans';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('./fonts/plex-sans-latin-600.woff2') format('woff2');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191,
+    U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'IBM Plex Sans';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('./fonts/plex-sans-latin-ext-600.woff2') format('woff2');
+  unicode-range:
+    U+0100-02AF, U+0304, U+0308, U+0329, U+1E00-1E9F, U+1EF2-1EFF, U+2020,
+    U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+/* --------------------------------------------------------------- machine -- */
+/* latin only. Machine output is ASCII by definition; see the register rule. */
+
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./fonts/plex-mono-latin-400.woff2') format('woff2');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191,
+    U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('./fonts/plex-mono-latin-600.woff2') format('woff2');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191,
+    U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* ==========================================================================
+   CJK fallbacks, ordered per :lang()
+   ==========================================================================
+   `--mq-font-cjk` is the second entry in `--mq-font-body` and
+   `--mq-font-display` (see tokens.css). Latin locales resolve it to the
+   platform UI face, which they never reach because Plex covers their range.
+   Each CJK locale replaces it with a stack that is correct FOR THAT
+   LANGUAGE, macOS first, then Windows, then Android/Linux, then Noto.
+   ========================================================================== */
+
+:root {
+  --mq-font-cjk: system-ui;
+}
+
+/* Traditional Chinese, Taiwan. TC faces first; SC faces are deliberately
+   absent -- Simplified forms in a zh-TW page are worse than a fallback. */
+:root:lang(zh-TW),
+:lang(zh-TW) {
+  --mq-font-cjk:
+    'PingFang TC', 'Heiti TC', 'Microsoft JhengHei', 'Noto Sans TC',
+    'Source Han Sans TC', 'Hiragino Sans CNS', sans-serif;
+}
+
+/* Japanese. Hiragino / Yu Gothic ahead of anything Chinese, so kanji take
+   Japanese shapes. */
+:root:lang(ja),
+:lang(ja) {
+  --mq-font-cjk:
+    'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', 'YuGothic',
+    'Noto Sans JP', 'Source Han Sans JP', Meiryo, sans-serif;
+}
+
+/* Korean. Hangul-first faces; the hanja these carry are Korean-shaped. */
+:root:lang(ko),
+:lang(ko) {
+  --mq-font-cjk:
+    'Apple SD Gothic Neo', Pretendard, 'Noto Sans KR', 'Source Han Sans KR',
+    'Malgun Gothic', 'Nanum Gothic', sans-serif;
+}

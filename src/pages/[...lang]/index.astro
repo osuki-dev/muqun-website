@@ -1,0 +1,1206 @@
+---
+/**
+ * The Muqun product page — every locale, one file.
+ *
+ * `[...lang]` is a rest parameter, so the same route emits `/` (with `lang`
+ * undefined, because `prefixDefaultLocale: false`) and `/ja/`, `/de/` and the
+ * rest. The old site needed two files for this — `pages/muqun/index.astro` and
+ * `pages/[lang]/muqun/index.astro` — plus a third in `components/pages/` to
+ * hold the markup they shared, and that arrangement is exactly how it ended up
+ * with a `/muqun/privacy` for English and a 404 for the other nine.
+ *
+ * The page has one reader — someone whose agent stalled on a permission prompt
+ * while they were away from the desk — and one outcome, and it runs in one
+ * fixed order: the pain, the answer, four pillars, setup, the parts that make
+ * it a pleasure, the promise, the download.
+ *
+ * ── How it is built ─────────────────────────────────────────────────────────
+ * Full-bleed bands over one constrained container, and the band's tone is a
+ * claim about who is speaking rather than a decoration:
+ *
+ *   ink       the machine. The aperture, the terminal, the theme rail.
+ *   cream     Muqun. Headlines, claims, the deal.
+ *   recessed  procedure. Setup, commands, the download.
+ *
+ * The hero is inverted on purpose. The dark aperture comes FIRST and the
+ * headline sits in cream beneath it: the picture is the argument and the type
+ * is its caption, which is the opposite of a marketing page and the right way
+ * round for a product whose whole subject is a terminal you cannot reach.
+ *
+ * Every section carries evidence — a panel, a command block, or the aperture,
+ * and the one claim that has none is a line inside its neighbour rather than a
+ * section of its own. Nothing here declares a *look* of its own; the pieces are
+ * all `src/components`, and anything a section needed that the set did not have
+ * was added there (`PushNotice`, `TaskSheet`, `ServerCard`, `PairPanel`,
+ * `StoreButton`, `FactList`). What the styles at the foot
+ * of this file own is how those pieces are arranged on this page, which is this
+ * page's business and no component's.
+ *
+ * All text comes from `src/i18n/muqun`. Anything inline here is a product name,
+ * a shell command, a path or a status line label, none of which are translated.
+ */
+import Layout from '@/layouts/Layout.astro';
+import AppIcon from '@/components/AppIcon.astro';
+import Aperture from '@/components/Aperture.astro';
+import AwayDigest from '@/components/AwayDigest.astro';
+import BlockedPrompt from '@/components/BlockedPrompt.astro';
+import Button from '@/components/Button.astro';
+import CodeBlock from '@/components/CodeBlock.astro';
+import ComposerStrip from '@/components/ComposerStrip.astro';
+import Container from '@/components/Container.astro';
+import DeviceShot from '@/components/DeviceShot.astro';
+import Display from '@/components/Display.astro';
+import FactList from '@/components/FactList.astro';
+import LiveActivity from '@/components/LiveActivity.astro';
+import PairPanel from '@/components/PairPanel.astro';
+import Pane from '@/components/Pane.astro';
+import Prose from '@/components/Prose.astro';
+import PushNotice from '@/components/PushNotice.astro';
+import SectionHeading from '@/components/SectionHeading.astro';
+import ServerCard from '@/components/ServerCard.astro';
+import Step from '@/components/Step.astro';
+import Steps from '@/components/Steps.astro';
+import StoreButton from '@/components/StoreButton.astro';
+import WebServiceSheet from '@/components/WebServiceSheet.astro';
+import { SAMPLE_STREAM } from '@/components/aperture/sample-stream';
+import { getPacks } from '@/components/aperture/themes';
+import {
+  PROMPT_CHOICES,
+  PROMPT_QUESTION,
+  PROMPT_REPLIES,
+  SESSION_SCROLLBACK,
+} from '@/components/aperture/session-stream';
+import type { StatusLineItem } from '@/components/types';
+import MuqunPending from '@/components/ui/muqun-pending.astro';
+import { getMuqunCopy } from '@/i18n/muqun';
+import { isShot, ogImage } from '@/lib/muqun-assets';
+import {
+  appStoreUrl,
+  feedbackIssueUrl,
+  gatewayInspectCommand,
+  gatewayInstallCommand,
+  gatewayManageCommand,
+  gatewayRepoUrl,
+  playStoreUrl,
+} from '@/lib/muqun-links';
+import { appStoreAvailable } from '@/lib/muqun-release';
+import { localizedPath, siteLocaleCodes, defaultLocale } from '@/lib/locales';
+
+export function getStaticPaths() {
+  return siteLocaleCodes.map((code) => ({
+    params: { lang: code === defaultLocale ? undefined : code },
+    props: { locale: code },
+  }));
+}
+
+/**
+ * `locale` is inferred from `getStaticPaths` above rather than declared as a
+ * `Props` interface: with both, the interface is the one TypeScript ignores,
+ * so it is a second declaration of the same fact that nothing checks.
+ */
+const { locale } = Astro.props;
+const copy = getMuqunCopy(locale);
+
+const privacyPath = localizedPath('/privacy', locale);
+const supportPath = localizedPath('/support', locale);
+
+/**
+ * The five packs the rail offers. Names are never translated — see the naming
+ * rule in `src/i18n/muqun/types.ts` — which is why they can sit in the mono
+ * register.
+ *
+ * These are five of the app's thirty-two packs, and deliberately not the five
+ * the app's own registry leads with — that set has Everforest where this one
+ * has Gruvbox. The choice is recorded on the other side of the fence, in
+ * `muqun/maestro/flows/web-theme-shots.yaml`, which captures exactly this
+ * list and says why: "Osuki because it is ours, then four a reader is likely
+ * to recognise by name."
+ *
+ * So this list and that flow are one decision in two repositories, and the
+ * flow's own instruction is the rule to follow: change one, change the other.
+ * A pack added here without a capture run fails the build in `themeShots`
+ * below; a pack captured there and not listed here is a screenshot nobody
+ * publishes.
+ */
+const themePacks = ['osuki', 'catppuccin', 'rose-pine', 'gruvbox', 'tokyo-night'];
+
+/**
+ * The same five, paired with their captures, for the rail under the aperture.
+ *
+ * Both halves are resolved rather than written out again -- the label from the
+ * pack table, the capture from the generated manifest -- so the three lists
+ * cannot drift apart silently. A pack the app has renamed makes `getPacks`
+ * throw; a pack whose capture has not been regenerated makes this throw. Both
+ * fail the build, which is the only place a missing screenshot is cheap to
+ * find.
+ */
+const themeShots = getPacks(themePacks).map((pack) => {
+  const shot = `theme-${pack.id}`;
+  if (!isShot(shot)) {
+    throw new Error(`No capture for theme pack "${pack.id}". Run \`bun run shots:generate\`.`);
+  }
+  return { label: pack.label, shot };
+});
+
+/**
+ * The windows in the status line.
+ *
+ * The labels are ASCII and untranslated because the bar is in the machine
+ * register — see the register rule in `tokens.css`, which is what lets it be
+ * tight-tracked and lowercase-terse without that treatment ever landing on
+ * Korean. Each one carries the section's own translated name as `srLabel`, so
+ * a screen reader announces that instead, and the label can never drift from
+ * the heading it points at because it is the heading's own string.
+ */
+const sections: readonly StatusLineItem[] = [
+  { key: '0', id: 'muqun', label: 'muqun', srLabel: copy.hero.paneLabel },
+  { key: '1', id: 'features', label: 'what it is', srLabel: copy.pillars.paneLabel },
+  { key: '2', id: 'setup', label: 'setup', srLabel: copy.setup.paneLabel },
+  { key: '3', id: 'themes', label: 'themes', srLabel: copy.delight.paneLabel },
+  { key: '4', id: 'promise', label: 'the deal', srLabel: copy.promise.paneLabel },
+  { key: '5', id: 'get', label: 'get', srLabel: copy.footer.heading },
+];
+
+/**
+ * The same list, addressable by id, so a pane's title bar and the status
+ * line's entry for it are one fact rather than two.
+ *
+ * Every pane on this page takes its index and its name from here. Renaming a
+ * window is therefore one edit in the array above, and a pane whose bar says
+ * `2:setup` while the bar at the foot of the page says `3:setup` is not a
+ * thing that can happen -- which is the whole reason the reader is willing to
+ * read the two as the same window list.
+ */
+const win = Object.fromEntries(
+  sections.map((item) => [item.id, item]),
+) as Record<string, StatusLineItem>;
+
+/**
+ * The five claims, each taken by name.
+ *
+ * HOW A CLAIM EARNS ITS PLACE
+ * The test is not "does the code exist". It is "can somebody who installs the
+ * app today reach it". Those are different questions, and the difference is
+ * exactly where this file has been wrong in both directions.
+ *
+ * `send` was withheld for a release on the belief it had not shipped. It had:
+ * `components/attachment-menu.tsx` offers Take photo / Photo library / Choose
+ * files against a real upload queue, and the gateway routes
+ * `post(upload_file)` and pastes the stored path into the pane. It is back.
+ *
+ * `dispatch` went the other way, and is off again. The route exists, the
+ * sheet exists, the gateway implements `/agents/spawn` and advertises
+ * `agent_spawn` — and none of that matters, because the app holds the whole
+ * feature behind one constant:
+ *
+ *     lib/agent-spawn.ts:51   export const AGENT_SPAWN_SHIPPED = false;
+ *
+ * held back from 1.2.0 deliberately, with every entry point — the sheet, the
+ * quick-actions row, the home menu, the Stop control — gated on it. A reader
+ * who installs today has no New Task button anywhere. Checking the source for
+ * a file and not for its gate is how this page came to promise it.
+ *
+ * So: when this list changes, read the gate, not the filename. It is the only
+ * flag of its kind in the app, and `grep AGENT_SPAWN_SHIPPED` is the whole
+ * check.
+ *
+ * `away` and `serve` are new and were never on the page: `lib/away-digest.ts`
+ * (come back after fifteen minutes and the server screen leads with what
+ * moved) and `app/web-service.tsx` (type a port, and the dev server on that
+ * machine opens in the phone's browser). Both were read the same way, gate
+ * included — `away` behind the ordinary `agent_events` capability the current
+ * gateway advertises, `serve` behind nothing at all.
+ *
+ * Still taken by name rather than mapped, and the reason is unchanged: what
+ * this page claims has to be a decision somebody makes in this file, never
+ * something that happens because an entry appeared in a catalogue.
+ */
+const [approve, watch, send, , away, serve] = copy.pillars.items;
+
+/** The three answers Muqun's permission push actually offers. */
+const approvalActions = ['Approve', 'Approve always', 'Deny'];
+
+/**
+ * The evidence for the six, as the app has it.
+ *
+ * Every string below is ASCII and untranslated because every one of them is
+ * the machine's own: agent names, a status word, a filename, a port. See the
+ * register rule in `tokens.css`. The numbers are the real ceilings from
+ * `lib/attachment-queue.ts` and the real threshold from `lib/away-digest.ts`,
+ * not round figures picked to look tidy.
+ */
+const awayRows = [
+  { agent: 'claude', status: 'Blocked', tone: 'blocked' as const, when: '12m ago' },
+  { agent: 'codex', status: 'Done', tone: 'done' as const, asked: 2, when: '20m ago' },
+  { agent: 'nvim', status: 'Idle', tone: 'idle' as const, when: '34m ago' },
+];
+
+/** One settled, one mid-flight. The app's own four state words. */
+const composerFiles = [
+  { name: 'mockup.png', note: 'uploaded', done: true },
+  { name: 'crash.log', note: 'uploading' },
+];
+
+
+/** The Gateway's own panel, as it appears inside a terminal session. */
+const panelKeys = [
+  { key: 'p', label: 'pair another device' },
+  { key: 'x', label: 'revoke a device' },
+  { key: 'u', label: 'change the address' },
+];
+
+/** The server card a second after pairing. Drawn: a capture carries an address. */
+const pairedAgents = [
+  { name: 'claude', state: 'Working' },
+  { name: 'nvim', state: 'Idle' },
+  { name: 'codex', state: 'Working' },
+];
+---
+
+<!-- Its own card, not the site default: every link to this page unfurls into
+     the product it is about. -->
+<Layout
+  lang={locale}
+  title={copy.meta.title}
+  description={copy.meta.description}
+  ogImage={ogImage}
+  sections={sections}
+>
+  {/*
+    1 · The claim, and the thing it is a claim about.
+
+    The headline says the agent is waiting for one keypress. The pane beside
+    it is waiting for one keypress. That is the whole hero: a sentence and the
+    proof of it, in the same screen, where the proof is not a picture of a
+    terminal but a terminal the reader can answer.
+
+    The clock in this pane's title bar counts up until they do.
+  */}
+  <Pane index={win.muqun.key} name={win.muqun.label} tone="cream" id="muqun" clockFrom={14}>
+    <div class="mq-hero">
+      <div class="mq-hero__lede">
+        {/* Translated, so it is proportional and small rather than a mono
+            eyebrow: uppercase and tracking live on the mono roles only. */}
+        <div class="mq-hero-eyebrow"><Prose size="small">{copy.hero.eyebrow}</Prose></div>
+
+        <Display level={1}>{copy.hero.heading}</Display>
+
+        <div class="mq-hero-sub"><Prose size="lead">{copy.hero.sub}</Prose></div>
+
+        <div class="mq-hero-actions">
+          {
+            /*
+             * While the App Store listing is in review there is no page to
+             * link to, so the store button is not rendered at all -- not
+             * disabled, not greyed. A store link that 404s is worse on launch
+             * week than no button. Google Play carries the page's weight for
+             * as long as that lasts; flipping `src/lib/muqun-release.ts`
+             * returns both to where they were, in one edit, with no markup to
+             * move.
+             */
+            appStoreAvailable ? (
+              <StoreButton
+                store="app-store"
+                href={appStoreUrl}
+                label={copy.hero.appStore}
+                variant="primary"
+                size="lg"
+              />
+            ) : (
+              <MuqunPending status={copy.review.status} variant="pill" />
+            )
+          }
+          <StoreButton
+            store="play"
+            href={playStoreUrl}
+            label={copy.hero.googlePlay}
+            variant={appStoreAvailable ? 'secondary' : 'primary'}
+            size="lg"
+          />
+        </div>
+
+        {
+          /* Under the row rather than inside it, so the status stays one short
+             line and the sentence that explains it can be a sentence. */
+          appStoreAvailable ? null : <Prose size="small">{copy.review.note}</Prose>
+        }
+
+        <div class="mq-hero-install"><Prose size="small">{copy.hero.installLabel}</Prose></div>
+        <CodeBlock
+          code={gatewayInstallCommand}
+          label="sh"
+          copy
+          wrap
+          copyLabel={copy.hero.copyLabel}
+          copiedLabel={copy.hero.copiedLabel}
+        />
+      </div>
+
+      {/*
+        The prompt, live.
+
+        This is where the page spends its whole risk budget, and the reason
+        is that the product is one sentence long: your agent is waiting for
+        one keypress. A reader who has pressed that key has understood Muqun
+        in a way no screenshot produces. `BlockedPrompt` owns the behaviour;
+        what this file decides is that the hero is worth it.
+
+        And that it is the only thing here. A drawn push notification sat
+        beside this for one draft, on the argument that it showed the other
+        half of the product -- but the same drawing is the proof under the
+        `approve` claim two panes down, where it is answering a sentence
+        rather than competing with a live terminal. Two copies of one
+        notification is not two pieces of evidence. The hint under the pane
+        says the answer can come from the Lock Screen; the pane below shows
+        it.
+      */}
+      <div class="mq-hero-demo">
+        <BlockedPrompt
+          lines={SESSION_SCROLLBACK}
+          question={PROMPT_QUESTION}
+          choices={PROMPT_CHOICES}
+          replies={PROMPT_REPLIES}
+          legend={copy.hero.promptLegend}
+          hint={copy.hero.promptHint}
+          caption={copy.hero.promptCaption}
+        />
+      </div>
+    </div>
+  </Pane>
+
+  {/*
+    2 · What it is for. Six claims, because six have shipped.
+
+    The full-bleed aperture used to sit between the hero and this pane: one
+    more continuous session, ending on the same permission prompt. It was the
+    argument when the hero was only a headline. It stopped being one the day
+    the hero became a prompt the reader can actually answer — at that point it
+    was a static rerun of something they had just done themselves, 758px of
+    it, pushing the first real feature further down the page. Cut, and the
+    session it drew is not lost: it is the scrollback inside the hero's own
+    terminal, sliced from the same array.
+
+    What the space buys is this pane going from two claims to six. Two of them
+    (`send`, `dispatch`) were written, translated into eight languages and
+    then withheld on the belief that they had not shipped; they had. Two
+    (`away`, `serve`) were never here at all. See the destructure above.
+
+    Three columns at 1024px, two at 700, one below that — with a rule down
+    every split, because that is what this page does at a boundary. Each cell
+    is one claim and one piece of evidence, and the evidence is drawn rather
+    than captured wherever the app's own screen would otherwise have carried
+    somebody's hostname and somebody's clock.
+
+    Five, not six. `dispatch` was here for one commit and came off again when
+    the gate was read rather than the filename — see the destructure above.
+    `TaskSheet.astro` goes back to sitting unreferenced in the component set,
+    which is the right place for it: shipping the feature is then an edit to
+    this file and nothing else.
+  */}
+  <Pane index={win.features.key} name={win.features.label} tone="cream" id="features">
+    <SectionHeading title={copy.pillars.paneLabel} level={2} />
+
+    <ul class="mq-claims">
+      <li class="mq-claim">
+        {/* The pane's name and its state, both translated, so both
+            proportional. */}
+        <p class="mq-small">{approve.pane} · {approve.state}</p>
+        <h3 class="mq-subheading">{approve.title}</h3>
+        <Prose>{approve.line}</Prose>
+        <div class="mq-claim__proof">
+          <PushNotice
+            meta="Muqun · now"
+            agent="claude"
+            path="src/theme.ts"
+            actions={approvalActions}
+            ariaLabel={approve.alt}
+          />
+          {/*
+            The second half of the same claim, and the reason it is here
+            rather than in a seventh cell: `lib/live-activity.ts` and
+            `lib/agent-widget.ts` are not a different feature from the push,
+            they are the same answer arriving without one. A Lock Screen that
+            already reads `blocked` is a notification nobody had to send.
+          */}
+          <LiveActivity
+            agent="claude"
+            status="blocked"
+            detail="wants to edit src/theme.ts"
+            clock="9:41"
+            ariaLabel={approve.alt}
+          />
+        </div>
+      </li>
+
+      {/*
+        `screen-session`, not `screen-terminal`. Both are the app showing a
+        terminal; the difference is what is in the terminal. `screen-terminal`
+        is an editor holding five lines of a file, so two thirds of a
+        660px-tall frame is empty grid — an odd picture under a sentence about
+        output streaming in. `screen-session` is the agent mid-run, which is
+        also the screen this claim's own alt has always described: a coloured
+        diff, a bordered table, a green pass line.
+      */}
+      <li class="mq-claim">
+        <p class="mq-small">{watch.pane} · {watch.state}</p>
+        <h3 class="mq-subheading">{watch.title}</h3>
+        <Prose>{watch.line}</Prose>
+        {/*
+          Capped rather than given the column.
+
+          It is the only capture among six drawings, and a phone is 2.17 times
+          as tall as it is wide — at the full column width it stood half again
+          as tall as anything beside it and set the height of the whole first
+          row, leaving its two neighbours sitting over a hole. 14rem is the
+          width at which the app's own type is still readable and the row
+          stops being about one cell.
+        */}
+        <div class="mq-claim__proof">
+          <DeviceShot name="screen-session" alt={watch.alt} width="14rem" raised />
+        </div>
+      </li>
+
+      <li class="mq-claim">
+        <p class="mq-small">{send.pane} · {send.state}</p>
+        <h3 class="mq-subheading">{send.title}</h3>
+        <Prose>{send.line}</Prose>
+        <div class="mq-claim__proof">
+          <ComposerStrip
+            files={composerFiles}
+            placeholder="Send a message"
+            ariaLabel={send.alt}
+          />
+        </div>
+      </li>
+
+      <li class="mq-claim">
+        <p class="mq-small">{away.pane} · {away.state}</p>
+        <h3 class="mq-subheading">{away.title}</h3>
+        <Prose>{away.line}</Prose>
+        <div class="mq-claim__proof">
+          {/* `codex` carries the count and `claude` does not, which is the
+              app's own rule: "Blocked · asked twice" says the same thing
+              twice and buries the half that needs answering. */}
+          <AwayDigest rows={awayRows} more="and 2 more agents" ariaLabel={away.alt} />
+        </div>
+      </li>
+
+      <li class="mq-claim">
+        <p class="mq-small">{serve.pane} · {serve.state}</p>
+        <h3 class="mq-subheading">{serve.title}</h3>
+        <Prose>{serve.line}</Prose>
+        <div class="mq-claim__proof">
+          <WebServiceSheet
+            server="Local Gateway"
+            port="5173"
+            recent={['3000', '5173', '8080']}
+            action="Open"
+            ariaLabel={serve.alt}
+          />
+        </div>
+      </li>
+    </ul>
+
+    {/*
+      2b · The same pane, further down: what the thing is like to hold.
+
+      The claims above answer "what would I use this for". Someone still
+      reading has already decided they want that, and is now asking the only
+      question left, which is whether a terminal on a phone is any good to
+      actually use -- because their experience of that is every other client
+      they have tried, and it was bad.
+
+      So this is a list of gestures rather than a list of features, and each
+      line says why the gesture is the shape it is. "Two fingers switch tabs"
+      is a bullet point; "Muqun tells the sweep from a pinch before it moves
+      you" is the week of work that makes it not maddening, and it is the half
+      that a reader who has been burned before is actually listening for.
+
+      It sits inside the features pane, not in one of its own. It is the same
+      argument at a smaller scale, and a seventh window in the status line for
+      it would promise a section rather than a paragraph.
+    */}
+    <div class="mq-craft">
+      <p class="mq-small">{copy.craft.paneLabel} · {copy.craft.paneNote}</p>
+      <SectionHeading title={copy.craft.heading} level={3}>
+        <p>{copy.craft.lead}</p>
+      </SectionHeading>
+
+      <dl class="mq-gestures">
+        {
+          copy.craft.items.map((item) => (
+            <div class="mq-gesture">
+              <dt class="mq-gesture__key">{item.gesture}</dt>
+              <dd class="mq-gesture__line">
+                <Prose>{item.line}</Prose>
+              </dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </Pane>
+
+  {/* 4 · Setup: procedure, on the procedure band. The block that has to
+      convert, so every command on it is here in full, at full width, with its
+      own copy button — a command behind a scrollbar is one nobody can check
+      before they pipe it into a shell. */}
+  <Pane
+    index={win.setup.key}
+    name={win.setup.label}
+    tone="recessed"
+    id="setup"
+    meta={copy.setup.paneNote}
+  >
+    {/* `paneNote` is on the pane's title bar now -- see the `meta` prop above
+        -- so it is not repeated here. A procedure that tells you twice how
+        long it takes is a procedure that sounds unsure. */}
+    <SectionHeading eyebrow="muqun-gateway" title={copy.setup.heading} level={2}>
+      <p>{copy.setup.lead}</p>
+    </SectionHeading>
+
+    <Steps>
+      <Step title={copy.setup.steps[0].title}>
+        <Prose>{copy.setup.steps[0].body}</Prose>
+        <CodeBlock
+          code={gatewayInstallCommand}
+          label="sh"
+          copy
+          wrap
+          copyLabel={copy.hero.copyLabel}
+          copiedLabel={copy.hero.copiedLabel}
+        />
+        <Prose size="small">{copy.setup.inspectLead}</Prose>
+        {/* All three lines, one button: they are one procedure, and copying
+            them one at a time is how people end up running a different file
+            from the one they read. */}
+        <CodeBlock
+          code={gatewayInspectCommand}
+          label="sh"
+          copy
+          wrap
+          copyLabel={copy.setup.inspectCopyLabel}
+          copiedLabel={copy.hero.copiedLabel}
+        />
+      </Step>
+
+      {/*
+        Steps 2 and 3 carry a phone in their media slot.
+
+        The procedure's own evidence is all machine -- three command blocks, a
+        pairing panel, a server card -- and those stop at 80ch inside a 1200px
+        container, which left a column the height of the whole band with
+        nothing in it. What belongs in that column is not decoration but the
+        other half of each step: pairing is two screens, and only one of them
+        was on the page. Step 2 is the phone with nothing paired yet; step 3
+        is the same phone a moment later, with one of the machine's panes open
+        on it and the rest in the strip along the bottom.
+
+        Step 1 gets none. Nothing has happened on the phone yet, and a
+        screenshot there would be a picture of waiting.
+      */}
+      <Step title={copy.setup.steps[1].title}>
+        <Prose>{copy.setup.steps[1].body}</Prose>
+        <PairPanel title="gateway | manage" keys={panelKeys} ariaLabel={copy.setup.qrPanelAlt} />
+
+        {/* The uncommon path, and the one that loses installs: the script
+            opens the panel itself, so most people never see this — but
+            someone left staring at a blank pane with no QR and nothing to
+            type simply stops, so the way out belongs on the page and not in
+            the README. */}
+        <Prose size="small">
+          <strong>{copy.setup.panelFallbackLabel}</strong>
+          {' '}{copy.setup.panelFallbackBody}
+        </Prose>
+        <CodeBlock
+          code={gatewayManageCommand}
+          label="sh"
+          copy
+          wrap
+          copyLabel={copy.setup.panelCopyLabel}
+          copiedLabel={copy.hero.copiedLabel}
+        />
+        <Prose size="small">{copy.setup.panelFallbackAfter}</Prose>
+
+        <DeviceShot
+          slot="media"
+          name="screen-home"
+          alt={copy.setup.pairPhoneAlt}
+          width="13rem"
+          raised
+        />
+      </Step>
+
+      <Step title={copy.setup.steps[2].title}>
+        <Prose>{copy.setup.steps[2].body}</Prose>
+        <ServerCard
+          name="Local Gateway"
+          status={copy.setup.onlineLabel}
+          agents={pairedAgents}
+          ariaLabel={copy.setup.onlinePanelAlt}
+        />
+
+        <DeviceShot
+          slot="media"
+          name="screen-terminal"
+          alt={copy.setup.panelsPhoneAlt}
+          width="13rem"
+          raised
+        />
+      </Step>
+    </Steps>
+
+    {/*
+      What closes the procedure, and what does not.
+
+      The requirements stay: three lines somebody needs BEFORE they run a
+      command, and a landing page that makes you install something to find
+      out it does not support Windows has wasted your evening.
+
+      The Tailscale paragraph came off. It was three sentences recommending
+      Tailscale Serve and warning against Funnel — and `/support` already
+      carries that recommendation, at length, under its own heading, with the
+      same link. Two copies of one recommendation is one place for it to go
+      stale. The updating note stays because nothing else on the site says
+      it, but it is one line now rather than a paragraph with a second
+      subject bolted on.
+
+      The strings for the cut paragraph stay in `src/i18n/muqun`, translated,
+      because `/support` renders them.
+    */}
+    <div class="mq-setup-close mq-stack">
+      <FactList items={copy.setup.requirements} caption="REQUIREMENTS" />
+
+      <Prose>
+        <strong>{copy.setup.updatingLabel}</strong>
+        {' '}{copy.setup.updatingBody}
+        {' '}{copy.setup.openSourceBefore}
+        {' '}<a href={gatewayRepoUrl}>{copy.setup.openSourceLink}</a>.
+      </Prose>
+    </div>
+  </Pane>
+
+  {/* 5 · The parts that make it a pleasure. One session, one rail, and the
+      only thing that changes between frames is the colour — which is exactly
+      the claim the section is making about the app. */}
+  <Pane
+    index={win.themes.key}
+    name={win.themes.label}
+    tone="ink"
+    id="themes"
+    contain={false}
+    tight
+    meta={copy.delight.paneNote}
+  >
+    <div class="mq-themes-head">
+      <Container>
+        <SectionHeading eyebrow="theme-packs" title={copy.delight.heading} level={2}>
+          <p>{copy.delight.line}</p>
+        </SectionHeading>
+      </Container>
+    </div>
+
+    {/* A shorter indent than the hero's, because this device is smaller: the
+        panel's silhouette holds about 25 columns to the hero's 33, and the
+        indent is what decides which columns of the output land inside it. */}
+    <Aperture
+      id="themes-aperture"
+      lines={SAMPLE_STREAM}
+      caption={copy.delight.themeAlt.replace('{pack}', 'Osuki')}
+      size="panel"
+      indent="40ch"
+      themes={themePacks}
+      theme="osuki"
+      railLegend={copy.delight.heading}
+      chrome={{ title: 'muqun', status: 'connected', statusLabel: copy.setup.onlineLabel }}
+    />
+
+    {/*
+      The five packs, as captures.
+
+      This is not the aperture's claim repeated. The aperture re-themes a
+      terminal -- it is the machine's own colours moving, which is the part
+      that has to be live to be believed. These are the app: the tab strip,
+      the key row, the composer, all of it in the pack. A palette swap on one
+      element cannot show that the pack reaches the chrome, and a screenshot
+      of the whole screen cannot be re-coloured by CSS, so the two are
+      different evidence for two halves of the same sentence.
+
+      Dark captures only -- `mode="dark"`, and now actually so. The rail said
+      this in prose while `DeviceShot` followed the reader's theme like every
+      other capture, so a reader in light mode got five white phones on the
+      ink band: a wall of near-white rectangles on near-black, reading as a
+      different product rather than as five themes of this one. The pinned
+      polarity also ships one image per frame instead of two.
+    */}
+    <Container>
+      <ul class="mq-theme-shots" aria-label={copy.delight.heading}>
+        {
+          themeShots.map((pack) => (
+            <li class="mq-theme-shots__item">
+              <figure class="mq-theme-shots__figure">
+                <DeviceShot
+                  name={pack.shot}
+                  alt={copy.delight.themeAlt.replace('{pack}', pack.label)}
+                  width="100%"
+                  mode="dark"
+                  raised
+                />
+                {/* Pack names are never translated -- see the naming rule in
+                    `src/i18n/muqun/types.ts` -- so the caption sits in the
+                    mono register with the rest of the machine's nouns. */}
+                <figcaption class="mq-theme-shots__caption">{pack.label}</figcaption>
+              </figure>
+            </li>
+          ))
+        }
+      </ul>
+    </Container>
+  </Pane>
+
+  {/* 6 · The deal. Facts, no adjectives, in a list you can check. */}
+  <Pane index={win.promise.key} name={win.promise.label} tone="cream" id="promise">
+    <SectionHeading title={copy.promise.paneLabel} level={2} />
+
+    <FactList items={copy.promise.lines} />
+
+    {/* Two links, one line: what this app will never do with you, and where to
+        say what it should do next. The second is the only place on the page
+        that asks the reader for something, and it is deliberately the last
+        thing in the block that just promised them free updates — the two are
+        the same argument from both ends. */}
+    <div class="mq-promise-links">
+      <Button href={privacyPath} variant="quiet" arrow>{copy.promise.link}</Button>
+      <Button href={feedbackIssueUrl} variant="quiet" arrow rel="noopener" target="_blank">
+        {copy.promise.feedbackLink}
+      </Button>
+    </div>
+  </Pane>
+
+  {/* 7 · Download. The same two ways in as the hero, and the same command,
+      because someone who read the whole page should not have to scroll back
+      up to act on it. */}
+  <Pane index={win.get.key} name={win.get.label} tone="recessed" id="get">
+    {/* The icon beside the heading rather than in the hero: this is the block
+        that ends in two store buttons, and the tile the reader is about to
+        tap on their home screen belongs next to the buttons that put it
+        there. `Muqun` is a proper noun and identical in all eight locales,
+        so the alt is not a translated string. */}
+    <div class="mq-get-head">
+      <AppIcon alt="Muqun" />
+      <Display level={2} size="display-sm" lines={1}>{copy.footer.heading}</Display>
+    </div>
+
+    <div class="mq-hero-actions">
+      {
+        appStoreAvailable ? (
+          <StoreButton
+            store="app-store"
+            href={appStoreUrl}
+            label={copy.footer.appStore}
+            variant="primary"
+            size="lg"
+          />
+        ) : (
+          <MuqunPending status={copy.review.status} variant="pill" />
+        )
+      }
+      <StoreButton
+        store="play"
+        href={playStoreUrl}
+        label={copy.footer.googlePlay}
+        variant={appStoreAvailable ? 'secondary' : 'primary'}
+        size="lg"
+      />
+    </div>
+
+    {appStoreAvailable ? null : <Prose size="small">{copy.review.note}</Prose>}
+
+    {/*
+      No install command here.
+
+      This pane used to close with a third copy of `curl … | sh` — after the
+      hero's and the one inside step 1, which is the copy somebody actually
+      installs from because it is the one with the procedure around it. A
+      command repeated three times on one page is not three chances to
+      convert; it is the page having nothing else to say. The two ways in
+      that belong at the end are the store buttons above and the way to ask
+      for help below.
+
+      `copy.footer.installLabel` stays in the catalogue, translated: this is
+      a decision about this page, and the next arrangement may want it back.
+    */}
+    <p class="mq-get-support">
+      <Button href={supportPath} variant="quiet" arrow>{copy.footer.support}</Button>
+    </p>
+  </Pane>
+</Layout>
+
+<style>
+  /*
+   * Rhythm and arrangement. Everything with a look of its own is a component;
+   * what is left here is where the pieces of a band sit and how much air is
+   * between them, which is a property of this page's composition rather than
+   * of any component in it. No colour, no border, no type.
+   */
+  /*
+   * The hero: read on the left, devices on the right.
+   *
+   * One column until 1024px, and in that column the devices come last --
+   * source order is reading order, and on a phone the sentence and the two
+   * buttons should not be pushed under a picture.
+   *
+   * From 1024px the two are side by side and both start at the band's top
+   * edge. The lede track is `--mq-measure` because that is where the headline
+   * and the sub already stop; giving it a fraction of the container would
+   * only pad the column with space the type cannot use, which was the old
+   * arrangement's whole problem in a different place.
+   */
+  .mq-hero {
+    display: grid;
+    gap: var(--mq-space-12);
+  }
+
+  @media (min-width: 1024px) {
+    .mq-hero {
+      /*
+       * The terminal gets the larger half. It is the argument, and a fixed
+       * 94-column stream needs the room to be read at more than a hint --
+       * the lede is prose and stops at its measure whatever it is given.
+       */
+      grid-template-columns: minmax(0, 26rem) minmax(0, 1fr);
+      gap: var(--mq-space-10);
+      align-items: start;
+    }
+  }
+
+  /*
+   * The demo sticks. The lede is short and the terminal is tall, so on a wide
+   * screen the reader scrolls past the sentence while the thing the sentence
+   * is about stays on screen -- which is the one place on this page where
+   * pinning something is not a trick but the literal claim: it is still
+   * waiting.
+   *
+   * Only where there is height for it. `min-height` on the query, because a
+   * sticky element taller than the viewport sticks to nothing and simply
+   * scrolls, which looks like a bug.
+   */
+  /* The wrapper is a grid item too, so it carries the same floor -- see the
+     note in `BlockedPrompt`. Without it the track grows to the stream's
+     width and the clip inside never gets the chance to bite. */
+  .mq-hero-demo {
+    min-inline-size: 0;
+  }
+
+  @media (min-width: 1024px) and (min-height: 46rem) {
+    .mq-hero-demo {
+      position: sticky;
+      inset-block-start: calc(var(--mq-header-height) + var(--mq-space-4));
+    }
+  }
+
+  .mq-hero-eyebrow {
+    margin-block-end: var(--mq-space-4);
+  }
+
+  .mq-hero-sub {
+    margin-block-start: var(--mq-space-6);
+  }
+
+  .mq-hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--mq-space-3);
+    margin-block: var(--mq-space-8) var(--mq-space-5);
+  }
+
+  .mq-hero-install {
+    margin-block: var(--mq-space-8) var(--mq-space-3);
+  }
+
+  /*
+   * The pad with the phone standing in front of it.
+   *
+   * The overlap is real -- the phone is absolutely placed over the pad's
+   * lower-right corner -- so the cell has to reserve the overhang itself or
+   * the phone hangs into whatever follows. `padding-block-end` does that, and
+   * it is a share of the pad's own height rather than a fixed length, because
+   * the pad is fluid and a fixed reserve is right at exactly one width.
+   */
+  .mq-hero-devices {
+    position: relative;
+    /*
+     * 1180x813, so the pad is 0.689 of its width tall, and a phone at `f` of
+     * that width is 2.17f tall. The reserve has to cover whatever the phone
+     * has left over: 2.17 x 0.38 = 0.825, against 0.689 + 0.18. At the old
+     * 40% and 14% the phone was taller than the sum and rose over the pad's
+     * top edge, so the tablet looked cropped rather than stood behind.
+     */
+    padding-block-end: 18%;
+  }
+
+  .mq-hero-devices :global(.mq-hero-devices__phone) {
+    position: absolute;
+    inset-inline-end: 0;
+    inset-block-end: 0;
+    inline-size: 38%;
+    /* Its own max would hold it at 17rem, which is wider than 40% of the pad
+       at every width this layout uses. Removed rather than raised, so the
+       phone is always a proportion of the pad it stands on. */
+    max-inline-size: none;
+  }
+
+  /*
+   * Below 640px the pad is a 300px-wide strip in which nothing is legible,
+   * and an illustration nobody can read is worse than one fewer picture. The
+   * phone drops back into the flow at full width.
+   */
+  @media (max-width: 639px) {
+    .mq-hero-devices {
+      padding-block-end: 0;
+    }
+
+    .mq-hero-devices :global(.mq-hero-devices__pad) {
+      display: none;
+    }
+
+    .mq-hero-devices :global(.mq-hero-devices__phone) {
+      position: static;
+      inline-size: 100%;
+      max-inline-size: 17rem;
+    }
+  }
+
+  /*
+   * The six claims, as a split pane.
+   *
+   * One column held to the prose measure, then two from 700px, then three
+   * from 1024. Three is the ceiling and not an arbitrary one: the widest
+   * piece of evidence in here is a phone capture, and at four columns inside
+   * a 1200px container that capture is 260px wide, which is where the app's
+   * own type stops being readable.
+   *
+   * `align-items: start`, because a claim should end where its proof ends.
+   * The cells are deliberately not padded out to a common height — six
+   * drawings of six different objects are different heights, and forcing
+   * them level would mean six boxes with holes in them rather than six
+   * claims.
+   */
+  .mq-claims {
+    display: grid;
+    gap: var(--mq-space-12) 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    max-inline-size: var(--mq-measure);
+  }
+
+  .mq-claim {
+    display: grid;
+    gap: var(--mq-space-3);
+    align-content: start;
+    min-inline-size: 0;
+  }
+
+  /* The proof sits at the foot of the cell with air above it, so the reading
+     (label, heading, sentence) stays one block and the picture is clearly
+     the answer to it rather than the next thing in a list. */
+  .mq-claim__proof {
+    display: grid;
+    gap: var(--mq-space-4);
+    margin-block-start: var(--mq-space-2);
+  }
+
+  /*
+   * The gestures, at the foot of the same pane.
+   *
+   * A rule above it rather than a band of its own: it is a second movement in
+   * one argument, and giving it a background would make the page read as
+   * having two feature sections when it has one.
+   */
+  .mq-craft {
+    margin-block-start: var(--mq-space-16);
+    padding-block-start: var(--mq-space-10);
+    border-block-start: 1px solid var(--mq-hairline);
+  }
+
+  .mq-gestures {
+    display: grid;
+    gap: var(--mq-space-6) 0;
+    margin: 0;
+    padding: 0;
+    max-inline-size: var(--mq-measure);
+  }
+
+  .mq-gesture {
+    display: grid;
+    gap: var(--mq-space-2);
+    align-content: start;
+    min-inline-size: 0;
+  }
+
+  /*
+   * Proportional, and that is the whole point.
+   *
+   * A key column asks to be set in the mono uppercase the eyebrows use, and it
+   * must not be: these strings are translated, and that treatment on 두 손가락
+   * or ファイルをタップ is the exact thing the register rule in tokens.css
+   * exists to prevent. Colour and weight do the same job to the eye and do it
+   * in every script.
+   */
+  .mq-gesture__key {
+    color: var(--mq-text-accent);
+    font-weight: 600;
+  }
+
+  .mq-gesture__line {
+    margin: 0;
+  }
+
+  @media (min-width: 700px) {
+    .mq-gestures {
+      max-inline-size: none;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: var(--mq-space-8);
+      row-gap: var(--mq-space-8);
+      align-items: start;
+    }
+
+    /* Same split-gutter rule as the claims above, so the two lists read as one
+       column system rather than two that happen to sit under each other. */
+    .mq-gesture:not(:nth-child(2n + 1)) {
+      border-inline-start: 1px solid var(--mq-hairline);
+      padding-inline-start: var(--mq-space-8);
+    }
+  }
+
+  /*
+   * From 700px the claims tile, and every split is a rule.
+   *
+   * The rule is a `border-inline-start` on every cell that is not in the
+   * first column, with the gutter split either side of it — `column-gap`
+   * before, `padding-inline-start` after — so it always lands in the middle
+   * of the gutter and cannot drift when the free space changes. `:nth-child`
+   * on the column count rather than a wrapper per row, because the rows are
+   * a consequence of the grid and not a thing in the markup.
+   */
+  @media (min-width: 700px) {
+    .mq-claims {
+      max-inline-size: none;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: var(--mq-space-8);
+      align-items: start;
+    }
+
+    .mq-claim:not(:nth-child(2n + 1)) {
+      border-inline-start: 1px solid var(--mq-hairline);
+      padding-inline-start: var(--mq-space-8);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .mq-claims {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      column-gap: var(--mq-space-10);
+    }
+
+    /* The two-column rule has to be undone before the three-column one is
+       applied, or every fourth cell keeps a border it is no longer beside. */
+    .mq-claim:not(:nth-child(2n + 1)) {
+      border-inline-start: 0;
+      padding-inline-start: 0;
+    }
+
+    .mq-claim:not(:nth-child(3n + 1)) {
+      border-inline-start: 1px solid var(--mq-hairline);
+      padding-inline-start: var(--mq-space-10);
+    }
+  }
+
+  .mq-setup-close {
+    margin-block-start: var(--mq-space-12);
+    --mq-stack-gap: var(--mq-space-8);
+  }
+
+  .mq-themes-head {
+    margin-block-end: var(--mq-space-10);
+  }
+
+  /*
+   * The five captures, on a rail rather than in a grid.
+   *
+   * A grid of five phone screens at any readable width is either two ragged
+   * rows or five illegible thumbnails. A rail is neither: every frame is the
+   * same size at every viewport, and the row scrolls instead of wrapping. It
+   * is also how the app's own theme picker presents them, which is the thing
+   * this section is a picture of.
+   */
+  .mq-theme-shots {
+    display: flex;
+    gap: var(--mq-space-6);
+    margin: var(--mq-space-10) 0 0;
+    padding: 0 0 var(--mq-space-3);
+    list-style: none;
+    overflow-x: auto;
+    /* The rail carries the page's gutter inside itself, so the first and last
+       frames can reach the container's edges instead of stopping short of a
+       padding nobody can see. */
+    scroll-padding-inline: var(--mq-gutter);
+    /* Left to itself the browser stops between two frames. This is a short
+       list of equal objects, which is the one case where snapping is exactly
+       right -- and unlike the page's bands, every item is smaller than the
+       scrollport. */
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-inline: contain;
+  }
+
+  /*
+   * `13rem`, not `11rem`. Five frames at 11rem plus their gaps came to about
+   * 980px inside a 1200px container, so the rail stopped short of the right
+   * edge and the band ended in a strip of nothing -- a scrolling rail that
+   * does not reach its own edge reads as a row that ran out. At 13rem the
+   * five fill the container, and the packs' difference is a palette, which
+   * needs the extra 32px to be a difference at all.
+   */
+  .mq-theme-shots__item {
+    flex: 0 0 auto;
+    inline-size: 13rem;
+    scroll-snap-align: start;
+  }
+
+  .mq-theme-shots__figure {
+    margin: 0;
+  }
+
+  .mq-theme-shots__caption {
+    margin-block-start: var(--mq-space-3);
+    font-family: var(--mq-font-mono);
+    font-size: var(--mq-size-mono-sm);
+    letter-spacing: var(--mq-tracking-mono);
+    color: var(--mq-text-muted);
+  }
+
+  .mq-promise-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--mq-space-2) var(--mq-space-6);
+    margin-block-start: var(--mq-space-8);
+  }
+
+  /*
+   * The icon and the heading on one line, top-aligned rather than centred: the
+   * heading is two lines at some widths and one at others, and a centred tile
+   * would sit at a different height in each. `baseline` is not available --
+   * the tile has no text in it to align to.
+   */
+  .mq-get-head {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--mq-space-5);
+  }
+
+  .mq-get-support {
+    margin-block-start: var(--mq-space-6);
+  }
+</style>

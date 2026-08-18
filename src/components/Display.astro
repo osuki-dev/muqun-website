@@ -1,0 +1,35 @@
+---
+/**
+ * A headline at display size, with the per-language handling from
+ * `base.css` already attached.
+ *
+ * No headline is ever mono. The condensed face is the display face for
+ * Latin; zh-TW, ja and ko are switched off it automatically because it has
+ * no CJK coverage and would otherwise mix a condensed Latin word into a
+ * normal-width Han line.
+ *
+ * `lines` reserves vertical space so that switching locale does not move the
+ * rest of the page. The language defaults (2 for English, 3 for German and
+ * the Romance locales, 3 for CJK) are in `base.css`; this prop overrides
+ * them for a specific headline that is known to be shorter or longer.
+ */
+interface Props {
+  level?: 1 | 2;
+  /** Reserve this many lines of vertical space. */
+  lines?: number;
+  size?: 'display' | 'display-sm';
+  id?: string;
+  class?: string;
+}
+
+const { level = 1, lines, size = 'display', id, class: className } = Astro.props;
+const Tag = `h${level}` as 'h1' | 'h2';
+---
+
+<Tag
+  class:list={['mq-display', size === 'display-sm' && 'mq-display--sm', className]}
+  id={id}
+  style={lines ? `--mq-display-lines:${lines}` : undefined}
+>
+  <slot />
+</Tag>

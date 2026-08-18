@@ -1,0 +1,354 @@
+---
+/**
+ * A command you are meant to run, or output you are meant to read.
+ *
+ * Hard 80ch measure, because that is the width the output was wrapped at and
+ * re-wrapping it to a prose measure would break columns that were aligned
+ * when they left the machine. Below 80ch of available width it scrolls
+ * horizontally rather than reflowing, for the same reason.
+ *
+ * ── `wrap`, and why it is not the default ───────────────────────────────────
+ * That reasoning is about OUTPUT. It is exactly wrong for a COMMAND: nothing
+ * in `curl -fsSL https://muqun.dev/gateway.sh | sh` is aligned to a column, and
+ * a phone reader who has to drag the block sideways to see how it ends cannot
+ * check the thing before piping it into a shell — which is the one moment on
+ * this page where checking matters most. `wrap` is that case, and it is opt-in
+ * so that the day a block holds real output, the measure still holds.
+ *
+ * Wrapping a shell command has one risk worth designing against: a
+ * continuation can be misread as a second command. So every logical line is
+ * its own block and carries a 2ch hanging indent, which makes a continuation
+ * visibly a continuation. Because the lines are now separate elements, the
+ * copy button reads the original text off `data-code` rather than off
+ * `textContent`, which would have lost the newlines between them.
+ *
+ * Everything visible here is mono, ASCII and untranslated. The only string
+ * on this component that gets translated is `copyLabel`, and it lives on a
+ * `<button>` in the proportional face.
+ */
+import type { HTMLAttributes } from 'astro/types';
+
+interface Props extends HTMLAttributes<'figure'> {
+  /** The literal text. Rendered verbatim; not highlighted, not retouched. */
+  code: string;
+  /** Mono, ASCII: a filename, a shell name, a host. Machine register. */
+  label?: string;
+  /** Show a copy button. */
+  copy?: boolean;
+  /** Translated. Defaults to English. */
+  copyLabel?: string;
+  /** Translated. Announced after a successful copy. */
+  copiedLabel?: string;
+  /** `ink` puts it on the machine's ground; `recessed` keeps it in procedure. */
+  tone?: 'ink' | 'recessed';
+  /**
+   * Reflow instead of scrolling. For commands, never for output — see the
+   * note above.
+   */
+  wrap?: boolean;
+  class?: string;
+}
+
+const {
+  code,
+  label,
+  copy = false,
+  copyLabel = 'Copy',
+  copiedLabel = 'Copied',
+  tone = 'recessed',
+  wrap = false,
+  class: className,
+  ...rest
+} = Astro.props;
+
+const trimmed = code.replace(/\n+$/, '');
+const lines = trimmed.split('\n');
+---
+
+<figure
+  class:list={['mq-code', `mq-code--${tone}`, wrap && 'mq-code--wrap', className]}
+  {...rest}
+>
+  {
+    (label || copy) && (
+      <figcaption class="mq-code__bar">
+        {label && <span class="mq-mono-label mq-code__label">{label}</span>}
+        {copy && (
+          /*
+           * The glyph, and only the glyph.
+           *
+           * It used to carry its words at any width that fit them, and a
+           * pill reading "Copy the install command" is the widest thing in
+           * the bar it sits in — on a page with five code blocks that is five
+           * sentences competing with the commands they belong to. Copy is the
+           * one gesture nobody needs told: two squares is the same glyph in
+           * every editor and every terminal the reader already uses.
+           *
+           * The words are still the button's accessible name, and they are
+           * still translated. They are visually hidden, not removed — see the
+           * rule below — and they double as the `title`, so a hover says the
+           * same sentence a screen reader hears.
+           */
+          <button
+            class="mq-code__copy"
+            type="button"
+            title={copyLabel}
+            data-copy
+            data-copy-idle={copyLabel}
+            data-copy-done={copiedLabel}
+          >
+            <svg
+              class="mq-code__glyph"
+              viewBox="0 0 16 16"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <g class="mq-code__glyph-copy">
+                <rect x="5.75" y="1.75" width="9" height="11" rx="2" />
+                <path d="M11 14.25H3.25a2 2 0 0 1-2-2V4.5" />
+              </g>
+              <path class="mq-code__glyph-done" d="M2.5 8.5 6 12l7.5-7.5" />
+            </svg>
+            <span class="mq-code__copy-text" data-copy-text>{copyLabel}</span>
+          </button>
+        )}
+      </figcaption>
+    )
+  }
+  {/* `tabindex` only where it earns its place: a block that reflows has
+      nothing to scroll, and a tab stop that does nothing is noise. */}
+  <pre class="mq-code__pre" tabindex={wrap ? undefined : 0}><code
+      class="mq-code__code"
+      data-copy-source
+      data-code={trimmed}
+    >{lines.map((line) => <span class="mq-code__line">{line}</span>)}</code></pre>
+</figure>
+
+<style>
+  .mq-code {
+    --mq-code-bg: var(--mq-recessed);
+    --mq-code-fg: var(--mq-text);
+    background: var(--mq-code-bg);
+    color: var(--mq-code-fg);
+    border: 1px solid var(--mq-hairline);
+    border-radius: var(--mq-radius-md);
+    overflow: clip;
+    max-inline-size: calc(var(--mq-measure-code) + var(--mq-space-8));
+  }
+
+  /* On the machine's ground the block is the ground: same dark surface in
+     both page themes, so a light-mode reader still sees real terminal
+     colours rather than a bleached approximation of them. */
+  .mq-code--ink {
+    --mq-code-bg: var(--mq-term-bg, #08111b);
+    --mq-code-fg: var(--mq-term-fg, #d8e1ea);
+    border-color: color-mix(in srgb, var(--mq-code-fg) 18%, transparent);
+  }
+
+  .mq-code__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--mq-space-4);
+    padding: var(--mq-space-2) var(--mq-space-3) var(--mq-space-2) var(--mq-space-4);
+    border-block-end: 1px solid
+      color-mix(in srgb, var(--mq-code-fg) 14%, transparent);
+    min-block-size: var(--mq-control-height-sm);
+  }
+
+  .mq-code__label {
+    color: color-mix(in srgb, var(--mq-code-fg) 70%, transparent);
+  }
+
+  /* Square, and no smaller than the smallest chip elsewhere on the page:
+     losing the words must not lose the tap target with them. */
+  .mq-code__copy {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 32px;
+    block-size: 32px;
+    padding: 0;
+    border: 1px solid color-mix(in srgb, var(--mq-code-fg) 42%, transparent);
+    background: transparent;
+    color: var(--mq-code-fg);
+    border-radius: var(--mq-radius-full);
+    cursor: pointer;
+    transition:
+      background-color var(--mq-duration-fast) var(--mq-ease-standard),
+      border-color var(--mq-duration-fast) var(--mq-ease-standard);
+  }
+
+  /*
+   * The words, kept out of sight and in the accessible tree.
+   *
+   * They are the button's whole name -- "Copy the install command", not
+   * "Copy" -- and after a press they become "Copied", which is what the live
+   * region announces. Removing them would leave a button called nothing.
+   */
+  .mq-code__copy-text {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .mq-code__copy:hover {
+    background: color-mix(in srgb, var(--mq-code-fg) 10%, transparent);
+  }
+
+  .mq-code__copy:focus-visible {
+    outline-color: var(--mq-code-fg);
+  }
+
+  .mq-code__glyph {
+    inline-size: 15px;
+    block-size: 15px;
+    flex: 0 0 auto;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /*
+   * Two glyphs in one box, one shown at a time.
+   *
+   * With the words gone this tick is the ONLY confirmation a sighted reader
+   * gets, so it is not decoration -- it is the button's entire answer, and it
+   * is why the swap is a spring rather than a cut. The copy glyph leaves
+   * downward and small, the tick arrives the same way; a press that answers
+   * instantly reads as nothing having happened.
+   *
+   * A screen reader gets the live region on the hidden words instead, which
+   * is the same answer in the other channel.
+   */
+  .mq-code__glyph-copy,
+  .mq-code__glyph-done {
+    /* Stacked, not laid out: both live in the same 16-unit viewBox, so
+       neither moves when the other appears. `fill-box` makes `scale` happen
+       around each glyph's own centre rather than the viewBox origin. */
+    transform-box: fill-box;
+    transform-origin: center;
+    transition:
+      opacity var(--mq-duration-fast) var(--mq-ease-standard),
+      scale var(--mq-duration-fast) var(--mq-ease-exit);
+  }
+
+  .mq-code__glyph-done {
+    opacity: 0;
+    scale: 0.6;
+  }
+
+  .mq-code__copy[data-state='done'] {
+    border-color: color-mix(in srgb, var(--mq-code-fg) 20%, transparent);
+    background: color-mix(in srgb, var(--mq-verified) 18%, transparent);
+    color: var(--mq-verified);
+  }
+
+  .mq-code__copy[data-state='done'] .mq-code__glyph-copy {
+    opacity: 0;
+    scale: 0.6;
+  }
+
+  .mq-code__copy[data-state='done'] .mq-code__glyph-done {
+    opacity: 1;
+    scale: 1;
+  }
+
+  .mq-code__pre {
+    margin: 0;
+    padding: var(--mq-space-4);
+    overflow-x: auto;
+    font-family: var(--mq-font-mono);
+    font-size: var(--mq-size-mono);
+    line-height: var(--mq-leading-mono);
+    tab-size: 2;
+  }
+
+  .mq-code__code {
+    display: block;
+    inline-size: max-content;
+    min-inline-size: 100%;
+  }
+
+  .mq-code__line {
+    display: block;
+  }
+
+  /* Commands only. The hanging indent is what stops a wrapped line from
+     reading as a command of its own. */
+  .mq-code--wrap .mq-code__code {
+    inline-size: auto;
+  }
+
+  .mq-code--wrap .mq-code__line {
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    padding-inline-start: 2ch;
+    text-indent: -2ch;
+  }
+
+  /* `tabindex="0"` makes a scrollable region keyboard reachable, which then
+     has to show that it is focused. */
+  .mq-code__pre:focus-visible {
+    outline-color: var(--mq-code-fg);
+    outline-offset: -2px;
+  }
+</style>
+
+<script>
+  /**
+   * Copy. Two things worth doing properly: the button reports the result in
+   * its own label rather than firing a toast, and it announces the change to
+   * a screen reader through `aria-live` on the label span.
+   */
+  class CodeCopy {
+    static bind(button: HTMLButtonElement) {
+      const figure = button.closest('figure');
+      const source = figure?.querySelector<HTMLElement>('[data-copy-source]');
+      const text = button.querySelector<HTMLElement>('[data-copy-text]');
+      if (!figure || !source || !text) return;
+
+      text.setAttribute('aria-live', 'polite');
+      const idle = button.dataset.copyIdle ?? 'Copy';
+      const done = button.dataset.copyDone ?? 'Copied';
+      let timer: number | undefined;
+
+      button.addEventListener('click', async () => {
+        try {
+          // `data-code`, not `textContent`: each line is its own block so the
+          // hanging indent can work, and concatenating those would run the
+          // three inspect commands together into one unrunnable line.
+          await navigator.clipboard.writeText(source.dataset.code ?? source.textContent ?? '');
+          text.textContent = done;
+          button.dataset.state = 'done';
+        } catch {
+          // No clipboard permission, or an insecure context. Selecting the
+          // text is the honest fallback: the reader can still copy it, and a
+          // selection across block lines carries the newlines with it.
+          const range = document.createRange();
+          range.selectNodeContents(source);
+          const selection = window.getSelection();
+          selection?.removeAllRanges();
+          selection?.addRange(range);
+          return;
+        }
+        window.clearTimeout(timer);
+        timer = window.setTimeout(() => {
+          text.textContent = idle;
+          delete button.dataset.state;
+        }, 2000);
+      });
+    }
+  }
+
+  document
+    .querySelectorAll<HTMLButtonElement>('button[data-copy]')
+    .forEach((button) => CodeCopy.bind(button));
+</script>

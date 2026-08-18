@@ -1,0 +1,87 @@
+---
+/**
+ * A capture of the app, in a silhouette, at a size.
+ *
+ * `ui/muqun-shot.astro` picks the right polarity and carries the intrinsic
+ * dimensions; what it deliberately does not do is decide how wide the picture
+ * should be, because that is the layout's business. This is the layout's
+ * answer: a phone capture is 660x1435, so a column that hands it its full
+ * width hands it a 1400px-tall element and the section becomes a wall.
+ *
+ * The radius is the device radius -- the same `--mq-radius-xl` the aperture
+ * clips its silhouette with -- so a real capture and the drawn device read as
+ * the same object.
+ */
+import MuqunShot from './ui/muqun-shot.astro';
+import type { MuqunShotBase } from '@/lib/muqun-shots';
+
+interface Props {
+  name: MuqunShotBase;
+  /** Translated. What is happening on the screen, not "a screenshot". */
+  alt: string;
+  /** The widest it may be. Defaults to a phone at a comfortable reading size. */
+  width?: string;
+  class?: string;
+  /** Passed through: pin a polarity for a device that sits on the ink band. */
+  mode?: 'auto' | 'light' | 'dark';
+  /**
+   * Lift the device off the band.
+   *
+   * A light capture on the cream band is a white rectangle on an almost-white
+   * ground, and a hairline is not enough edge to say "this is a screen" -- at
+   * hero size it reads as a hole in the page rather than as a device. Raised
+   * devices get the same shadow the film panel already carries, so the two
+   * sitting next to each other are one object each.
+   */
+  raised?: boolean;
+}
+
+const { name, alt, width = '15rem', class: className, mode, raised = false } = Astro.props;
+---
+
+<figure
+  class:list={[
+    'mq-device',
+    raised && 'mq-device--raised',
+    mode === 'dark' && 'mq-device--dark',
+    className,
+  ]}
+  style={`--mq-device-w:${width}`}
+>
+  <MuqunShot name={name} alt={alt} mode={mode} />
+</figure>
+
+<style>
+  /*
+   * The ground behind the capture, and it has to be the ground the capture
+   * is about to arrive on.
+   *
+   * This was `--mq-ink-ground` for every device, which is right for a phone
+   * showing a dark capture and wrong for every other case: captures are
+   * lazy, so on the cream bands a reader met a phone-shaped slab of black
+   * that swapped to a near-white screenshot when the file landed. Anyone on
+   * a slow connection saw the page as half dark; anyone whose capture failed
+   * saw it that way permanently, which is how this was found.
+   *
+   * `--mq-canvas` follows the reader's theme exactly as an `auto` capture
+   * does, so the placeholder is always the polarity of the thing replacing
+   * it. A capture pinned dark says so and keeps the ink.
+   */
+  .mq-device {
+    inline-size: 100%;
+    max-inline-size: var(--mq-device-w, 15rem);
+    margin: 0;
+    border-radius: var(--mq-radius-xl);
+    border: 1px solid var(--mq-hairline);
+    overflow: clip;
+    background: var(--mq-canvas);
+  }
+
+  .mq-device--dark {
+    background: var(--mq-ink-ground);
+  }
+
+  .mq-device--raised {
+    box-shadow: var(--mq-shadow-raised);
+  }
+</style>

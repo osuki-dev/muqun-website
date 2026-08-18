@@ -1,0 +1,84 @@
+---
+/**
+ * The eight locales, as eight links.
+ *
+ * A list, not a `<select>`. Eight items fit, real links are crawlable and
+ * carry `hreflang`, and a native select on mobile is a modal that hides the
+ * page. Each language names itself in its own language -- "Deutsch", not
+ * "German" -- because that is the only name a reader looking for it will
+ * recognise.
+ *
+ * `lang` on each anchor is what stops the CJK entries rendering in the
+ * previous locale's font: without it, the `:lang()` stacks in `fonts.css`
+ * would give a Japanese reader Traditional Chinese forms for the zh-TW
+ * item, on the one line of the page where the difference is the point.
+ */
+import type { LocaleOption } from './types';
+
+interface Props {
+  locales: readonly LocaleOption[];
+  /** The BCP-47 tag of the page being viewed. */
+  current: string;
+  /** Translated. The list's accessible name, e.g. "Language". */
+  label: string;
+  class?: string;
+}
+
+const { locales, current, label, class: className } = Astro.props;
+---
+
+<nav class:list={['mq-locales', className]} aria-label={label}>
+  <ul class="mq-locales__list">
+    {
+      locales.map((locale) => {
+        const isCurrent = locale.code === current;
+        return (
+          <li>
+            <a
+              class="mq-locales__link"
+              href={locale.href}
+              lang={locale.code}
+              hreflang={locale.code}
+              aria-current={isCurrent ? 'true' : undefined}
+            >
+              {locale.label}
+            </a>
+          </li>
+        );
+      })
+    }
+  </ul>
+</nav>
+
+<style>
+  .mq-locales__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--mq-space-1) var(--mq-space-2);
+    margin: 0;
+    padding: 0;
+  }
+
+  .mq-locales__link {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: var(--mq-control-height-sm);
+    padding-inline: var(--mq-space-3);
+    border-radius: var(--mq-radius-full);
+    font-size: var(--mq-size-small);
+    color: var(--mq-text-muted);
+    text-decoration: none;
+  }
+
+  .mq-locales__link:hover {
+    background: color-mix(in srgb, var(--mq-text) 8%, transparent);
+    color: var(--mq-text);
+  }
+
+  /* Current is weight and fill and `aria-current`, not colour alone. */
+  .mq-locales__link[aria-current='true'] {
+    color: var(--mq-text);
+    font-weight: var(--mq-weight-strong);
+    background: color-mix(in srgb, var(--mq-text) 8%, transparent);
+  }
+</style>

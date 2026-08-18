@@ -1,0 +1,90 @@
+---
+/**
+ * One line of the ledger.
+ *
+ * The verdict is carried by a glyph AND by a colour AND by an accessible
+ * label -- never by colour alone. The glyphs are the ones the token system
+ * already ships for CLI output (`✓ ✗ !`), so a person who has used the
+ * gateway has already read them.
+ */
+import type { LedgerVerdict } from './types';
+
+interface Props {
+  verdict: LedgerVerdict;
+  /** Proportional, translated. What is being accounted for. */
+  term: string;
+  /**
+   * The verdict spoken. Translated. Defaults are English; pass the locale's
+   * own words. Without this the glyph is announced as punctuation or
+   * skipped entirely.
+   */
+  verdictLabel?: string;
+  class?: string;
+}
+
+const { verdict, term, verdictLabel, class: className } = Astro.props;
+
+const GLYPH: Record<LedgerVerdict, string> = { yes: '✓', no: '✗', note: '!' };
+const FALLBACK: Record<LedgerVerdict, string> = {
+  yes: 'Yes',
+  no: 'No',
+  note: 'Note',
+};
+---
+
+<div class:list={['mq-ledger-row', `mq-ledger-row--${verdict}`, className]}>
+  <dt class="mq-ledger-row__term">
+    <span class="mq-ledger-row__glyph" aria-hidden="true">{GLYPH[verdict]}</span>
+    <span class="mq-visually-hidden">{verdictLabel ?? FALLBACK[verdict]}</span>
+    <span>{term}</span>
+  </dt>
+  <dd class="mq-ledger-row__detail"><slot /></dd>
+</div>
+
+<style>
+  .mq-ledger-row {
+    display: grid;
+    gap: var(--mq-space-1) var(--mq-space-4);
+    padding-block: var(--mq-space-4);
+    border-block-end: 1px solid var(--mq-hairline);
+  }
+
+  @media (min-width: 640px) {
+    .mq-ledger-row {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      align-items: baseline;
+    }
+  }
+
+  .mq-ledger-row__term {
+    display: grid;
+    grid-template-columns: 1.25em minmax(0, 1fr);
+    gap: var(--mq-space-2);
+    font-weight: var(--mq-weight-strong);
+    align-items: baseline;
+  }
+
+  .mq-ledger-row__glyph {
+    font-family: var(--mq-font-mono);
+    font-weight: var(--mq-weight-strong);
+    line-height: 1;
+  }
+
+  .mq-ledger-row--yes .mq-ledger-row__glyph {
+    color: var(--mq-verified);
+  }
+
+  .mq-ledger-row--no .mq-ledger-row__glyph {
+    color: var(--mq-text-accent);
+  }
+
+  .mq-ledger-row--note .mq-ledger-row__glyph {
+    color: var(--mq-text-muted);
+  }
+
+  .mq-ledger-row__detail {
+    margin: 0;
+    color: var(--mq-text-muted);
+    max-inline-size: var(--mq-measure);
+  }
+</style>

@@ -1,0 +1,144 @@
+---
+/**
+ * The page-level layout, in the shape the pages ask for.
+ *
+ * `BaseLayout` is the design system's own layout and takes the site chrome as
+ * arguments -- the status line's items, the version, the skip-link label. The
+ * pages should not be assembling that: every one of them wants the same
+ * navigation, and a page that could pass a different one is a page that can get
+ * it wrong. So this owns the chrome and leaves the pages with what actually
+ * differs between them: which language, what the page is called, what it says.
+ *
+ * That is also why this exists rather than the pages importing `BaseLayout`
+ * directly. The seam is the point: content and presentation were built against
+ * two different vocabularies, and one small adapter is cheaper -- and far
+ * easier to re-read -- than renaming one side to match the other.
+ *
+ * Three things live here rather than in any page, because all four pages want
+ * exactly one of each and a page that could differ is a page that eventually
+ * will:
+ *
+ *   - the header: the wordmark, always a home link, and the light/dark control;
+ *   - the footer: the eight languages, the other two pages, the copyright;
+ *   - the status line, via `BaseLayout`, from the `sections` a page declares.
+ *
+ * The language list is in the footer rather than the header on purpose. Eight
+ * self-named languages is three wrapped rows at 390px, and a header that tall
+ * pushes the aperture -- which is the page's whole argument -- off the first
+ * screen on a phone.
+ */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Button from '@/components/Button.astro';
+import LocaleMenu from '@/components/LocaleMenu.astro';
+import PageHeader from '@/components/PageHeader.astro';
+import SiteFooter from '@/components/SiteFooter.astro';
+import ThemeToggle from '@/components/ThemeToggle.astro';
+import type { LocaleOption, StatusLineItem } from '@/components/types';
+import { getChrome } from '@/i18n/chrome';
+import { appRepoUrl } from '@/lib/muqun-links';
+import {
+  localizedPath,
+  normalizeSiteLocale,
+  normalizeSitePath,
+  siteLanguages,
+} from '@/lib/locales';
+
+interface Props {
+  lang: string;
+  title: string;
+  description: string;
+  /** Absolute or root-relative. Defaults to the shared card. */
+  ogImage?: string;
+  /** The 404 sets this; nothing else should. */
+  noindex?: boolean;
+  /**
+   * The sections of *this* page, in the order they appear.
+   *
+   * The status line addresses the page the way tmux addresses windows, so its
+   * entries are anchors within the page rather than links to other pages. A
+   * page that passes nothing gets no status line, which is right for the short
+   * ones -- a nav listing one section is furniture, not navigation.
+   */
+  sections?: readonly StatusLineItem[];
+  /** Mono, ASCII. Right-aligned in the status line. */
+  version?: string;
+}
+
+const {
+  lang,
+  title,
+  description,
+  ogImage = '/og-muqun.png',
+  noindex = false,
+  sections = [],
+  version,
+} = Astro.props;
+
+const locale = normalizeSiteLocale(lang);
+const chrome = getChrome(locale);
+
+const home = localizedPath('/', locale);
+const support = localizedPath('/support', locale);
+const privacy = localizedPath('/privacy', locale);
+
+/**
+ * The same page in each of the eight, built from the path being read rather
+ * than from a fixed list: `/ja/support/` offers `/de/support/`, not `/de/`.
+ * `normalizeSitePath` strips whatever language segment the current URL carries
+ * first, so the switcher can never compound one.
+ */
+const here = normalizeSitePath(Astro.url.pathname);
+const locales: LocaleOption[] = siteLanguages.map((language) => ({
+  code: language.code,
+  label: language.label,
+  href: localizedPath(here, language.code),
+}));
+
+const year = new Date().getFullYear();
+---
+
+<BaseLayout
+  lang={lang}
+  title={title}
+  description={description}
+  canonical={Astro.url}
+  skipLabel={chrome.header.aria.menu}
+  homeHref={home}
+  nav={sections}
+  navLabel={chrome.header.aria.menu}
+  version={version}
+  locales={locales}
+  localeLabel={chrome.header.aria.language}
+>
+  <Fragment slot="head">
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={new URL(ogImage, Astro.site)} />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    {noindex && <meta name="robots" content="noindex" />}
+  </Fragment>
+
+  <PageHeader slot="header" homeHref={home} homeLabel={chrome.site.name}>
+    <ThemeToggle
+      legend={chrome.header.aria.theme}
+      labels={{ auto: chrome.theme.system, light: chrome.theme.light, dark: chrome.theme.dark }}
+    />
+  </PageHeader>
+
+  <slot />
+
+  <SiteFooter slot="footer">
+    <LocaleMenu locales={locales} current={locale} label={chrome.header.aria.language} />
+
+    <Fragment slot="meta">
+      <Button href={support} variant="quiet">{chrome.nav.support}</Button>
+      <Button href={privacy} variant="quiet">{chrome.nav.privacy}</Button>
+      <Button href={appRepoUrl} variant="quiet">{chrome.footer.github}</Button>
+    </Fragment>
+
+    <Fragment slot="legal">
+      <p>{chrome.footer.copyright.replace('{year}', String(year))}</p>
+    </Fragment>
+  </SiteFooter>
+</BaseLayout>

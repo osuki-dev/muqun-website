@@ -1,0 +1,104 @@
+---
+/**
+ * One screenshot, in both polarities, chosen by CSS rather than by script.
+ *
+ * Two `<picture>` elements, one shown per theme. It could be one element with a
+ * `media="(prefers-color-scheme: dark)"` source, and that would be shorter and
+ * wrong: this site has a *manual* theme toggle, so the page can be dark while
+ * the OS is light. `prefers-color-scheme` cannot see that choice. Selecting on
+ * `html[data-theme]` can, and it is the same signal the rest of the styling
+ * already obeys.
+ *
+ * AVIF first, WebP second, and no JPEG fallback: every browser that can run
+ * this site reads WebP.
+ *
+ * `mode` pins one polarity for a capture that does not sit on the reader's
+ * ground -- see the prop below.
+ */
+import { shotSources } from '@/lib/muqun-assets';
+// The base name comes from the generated manifest, which is the only thing that
+// knows which shots exist. Importing the type from there rather than re-exporting
+// it keeps the manifest the single source of that truth.
+import type { MuqunShotBase } from '@/lib/muqun-shots';
+
+interface Props {
+  name: MuqunShotBase;
+  /** Translated. Describes what is happening on the screen, not "a screenshot". */
+  alt: string;
+  class?: string;
+  /** The hero's shot only: everything below the fold stays lazy. */
+  eager?: boolean;
+  /**
+   * Which polarity to show.
+   *
+   * `auto` follows the reader's theme, which is what a capture sitting on the
+   * page's own ground wants. A capture pinned onto a band that has one colour
+   * whatever the theme -- the ink band -- says which one it needs, and then
+   * only that half is emitted: not hidden, not shipped. A light phone on the
+   * ink band reads as a different product rather than as a different theme.
+   */
+  mode?: 'auto' | 'light' | 'dark';
+}
+
+const { name, alt, class: className, eager = false, mode = 'auto' } = Astro.props;
+
+const light = shotSources(name, 'light');
+const dark = shotSources(name, 'dark');
+const loading = eager ? 'eager' : 'lazy';
+const fetchpriority = eager ? 'high' : 'auto';
+---
+
+{
+  mode !== 'dark' && (
+    <picture class:list={['mq-shot', mode === 'auto' && 'mq-shot--light', className]}>
+      <source srcset={light.avif} type="image/avif" />
+      <source srcset={light.webp} type="image/webp" />
+      <img
+        src={light.webp}
+        alt={alt}
+        width={light.width}
+        height={light.height}
+        loading={loading}
+        fetchpriority={fetchpriority}
+        decoding="async"
+      />
+    </picture>
+  )
+}
+
+{
+  mode !== 'light' && (
+    <picture class:list={['mq-shot', mode === 'auto' && 'mq-shot--dark', className]}>
+      <source srcset={dark.avif} type="image/avif" />
+      <source srcset={dark.webp} type="image/webp" />
+      <img
+        src={dark.webp}
+        alt={alt}
+        width={dark.width}
+        height={dark.height}
+        loading={loading}
+        fetchpriority={fetchpriority}
+        decoding="async"
+      />
+    </picture>
+  )
+}
+
+<style>
+  /* The alt text is on both, so a screen reader would read it twice. The hidden
+     one is taken out of the tree entirely rather than merely made invisible. */
+  :global(html[data-theme='dark']) .mq-shot--light,
+  :global(html:not([data-theme='dark'])) .mq-shot--dark {
+    display: none;
+  }
+
+  .mq-shot {
+    display: block;
+  }
+
+  .mq-shot img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+</style>

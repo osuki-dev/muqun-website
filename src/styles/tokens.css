@@ -1,0 +1,449 @@
+/*
+ * muqun.dev design tokens
+ * =======================
+ *
+ * Layered the way `osuki.dev/design.md` layers: primitive -> semantic ->
+ * component. Product code (components, layouts) reads the *semantic* and
+ * *component* rows only. A primitive appearing in a component file is a bug.
+ * Alpha is its own token, never baked into an rgba() string. Dimensions are
+ * unitless numbers in the primitive row; the web layer applies `px`.
+ *
+ * The values are not Osuki's. This is Muqun's own palette and the prefix is
+ * `--mq-*`, so the two systems can sit in one page without colliding.
+ *
+ * THE IDEA THE COLOURS ENCODE
+ * ---------------------------
+ * Two materials with a hard rule between them. Cream-and-ink surfaces are
+ * where Muqun speaks. Dark terminal ground is where the machine speaks. A
+ * band's colour is a claim about whose voice it is, so `--mq-canvas`,
+ * `--mq-recessed` and `--mq-ink-ground` are never picked for looks.
+ *
+ * THREE RULES THAT CAME OUT OF MEASUREMENT
+ * ----------------------------------------
+ * Every ratio below was computed against WCAG 2.1 relative luminance, not
+ * eyeballed. They are encoded as tokens rather than written in a doc nobody
+ * opens, because a rule you have to remember is a rule that gets broken.
+ *
+ *  1. A coral button takes an INK label, never white.
+ *       #FCFBFA on #FF5A4A ... 3.08:1  (fails 4.5:1, fails 3:1 large-text)
+ *       #07111B on #FF5A4A ... 6.17:1  (passes)
+ *     `--mq-on-accent` is ink in both themes and there is no white variant
+ *     to reach for by accident.
+ *
+ *  2. In LIGHT mode coral is never a text colour.
+ *       #FF5A4A on #F3EEE5 ... 2.67:1  (fails everything)
+ *       #C2371F on #F3EEE5 ... 4.71:1  (passes)
+ *     So `--mq-coral` is a fill and `--mq-coral-text` is the reading value.
+ *     In DARK mode #FF5A4A on #07111B measures 6.20:1 and reads fine; the
+ *     asymmetry is deliberate, not an oversight. `--mq-text-accent` is the
+ *     semantic that resolves it, so a component never chooses.
+ *
+ *  3. Hairlines are decoration, not structure.
+ *       #E0DAD1 on #F3EEE5 ... 1.20:1
+ *       #1B2634 on #07111B ... 1.25:1
+ *     Fine for dividing a list. Not a control edge. Anything a person can
+ *     click, type into, or tab to takes `--mq-rule`, which measures 3.36:1
+ *     light and 4.00:1 dark and therefore clears the 3:1 non-text bar.
+ *
+ * A fourth, found while checking the first three: #C2371F on the recessed
+ * band #E8E2D8 is 4.22:1 and misses. The recessed band overrides
+ * `--mq-text-accent` to `--mq-coral-text-strong` (#B33218, 4.81:1 there).
+ * See the band overrides at the end of this file.
+ */
+
+/* ==========================================================================
+   1. PRIMITIVE — raw values. Never referenced outside this file.
+   ========================================================================== */
+
+:root {
+  /* --- colour: light material ------------------------------------------ */
+  --mq-p-cream: #f3eee5; /* the canvas Muqun speaks on */
+  --mq-p-cream-recessed: #e8e2d8; /* one step back: procedure, commands */
+  --mq-p-white: #ffffff; /* a card lifts toward white */
+  --mq-p-ink: #07111b; /* also the dark canvas -- one value, two jobs */
+  --mq-p-slate: #5a6373;
+  --mq-p-hairline-light: #e0dad1;
+  --mq-p-rule-light: #8a8072;
+  --mq-p-green-deep: #0f6042;
+
+  /* --- colour: dark material ------------------------------------------- */
+  --mq-p-ink-recessed: #0e1926;
+  --mq-p-ink-card: #17222f;
+  --mq-p-offwhite: #fcfbfa;
+  --mq-p-slate-light: #b6bdc8;
+  --mq-p-hairline-dark: #1b2634;
+  --mq-p-rule-dark: #667485;
+  --mq-p-green-light: #34c08b;
+
+  /* --- colour: the one hue that crosses both materials ------------------ */
+  --mq-p-coral: #ff5a4a;
+  --mq-p-coral-pressed: #e64536;
+  --mq-p-coral-text-light: #c2371f; /* 4.71:1 on cream, 5.44:1 on white */
+  --mq-p-coral-text-light-strong: #b33218; /* 4.81:1 on the recessed band */
+  --mq-p-coral-text-dark: #ff7a66; /* 7.49:1 on the dark canvas */
+
+  /* --- alpha — separate tokens, per design.md rule 3 -------------------- */
+  /* Kept to the ones that are actually referenced. An alpha token nothing
+     reads is a value that drifts from the number in the component. */
+  --mq-alpha-field: 0.35; /* the aperture's dimmed overscan */
+  --mq-alpha-disabled: 0.45;
+  --mq-alpha-accent-wash: 0.14;
+  --mq-alpha-accent-wash-dark: 0.24;
+
+  /* --- dimension: space. Unitless ladder, px applied below. ------------ */
+  --mq-space-1: 4px;
+  --mq-space-2: 8px;
+  --mq-space-3: 12px;
+  --mq-space-4: 16px;
+  --mq-space-5: 20px;
+  --mq-space-6: 24px;
+  --mq-space-8: 32px;
+  --mq-space-10: 40px;
+  --mq-space-12: 48px;
+  --mq-space-16: 64px;
+  --mq-space-20: 80px;
+  --mq-space-24: 96px;
+  --mq-space-32: 128px;
+  --mq-space-40: 160px;
+
+  /* --- dimension: radius -----------------------------------------------
+   * Panes are square. A tmux pane is a rectangle of character cells with a
+   * one-character rule down its side; it has no corner radius because it has
+   * no corners to round -- the terminal has nowhere to put the pixels. This
+   * page is laid out as that window, so every structural surface on it is
+   * square: bands, panes, cards, code blocks, the drawn app chrome.
+   *
+   * Two things stay round, and both for the same reason: they are objects
+   * rather than panes. A phone has a radius because the glass has a radius.
+   * A control has one because a finger does. Nothing else may.
+   */
+  --mq-radius-sm: 0;
+  --mq-radius-md: 0;
+  --mq-radius-lg: 0;
+  --mq-radius-xl: 28px; /* the device silhouette -- real hardware, real corners */
+  --mq-radius-full: 9999px; /* controls and touch targets */
+
+  /* --- dimension: grid -------------------------------------------------- */
+  --mq-container: 1200px;
+  --mq-container-narrow: 760px;
+  --mq-container-wide: 1440px;
+  --mq-columns: 4; /* 4 / 6 / 12 as the viewport grows */
+  --mq-gutter: 16px; /* 16 / 20 / 24 alongside */
+
+  /* --- duration + easing ------------------------------------------------ */
+  --mq-duration-fast: 150ms;
+  --mq-duration-medium: 240ms;
+  --mq-duration-reveal: 420ms;
+  --mq-duration-aperture: 2000ms; /* the one orchestrated sequence */
+  --mq-ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --mq-ease-exit: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* --- elevation. Five levels, no intermediates. ------------------------ */
+  --mq-z-base: 0;
+  --mq-z-raised: 1;
+  --mq-z-chrome: 5; /* app chrome inside the aperture */
+  --mq-z-overlay: 10;
+  --mq-z-statusline: 20; /* the docked navigation */
+  --mq-z-skiplink: 40;
+}
+
+/*
+ * Column count and gutter step with the breakpoint: 4 columns / 16px gutter
+ * is the mobile floor set above; 6/20 and 12/24 layer on top.
+ */
+@media (min-width: 640px) {
+  :root {
+    --mq-columns: 6;
+    --mq-gutter: 20px;
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --mq-columns: 12;
+    --mq-gutter: 24px;
+  }
+}
+
+/* ==========================================================================
+   2. SEMANTIC — what components consume. Same role names in both themes.
+      Switching theme swaps values, never roles.
+   ========================================================================== */
+
+:root,
+[data-theme='light'] {
+  color-scheme: light;
+
+  --mq-canvas: var(--mq-p-cream);
+  --mq-recessed: var(--mq-p-cream-recessed);
+  --mq-card: var(--mq-p-white);
+  /* The machine's ground is dark in BOTH themes. The page's mode and the
+     terminal's theme are independent controls; a light page holds a dark
+     terminal, on purpose. */
+  --mq-ink-ground: var(--mq-p-ink);
+
+  --mq-text: var(--mq-p-ink);
+  --mq-text-muted: var(--mq-p-slate); /* 5.19:1 on cream, 4.65:1 recessed */
+  --mq-text-on-ink: var(--mq-p-offwhite);
+  --mq-text-muted-on-ink: var(--mq-p-slate-light);
+
+  --mq-hairline: var(--mq-p-hairline-light); /* decoration only, 1.20:1 */
+  --mq-rule: var(--mq-p-rule-light); /* control edges, 3.36:1 */
+
+  --mq-accent: var(--mq-p-coral);
+  --mq-accent-pressed: var(--mq-p-coral-pressed);
+  --mq-on-accent: var(--mq-p-ink); /* rule 1. There is no white variant. */
+  --mq-text-accent: var(--mq-p-coral-text-light); /* rule 2 */
+  --mq-text-accent-strong: var(--mq-p-coral-text-light-strong);
+  --mq-accent-wash: color-mix(
+    in srgb,
+    var(--mq-p-coral) calc(var(--mq-alpha-accent-wash) * 100%),
+    transparent
+  );
+
+  --mq-verified: var(--mq-p-green-deep); /* 6.47:1 on cream */
+
+  --mq-focus: var(--mq-p-ink);
+  --mq-focus-offset: var(--mq-canvas);
+
+  --mq-shadow-raised: 0 4px 12px color-mix(in srgb, var(--mq-p-ink) 6%, transparent);
+  --mq-shadow-overlay: 0 10px 28px color-mix(in srgb, var(--mq-p-ink) 10%, transparent);
+}
+
+[data-theme='dark'] {
+  color-scheme: dark;
+
+  --mq-canvas: var(--mq-p-ink);
+  --mq-recessed: var(--mq-p-ink-recessed);
+  --mq-card: var(--mq-p-ink-card);
+  --mq-ink-ground: var(--mq-p-ink);
+
+  --mq-text: var(--mq-p-offwhite); /* 18.5:1 */
+  --mq-text-muted: var(--mq-p-slate-light); /* 10.0:1 */
+  --mq-text-on-ink: var(--mq-p-offwhite);
+  --mq-text-muted-on-ink: var(--mq-p-slate-light);
+
+  --mq-hairline: var(--mq-p-hairline-dark); /* 1.25:1 */
+  --mq-rule: var(--mq-p-rule-dark); /* 4.00:1 */
+
+  --mq-accent: var(--mq-p-coral);
+  --mq-accent-pressed: var(--mq-p-coral-pressed);
+  --mq-on-accent: var(--mq-p-ink); /* rule 1 holds in dark too */
+  --mq-text-accent: var(--mq-p-coral-text-dark); /* rule 2's other half */
+  --mq-text-accent-strong: var(--mq-p-coral-text-dark);
+  --mq-accent-wash: color-mix(
+    in srgb,
+    var(--mq-p-coral) calc(var(--mq-alpha-accent-wash-dark) * 100%),
+    transparent
+  );
+
+  --mq-verified: var(--mq-p-green-light); /* 8.17:1 */
+
+  --mq-focus: var(--mq-p-offwhite); /* "ink" means the text colour */
+  --mq-focus-offset: var(--mq-canvas);
+
+  --mq-shadow-raised: 0 4px 12px rgb(0 0 0 / 0.4);
+  --mq-shadow-overlay: 0 10px 28px rgb(0 0 0 / 0.5);
+}
+
+/* ==========================================================================
+   3. TYPOGRAPHY — the register rule
+   ==========================================================================
+   Proportional sans = Muqun talking, and therefore translated into eight
+   languages. Monospace = the machine talking, never translated, always
+   ASCII.
+   The payoff is mechanical: because mono only ever carries machine output,
+   every tight-tracked, uppercase, letter-spaced treatment can live in mono
+   and *cannot* land on a Korean or Japanese string. Uppercase transforms and
+   positive tracking are therefore defined here on mono roles only.
+   Faces are declared in fonts.css; the per-`:lang()` CJK ordering is there
+   too, because a single global fallback stack hands Japanese readers
+   Traditional Chinese glyph forms for roughly a third of shared kanji.
+
+   THE DISPLAY FACE IS MONO
+   ------------------------
+   This rule used to read "no headline is ever mono", and the reason given
+   was sound: mono cannot carry CJK, and every headline on this site ships in
+   eight languages. What it produced was a page whose headlines were set in a
+   condensed grotesk on cream -- a look with nothing of this product in it,
+   which could have been any startup's landing page and was.
+
+   The premise of Muqun is a terminal you cannot reach. The headline should
+   be in the terminal's own face, and the rule that gets both is not "never"
+   but "where the face has the glyphs": Latin locales take Plex Mono at
+   display size, and zh-TW, ja and ko fall to the body face. That switch is
+   not new machinery -- `base.css` already does exactly this for the
+   condensed face, for exactly this reason, and those rules now do the job
+   for mono with no change beyond the value below.
+
+   The scale drops with the face. Mono advances are about 60% of the em on
+   every character, caps and lowercase alike, so a mono line is roughly 1.5x
+   the width of the same string in the condensed face. 5rem became 3.25rem to
+   keep the same two-line hero in the same column.
+   ========================================================================== */
+
+:root {
+  --mq-font-display: 'IBM Plex Mono', var(--mq-font-cjk), ui-monospace, monospace;
+  --mq-font-body: 'IBM Plex Sans', var(--mq-font-cjk), system-ui, sans-serif;
+  --mq-font-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', 'Cascadia Mono', monospace;
+
+  /* Type scale. `clamp` between the mobile and desktop ends of each step,
+     so there is no jump at a breakpoint. */
+  --mq-size-display: clamp(1.75rem, 1.05rem + 3.1vw, 3.25rem);
+  /* Also the size CJK headlines take, since they are switched off the mono
+     face entirely -- so this end stays generous. */
+  --mq-size-display-sm: clamp(1.5rem, 1.05rem + 2.2vw, 2.5rem);
+  --mq-size-heading: clamp(1.5rem, 1.2rem + 1.3vw, 2.25rem);
+  --mq-size-subheading: clamp(1.125rem, 1rem + 0.5vw, 1.375rem);
+  --mq-size-lead: clamp(1.0625rem, 1rem + 0.35vw, 1.25rem);
+  --mq-size-body: 1rem;
+  --mq-size-small: 0.875rem;
+  --mq-size-mono: 0.8125rem;
+  --mq-size-mono-sm: 0.75rem;
+
+  --mq-leading-display: 1.02;
+  --mq-leading-heading: 1.15;
+  --mq-leading-body: 1.65;
+  --mq-leading-lead: 1.5;
+  --mq-leading-mono: 1.5;
+
+  /* Tracking lives on mono roles and on the display face, which is Latin-only
+     in practice -- see the `:lang()` overrides in base.css that take the
+     display face off mono for zh-TW / ja / ko. Display tracking is negative
+     and larger than it was: mono sets every character on the same wide
+     advance, so a headline needs pulling in where a proportional face does
+     the work itself. */
+  --mq-tracking-display: -0.045em;
+  --mq-tracking-mono: 0.04em;
+  --mq-tracking-mono-tight: 0;
+
+  --mq-weight-display: 600;
+  --mq-weight-body: 400;
+  --mq-weight-medium: 500;
+  --mq-weight-strong: 600;
+
+  /* One measure token for both scripts. 34em is ~68 Latin characters and
+     ~34 CJK characters, which land within a line of each other. Code is
+     hard 80ch because that is where terminal output was wrapped. */
+  --mq-measure: 34em;
+  --mq-measure-code: 80ch;
+}
+
+/* ==========================================================================
+   4. COMPONENT — reference the semantic layer only.
+   ========================================================================== */
+
+:root {
+  /* Focus. 2px solid ink, 2px canvas-coloured offset. Never removed --
+     restyled where it needs to be, never hidden. */
+  --mq-focus-width: 2px;
+  --mq-focus-offset-width: 2px;
+
+  --mq-control-height: 44px; /* also the touch-target floor */
+  --mq-control-height-sm: 36px;
+  --mq-control-radius: var(--mq-radius-full);
+  --mq-control-padding-x: var(--mq-space-5);
+
+  --mq-statusline-height: 32px;
+  /*
+   * The docked header's height, declared rather than measured.
+   *
+   * It is read in three places that must agree: the header's own sticky
+   * offset, `scroll-padding-block-start` (so an anchor never lands under the
+   * bar), and `scroll-snap-align` on a band (so a snapped section starts
+   * where the header ends). A measured value would need JavaScript before
+   * first paint to be right, and being wrong for one frame here means a
+   * heading hidden behind the bar.
+   *
+   * = space-5 top + space-5 bottom + control-height-sm. Change one, change
+   * this.
+   */
+  --mq-header-height: calc(var(--mq-space-5) * 2 + var(--mq-control-height-sm));
+  --mq-band-padding-y: clamp(var(--mq-space-16), 8vw, var(--mq-space-32));
+  --mq-band-padding-y-tight: clamp(var(--mq-space-12), 5vw, var(--mq-space-20));
+
+  /* The aperture. `--mq-aperture-*` are read by Aperture.astro and by the
+     clip geometry that keeps the two stream layers in register. */
+  /*
+   * Sized so that ~100 columns of output is a little wider than the band.
+   * That is the number the whole composition turns on: too small and the
+   * stream is a narrow ribbon down the middle of a dark field, too large and
+   * the device silhouette holds a dozen columns and stops reading as a
+   * terminal.
+   */
+  --mq-aperture-mono-size: clamp(11px, 1.2vw, 17px);
+
+  /* Terminal defaults, overwritten per theme pack by ThemeRail's generated
+     rules. These are the Osuki pack, which is Muqun's own default. */
+  --mq-term-bg: #08111b;
+  --mq-term-fg: #d8e1ea;
+  --mq-term-cursor: #ff5a4a;
+  --mq-term-link: #a4bcfd;
+  --mq-term-dim: #6b7585;
+  --mq-term-ok: #34c08b;
+  --mq-term-warn: #f0a93c;
+  --mq-term-err: #f2554a;
+  --mq-term-info: #7da2ff;
+  --mq-term-accent: #ff5a4a;
+}
+
+/*
+ * Two registered properties, so the aperture's opening sequence can be one
+ * CSS animation rather than a JavaScript timeline. An unregistered custom
+ * property is a string and does not interpolate; registering it with a
+ * `<number>` syntax makes it animatable, and everything derived from it --
+ * the clip geometry, the dim level -- follows for free and stays in register.
+ */
+@property --mq-ap-open {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 1;
+}
+
+/* 0.35 is `--mq-alpha-field`, restated because `initial-value` has to be a
+   literal -- it is resolved before custom properties exist. */
+@property --mq-ap-dim {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0.35;
+}
+
+/* ==========================================================================
+   5. SURFACE OVERRIDES — the fourth measured rule, made automatic.
+   ==========================================================================
+   `--mq-coral-text` #C2371F measures 4.22:1 on the light recessed band and
+   misses 4.5:1. Rather than asking every author to remember which band they
+   are on, the band itself re-points the semantic token. Dark mode needs no
+   equivalent: #FF7A66 on #0E1926 is 6.89:1.
+   ========================================================================== */
+
+[data-theme='light'] .mq-band--recessed,
+:root:not([data-theme='dark']) .mq-band--recessed {
+  --mq-text-accent: var(--mq-text-accent-strong);
+  --mq-focus-offset: var(--mq-recessed);
+}
+
+.mq-band--card {
+  --mq-focus-offset: var(--mq-card);
+}
+
+/*
+ * The ink band is the machine's ground and does not follow the page theme:
+ * it is dark whether the reader is in light or dark mode. Text roles are
+ * re-pointed rather than the band special-casing every child.
+ */
+.mq-band--ink {
+  color-scheme: dark;
+  --mq-canvas: var(--mq-ink-ground);
+  --mq-recessed: var(--mq-p-ink-recessed);
+  --mq-card: var(--mq-p-ink-card);
+  --mq-text: var(--mq-p-offwhite);
+  --mq-text-muted: var(--mq-p-slate-light);
+  --mq-hairline: var(--mq-p-hairline-dark);
+  --mq-rule: var(--mq-p-rule-dark);
+  --mq-text-accent: var(--mq-p-coral-text-dark);
+  --mq-text-accent-strong: var(--mq-p-coral-text-dark);
+  --mq-verified: var(--mq-p-green-light);
+  --mq-focus: var(--mq-p-offwhite);
+  --mq-focus-offset: var(--mq-ink-ground);
+}

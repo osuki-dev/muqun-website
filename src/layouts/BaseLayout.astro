@@ -1,0 +1,183 @@
+---
+/**
+ * The document shell.
+ *
+ * Owns four things and nothing else: the `<html lang>` that drives every
+ * `:lang()` rule in the stylesheet, the theme guard that runs before first
+ * paint, the skip link, and the docked status line. Page content, metadata
+ * beyond the basics, and anything locale-aware belongs to the caller --
+ * pass it in or fill the `head` slot.
+ */
+import SkipLink from '../components/SkipLink.astro';
+import StatusLine from '../components/StatusLine.astro';
+import type { LocaleOption, StatusLineItem } from '../components/types';
+import '../styles/global.css';
+// Imported rather than hand-written as a path: these come back as the
+// fingerprinted URLs the stylesheet will also use, so the preload and the
+// `@font-face` point at one file instead of racing two.
+import bodyFontUrl from '../styles/fonts/plex-sans-latin-400.woff2?url';
+import displayFontUrl from '../styles/fonts/plex-sans-condensed-latin-600.woff2?url';
+
+interface Props {
+  /** BCP-47. One of en, zh-TW, ja, ko, de, fr, es, pt. Drives `:lang()`. */
+  lang?: string;
+  title: string;
+  description?: string;
+  /** Absolute canonical URL for this page. */
+  canonical?: string | URL;
+  /** Translated. The skip link's text. */
+  skipLabel?: string;
+  /** Where the status line's wordmark and `PageHeader` point. */
+  homeHref?: string;
+  /** Status-line entries. Omit for a page with no in-page sections. */
+  nav?: readonly StatusLineItem[];
+  /** Translated. The status line's accessible name. */
+  navLabel?: string;
+  /** Mono, ASCII. Right-aligned in the status line. */
+  version?: string;
+  /** The same page in each language, for the bar's language control. */
+  locales?: readonly LocaleOption[];
+  /** Translated. The language control's accessible name. */
+  localeLabel?: string;
+  /** Extra classes on `<body>`. */
+  class?: string;
+}
+
+const {
+  lang = 'en',
+  title,
+  description,
+  canonical,
+  skipLabel = 'Skip to content',
+  homeHref = '/',
+  nav,
+  navLabel = 'Sections',
+  version,
+  locales,
+  localeLabel,
+  class: className,
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+    {canonical && <link rel="canonical" href={String(canonical)} />}
+
+    {/*
+      The app's own icon, resized from `assets/images/icon.png` and
+      `icon-dark.png` in the Muqun repo. Not redrawn here: the tab and the
+      home screen have to be the same object the reader is about to install,
+      and a site-only variant is a second mark to keep in step.
+
+      Two files with a `media` query rather than one. Both grounds are the
+      page's own -- the light icon sits on cream, the dark on ink -- so a
+      single copy of either lands as a bright square on a dark browser chrome
+      or the reverse. Browsers that ignore `media` on an icon link take the
+      first, which is the light one, and it is legible either way.
+    */}
+    <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
+    <link
+      rel="icon"
+      href="/favicon-32-dark.png"
+      sizes="32x32"
+      type="image/png"
+      media="(prefers-color-scheme: dark)"
+    />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
+
+    {/*
+      The theme guard. Runs before the first pixel, which is the only place
+      it can run: applying the class after paint is exactly the flash it
+      exists to prevent. Inline and synchronous on purpose -- it is 300
+      bytes, and a deferred script would be too late by definition.
+
+      Precedence: a stored manual choice wins; with nothing stored we honour
+      `prefers-color-scheme`. `data-theme-mode` records which of the two it
+      was, so the toggle can show "System" rather than guessing.
+
+      This is the PAGE's mode only. The terminal's theme is a separate
+      control and is not read or written here.
+    */}
+    <script is:inline>
+      (() => {
+        try {
+          const stored = localStorage.getItem('mq-theme');
+          const mode = stored === 'light' || stored === 'dark' ? stored : 'auto';
+          const dark =
+            mode === 'auto'
+              ? window.matchMedia('(prefers-color-scheme: dark)').matches
+              : mode === 'dark';
+          document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+          document.documentElement.dataset.themeMode = mode;
+        } catch {
+          // Storage blocked (private mode, embedded webview). Fall back to
+          // the media query alone rather than leaving the page unthemed.
+          document.documentElement.dataset.theme = window.matchMedia(
+            '(prefers-color-scheme: dark)',
+          ).matches
+            ? 'dark'
+            : 'light';
+        }
+      })();
+    </script>
+
+    {/*
+      Two preloads, not nine. Body 400 and the condensed display weight are
+      what the first screen needs; the rest arrive with `font-display: swap`
+      and nobody sees the difference. `crossorigin` is required even
+      same-origin for fonts, or the preload is fetched twice.
+    */}
+    <link rel="preload" as="font" type="font/woff2" href={bodyFontUrl} crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href={displayFontUrl} crossorigin />
+
+    <slot name="head" />
+  </head>
+
+  <body class={className}>
+    <SkipLink label={skipLabel} />
+    <slot name="header" />
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <slot name="footer" />
+    {nav && nav.length > 0 && (
+      <StatusLine
+        items={nav}
+        label={navLabel}
+        version={version}
+        homeHref={homeHref}
+        locales={locales}
+        locale={lang}
+        localeLabel={localeLabel}
+      />
+    )}
+
+    {/*
+      The scroll behaviour: the header's edge, the band reveals, the settle,
+      and the status line's mark and progress rule. Last in the body and
+      module-deferred, because every one of those is an enhancement of a page
+      that already works -- and because it must not measure a layout the
+      stylesheet above it has not finished describing.
+    */}
+    <script>
+      import '@/scripts/scroll';
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  /*
+   * `<main>` carries `tabindex="-1"` so the skip link can move focus into
+   * it. That makes it focusable, and a focusable region that shows a ring
+   * when clicked is noise -- `:focus-visible` already excludes the click
+   * case, so the ring only appears for the keyboard path that needs it.
+   */
+  main:focus {
+    outline: none;
+  }
+</style>

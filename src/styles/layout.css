@@ -1,0 +1,167 @@
+/*
+ * Layout
+ * ======
+ * Full-bleed horizontal bands with a constrained inner container. The band's
+ * colour is the load-bearing part: it says whose voice the section is in.
+ *
+ *   cream    -- Muqun speaking. Claims, headings, the things we assert.
+ *   recessed -- procedure. Install steps, commands, anything you follow.
+ *   ink      -- the machine. Real output, dark in both page themes.
+ *   card     -- a lifted surface inside a cream band. Never inside another
+ *               card; `.mq-card .mq-card` is a bug and is flagged below.
+ */
+
+.mq-band {
+  position: relative;
+  inline-size: 100%;
+  padding-block: var(--mq-band-padding-y);
+  background: var(--mq-canvas);
+  color: var(--mq-text);
+
+  /*
+   * The snap point, and it is the band's own start edge rather than a
+   * wrapper's: a band IS the unit the reader moves through, and the status
+   * line already addresses the page in exactly these terms. `html` carries
+   * the `proximity` that makes this advisory instead of a trap -- see the
+   * note there, which is where the reasoning for the whole mechanism lives.
+   *
+   * `scroll-margin-block-start` and not the scroll-padding on `html` alone:
+   * the padding aligns anchors, this aligns the snap, and a band that snaps
+   * to a different line than `#setup` jumps to is the same section landing
+   * in two places depending on how you got there.
+   */
+  scroll-snap-align: start;
+  scroll-margin-block-start: calc(var(--mq-header-height) + var(--mq-space-4));
+}
+
+/*
+ * The reveal each band's content plays as it enters is GSAP's, in
+ * `src/scripts/scroll.ts`, and not a scroll-driven CSS animation here.
+ *
+ * The reason is the snap. Section-at-a-time scrolling and the reveal are one
+ * behaviour -- the settle has to be able to know a reveal is mid-flight, and
+ * the reveal has to be able to finish instantly when the snap lands on it --
+ * and splitting them across two engines means two sources of truth for where
+ * the page is. ScrollTrigger already holds that number for the snap, so the
+ * reveal reads it rather than measuring the same scroll a second time.
+ *
+ * What is left here is the resting position, which is layout and belongs to
+ * the stylesheet: where a band comes to rest when the snap catches it.
+ */
+
+.mq-band--tight {
+  padding-block: var(--mq-band-padding-y-tight);
+}
+
+.mq-band--flush {
+  padding-block: 0;
+}
+
+.mq-band--cream {
+  background: var(--mq-canvas);
+}
+
+.mq-band--recessed {
+  background: var(--mq-recessed);
+}
+
+/*
+ * The seam matters here in a way it does not on the other bands. In light
+ * mode the colour change from cream to near-black is the seam and a line
+ * would be noise -- but in DARK mode the page canvas is #07111B and a dark
+ * terminal's ground is within a percent of it, so the band's edge vanishes
+ * and with it the whole point of the two-material rule. A hairline at
+ * decoration contrast puts the edge back without drawing attention to it.
+ */
+.mq-band--ink {
+  background: var(--mq-ink-ground);
+  color: var(--mq-text);
+  border-block: 1px solid color-mix(in srgb, var(--mq-p-offwhite) 12%, transparent);
+}
+
+/*
+ * A hairline between two bands of the same colour, so the seam is visible
+ * without a shadow. Between different colours the colour change is the seam
+ * and the line would be noise.
+ *
+ * A hairline is 1.20:1 and that is the right weight for two sections of one
+ * argument continuing past each other. It is the wrong weight for the end of
+ * the document -- see below.
+ */
+.mq-band--cream + .mq-band--cream,
+.mq-band--recessed + .mq-band--recessed {
+  border-block-start: 1px solid var(--mq-hairline);
+}
+
+/*
+ * The footer's edge. Not a seam between two sections but the end of the page,
+ * and the only band boundary a reader should be able to find without looking
+ * for it -- so it is drawn at `--mq-rule` (3.36:1 light, 4.00:1 dark), the
+ * weight this system reserves for an edge that has to be seen.
+ *
+ * It is what lets the footer sit on the canvas. Housekeeping is not one of the
+ * three voices and there is no fourth material for it, so it takes the plain
+ * canvas and this line -- rather than recessed, which would be claiming the
+ * language switcher is a procedure. See `SiteFooter`.
+ *
+ * Two classes, so it outranks the same-tone hairline above it whichever band
+ * the page happens to end on. `.mq-footer` is a band, and this is a rule about
+ * where a band sits in the document, which is why it is here and not in the
+ * component.
+ */
+.mq-band.mq-footer {
+  border-block-start: 1px solid var(--mq-rule);
+}
+
+.mq-container {
+  inline-size: 100%;
+  max-inline-size: var(--mq-container);
+  margin-inline: auto;
+  padding-inline: var(--mq-gutter);
+}
+
+.mq-container--narrow {
+  max-inline-size: var(--mq-container-narrow);
+}
+
+.mq-container--wide {
+  max-inline-size: var(--mq-container-wide);
+}
+
+.mq-container--flush {
+  padding-inline: 0;
+}
+
+/* The 4 / 6 / 12 column grid. `--mq-columns` steps at the breakpoints. */
+.mq-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--mq-columns), minmax(0, 1fr));
+  gap: var(--mq-gutter);
+}
+
+.mq-card {
+  background: var(--mq-card);
+  border: 1px solid var(--mq-hairline);
+  border-radius: var(--mq-radius-lg);
+  padding: var(--mq-space-6);
+  --mq-focus-offset: var(--mq-card);
+}
+
+/*
+ * Never a card inside a card. This is not a fix -- a nested card still looks
+ * wrong -- it is a tripwire, visible in review and in a screenshot diff.
+ */
+.mq-card .mq-card {
+  outline: 2px dashed var(--mq-accent);
+  outline-offset: -2px;
+}
+
+.mq-stack > * + * {
+  margin-block-start: var(--mq-stack-gap, var(--mq-space-5));
+}
+
+.mq-rule {
+  border: 0;
+  border-block-start: 1px solid var(--mq-hairline);
+  margin: 0;
+}

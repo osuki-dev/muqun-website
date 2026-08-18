@@ -1,0 +1,54 @@
+---
+/**
+ * "In review with Apple", and things like it.
+ *
+ * A sentence, not a control. It looks like a button in the place a store badge
+ * would sit, and that is exactly the trap: a `<button>` or an `<a>` here takes
+ * a tab stop, invites a press, and answers with nothing. It is a `<p>` or a
+ * `<span>` with `aria-live` off and no focus behaviour, because there is
+ * nothing to do to it.
+ *
+ * `variant` is presentation only: `block` reads as a line of copy, `pill` sits
+ * inline beside the real store buttons.
+ */
+interface Props {
+  /** Translated. The whole sentence, e.g. "In review with Apple". */
+  status: string;
+  variant?: 'block' | 'pill';
+  class?: string;
+}
+
+const { status, variant = 'block', class: className } = Astro.props;
+const Tag = variant === 'pill' ? 'span' : 'p';
+---
+
+<Tag class:list={['muqun-pending', `muqun-pending--${variant}`, className]}>{status}</Tag>
+
+<style>
+  /*
+   * Proportional, not mono, and with no uppercase or tracking on it. This
+   * string is translated -- "In review with Apple" is 「Apple の審査中」 in
+   * Japanese -- and uppercase transforms and positive tracking live on the
+   * mono roles precisely so they can never land on a Korean or Japanese
+   * sentence. See the register rule in `tokens.css`.
+   */
+  .muqun-pending {
+    margin: 0;
+    color: var(--mq-text-muted);
+    font-size: var(--mq-size-small);
+  }
+
+  .muqun-pending--pill {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: var(--mq-control-height);
+    padding-inline: var(--mq-space-5);
+    /* A control-weight edge, so the shape is legible: it sits in a row with
+       real buttons and has to read as deliberately not one of them. */
+    border: 1px dashed var(--mq-rule);
+    border-radius: var(--mq-radius-full);
+    /* Deliberately not the coral fill: this is the absence of a button, and
+       colouring it like one is how it gets pressed. */
+    background: transparent;
+  }
+</style>

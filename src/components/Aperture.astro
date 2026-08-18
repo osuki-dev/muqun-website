@@ -1,0 +1,463 @@
+---
+/**
+ * The aperture.
+ * =============
+ *
+ * A dark band of real terminal output, overscanned so it bleeds off every
+ * edge. One device silhouette sits in it, showing the SAME stream at the
+ * SAME position at full brightness, wearing the app's chrome. Outside the
+ * silhouette the stream continues, dimmed. A line of output that crosses the
+ * device edge continues unbroken on the other side.
+ *
+ * That last sentence is the whole idea, and it is the reason for every
+ * structural decision below. The device is not a picture of the app placed
+ * on a background; it is a WINDOW cut into one continuous piece of output.
+ * The page is not showing you a product shot, it is showing you the product's
+ * own output, and the device outline is where the app's chrome happens to
+ * fall across it.
+ *
+ * HOW THE TWO LAYERS CANNOT DRIFT
+ * -------------------------------
+ * Both layers are the same box: `position: absolute; inset: 0` on the same
+ * parent, containing the same `TerminalStream` rendered from the same
+ * `lines` array. They are therefore in register by construction -- there is
+ * no offset to compute, no transform to keep in sync, and no way for a
+ * change to one to miss the other.
+ *
+ * The device is a `clip-path: inset(... round ...)` applied to the bright
+ * layer. Clipping cannot move what it clips, so "same position" is not
+ * something this component maintains; it is something it cannot break. The
+ * only shared numbers are the geometry custom properties below, and the
+ * chrome and the edge ring read the same ones, so all four things agree.
+ *
+ * `TerminalStream` sets `white-space: pre` and a fixed `ch` width for the
+ * same reason: a wrapped line could wrap at a different column in a clipped
+ * box than in a full-bleed one, and the layers would come apart.
+ *
+ * MOTION
+ * ------
+ * One orchestrated sequence, about two seconds, once. It never loops. Two
+ * registered custom properties (`--mq-ap-open`, `--mq-ap-dim`) are animated
+ * and everything derived from them follows, so the sequence is a single CSS
+ * animation with no timeline to keep in sync. Under
+ * `prefers-reduced-motion: reduce` the animation is not applied at all and
+ * the end state is what renders.
+ */
+import TerminalStream from './aperture/TerminalStream.astro';
+import ThemeRail from './aperture/ThemeRail.astro';
+import { apertureCss, getPack, getPacks, type TerminalVariant } from './aperture/themes';
+import type { ApertureChrome, StreamLine } from './types';
+
+interface Props {
+  /**
+   * The one content source. Both layers render from this array; there is no
+   * second copy to keep in step.
+   */
+  lines: readonly StreamLine[];
+  /**
+   * Unique on the page. Scopes the generated theme CSS and the radio names,
+   * so two apertures can sit on one page without fighting.
+   */
+  id: string;
+  /** Translated. The figure's accessible description. */
+  caption: string;
+  /** Taller for the hero, shorter for a section panel. */
+  size?: 'hero' | 'panel';
+  /** Theme pack ids for the rail. Omit for no rail. */
+  themes?: readonly string[];
+  /** Which pack is selected on load. Defaults to the first in `themes`. */
+  theme?: string;
+  /** Translated. The rail's accessible group name. */
+  railLegend?: string;
+  /** Which half of each pack to use. The machine's ground is dark by default. */
+  variant?: TerminalVariant;
+  /** What the app chrome says. ASCII, mono, untranslated. */
+  chrome?: ApertureChrome;
+  /** Columns of output. Wider than the device on purpose: lines must cross. */
+  cols?: number;
+  /** Whole repeats of the stream, to fill a band taller than the output. */
+  repeat?: number;
+  /** Run the opening sequence. True for the hero, false everywhere else. */
+  animate?: boolean;
+  /**
+   * Where the output starts, measured back from the device's left edge, as a
+   * `ch` length. Defaults to the 44ch the hero wants.
+   *
+   * It is a prop rather than a constant because it depends on the stream, not
+   * on the component: at 44ch only lines longer than 44 characters appear
+   * inside the window at all, so a stream with short lines -- a test summary,
+   * a status list -- shows a half-empty device. Move the indent back until
+   * the columns the device holds are columns the output actually fills.
+   */
+  indent?: string;
+  class?: string;
+}
+
+const {
+  lines,
+  id,
+  caption,
+  size = 'hero',
+  themes,
+  theme,
+  railLegend = 'Terminal theme',
+  variant = 'dark',
+  chrome = {},
+  cols = 112,
+  repeat = 1,
+  animate = false,
+  indent,
+  class: className,
+} = Astro.props;
+
+const packs = themes && themes.length > 0 ? getPacks(themes) : [];
+// Muqun's own pack is the default. An aperture with no rail is still themed
+// -- it just cannot be re-themed by the reader.
+const initial =
+  packs.find((pack) => pack.id === theme) ?? packs[0] ?? getPack(theme ?? 'osuki');
+const scopedCss = apertureCss(id, initial, packs, variant);
+
+// Only the line count is inline. The palette must not be: see `apertureCss`.
+const rootStyle = `--mq-stream-lines:${lines.length * Math.max(1, repeat)}`;
+
+const { title = 'muqun', status = 'connected', statusLabel } = chrome;
+---
+
+<div
+  class:list={['mq-aperture-root', `mq-aperture-root--${size}`, className]}
+  id={id}
+  style={rootStyle}
+>
+  {
+    packs.length > 0 && (
+      <div class="mq-aperture-root__rail">
+        <ThemeRail scope={id} packs={packs} value={initial.id} legend={railLegend} />
+      </div>
+    )
+  }
+
+  {/*
+    The indent rides on THIS element and not on the root, because the rule
+    below declares it here too: a value inherited from an ancestor loses to a
+    declaration on the element the stream actually inherits from.
+  */}
+  <div
+    class:list={['mq-aperture', animate && 'mq-aperture--animate']}
+    style={indent ? `--mq-stream-indent:${indent}` : undefined}
+  >
+    {/*
+      Layer A: the field. The whole band, dimmed. Hidden from assistive
+      technology because layer B carries the same text.
+    */}
+    <div class="mq-aperture__field mq-aperture__field--dim" aria-hidden="true">
+      <TerminalStream lines={lines} cols={cols} repeat={repeat} />
+    </div>
+
+    {/*
+      Layer B: the same box, the same stream, full brightness, clipped to the
+      device. Identical geometry is what makes a line continue unbroken
+      across the edge.
+    */}
+    <figure class="mq-aperture__figure">
+      {/*
+        `role="img"` collapses the whole stream into one labelled node. Forty
+        lines of terminal output read out character by character is hostile,
+        and it is not what the reader needs from a hero: they need to know
+        what they are looking at, which is what the caption says.
+      */}
+      <div
+        class="mq-aperture__field mq-aperture__field--bright"
+        role="img"
+        aria-labelledby={`${id}-caption`}
+      >
+        <TerminalStream lines={lines} cols={cols} repeat={repeat} />
+      </div>
+      <figcaption class="mq-visually-hidden" id={`${id}-caption`}>{caption}</figcaption>
+    </figure>
+
+    {/* The silhouette's edge and the app's chrome, on the same geometry. */}
+    <div class="mq-aperture__edge" aria-hidden="true"></div>
+
+    <div class="mq-aperture__chrome" aria-hidden="true">
+      <div class="mq-aperture__titlebar">
+        <span class="mq-aperture__title">{title}</span>
+        <span class="mq-aperture__status">
+          <span class="mq-aperture__dot"></span>
+          {status}
+        </span>
+      </div>
+      <div class="mq-aperture__keys">
+        <span>esc</span>
+        <span>tab</span>
+        <span>ctrl</span>
+        <span class="mq-aperture__caret">→</span>
+      </div>
+    </div>
+    {statusLabel && <p class="mq-visually-hidden">{statusLabel}</p>}
+  </div>
+
+  <slot name="footnote" />
+</div>
+
+{scopedCss && <style is:inline set:html={scopedCss} />}
+
+<style>
+  .mq-aperture-root {
+    display: grid;
+    /* The rail is a horizontally scrolling list of pills whose max-content
+       width is the sum of all of them. In an implicit `auto` track that sum
+       becomes the column's width and the page scrolls sideways on a phone;
+       `minmax(0, 1fr)` holds the column to the container and lets the rail
+       scroll, which is what it was built to do. */
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--mq-space-5);
+    inline-size: 100%;
+  }
+
+  .mq-aperture-root__rail {
+    max-inline-size: var(--mq-container);
+    margin-inline: auto;
+    inline-size: 100%;
+    padding-inline: var(--mq-gutter);
+  }
+
+  /*
+   * All of the geometry lives HERE, on the same element the opening
+   * animation runs on, and that is load-bearing rather than tidy. A custom
+   * property that references another custom property is substituted at
+   * computed-value time on the element that declares it -- so if these sat
+   * on the root while `--mq-ap-open` animated on the child, `--mq-dev-h`
+   * would resolve once against the root's static value and the window would
+   * never open. Everything that reads the geometry (the clip, the edge, the
+   * chrome, the stream's origin) is a descendant of this element.
+   */
+  .mq-aperture {
+    --mq-ap-h: clamp(600px, 84vh, 900px);
+    --mq-dev-fill: 0.86; /* share of the band's height the device takes */
+    --mq-dev-h: calc(var(--mq-ap-h) * var(--mq-dev-fill) * var(--mq-ap-open));
+    --mq-dev-w: calc(var(--mq-dev-h) * 9 / 19.5); /* the ~19.5:9 silhouette */
+    --mq-dev-inset-y: calc((var(--mq-ap-h) - var(--mq-dev-h)) / 2);
+    --mq-dev-inset-x: calc(50% - var(--mq-dev-w) / 2);
+    --mq-chrome-h: 40px;
+    --mq-keys-h: 38px;
+    /*
+     * Where the output starts, measured back from the device's left edge.
+     * Large on purpose. It sets which columns of the output the device
+     * shows, and therefore which lines cross which edge: at 44 columns,
+     * every line longer than 44 characters crosses the left edge and every
+     * line longer than about 77 crosses the right one. That is the whole
+     * reason the sample stream insists on long lines -- short output makes
+     * a ribbon down the middle of the band instead of a field with a
+     * window cut into it.
+     */
+    --mq-stream-indent: 44ch;
+
+    position: relative;
+    inline-size: 100%;
+    block-size: var(--mq-ap-h);
+    /* The band IS the terminal's ground: it takes the pack's background, so
+       a light page still shows the machine on the machine's own surface. */
+    background: var(--mq-term-bg);
+    overflow: clip;
+    isolation: isolate;
+    transition: background-color var(--mq-duration-medium) var(--mq-ease-standard);
+  }
+
+  /* Both layers are the same box. This is the invariant. */
+  .mq-aperture__field {
+    position: absolute;
+    inset: 0;
+  }
+
+  .mq-aperture__figure {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+  }
+
+  /*
+   * The stream's own position, expressed against the device rather than
+   * against the band, so the device always lands on output rather than on
+   * whitespace. `em` and `ch` here resolve against the stream's own font
+   * size, which is the same in both layers.
+   */
+  .mq-aperture__field :global(.mq-stream) {
+    position: absolute;
+    inset-inline-start: calc(var(--mq-dev-inset-x) - var(--mq-stream-indent));
+    inset-block-start: calc(
+      50% - (var(--mq-stream-lines, 40) * var(--mq-leading-mono) * 1em) / 2
+    );
+  }
+
+  .mq-aperture__field--dim {
+    opacity: var(--mq-ap-dim);
+  }
+
+  /* The window. `round` gives the silhouette its radius; nothing here can
+     shift the content it reveals. */
+  .mq-aperture__field--bright {
+    clip-path: inset(
+      var(--mq-dev-inset-y) var(--mq-dev-inset-x) var(--mq-dev-inset-y)
+        var(--mq-dev-inset-x) round var(--mq-radius-xl)
+    );
+  }
+
+  /*
+   * The edge. One hairline of the terminal's own foreground, not a drop
+   * shadow -- the device is a cut in the output, not an object floating over
+   * it, and a shadow would say the opposite.
+   */
+  .mq-aperture__edge {
+    position: absolute;
+    inset-block: var(--mq-dev-inset-y);
+    inset-inline: var(--mq-dev-inset-x);
+    border: 1px solid color-mix(in srgb, var(--mq-term-fg) 55%, transparent);
+    border-radius: var(--mq-radius-xl);
+    pointer-events: none;
+    z-index: var(--mq-z-raised);
+    /* At `--mq-ap-open: 0` the ring is a zero-height box whose two borders
+       would still paint a 2px line across the band. */
+    opacity: var(--mq-ap-open);
+  }
+
+  /*
+   * The app's chrome. Muqun's cream and coral in both page themes and under
+   * every terminal theme, because the chrome belongs to the app and the
+   * colours inside the frame belong to the machine. Holding the chrome fixed
+   * while 32 palettes move behind it is what makes the rail read as
+   * "the terminal is themed", not "the site is themed".
+   */
+  .mq-aperture__chrome {
+    position: absolute;
+    inset-block: var(--mq-dev-inset-y);
+    inset-inline: var(--mq-dev-inset-x);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    pointer-events: none;
+    z-index: var(--mq-z-chrome);
+    /*
+     * Ramped rather than linear with the opening. The two chrome bars have
+     * fixed heights, so while the window is short they meet in the middle
+     * and read as a smear across the output. Holding them at zero until the
+     * window is 55% open means they only ever appear at a size that fits.
+     */
+    opacity: clamp(0, calc((var(--mq-ap-open) - 0.55) / 0.45), 1);
+  }
+
+  .mq-aperture__titlebar,
+  .mq-aperture__keys {
+    display: flex;
+    align-items: center;
+    background: var(--mq-p-cream);
+    color: var(--mq-p-ink);
+    font-family: var(--mq-font-mono);
+    font-size: var(--mq-size-mono-sm);
+    letter-spacing: var(--mq-tracking-mono);
+    padding-inline: var(--mq-space-3);
+  }
+
+  .mq-aperture__titlebar {
+    justify-content: space-between;
+    block-size: var(--mq-chrome-h);
+    border-start-start-radius: var(--mq-radius-xl);
+    border-start-end-radius: var(--mq-radius-xl);
+    border-block-end: 1px solid var(--mq-p-hairline-light);
+  }
+
+  .mq-aperture__title {
+    font-weight: var(--mq-weight-strong);
+  }
+
+  .mq-aperture__status {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--mq-space-2);
+    color: var(--mq-p-slate);
+  }
+
+  .mq-aperture__dot {
+    inline-size: 7px;
+    block-size: 7px;
+    border-radius: var(--mq-radius-full);
+    background: var(--mq-p-coral);
+  }
+
+  .mq-aperture__keys {
+    justify-content: space-between;
+    block-size: var(--mq-keys-h);
+    border-end-start-radius: var(--mq-radius-xl);
+    border-end-end-radius: var(--mq-radius-xl);
+    border-block-start: 1px solid var(--mq-p-hairline-light);
+    color: var(--mq-p-slate);
+  }
+
+  .mq-aperture__caret {
+    color: var(--mq-p-coral-text-light);
+    font-weight: var(--mq-weight-strong);
+  }
+
+  /* ==================================================================== */
+  /* The opening sequence. About two seconds, once, never looping.        */
+  /* ==================================================================== */
+
+  .mq-aperture--animate {
+    animation: mq-aperture-open var(--mq-duration-aperture) var(--mq-ease-exit) 1
+      both;
+  }
+
+  @keyframes mq-aperture-open {
+    /* 0-25%: the band is one flat sheet of output at full strength. There is
+       no device yet -- the reader is looking at the machine. */
+    0% {
+      --mq-ap-open: 0;
+      --mq-ap-dim: 1;
+    }
+    25% {
+      --mq-ap-open: 0;
+      --mq-ap-dim: 1;
+    }
+    /* 25-70%: the window opens. Because the clip is derived from
+       `--mq-ap-open`, the device grows out of the middle of the output
+       rather than being pasted on top of it. */
+    70% {
+      --mq-ap-open: 1;
+      --mq-ap-dim: 1;
+    }
+    /* 70-100%: everything outside the window recedes, and what is left is
+       the app. Nothing translated, nothing bounced, nothing repeated. */
+    100% {
+      --mq-ap-open: 1;
+      --mq-ap-dim: 0.35;
+    }
+  }
+
+  /*
+   * Reduced motion gets the end state, not a faster version of the sequence.
+   * The animation is removed rather than shortened, so there is no
+   * single-frame flash of the opening state.
+   */
+  @media (prefers-reduced-motion: reduce) {
+    .mq-aperture--animate {
+      animation: none;
+    }
+  }
+
+  .mq-aperture-root--panel .mq-aperture {
+    --mq-ap-h: clamp(440px, 60vh, 620px);
+    --mq-dev-fill: 0.88;
+  }
+
+  /*
+   * Below 640px the device is most of the band and the field around it is a
+   * margin rather than a scene, so the indent tightens -- otherwise the
+   * overscan reads as a mistake instead of as context.
+   */
+  @media (max-width: 639px) {
+    .mq-aperture {
+      --mq-ap-h: clamp(480px, 74vh, 640px);
+      --mq-dev-fill: 0.9;
+      --mq-stream-indent: 5ch;
+    }
+  }
+</style>

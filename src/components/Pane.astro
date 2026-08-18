@@ -1,0 +1,242 @@
+---
+/**
+ * A pane in the window.
+ *
+ * This is the page's structural unit, and it is a tmux pane rather than a
+ * section: a rectangle with a rule along its top edge and a title sitting on
+ * that rule, tiled against its neighbours with no gap and no radius. The
+ * reader is looking at a window that has been split five times.
+ *
+ *     ─────────────────────────────────────────────────────────────
+ *     ● 2:setup                                     about a minute
+ *
+ *       One command. One scan.
+ *       …
+ *
+ * The title bar is the whole idea and it is not decoration: `2:setup` is the
+ * same index and the same name the docked status line at the foot of the page
+ * shows for this section, so the bar at the bottom is a window list and each
+ * pane announces which window it is. Change a name here, change it there --
+ * they are one fact written twice and `index.astro` passes both from the same
+ * `sections` array.
+ *
+ * WHY THE TITLE IS MONO AND UNTRANSLATED
+ * A tmux window name is a machine string. `2:setup` is what the terminal
+ * would print, in the register `tokens.css` reserves for the machine, and
+ * that is what lets it be lowercase, tight and ASCII in every locale without
+ * that treatment ever landing on Korean. Anything a reader needs to read as
+ * language goes in the heading inside the pane, never in the bar -- with one
+ * exception, `meta`, which is translated and therefore proportional.
+ *
+ * Tone is `Band`'s tone and means what it means there: whose voice this is.
+ * The classes are `Band`'s too, so the two stay one system; what `Pane` adds
+ * is the split rule and the title. A section that wants no title bar is still
+ * a `Band`.
+ */
+import Container from './Container.astro';
+import type { BandTone, ContainerWidth } from './types';
+
+interface Props {
+  /** The window index, as the status line shows it. ASCII digit. */
+  index: string;
+  /** The window name. ASCII, lowercase, never translated. */
+  name: string;
+  /**
+   * The right-hand end of the bar.
+   *
+   * Translated, so it is proportional and sentence case -- this is the one
+   * thing in the bar a reader reads as language rather than as a machine
+   * token. tmux puts the clock here; this page puts whatever the reader
+   * would want to know before starting the section, which for a procedure is
+   * how long it takes.
+   */
+  meta?: string;
+  /**
+   * Turn the right-hand end of the bar into a running clock.
+   *
+   * The value is the number of seconds the agent has already been blocked
+   * when the page loads, and from there it counts up once a second until the
+   * prompt inside the pane is answered -- see `BlockedPrompt`, which owns
+   * both the ticking and the stop. Only the hero uses it, and only because
+   * "your agent is waiting" is a claim a number can make better than a
+   * sentence can. `meta` is ignored when this is set.
+   */
+  clockFrom?: number;
+  tone: BandTone;
+  /** Used by the status line to scroll here. */
+  id?: string;
+  /** `false` bleeds the body to the viewport edge. The aperture needs it. */
+  contain?: false | ContainerWidth;
+  /** Shorter vertical rhythm, for a pane that continues the one above it. */
+  tight?: boolean;
+  class?: string;
+  /** Body-only class, for a pane whose content manages its own padding. */
+  bodyClass?: string;
+}
+
+const {
+  index,
+  name,
+  meta,
+  clockFrom,
+  tone,
+  id,
+  contain = 'default',
+  tight = false,
+  class: className,
+  bodyClass,
+} = Astro.props;
+
+/** The clock's first reading, so the server sends the same string the script
+    would have written on its first tick. */
+function clockLabel(seconds: number): string {
+  const mm = String(Math.floor(seconds / 60)).padStart(2, '0');
+  const ss = String(seconds % 60).padStart(2, '0');
+  return `blocked ${mm}:${ss}`;
+}
+---
+
+<section
+  class:list={['mq-band', `mq-band--${tone}`, 'mq-pane', tight && 'mq-pane--tight', className]}
+  id={id}
+  data-blocked-scope={clockFrom === undefined ? undefined : ''}
+  data-blocked-clock={clockFrom === undefined ? undefined : String(clockFrom)}
+>
+  {/*
+    `aria-hidden`, and deliberately so. Every word in this bar is either
+    repeated by the heading below it or is chrome -- the dot, the rule, the
+    index. A screen reader that announced "bullet 2 colon setup" before every
+    section would be reading the furniture aloud. The status line at the foot
+    of the page carries the same names as real links with translated
+    accessible names, which is where that navigation belongs.
+  */}
+  <div class="mq-pane__bar" aria-hidden="true">
+    <Container class="mq-pane__bar-inner">
+      <span class="mq-pane__dot"></span>
+      <span class="mq-pane__name"><span class="mq-pane__index">{index}</span>:{name}</span>
+      <span class="mq-pane__split"></span>
+      {
+        clockFrom === undefined ? (
+          meta && <span class="mq-pane__meta">{meta}</span>
+        ) : (
+          /* Mono, not the proportional meta: this is a machine reading. */
+          <span class="mq-pane__clock" data-blocked-clock-out>{clockLabel(clockFrom)}</span>
+        )
+      }
+    </Container>
+  </div>
+
+  <div class:list={['mq-pane__body', bodyClass]}>
+    {
+      contain === false ? (
+        <slot />
+      ) : (
+        <Container width={contain}>
+          <slot />
+        </Container>
+      )
+    }
+  </div>
+</section>
+
+<style>
+  /*
+   * The pane's own padding replaces the band's. A band pads top and bottom
+   * symmetrically because it floats; a pane starts at its title bar, so the
+   * space belongs under the bar and at the foot of the body, and the bar
+   * itself sits tight against the split above it.
+   */
+  .mq-pane {
+    padding-block: 0;
+  }
+
+  .mq-pane__bar {
+    /*
+     * The split. `--mq-rule` and not `--mq-hairline`: this is a structural
+     * edge -- the line between two panes -- and `tokens.css` reserves the
+     * heavier weight for edges that have to be seen. A hairline here made
+     * the page read as sections with dividers instead of as one window that
+     * had been split, which is the entire difference this component exists
+     * to make.
+     */
+    border-block-start: 1px solid var(--mq-rule);
+    padding-block: var(--mq-space-3);
+  }
+
+  .mq-pane__bar-inner {
+    display: flex;
+    align-items: center;
+    gap: var(--mq-space-3);
+    font-family: var(--mq-font-mono);
+    font-size: var(--mq-size-mono-sm);
+    letter-spacing: var(--mq-tracking-mono);
+    line-height: 1;
+  }
+
+  /* The pane's active marker. tmux paints the active pane's border; a page
+     has no active pane, so the dot is simply the window's own mark. */
+  .mq-pane__dot {
+    inline-size: 6px;
+    block-size: 6px;
+    background: var(--mq-accent);
+    flex: 0 0 auto;
+  }
+
+  .mq-pane__name {
+    color: var(--mq-text-muted);
+    white-space: nowrap;
+  }
+
+  .mq-pane__index {
+    color: var(--mq-text-accent);
+    font-weight: var(--mq-weight-strong);
+  }
+
+  /*
+   * The rule that runs from the name to the meta. This is the character-cell
+   * fill a real pane title has -- `── name ─────────` -- drawn as a border
+   * on a flexible spacer rather than as repeated box-drawing characters,
+   * because a string of U+2500 does not resize and leaves a ragged end
+   * wherever the container happens to stop.
+   */
+  .mq-pane__split {
+    flex: 1 1 auto;
+    block-size: 1px;
+    background: var(--mq-hairline);
+    min-inline-size: var(--mq-space-4);
+  }
+
+  .mq-pane__meta {
+    /* Translated, so proportional and sentence case -- the one thing in the
+       bar that is language rather than a machine token. */
+    font-family: var(--mq-font-body);
+    font-size: var(--mq-size-small);
+    letter-spacing: normal;
+    color: var(--mq-text-muted);
+    white-space: nowrap;
+  }
+
+  /*
+   * Tabular figures, because this one ticks. Without them the bar shifts a
+   * pixel every second as the digits change width, which on an otherwise
+   * still page is the only thing moving and therefore the only thing you
+   * look at.
+   */
+  .mq-pane__clock {
+    color: var(--mq-text-accent);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  [data-answered] .mq-pane__clock {
+    color: var(--mq-verified);
+  }
+
+  .mq-pane__body {
+    padding-block: var(--mq-space-12) var(--mq-band-padding-y);
+  }
+
+  .mq-pane--tight .mq-pane__body {
+    padding-block: var(--mq-space-8) var(--mq-band-padding-y-tight);
+  }
+</style>

@@ -1,0 +1,120 @@
+---
+/**
+ * One step of a procedure. Must be a direct child of `Steps`.
+ *
+ * The marker is mono and tabular so a two-digit step does not shift the
+ * column. The title is proportional and translated.
+ *
+ * A step may also carry a `media` slot: what the *other* screen shows while
+ * you are doing this. The default slot is the machine — commands, the pairing
+ * panel — and the media slot is the phone in your other hand. It sits in a
+ * rail beside the step where there is room for one, and under the step where
+ * there is not; on a procedure whose commands stop at 80ch inside a 1200px
+ * container, that rail is otherwise a column of nothing running the height of
+ * the band.
+ */
+interface Props {
+  /** Proportional, translated. What you do. */
+  title: string;
+  class?: string;
+}
+const { title, class: className } = Astro.props;
+const hasMedia = Astro.slots.has('media');
+---
+
+<li class:list={['mq-step', className]}>
+  <span class="mq-step__marker" aria-hidden="true"></span>
+  <div class="mq-step__body">
+    <h3 class="mq-step__title">{title}</h3>
+    <slot />
+  </div>
+  {
+    hasMedia && (
+      <div class="mq-step__media">
+        <slot name="media" />
+      </div>
+    )
+  }
+</li>
+
+<style>
+  .mq-step {
+    display: grid;
+    grid-template-columns: 32px minmax(0, 1fr);
+    gap: var(--mq-space-4);
+    align-items: start;
+  }
+
+  /*
+   * Under the step by default: one column of reading, the picture after the
+   * words it belongs to. `grid-column: 2` keeps it off the marker's track, so
+   * it lines up with the body rather than with the number.
+   */
+  .mq-step__media {
+    grid-column: 2;
+    margin-block-start: var(--mq-space-2);
+  }
+
+  /*
+   * From 1024px the media takes its own track. `auto` rather than a fraction:
+   * the picture is a phone at a fixed width, and a fractional track would
+   * stretch it to whatever is left over.
+   *
+   * The extra air is a margin on the media rather than a wider `column-gap`,
+   * because the gap is shared with the marker and the number belongs tight
+   * against the words it numbers.
+   */
+  @media (min-width: 1024px) {
+    .mq-step:has(.mq-step__media) {
+      grid-template-columns: 32px minmax(0, 1fr) auto;
+    }
+
+    .mq-step__media {
+      grid-column: 3;
+      grid-row: 1;
+      margin-block-start: 0;
+      margin-inline-start: var(--mq-space-8);
+    }
+  }
+
+  .mq-step__marker {
+    counter-increment: mq-step;
+    display: grid;
+    place-items: center;
+    inline-size: 32px;
+    block-size: 32px;
+    border-radius: var(--mq-radius-full);
+    background: var(--mq-canvas);
+    border: 1px solid var(--mq-rule);
+    font-family: var(--mq-font-mono);
+    font-size: var(--mq-size-mono-sm);
+    font-weight: var(--mq-weight-strong);
+    font-variant-numeric: tabular-nums;
+    color: var(--mq-text);
+    position: relative;
+    z-index: 1;
+  }
+
+  .mq-step__marker::before {
+    content: counter(mq-step);
+  }
+
+  .mq-step__body {
+    display: grid;
+    /* `minmax(0, 1fr)`, not the implicit `auto`. An auto track takes its
+       content's MAX-content size and is not clamped by the grid container, so
+       one 80ch command block in here widens the column past the viewport and
+       the whole page scrolls sideways. */
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--mq-space-4);
+    padding-block-start: 3px;
+    min-inline-size: 0;
+  }
+
+  .mq-step__title {
+    margin: 0;
+    font-size: var(--mq-size-subheading);
+    font-weight: var(--mq-weight-strong);
+    line-height: var(--mq-leading-heading);
+  }
+</style>

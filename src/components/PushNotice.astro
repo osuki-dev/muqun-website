@@ -1,0 +1,94 @@
+---
+/**
+ * The permission push, drawn.
+ *
+ * Drawn rather than captured, and that is the considered choice: a real
+ * screenshot of this notification carries one phone's banner chrome, one
+ * machine's hostname and one moment's clock, none of which is the claim. The
+ * claim is that the prompt reaches you with its three answers attached.
+ *
+ * `role="img"` with a translated label, because the strings inside are the
+ * app's own English answer words and the alt text is the sentence a reader
+ * who cannot see it needs. It is a picture of a notification, not a
+ * notification: nothing in it is focusable and nothing can be pressed.
+ */
+interface Props {
+  /** Mono, ASCII. The banner's own header, e.g. "Muqun · now". */
+  meta: string;
+  /** ASCII. What the agent is called in the session. */
+  agent: string;
+  /** ASCII. The file it wants. */
+  path: string;
+  /** The app's own answer words, in the app's own order. ASCII. */
+  actions: readonly string[];
+  /** Translated. Describes the picture. */
+  ariaLabel: string;
+  class?: string;
+}
+
+const { meta, agent, path, actions, ariaLabel, class: className } = Astro.props;
+---
+
+<div class:list={['mq-card', 'mq-push', className]} role="img" aria-label={ariaLabel}>
+  <p class="mq-mono-label mq-push__meta">{meta}</p>
+  <p class="mq-push__body">
+    {agent} wants to edit <span class="mq-push__path">{path}</span>
+  </p>
+  <ul class="mq-push__actions">
+    {
+      actions.map((action, index) => (
+        <li class:list={['mq-push__action', index === 0 && 'mq-push__action--primary']}>
+          {action}
+        </li>
+      ))
+    }
+  </ul>
+</div>
+
+<style>
+  .mq-push {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--mq-space-3);
+    padding: var(--mq-space-5);
+    box-shadow: var(--mq-shadow-raised);
+  }
+
+  .mq-push__body {
+    font-weight: var(--mq-weight-medium);
+    line-height: var(--mq-leading-heading);
+  }
+
+  .mq-push__path {
+    font-family: var(--mq-font-mono);
+    font-size: 0.9em;
+  }
+
+  .mq-push__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--mq-space-2);
+    margin: 0;
+    padding-block-start: var(--mq-space-2);
+    border-block-start: 1px solid var(--mq-hairline);
+  }
+
+  .mq-push__action {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: 32px;
+    padding-inline: var(--mq-space-4);
+    border: 1px solid var(--mq-rule);
+    border-radius: var(--mq-radius-full);
+    font-size: var(--mq-size-small);
+    font-weight: var(--mq-weight-medium);
+  }
+
+  /* Coral fill, ink label. The rule holds even in a drawing of a control. */
+  .mq-push__action--primary {
+    background: var(--mq-accent);
+    border-color: var(--mq-accent);
+    color: var(--mq-on-accent);
+    font-weight: var(--mq-weight-strong);
+  }
+</style>

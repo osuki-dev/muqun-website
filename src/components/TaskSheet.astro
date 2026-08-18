@@ -1,0 +1,111 @@
+---
+/**
+ * The new-task sheet, drawn.
+ *
+ * Same reasoning as `PushNotice`: a capture of this sheet carries one
+ * machine's directory listing and one person's agents. What the section
+ * claims is the shape of it -- pick an agent, pick a directory the session
+ * already knows, type the prompt -- so the shape is what is drawn.
+ *
+ * The row labels are translated (they are the app's own words for the three
+ * fields, taken from its catalogue) and therefore proportional. The values
+ * are a machine's own -- an agent's name, a path -- and stay mono and ASCII.
+ */
+interface Props {
+  /** Translated label, ASCII value. */
+  rows: readonly { label: string; value: string }[];
+  /** The prompt field, drawn with the caret in it. */
+  prompt: { label: string; value: string };
+  /** Translated. The button's word, e.g. "Start". */
+  action: string;
+  /** Translated. Describes the picture. */
+  ariaLabel: string;
+  class?: string;
+}
+
+const { rows, prompt, action, ariaLabel, class: className } = Astro.props;
+---
+
+<div class:list={['mq-card', 'mq-sheet', className]} role="img" aria-label={ariaLabel}>
+  <dl class="mq-sheet__rows">
+    {
+      rows.map((row) => (
+        <div class="mq-sheet__row">
+          <dt class="mq-sheet__label">{row.label}</dt>
+          <dd class="mq-sheet__value">{row.value}</dd>
+        </div>
+      ))
+    }
+    <div class="mq-sheet__row">
+      <dt class="mq-sheet__label">{prompt.label}</dt>
+      <dd class="mq-sheet__value mq-sheet__value--field">
+        {prompt.value}<span class="mq-sheet__caret"></span>
+      </dd>
+    </div>
+  </dl>
+  <p class="mq-sheet__action">{action}</p>
+</div>
+
+<style>
+  .mq-sheet {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--mq-space-4);
+    padding: var(--mq-space-5);
+  }
+
+  .mq-sheet__rows {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--mq-space-3);
+    margin: 0;
+  }
+
+  .mq-sheet__row {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
+    gap: var(--mq-space-3);
+    align-items: baseline;
+    padding-block-end: var(--mq-space-3);
+    border-block-end: 1px solid var(--mq-hairline);
+  }
+
+  .mq-sheet__label {
+    font-size: var(--mq-size-small);
+    color: var(--mq-text-muted);
+  }
+
+  .mq-sheet__value {
+    margin: 0;
+    font-family: var(--mq-font-mono);
+    font-size: var(--mq-size-mono);
+    overflow-wrap: anywhere;
+  }
+
+  .mq-sheet__value--field {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
+
+  /* The block cursor, static. Nothing on this site blinks forever. */
+  .mq-sheet__caret {
+    inline-size: 0.55em;
+    block-size: 1.05em;
+    background: var(--mq-accent);
+    flex: 0 0 auto;
+  }
+
+  .mq-sheet__action {
+    justify-self: start;
+    display: inline-flex;
+    align-items: center;
+    min-block-size: 36px;
+    padding-inline: var(--mq-space-5);
+    border-radius: var(--mq-radius-full);
+    background: var(--mq-accent);
+    color: var(--mq-on-accent); /* ink on coral, 6.17:1 */
+    font-size: var(--mq-size-small);
+    font-weight: var(--mq-weight-strong);
+  }
+</style>

@@ -1,0 +1,94 @@
+---
+/**
+ * The top of the page: wordmark on the left, controls on the right.
+ *
+ * Docked, and not a navigation. The navigation is the status line at the
+ * bottom; this is the anchor -- the always-present home link and the theme
+ * control -- and nothing else goes in it.
+ *
+ * It used to scroll away, on the argument that chrome docked to both edges
+ * would cost the status line its one bold move. That was wrong in the same
+ * way for both bars: on a page seven screens tall, a home link you can only
+ * reach by scrolling back to the top is not the reliable convention it was
+ * put there to be. Both bars stay, and the difference between them carries
+ * the idea instead of the absence of one -- the status line is the machine's
+ * register, mono and reversed and full of window numbers, and this is
+ * Muqun's, quiet enough that the bar at the other edge still reads as the
+ * loud one.
+ *
+ * Two rules keep them from becoming a frame around the page: this one has no
+ * links but the wordmark, and it takes its edge only once the page has moved
+ * under it (`data-docked`, set by `src/scripts/scroll.ts`). At rest it is
+ * indistinguishable from the band beneath it.
+ */
+import Container from './Container.astro';
+import Wordmark from './Wordmark.astro';
+
+interface Props {
+  homeHref?: string;
+  /** Translated. The wordmark's accessible name. */
+  homeLabel?: string;
+  class?: string;
+}
+
+const { homeHref = '/', homeLabel, class: className } = Astro.props;
+---
+
+<header class:list={['mq-page-header', className]} data-page-header>
+  <Container class="mq-page-header__inner">
+    <Wordmark href={homeHref} label={homeLabel} />
+    <div class="mq-page-header__controls">
+      <slot />
+    </div>
+  </Container>
+</header>
+
+<style>
+  .mq-page-header {
+    /*
+     * Sticky in the stylesheet, so it docks with the script absent. All the
+     * script adds is `data-docked`, and the only thing that hangs off it is
+     * the edge below.
+     */
+    position: sticky;
+    inset-block-start: 0;
+    z-index: var(--mq-z-overlay);
+
+    /* The declared height. `--mq-header-height` is derived from these two
+       and is what the scroll padding and the band snap both read, so a
+       change here is a change there -- see the token. */
+    padding-block: var(--mq-space-5);
+    min-block-size: var(--mq-header-height);
+
+    /*
+     * Opaque, because the first band under it is a full-bleed terminal and
+     * a translucent bar over moving output is unreadable. Cream over ink is
+     * also the page's own two-material rule holding at the seam: the chrome
+     * is Muqun's surface, whatever the machine is doing behind it.
+     */
+    background: var(--mq-canvas);
+
+    /* Transparent until the page moves, so at rest the header and the band
+       below it are one surface and there is no line across the top of the
+       document. */
+    border-block-end: 1px solid transparent;
+    transition: border-color var(--mq-duration-medium) var(--mq-ease-standard);
+  }
+
+  .mq-page-header[data-docked='true'] {
+    border-block-end-color: var(--mq-hairline);
+  }
+
+  .mq-page-header :global(.mq-page-header__inner) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--mq-space-4);
+  }
+
+  .mq-page-header__controls {
+    display: flex;
+    align-items: center;
+    gap: var(--mq-space-3);
+  }
+</style>

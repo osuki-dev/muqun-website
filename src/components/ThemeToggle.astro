@@ -1,0 +1,162 @@
+---
+/**
+ * The page's light/dark mode. Three states: follow the system, force light,
+ * force dark.
+ *
+ * This is NOT the terminal theme. The two are independent controls and the
+ * site is built so they can disagree: a light page can hold a Tokyo Night
+ * terminal, because that is the true thing about the product -- your phone's
+ * appearance setting and your terminal's palette are separate decisions and
+ * always have been. Conflating them here would be a lie told for tidiness.
+ *
+ * Three options rather than two, so "follow the system" is somewhere a
+ * reader can get back to. A two-state toggle silently becomes a permanent
+ * override the first time it is touched.
+ *
+ * Radios again: one tab stop, arrow keys between options, the selected state
+ * announced, none of it written by hand.
+ */
+interface Props {
+  /** Translated. The group's accessible name. */
+  legend: string;
+  /** Translated labels. */
+  labels?: { auto: string; light: string; dark: string };
+  class?: string;
+}
+
+const {
+  legend,
+  labels = { auto: 'System', light: 'Light', dark: 'Dark' },
+  class: className,
+} = Astro.props;
+
+const OPTIONS = [
+  { value: 'auto', label: labels.auto },
+  { value: 'light', label: labels.light },
+  { value: 'dark', label: labels.dark },
+] as const;
+---
+
+<fieldset class:list={['mq-theme-toggle', className]} data-theme-toggle>
+  <legend class="mq-visually-hidden">{legend}</legend>
+  {
+    OPTIONS.map((option) => (
+      <div class="mq-theme-toggle__item">
+        <input
+          class="mq-theme-toggle__input"
+          type="radio"
+          name="mq-theme-mode"
+          id={`mq-theme-${option.value}`}
+          value={option.value}
+          checked={option.value === 'auto'}
+        />
+        <label class="mq-theme-toggle__label" for={`mq-theme-${option.value}`}>
+          {option.label}
+        </label>
+      </div>
+    ))
+  }
+</fieldset>
+
+<style>
+  .mq-theme-toggle {
+    display: inline-flex;
+    gap: 2px;
+    padding: 3px;
+    border: 1px solid var(--mq-rule);
+    border-radius: var(--mq-radius-full);
+  }
+
+  /* Positioned because it holds an absolutely positioned radio. Without a
+     positioned ancestor that radio resolves against whichever ancestor
+     happens to be positioned -- on this site, the band -- and a 1px input
+     parked off-screen is enough to give the page a horizontal scrollbar. */
+  .mq-theme-toggle__item {
+    position: relative;
+  }
+
+  .mq-theme-toggle__input {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .mq-theme-toggle__label {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: 30px;
+    padding-inline: var(--mq-space-3);
+    border-radius: var(--mq-radius-full);
+    font-size: var(--mq-size-small);
+    font-weight: var(--mq-weight-medium);
+    cursor: pointer;
+    white-space: nowrap;
+    transition:
+      background-color var(--mq-duration-fast) var(--mq-ease-standard),
+      color var(--mq-duration-fast) var(--mq-ease-standard);
+  }
+
+  .mq-theme-toggle__label:hover {
+    background: color-mix(in srgb, var(--mq-text) 8%, transparent);
+  }
+
+  .mq-theme-toggle__input:checked + .mq-theme-toggle__label {
+    background: var(--mq-text);
+    color: var(--mq-canvas);
+    font-weight: var(--mq-weight-strong);
+  }
+
+  .mq-theme-toggle__input:focus-visible + .mq-theme-toggle__label {
+    outline: var(--mq-focus-width) solid var(--mq-focus);
+    outline-offset: var(--mq-focus-offset-width);
+  }
+</style>
+
+<script>
+  /**
+   * Applies and persists the page's mode.
+   *
+   * The first-paint half of this lives in `BaseLayout` as an inline script in
+   * the head, because it has to run before the first pixel; this half only
+   * has to run before the reader clicks something.
+   */
+  const STORAGE_KEY = 'mq-theme';
+  type Mode = 'auto' | 'light' | 'dark';
+
+  function apply(mode: Mode) {
+    const media = window.matchMedia('(prefers-color-scheme: dark)');
+    const resolved = mode === 'auto' ? (media.matches ? 'dark' : 'light') : mode;
+    document.documentElement.dataset.theme = resolved;
+    document.documentElement.dataset.themeMode = mode;
+  }
+
+  function stored(): Mode {
+    const value = localStorage.getItem(STORAGE_KEY);
+    return value === 'light' || value === 'dark' ? value : 'auto';
+  }
+
+  const group = document.querySelector<HTMLFieldSetElement>('[data-theme-toggle]');
+  if (group) {
+    const mode = stored();
+    const input = group.querySelector<HTMLInputElement>(`input[value="${mode}"]`);
+    if (input) input.checked = true;
+
+    group.addEventListener('change', (event) => {
+      const target = event.target as HTMLInputElement;
+      if (target.name !== 'mq-theme-mode') return;
+      const next = target.value as Mode;
+      if (next === 'auto') localStorage.removeItem(STORAGE_KEY);
+      else localStorage.setItem(STORAGE_KEY, next);
+      apply(next);
+    });
+  }
+
+  // While on `auto`, follow the system if it changes under us.
+  window
+    .matchMedia('(prefers-color-scheme: dark)')
+    .addEventListener('change', () => {
+      if (stored() === 'auto') apply('auto');
+    });
+</script>

@@ -1,0 +1,542 @@
+---
+/**
+ * The page's one bold thing: a terminal that is actually blocked.
+ *
+ * Every landing page for a developer tool shows a terminal. This one is
+ * stopped on a permission prompt and will not go on until the reader answers
+ * it -- press 1, 2 or 3, or click a choice -- at which point the agent
+ * finishes the job in front of them and the push notification beside it
+ * resolves to the answer they gave.
+ *
+ * The argument for spending the page's whole risk budget here: the product's
+ * premise is a single sentence, "your agent is waiting for one keypress",
+ * and a reader who has pressed that key has understood the product in a way
+ * no screenshot of a terminal can produce. It is also the honest demo. The
+ * choices are the app's three real answers in the app's real order, the diff
+ * is the diff from the session capture, and the continuation is what those
+ * commands actually print.
+ *
+ * WHAT THIS DOES NOT DO
+ * It does not trap the page. The scroll is never hijacked and nothing below
+ * is hidden behind the answer -- a page that holds its content hostage to an
+ * interaction is a page that gets closed, and the point being made is about
+ * the agent waiting, not about the reader being made to wait. What continues
+ * without an answer is the clock: the pane's own `blocked 00:14` counts up
+ * for as long as nobody answers, which is exactly what the product is about
+ * and costs the reader nothing.
+ *
+ * WITHOUT JAVASCRIPT
+ * Everything above renders as static text ending on the prompt, with the
+ * three choices as a plain list and the cursor parked on the first one. That
+ * is the same picture the old page printed and it is complete -- the reader
+ * loses the keypress, not the argument. The buttons are only upgraded from
+ * list items to controls once the script runs, so nothing on screen is ever
+ * a control that does nothing.
+ *
+ * REDUCED MOTION
+ * The typing sequence is skipped entirely -- the scrollback and the prompt
+ * are there on the first frame -- and so is the cursor blink. The prompt is
+ * still answerable and the continuation still appears; it appears at once
+ * rather than a line at a time. What is turned off is the animation, not the
+ * interaction.
+ */
+import TerminalStream from './aperture/TerminalStream.astro';
+import { getPack, packVars } from './aperture/themes';
+import type { StreamLine } from './types';
+
+interface Props {
+  /** The scrollback above the prompt. ASCII, machine register. */
+  lines: readonly StreamLine[];
+  /** The question, verbatim from the agent. ASCII. */
+  question: string;
+  /** The three answers, in the app's own order. ASCII. */
+  choices: readonly string[];
+  /**
+   * What the agent prints after each answer, one entry per choice.
+   * ASCII, machine register, same order as `choices`.
+   */
+  replies: readonly (readonly StreamLine[])[];
+  /** Translated. The accessible name of the choice group. */
+  legend: string;
+  /** Translated. The keyboard hint under the pane. */
+  hint: string;
+  /** Translated. Describes the whole pane for a screen reader. */
+  caption: string;
+  class?: string;
+}
+
+const { lines, question, choices, replies, legend, hint, caption, class: className } =
+  Astro.props;
+
+/*
+ * The terminal's own colours, in Osuki dark.
+ *
+ * `TerminalStream` colours by role and reads `--mq-term-*` off an ancestor;
+ * the aperture sets those from whichever pack the rail has selected. This
+ * pane has no rail -- it is one fixed session, not a theme demonstration --
+ * so it carries the house pack itself. Inline rather than in a stylesheet
+ * because nothing overrides it: there is no `:has()` variant to lose to.
+ */
+const term = packVars(getPack('osuki'), 'dark');
+const termStyle = Object.entries(term)
+  .map(([name, value]) => `${name}:${value}`)
+  .join(';');
+---
+
+<div
+  class:list={['mq-blocked', className]}
+  data-blocked
+  data-replies={JSON.stringify(replies)}
+>
+  <div class="mq-blocked__screen" role="img" aria-label={caption} style={termStyle}>
+    <div class="mq-blocked__scrollback" data-blocked-scrollback>
+      {/* Wider than the pane on purpose. Output that runs past the right edge
+          and is clipped there is what a terminal narrower than its output
+          looks like; reflowing it to fit would make it a paragraph. */}
+      <TerminalStream lines={lines} cols={94} />
+    </div>
+
+    <div class="mq-blocked__prompt">
+      <p class="mq-blocked__question">{question}</p>
+
+      {/*
+        A list until the script upgrades it. `data-blocked-choice` carries the
+        index so the keyboard handler and the click handler read the same
+        number, and the digit shown to the reader is `index + 1` in one place
+        rather than in three.
+      */}
+      <ul class="mq-blocked__choices" data-blocked-choices aria-label={legend}>
+        {
+          choices.map((choice, index) => (
+            <li class="mq-blocked__choice" data-blocked-choice={String(index)}>
+              <span class="mq-blocked__caret" aria-hidden="true">
+                {index === 0 ? '❯' : ' '}
+              </span>
+              <span class="mq-blocked__key">{index + 1}.</span>
+              <span class="mq-blocked__label">{choice}</span>
+            </li>
+          ))
+        }
+      </ul>
+
+      <p class="mq-blocked__cursor" aria-hidden="true"><span></span></p>
+    </div>
+
+    {/* Where the answer's consequences print. Polite, because it is the
+        result of something the reader just did and does not interrupt. */}
+    <div class="mq-blocked__reply" data-blocked-reply aria-live="polite"></div>
+  </div>
+
+  <p class="mq-blocked__hint" data-blocked-hint hidden>{hint}</p>
+</div>
+
+<style>
+  .mq-blocked {
+    display: grid;
+    gap: var(--mq-space-3);
+    min-inline-size: 0;
+  }
+
+  /*
+   * The screen. Ink in both page themes, because this is the machine's
+   * voice and `tokens.css` is explicit that the machine's ground does not
+   * follow the reader's theme. Square, like every other pane.
+   */
+  .mq-blocked__screen {
+    background: var(--mq-ink-ground);
+    border: 1px solid var(--mq-rule);
+    padding: var(--mq-space-5);
+    font-family: var(--mq-font-mono);
+    font-size: var(--mq-size-mono);
+    line-height: var(--mq-leading-mono);
+    overflow: clip;
+  }
+
+  /*
+   * The scrollback is clipped to a fixed window and anchored to its bottom,
+   * so the session reads as running off the top of the pane rather than as
+   * a paragraph that happens to start somewhere. `dvh` is deliberate: on a
+   * phone the address bar collapsing must not change how much output is on
+   * screen mid-read.
+   */
+  .mq-blocked__scrollback {
+    max-block-size: min(34vh, 20rem);
+    overflow: clip;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    /* The output fades where it leaves the pane, so the clip reads as more
+       output above rather than as a line cut in half. */
+    mask-image: linear-gradient(to bottom, transparent, black var(--mq-space-12));
+  }
+
+  .mq-blocked__prompt {
+    margin-block-start: var(--mq-space-5);
+    padding-block-start: var(--mq-space-4);
+    border-block-start: 1px solid color-mix(in srgb, var(--mq-p-offwhite) 14%, transparent);
+  }
+
+  .mq-blocked__question {
+    color: var(--mq-p-offwhite);
+    margin-block-end: var(--mq-space-3);
+  }
+
+  .mq-blocked__choices {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--mq-space-1);
+  }
+
+  .mq-blocked__choice {
+    display: grid;
+    grid-template-columns: 1.5ch 3ch minmax(0, 1fr);
+    gap: var(--mq-space-1);
+    align-items: baseline;
+    color: var(--mq-p-slate-light);
+    padding-block: var(--mq-space-1);
+  }
+
+  .mq-blocked__caret {
+    color: var(--mq-p-coral);
+  }
+
+  .mq-blocked__key {
+    color: var(--mq-p-coral);
+    font-weight: var(--mq-weight-strong);
+  }
+
+  /*
+   * Selected. The first choice is selected on load because that is where the
+   * agent leaves the cursor; after the script runs, it follows the arrow
+   * keys and the pointer.
+   */
+  /*
+   * `.mq-blocked` in front of both state rules on purpose. Once the script
+   * turns the rows into buttons they pick up the button reset below, which
+   * sets a resting colour at (0,2,1); a bare `[data-selected]` at (0,2,0)
+   * loses to it and the answered line stays grey instead of going green.
+   */
+  .mq-blocked .mq-blocked__choice[data-selected] {
+    color: var(--mq-p-offwhite);
+  }
+
+  /* Answered. The chosen line stays lit and the others go quiet, which is
+     what the terminal itself does once a prompt resolves. */
+  .mq-blocked .mq-blocked__choice[data-answered] {
+    color: var(--mq-p-green-light);
+  }
+
+  .mq-blocked[data-state='answered'] .mq-blocked__choice:not([data-answered]) {
+    opacity: var(--mq-alpha-disabled);
+  }
+
+  .mq-blocked[data-state='answered'] .mq-blocked__cursor {
+    display: none;
+  }
+
+  .mq-blocked__cursor {
+    margin-block-start: var(--mq-space-2);
+  }
+
+  .mq-blocked__cursor span {
+    display: inline-block;
+    inline-size: 0.6em;
+    block-size: 1.05em;
+    background: var(--mq-p-coral);
+    vertical-align: text-bottom;
+    animation: mq-blink 1.06s steps(1, end) infinite;
+  }
+
+  @keyframes mq-blink {
+    50% {
+      opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mq-blocked__cursor span {
+      animation: none;
+    }
+  }
+
+  .mq-blocked__reply:empty {
+    display: none;
+  }
+
+  .mq-blocked__reply {
+    margin-block-start: var(--mq-space-4);
+    padding-block-start: var(--mq-space-4);
+    border-block-start: 1px solid color-mix(in srgb, var(--mq-p-offwhite) 14%, transparent);
+    color: var(--mq-term-fg);
+    white-space: pre;
+    overflow: clip;
+  }
+
+  /*
+   * The reply's tones, against the same `--mq-term-*` the pane carries. They
+   * are `:global` because these nodes are built by the script at the foot of
+   * this file and never pass through Astro's scoping.
+   */
+  .mq-blocked__reply :global(.mq-blocked__line) {
+    display: block;
+    min-block-size: calc(var(--mq-leading-mono) * 1em);
+  }
+  .mq-blocked__reply :global(.mq-blocked__t--fg) {
+    color: var(--mq-term-fg);
+  }
+  .mq-blocked__reply :global(.mq-blocked__t--dim) {
+    color: var(--mq-term-dim);
+  }
+  .mq-blocked__reply :global(.mq-blocked__t--accent) {
+    color: var(--mq-term-accent);
+  }
+  .mq-blocked__reply :global(.mq-blocked__t--ok) {
+    color: var(--mq-term-ok);
+  }
+  .mq-blocked__reply :global(.mq-blocked__t--warn) {
+    color: var(--mq-term-warn);
+  }
+  .mq-blocked__reply :global(.mq-blocked__t--err) {
+    color: var(--mq-term-err);
+  }
+  .mq-blocked__reply :global(.mq-blocked__t--info) {
+    color: var(--mq-term-info);
+  }
+
+  .mq-blocked__hint {
+    font-family: var(--mq-font-mono);
+    font-size: var(--mq-size-mono-sm);
+    letter-spacing: var(--mq-tracking-mono);
+    color: var(--mq-text-muted);
+  }
+
+  /* Once the script upgrades the list, the rows are real controls. `color`
+     and `display` are restated because a button resets both. */
+  .mq-blocked button.mq-blocked__choice {
+    display: grid;
+    inline-size: 100%;
+    text-align: start;
+    background: none;
+    border: 0;
+    font: inherit;
+    color: var(--mq-p-slate-light);
+    cursor: pointer;
+  }
+
+  .mq-blocked button.mq-blocked__choice:hover {
+    color: var(--mq-p-offwhite);
+  }
+
+  .mq-blocked button.mq-blocked__choice:focus-visible {
+    outline: var(--mq-focus-width) solid var(--mq-p-coral);
+    outline-offset: 2px;
+  }
+
+  /*
+   * The screen must never widen its column. The stream inside it is a fixed
+   * 94ch block -- deliberately wider than the pane -- and a grid item's
+   * `min-width: auto` lets that content push the track out, which took the
+   * whole document 160px past the viewport and gave the page a horizontal
+   * scrollbar. Clipping only works once the box has stopped growing.
+   */
+  .mq-blocked,
+  .mq-blocked__screen {
+    min-inline-size: 0;
+    max-inline-size: 100%;
+  }
+</style>
+
+<script>
+  /**
+   * Answer the prompt.
+   *
+   * Three ways in, one path out: the digit keys, the arrows plus Enter, and
+   * the pointer all land in `answer(index)`. The keyboard listener is on the
+   * document rather than on the pane, because "press 1" has to work for a
+   * reader who has not clicked anything -- but it gives up the moment the
+   * reader is typing somewhere else, or has scrolled the pane out of view,
+   * so it can never eat a keystroke meant for the page's own copy buttons or
+   * for a browser find bar.
+   */
+  import type { StreamLine, StreamSpan } from '../components/types';
+
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /**
+   * Render one stream line into the reply area.
+   *
+   * Its own classes rather than `TerminalStream`'s: Astro scopes a
+   * component's styles to that component's own elements, so a node built here
+   * and given `mq-stream__t--ok` would match nothing and arrive uncoloured.
+   * The tones are defined in this file's stylesheet, against the same
+   * `--mq-term-*` variables the pane already carries.
+   */
+  function renderLine(line: StreamLine): HTMLElement {
+    const row = document.createElement('div');
+    row.className = 'mq-blocked__line';
+    if (line === '') {
+      row.append(' ');
+      return row;
+    }
+    const spans: StreamSpan[] = typeof line === 'string' ? [{ t: line }] : line;
+    for (const span of spans) {
+      const el = document.createElement('span');
+      el.className = `mq-blocked__t mq-blocked__t--${span.c ?? 'fg'}`;
+      el.textContent = span.t;
+      row.appendChild(el);
+    }
+    return row;
+  }
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-blocked]')) {
+    const list = root.querySelector<HTMLElement>('[data-blocked-choices]');
+    const replyBox = root.querySelector<HTMLElement>('[data-blocked-reply]');
+    const hint = root.querySelector<HTMLElement>('[data-blocked-hint]');
+    if (!list || !replyBox) continue;
+    /* Bound after the guard so the closures below see a non-null element:
+       narrowing on a `const` does not survive into a nested function. */
+    const reply: HTMLElement = replyBox;
+
+    let replies: StreamLine[][] = [];
+    try {
+      replies = JSON.parse(root.dataset.replies ?? '[]');
+    } catch {
+      continue;
+    }
+
+    /*
+     * Upgrade the rows to buttons. Done here and not in the markup so that a
+     * reader without this script never sees a control that cannot be pressed
+     * -- the server sends a list, and a list is what it stays.
+     */
+    const rows = [...list.querySelectorAll<HTMLElement>('[data-blocked-choice]')];
+    const buttons: HTMLButtonElement[] = rows.map((row) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      /*
+       * Every attribute, not just the class -- Astro scopes a component's CSS
+       * with a `data-astro-cid-*` attribute on the elements it compiled, and a
+       * node built here does not have one. Copying the class alone produced a
+       * button that matched none of the rules above it and inherited the
+       * page's ink text colour onto the ink screen: three answers rendered in
+       * black on black, present in the DOM and invisible on the page.
+       */
+      for (const attr of row.attributes) button.setAttribute(attr.name, attr.value);
+      while (row.firstChild) button.appendChild(row.firstChild);
+      row.replaceWith(button);
+      return button;
+    });
+    list.setAttribute('role', 'group');
+    if (hint) hint.hidden = false;
+
+    let selected = 0;
+    let answered = false;
+
+    function select(next: number) {
+      selected = (next + buttons.length) % buttons.length;
+      buttons.forEach((button, index) => {
+        const caret = button.querySelector('.mq-blocked__caret');
+        if (caret) caret.textContent = index === selected ? '❯' : ' ';
+        button.toggleAttribute('data-selected', index === selected);
+      });
+    }
+
+    function answer(index: number) {
+      if (answered) return;
+      answered = true;
+      select(index);
+      buttons[index]?.setAttribute('data-answered', '');
+      buttons.forEach((button) => {
+        button.disabled = true;
+      });
+      root.dataset.state = 'answered';
+      /*
+       * The clock stops and the pane's title bar says so. The bar belongs to
+       * `Pane`, so this reaches it through a data attribute on the section
+       * rather than by reaching into another component's markup.
+       */
+      root.closest('[data-blocked-scope]')?.setAttribute('data-answered', '');
+
+      const lines = replies[index] ?? [];
+      if (reduceMotion) {
+        for (const line of lines) reply.appendChild(renderLine(line));
+        return;
+      }
+      lines.forEach((line, step) => {
+        window.setTimeout(() => reply.appendChild(renderLine(line)), step * 110);
+      });
+    }
+
+    buttons.forEach((button, index) => {
+      button.addEventListener('click', () => answer(index));
+      button.addEventListener('focus', () => !answered && select(index));
+    });
+
+    /* Is the pane on screen? The document-level key handler only acts when it
+       is, so a digit typed while the reader is four sections down does
+       nothing. */
+    let onScreen = false;
+    new IntersectionObserver(
+      ([entry]) => {
+        onScreen = entry.isIntersecting;
+      },
+      { threshold: 0.4 },
+    ).observe(root);
+
+    document.addEventListener('keydown', (event) => {
+      if (answered || !onScreen) return;
+      if (event.metaKey || event.ctrlKey || event.altKey) return;
+      const target = event.target as HTMLElement | null;
+      if (target?.closest('input, textarea, select, [contenteditable]')) return;
+
+      const digit = Number.parseInt(event.key, 10);
+      if (digit >= 1 && digit <= buttons.length) {
+        event.preventDefault();
+        answer(digit - 1);
+        return;
+      }
+      if (event.key === 'ArrowDown' || event.key === 'j') {
+        event.preventDefault();
+        select(selected + 1);
+      } else if (event.key === 'ArrowUp' || event.key === 'k') {
+        event.preventDefault();
+        select(selected - 1);
+      } else if (event.key === 'Enter' && target?.closest('[data-blocked]')) {
+        event.preventDefault();
+        answer(selected);
+      }
+    });
+
+    select(0);
+  }
+
+  /**
+   * The clock that keeps counting.
+   *
+   * This is the honest version of "the page stops until you answer": nothing
+   * is withheld, but the number in the pane's title bar goes up for as long
+   * as the prompt is unanswered, and stops the moment it is. A reader who
+   * scrolls past without pressing anything comes back to a bigger number,
+   * which is the product's whole thesis stated without a word of copy.
+   */
+  for (const scope of document.querySelectorAll<HTMLElement>('[data-blocked-clock]')) {
+    const start = Number.parseInt(scope.dataset.blockedClock ?? '14', 10);
+    const output = scope.querySelector<HTMLElement>('[data-blocked-clock-out]');
+    if (!output) continue;
+    let seconds = start;
+
+    const tick = window.setInterval(() => {
+      if (scope.hasAttribute('data-answered')) {
+        window.clearInterval(tick);
+        output.textContent = 'resolved';
+        return;
+      }
+      seconds += 1;
+      const mm = String(Math.floor(seconds / 60)).padStart(2, '0');
+      const ss = String(seconds % 60).padStart(2, '0');
+      output.textContent = `blocked ${mm}:${ss}`;
+    }, 1000);
+  }
+</script>

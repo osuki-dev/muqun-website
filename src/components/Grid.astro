@@ -1,0 +1,41 @@
+---
+/**
+ * Equal columns that wrap by measure rather than by breakpoint.
+ *
+ * `auto-fit` with a `minmax` floor, so the column count follows the space
+ * that is actually there -- which is what a page in eight languages needs:
+ * German sets wider than English at the same size, and a hand-written
+ * `repeat(2, 1fr)` at 900px is a guess made in one of them.
+ *
+ * `min(100%, …)` is the part that keeps the whole thing inside a 390px
+ * viewport. Without it a 320px floor on a 358px content box still fits one
+ * column, but any child with its own minimum can push the track wider than
+ * the page.
+ */
+interface Props {
+  /** The narrowest a column may get before the grid drops one. */
+  min?: string;
+  /** Row and column gap. Defaults to the layout gutter. */
+  gap?: string;
+  class?: string;
+}
+
+const { min = '17rem', gap, class: className } = Astro.props;
+
+const style = [`--mq-grid-min:${min}`, gap && `--mq-grid-gap:${gap}`]
+  .filter(Boolean)
+  .join(';');
+---
+
+<div class:list={['mq-cols', className]} style={style}><slot /></div>
+
+<style>
+  .mq-cols {
+    display: grid;
+    gap: var(--mq-grid-gap, var(--mq-space-10));
+    grid-template-columns: repeat(
+      auto-fit,
+      minmax(min(100%, var(--mq-grid-min, 17rem)), 1fr)
+    );
+  }
+</style>

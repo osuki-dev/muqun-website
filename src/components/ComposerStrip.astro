@@ -1,0 +1,139 @@
+---
+/**
+ * The composer with something attached, drawn.
+ *
+ * From `components/attachment-menu.tsx` and `attachment-strip.tsx` in the app
+ * repo: the paperclip offers three sources -- Take photo, Photo library,
+ * Choose files -- and what you pick rides above the message field as a chip
+ * with its own upload state.
+ *
+ * The states are the app's four, in the app's words: queued to upload,
+ * uploading, uploaded, upload failed. The drawing shows one settled and one
+ * mid-flight, because an attachment strip with everything already green is a
+ * picture of a feature that has finished rather than one that works.
+ *
+ * The numbers in the caller are the real ceilings from
+ * `lib/attachment-queue.ts`: nine files per pick, ten megabytes each, three
+ * uploads at a time -- limits chosen against the gateway's own body limit,
+ * not invented for the page.
+ */
+interface Props {
+  /** ASCII. The chips above the field, in pick order. */
+  files: readonly { name: string; note: string; done?: boolean }[];
+  /** ASCII. The placeholder in the message field. */
+  placeholder: string;
+  /** Translated. Describes the picture. */
+  ariaLabel: string;
+  class?: string;
+}
+
+const { files, placeholder, ariaLabel, class: className } = Astro.props;
+---
+
+<div class:list={['mq-card', 'mq-composer', className]} role="img" aria-label={ariaLabel}>
+  <ul class="mq-composer__files">
+    {
+      files.map((file) => (
+        <li class="mq-composer__file" data-done={file.done ? '' : undefined}>
+          <span class="mq-composer__thumb" aria-hidden="true" />
+          <span class="mq-composer__name">{file.name}</span>
+          <span class="mq-composer__note">{file.note}</span>
+        </li>
+      ))
+    }
+  </ul>
+
+  <p class="mq-composer__field">
+    <span class="mq-composer__clip" aria-hidden="true">
+      {/* The paperclip that opened the menu. Drawn rather than shipped as an
+          icon font, because it is the only glyph this component needs. */}
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+        <path
+          d="M21 11.5 12.5 20a5 5 0 0 1-7-7l8.5-8.5a3.3 3.3 0 0 1 4.7 4.7L10.2 17.7a1.7 1.7 0 0 1-2.4-2.4l7.8-7.8"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+    </span>
+    <span class="mq-composer__placeholder">{placeholder}</span>
+  </p>
+</div>
+
+<style>
+  .mq-composer {
+    display: grid;
+    gap: var(--mq-space-3);
+    padding: var(--mq-space-4);
+    box-shadow: var(--mq-shadow-raised);
+  }
+
+  .mq-composer__files {
+    display: grid;
+    gap: var(--mq-space-2);
+    margin: 0;
+    padding: 0;
+  }
+
+  .mq-composer__file {
+    display: grid;
+    grid-template-columns: 28px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--mq-space-3);
+    padding: var(--mq-space-2);
+    border: 1px solid var(--mq-hairline);
+  }
+
+  /* A stand-in for the picked image's thumbnail. Flat, because a fake
+     photograph in a diagram is a lie with no upside. */
+  .mq-composer__thumb {
+    inline-size: 28px;
+    block-size: 28px;
+    background: var(--mq-accent-wash);
+    border: 1px solid var(--mq-hairline);
+  }
+
+  .mq-composer__name {
+    font-family: var(--mq-font-mono);
+    font-size: var(--mq-size-mono-sm);
+    letter-spacing: var(--mq-tracking-mono);
+    color: var(--mq-text);
+    overflow-wrap: anywhere;
+  }
+
+  .mq-composer__note {
+    font-family: var(--mq-font-mono);
+    font-size: var(--mq-size-mono-sm);
+    letter-spacing: var(--mq-tracking-mono);
+    color: var(--mq-text-muted);
+    white-space: nowrap;
+  }
+
+  [data-done] .mq-composer__note {
+    color: var(--mq-verified);
+  }
+
+  .mq-composer__field {
+    display: flex;
+    align-items: center;
+    gap: var(--mq-space-3);
+    min-block-size: var(--mq-control-height);
+    padding-inline: var(--mq-space-3);
+    border: 1px solid var(--mq-rule);
+    color: var(--mq-text-muted);
+    font-size: var(--mq-size-small);
+  }
+
+  .mq-composer__clip {
+    display: grid;
+    place-items: center;
+    inline-size: 20px;
+    block-size: 20px;
+    color: var(--mq-text-accent);
+    flex: 0 0 auto;
+  }
+
+  .mq-composer__clip svg {
+    inline-size: 18px;
+    block-size: 18px;
+  }
+</style>

@@ -1,0 +1,64 @@
+---
+/**
+ * Muqun's own app icon, at a size.
+ *
+ * The file is the app's, resized: `assets/images/icon.png` and
+ * `icon-dark.png` out of the Muqun repo, which is also where the tab icon in
+ * `BaseLayout` comes from. Nothing about the mark is redrawn here. The icon
+ * on this page and the icon that will appear on the reader's home screen a
+ * minute later have to be the same object, and a site-only copy is a second
+ * mark that drifts the first time either side is touched.
+ *
+ * Two files rather than one, chosen on `html[data-theme]` for the same reason
+ * `ui/muqun-shot.astro` does it: the toggle in the header is a manual choice
+ * and `prefers-color-scheme` cannot see it. The two grounds are the page's own
+ * cream and ink, so on the right theme the icon's ground disappears into the
+ * band and what is left is the mark -- which is the whole reason the app ships
+ * both.
+ */
+interface Props {
+  /** Translated. The app's name as it reads to a screen reader. */
+  alt: string;
+  /** The rendered edge length. */
+  size?: string;
+  class?: string;
+}
+
+const { alt, size = '4.5rem', class: className } = Astro.props;
+---
+
+<span class:list={['mq-app-icon', className]} style={`--mq-app-icon-size:${size}`}>
+  <img class="mq-app-icon__img mq-app-icon__img--light" src="/muqun-icon.png" alt={alt} width="512" height="512" loading="lazy" decoding="async" />
+  {/* The alt is on both, so only one may ever be in the tree at a time. */}
+  <img class="mq-app-icon__img mq-app-icon__img--dark" src="/muqun-icon-dark.png" alt={alt} width="512" height="512" loading="lazy" decoding="async" />
+</span>
+
+<style>
+  .mq-app-icon {
+    display: inline-block;
+    inline-size: var(--mq-app-icon-size, 4.5rem);
+    block-size: var(--mq-app-icon-size, 4.5rem);
+    flex: 0 0 auto;
+    /*
+     * The platform radius, not the design system's. This is a picture of an
+     * installed app, and an app tile with a 12px radius on a page whose cards
+     * use 16 reads as a card rather than as an icon.
+     */
+    border-radius: 22.37%;
+    overflow: clip;
+    /* The ground is part of the artwork; the hairline is what keeps a cream
+       tile from dissolving into a cream band. */
+    border: 1px solid var(--mq-hairline);
+  }
+
+  .mq-app-icon__img {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+  }
+
+  :global(html[data-theme='dark']) .mq-app-icon__img--light,
+  :global(html:not([data-theme='dark'])) .mq-app-icon__img--dark {
+    display: none;
+  }
+</style>

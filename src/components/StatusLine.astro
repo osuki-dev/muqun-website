@@ -1,0 +1,500 @@
+---
+/**
+ * The status line is the navigation.
+ * ==================================
+ *
+ * A 32px mono tabular bar docked to the bottom of the viewport:
+ *
+ *     muqun  0:what it is  1:setup  2:themes  3:the deal  4:get      1.3.0
+ *
+ * It is a tmux status line, and it is the one bold move on the site.
+ * Everything around it stays quiet so that it can be loud. Putting the
+ * navigation at the bottom, in the machine's register, is a claim: this is a
+ * terminal you are looking at, and the site is wearing its furniture.
+ *
+ * A bold move in the navigation is also the easiest way to make a site
+ * unusable, so it ships with its mitigations attached rather than as a
+ * follow-up card:
+ *
+ *   - A skip link is the first focusable thing on the page (`SkipLink`,
+ *     rendered by `BaseLayout`).
+ *   - A wordmark sits top-left on every page and is always a home link, so
+ *     the one convention people actually rely on is where they expect it.
+ *   - This is a real `<nav>` full of real `<a href="#...">` anchors. It works
+ *     with JavaScript off, it works in a text browser, middle-click opens a
+ *     new tab, and focus is visible on every item.
+ *   - Below 640px it collapses. The labels drop to their digits and only the
+ *     current section keeps its name -- so the bar becomes the wordmark plus
+ *     a "you are here", without any anchor being removed from the page.
+ *
+ * The labels are ASCII and untranslated on purpose: mono is the machine
+ * register, and the register rule is what lets this bar be tight-tracked and
+ * lowercase-terse without that treatment ever landing on Korean. Readers of
+ * the other seven locales get a translated accessible name via `srLabel`,
+ * which is what a screen reader announces instead of the ASCII.
+ */
+import type { LocaleOption, StatusLineItem } from './types';
+
+interface Props {
+  items: readonly StatusLineItem[];
+  /** Translated. The nav's accessible name, e.g. "Sections". */
+  label: string;
+  /** Shown right-aligned. Mono, ASCII. */
+  version?: string;
+  /** The wordmark in the bar links home too. */
+  homeHref?: string;
+  /**
+   * The same page in each language. Omit for no language control.
+   *
+   * It is in the bar rather than only in the footer because a bar that is
+   * always on screen is the only place a reader who cannot read the page can
+   * reach without first reading the page. The footer keeps its copy: eight
+   * self-named links, crawlable, which this popup is not a substitute for.
+   */
+  locales?: readonly LocaleOption[];
+  /** BCP-47 tag of the page being viewed. Marks the current entry. */
+  locale?: string;
+  /** Translated. The language control's accessible name. */
+  localeLabel?: string;
+  class?: string;
+}
+
+const {
+  items,
+  label,
+  version,
+  homeHref = '/',
+  locales,
+  locale,
+  localeLabel = 'Language',
+  class: className,
+} = Astro.props;
+
+/**
+ * The tag, in the machine register: `en`, `ja`, `zh-TW`. Lowercased ASCII
+ * rather than the language's own name, because the bar is mono and
+ * tight-tracked and that treatment must never land on Korean -- the same
+ * rule the window labels follow. The self-named label is one line down, in
+ * the popup, where it is set in the page's own face.
+ */
+const localeTag = locale ?? '';
+---
+
+<nav class:list={['mq-statusline', className]} aria-label={label} data-statusline>
+  <a class="mq-statusline__brand" href={homeHref}>muqun</a>
+
+  <ul class="mq-statusline__items">
+    {
+      items.map((item) => (
+        <li class="mq-statusline__item">
+          <a class="mq-statusline__link" href={`#${item.id}`} data-section={item.id}>
+            <span class="mq-statusline__key">{item.key}</span>
+            <span class="mq-statusline__colon" aria-hidden="true">
+              :
+            </span>
+            <span class="mq-statusline__label" aria-hidden={item.srLabel ? 'true' : undefined}>
+              {item.label}
+            </span>
+            {item.srLabel && <span class="mq-visually-hidden">{item.srLabel}</span>}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+
+  {
+    /*
+     * The right-hand side, which is where a tmux status line puts the things
+     * that are true of the session rather than of a window.
+     *
+     * `<details>`, not a scripted menu: it opens on click and on Enter, closes
+     * on Escape, is in the tab order, and announces its state -- all from the
+     * platform, and all still true with the page's JavaScript gone. The one
+     * thing it does not do natively is close on an outside click, which is the
+     * only reason there is any script on this component at all.
+     */
+    locales && locales.length > 0 && (
+      <details class="mq-statusline__lang" data-statusline-lang>
+        <summary class="mq-statusline__langbutton" aria-label={localeLabel}>
+          <span class="mq-statusline__langtag">{localeTag}</span>
+          <span class="mq-statusline__langcaret" aria-hidden="true">
+            ▲
+          </span>
+        </summary>
+
+        <ul class="mq-statusline__langmenu">
+          {locales.map((option) => (
+            <li>
+              <a
+                class="mq-statusline__langitem"
+                href={option.href}
+                lang={option.code}
+                hreflang={option.code}
+                aria-current={option.code === locale ? 'true' : undefined}
+              >
+                {/* The tag in mono on the left, the language's own name in the
+                    page's face on the right. Naming itself in its own language
+                    is the only name a reader looking for it recognises, and it
+                    is why this list is not in the bar's mono register. */}
+                <span class="mq-statusline__langcode">{option.code}</span>
+                <span class="mq-statusline__langname">{option.label}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </details>
+    )
+  }
+
+  {version && <span class="mq-statusline__version">{version}</span>}
+</nav>
+
+<style>
+  .mq-statusline {
+    position: fixed;
+    inset-inline: 0;
+    inset-block-end: 0;
+    z-index: var(--mq-z-statusline);
+
+    display: flex;
+    align-items: stretch;
+    gap: var(--mq-space-4);
+    /* Border-box, and the safe-area inset added to the height rather than
+       taken out of it. Under `content-box` the inline padding was added to a
+       width already pinned to the viewport by `inset-inline: 0`, so the bar
+       was 24px wider than the page and every phone had a horizontal
+       scrollbar. */
+    block-size: calc(var(--mq-statusline-height) + env(safe-area-inset-bottom, 0px));
+    padding-inline: var(--mq-space-3);
+    padding-block-end: env(safe-area-inset-bottom, 0px);
+
+    /* Opaque. Not a blurred pane -- backdrop blur was the parent brand's
+       signature and this is not that brand. A flat bar over the page edge
+       is also what a real status line is. */
+    background: var(--mq-p-ink);
+    color: var(--mq-p-slate-light);
+    border-block-start: 1px solid color-mix(in srgb, var(--mq-p-offwhite) 14%, transparent);
+
+    font-family: var(--mq-font-mono);
+    font-size: var(--mq-size-mono-sm);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: var(--mq-tracking-mono);
+    white-space: nowrap;
+
+    /* The bar is chrome, not canvas: its own focus ring is light on dark. */
+    --mq-focus: var(--mq-p-offwhite);
+    --mq-focus-offset: var(--mq-p-ink);
+  }
+
+  /*
+   * The bar never hides.
+   *
+   * It used to slide away on a scroll down and come back on a scroll up,
+   * which is the phone-browser convention and is wrong for this bar: this is
+   * not a toolbar over someone else's content, it is the page's only
+   * navigation, and a navigation that is absent exactly while you are moving
+   * through the page is absent when it is needed. It also meant the one
+   * always-true thing on the screen -- which section you are in -- blinked
+   * out on every downward flick.
+   *
+   * What replaces the movement is the rule below: the bar stays put and
+   * reports the scroll instead of reacting to it.
+   */
+
+  /*
+   * How far through the page, drawn as a coral rule along the bar's top
+   * edge. `--mq-scroll-progress` is set by `src/scripts/scroll.ts` off the
+   * same ScrollTrigger that marks the current window, so the rule and the
+   * mark can never disagree.
+   *
+   * `scaleX` from the inline start, not a width: a transform is composited
+   * and this updates on every frame of every scroll. It sits on the border
+   * the bar already has rather than adding height, so the layout is the same
+   * whether or not the script ran -- at rest the property is unset and
+   * `scaleX(0)` draws nothing.
+   */
+  .mq-statusline::before {
+    content: '';
+    position: absolute;
+    inset-block-start: -1px;
+    inset-inline: 0;
+    block-size: 2px;
+    background: var(--mq-p-coral);
+    transform: scaleX(var(--mq-scroll-progress, 0));
+    /* Physical, not logical: `transform-origin` takes no logical keywords,
+       and all eight locales this site ships are left-to-right. */
+    transform-origin: left center;
+    pointer-events: none;
+  }
+
+  .mq-statusline__brand,
+  .mq-statusline__link,
+  .mq-statusline__version {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+    padding-inline: var(--mq-space-2);
+  }
+
+  .mq-statusline__brand {
+    color: var(--mq-p-ink);
+    background: var(--mq-p-coral);
+    font-weight: var(--mq-weight-strong);
+    /* Ink on coral: 6.17:1. White on coral is 3.08:1 and would fail here at
+       13px more obviously than anywhere else on the site. */
+    margin-inline-start: calc(-1 * var(--mq-space-3));
+    padding-inline: var(--mq-space-3);
+    flex: 0 0 auto;
+  }
+
+  .mq-statusline__items {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+    flex: 1 1 auto;
+    min-inline-size: 0;
+  }
+
+  .mq-statusline__items::-webkit-scrollbar {
+    display: none;
+  }
+
+  .mq-statusline__item {
+    flex: 0 0 auto;
+  }
+
+  .mq-statusline__link {
+    color: inherit;
+    block-size: 100%;
+    gap: 1px;
+  }
+
+  .mq-statusline__key {
+    color: var(--mq-p-offwhite);
+    font-weight: var(--mq-weight-strong);
+  }
+
+  .mq-statusline__colon {
+    opacity: 0.55;
+  }
+
+  .mq-statusline__link {
+    transition:
+      background-color var(--mq-duration-fast) var(--mq-ease-standard),
+      color var(--mq-duration-fast) var(--mq-ease-standard);
+  }
+
+  .mq-statusline__link:hover {
+    background: color-mix(in srgb, var(--mq-p-offwhite) 12%, transparent);
+    color: var(--mq-p-offwhite);
+  }
+
+  /* Current section. Reversed block, the way a status line marks its active
+     window -- and `aria-current` says the same thing to a screen reader, so
+     it is never colour alone. */
+  .mq-statusline__link[aria-current='true'] {
+    background: var(--mq-p-offwhite);
+    color: var(--mq-p-ink);
+  }
+
+  .mq-statusline__link[aria-current='true'] .mq-statusline__key {
+    color: var(--mq-p-ink);
+  }
+
+  .mq-statusline__version {
+    flex: 0 0 auto;
+    color: color-mix(in srgb, var(--mq-p-slate-light) 80%, transparent);
+  }
+
+  /* ---------------------------------------------------------------- */
+  /* The language control, right-hand side.                            */
+  /* ---------------------------------------------------------------- */
+
+  .mq-statusline__lang {
+    /* The `auto` that used to sit on the version: whichever of the two comes
+       first takes the slack, and this one always does when it is present. */
+    margin-inline-start: auto;
+    position: relative;
+    flex: 0 0 auto;
+    display: flex;
+    align-items: stretch;
+  }
+
+  .mq-statusline__langbutton {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--mq-space-2);
+    padding-inline: var(--mq-space-2);
+    cursor: pointer;
+    /* The disclosure triangle the platform draws is a second caret next to
+       the one below, and it cannot be styled to match. */
+    list-style: none;
+  }
+
+  .mq-statusline__langbutton::-webkit-details-marker {
+    display: none;
+  }
+
+  .mq-statusline__langbutton:hover,
+  .mq-statusline__lang[open] .mq-statusline__langbutton {
+    background: color-mix(in srgb, var(--mq-p-offwhite) 12%, transparent);
+    color: var(--mq-p-offwhite);
+  }
+
+  .mq-statusline__langtag {
+    color: var(--mq-p-offwhite);
+    font-weight: var(--mq-weight-strong);
+  }
+
+  /* Points at the bar while shut and at the menu while open, so the control
+     says which way the panel went. */
+  .mq-statusline__langcaret {
+    font-size: 0.7em;
+    opacity: 0.6;
+    transition: rotate var(--mq-duration-fast) var(--mq-ease-standard);
+  }
+
+  .mq-statusline__lang[open] .mq-statusline__langcaret {
+    rotate: 180deg;
+  }
+
+  /*
+   * The panel, above the bar because the bar is at the bottom of the screen.
+   * It is the app's cream on the machine's ink, which is the same seam the
+   * aperture's chrome draws: the bar belongs to the terminal, this list of
+   * human languages does not.
+   */
+  .mq-statusline__langmenu {
+    position: absolute;
+    inset-block-end: 100%;
+    inset-inline-end: 0;
+    margin: 0 0 var(--mq-space-2);
+    padding: var(--mq-space-2);
+    min-inline-size: 12rem;
+    list-style: none;
+
+    background: var(--mq-p-cream);
+    color: var(--mq-p-ink);
+    border-radius: var(--mq-radius-md);
+    box-shadow: var(--mq-shadow-raised);
+
+    font-family: var(--mq-font-body);
+    letter-spacing: normal;
+    white-space: normal;
+
+    animation: mq-lang-open var(--mq-duration-medium) var(--mq-ease-exit) both;
+  }
+
+  /* Rises out of the bar it belongs to rather than fading in place: the
+     motion is the answer to "where did this come from". */
+  @keyframes mq-lang-open {
+    from {
+      opacity: 0;
+      translate: 0 6px;
+      scale: 0.98;
+    }
+  }
+
+  .mq-statusline__langitem {
+    display: flex;
+    align-items: baseline;
+    gap: var(--mq-space-3);
+    padding: var(--mq-space-2) var(--mq-space-3);
+    border-radius: var(--mq-radius-sm);
+    color: inherit;
+    text-decoration: none;
+    font-size: var(--mq-size-small);
+  }
+
+  .mq-statusline__langitem:hover {
+    background: color-mix(in srgb, var(--mq-p-ink) 8%, transparent);
+  }
+
+  .mq-statusline__langitem[aria-current='true'] {
+    font-weight: var(--mq-weight-strong);
+  }
+
+  .mq-statusline__langcode {
+    font-family: var(--mq-font-mono);
+    font-size: var(--mq-size-mono-sm);
+    letter-spacing: var(--mq-tracking-mono);
+    color: var(--mq-p-slate);
+    min-inline-size: 3.5em;
+  }
+
+  /* ---------------------------------------------------------------- */
+  /* Collapsed, below 640px: digits only, except for where you are.    */
+  /* ---------------------------------------------------------------- */
+  @media (max-width: 639px) {
+    .mq-statusline {
+      gap: var(--mq-space-2);
+    }
+
+    .mq-statusline__colon,
+    .mq-statusline__label {
+      display: none;
+    }
+
+    .mq-statusline__link[aria-current='true'] .mq-statusline__colon,
+    .mq-statusline__link[aria-current='true'] .mq-statusline__label {
+      display: inline;
+    }
+
+    .mq-statusline__version {
+      display: none;
+    }
+  }
+</style>
+
+{/*
+  The bar's two scroll behaviours -- marking the window you are in, and
+  drawing how far through the page you are -- are NOT here. They moved to
+  `src/scripts/scroll.ts`, where the band reveals already live: they are all
+  the same measurement, and taking it twice is how the mark ends up a frame
+  behind the rule that is supposed to agree with it.
+
+  The auto-hide that used to be here is gone rather than moved; the note in
+  the stylesheet above says why.
+
+  What is left is the one thing `<details>` does not do on its own.
+*/}
+<script>
+  /**
+   * Close the language menu on a click outside it, and on Escape.
+   *
+   * `<details>` gives us open, close, keyboard, focus and the announced
+   * state for free. It deliberately does not close on an outside click,
+   * because a `<details>` is usually an expander in the flow of a document
+   * and closing one because the reader clicked a paragraph would be wrong.
+   * This one is a popup over the page, where the opposite is true and a menu
+   * that stays open behind the reader is a menu they have to come back and
+   * dismiss.
+   *
+   * Escape is handled even though the platform handles it for a modal,
+   * because this is not modal -- nothing traps focus in it, on purpose.
+   */
+  const menus = document.querySelectorAll<HTMLDetailsElement>('[data-statusline-lang]');
+
+  if (menus.length > 0) {
+    document.addEventListener('click', (event) => {
+      for (const menu of menus) {
+        if (menu.open && !menu.contains(event.target as Node)) menu.open = false;
+      }
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key !== 'Escape') return;
+      for (const menu of menus) {
+        if (!menu.open) continue;
+        menu.open = false;
+        // Focus goes back to the control that opened it, or the next Tab
+        // starts from the top of the document.
+        menu.querySelector('summary')?.focus();
+      }
+    });
+  }
+</script>

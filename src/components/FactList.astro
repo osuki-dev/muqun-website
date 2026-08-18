@@ -1,0 +1,72 @@
+---
+/**
+ * A short list of facts, each one a sentence.
+ *
+ * `Ledger` is the richer thing next door -- a term, a verdict and an answer --
+ * and it is the right component whenever the copy has all three. This is for
+ * the case the copy does not: the requirements under the install steps and
+ * the lines of the deal are single sentences with nothing to put in a second
+ * column, and a ledger row with an empty answer is a five-column gap on every
+ * line.
+ *
+ * The marker is mono and `aria-hidden`, so it is texture rather than
+ * information: the sentence carries the meaning by itself, and a screen
+ * reader gets a plain list of five items.
+ */
+interface Props {
+  /** Translated sentences, in the order the copy lists them. */
+  items: readonly string[];
+  /** Mono, ASCII, uppercase. Machine register. Optional. */
+  caption?: string;
+  class?: string;
+}
+
+const { items, caption, class: className } = Astro.props;
+---
+
+<div class:list={['mq-facts', className]}>
+  {caption && <p class="mq-mono-label mq-facts__caption">{caption}</p>}
+  <ul class="mq-facts__list">
+    {
+      items.map((item) => (
+        <li class="mq-facts__item">
+          <span class="mq-facts__marker" aria-hidden="true">
+            ›
+          </span>
+          <span>{item}</span>
+        </li>
+      ))
+    }
+  </ul>
+</div>
+
+<style>
+  .mq-facts__caption {
+    padding-block-end: var(--mq-space-3);
+    border-block-end: 1px solid var(--mq-hairline);
+    margin-block-end: var(--mq-space-2);
+  }
+
+  .mq-facts__list {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    margin: 0;
+  }
+
+  .mq-facts__item {
+    display: grid;
+    grid-template-columns: 1.25em minmax(0, 1fr);
+    gap: var(--mq-space-2);
+    padding-block: var(--mq-space-4);
+    border-block-end: 1px solid var(--mq-hairline);
+    max-inline-size: var(--mq-measure);
+  }
+
+  .mq-facts__marker {
+    font-family: var(--mq-font-mono);
+    font-weight: var(--mq-weight-strong);
+    /* Never raw coral in light mode: this token is #C2371F there and
+       #FF7A66 in dark, and the recessed band pushes it one step darker. */
+    color: var(--mq-text-accent);
+  }
+</style>

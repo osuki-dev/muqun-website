@@ -1,0 +1,30 @@
+---
+import type { ContainerWidth } from './types';
+import type { HTMLTag, Polymorphic } from 'astro/types';
+
+type Props<Tag extends HTMLTag = 'div'> = Polymorphic<{ as: Tag }> & {
+  width?: ContainerWidth;
+  /** Drop the gutter, for a child that bleeds to the container edge. */
+  flush?: boolean;
+  class?: string;
+};
+
+const {
+  as: Tag = 'div',
+  width = 'default',
+  flush = false,
+  class: className,
+  ...rest
+} = Astro.props;
+
+const classes = [
+  'mq-container',
+  width !== 'default' && `mq-container--${width}`,
+  flush && 'mq-container--flush',
+  className,
+]
+  .filter(Boolean)
+  .join(' ');
+---
+
+<Tag class={classes} {...rest}><slot /></Tag>

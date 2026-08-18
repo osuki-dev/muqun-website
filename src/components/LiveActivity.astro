@@ -1,0 +1,116 @@
+---
+/**
+ * The Lock Screen activity, drawn.
+ *
+ * From `lib/live-activity.ts` in the app repo: while an agent is running, iOS
+ * keeps a live activity on the Lock Screen carrying that agent's name and its
+ * status -- `working`, `idle`, `blocked`, `done` -- and a line of detail. It
+ * updates in place, so the Lock Screen answers "is it still going" without
+ * anything being tapped and without a notification arriving at all.
+ *
+ * `lib/agent-widget.ts` is the Android half of the same idea, on the home
+ * screen instead, in two sizes. Both are deliberately token-free: the widget
+ * process never holds the gateway's stream and never sees the pairing token,
+ * so the worst a compromised one leaks is the list of agent names its owner
+ * already put on their home screen. Worth knowing, and not worth a second
+ * drawing -- the claim is the same claim.
+ */
+interface Props {
+  /** ASCII. The agent, as the session names it. */
+  agent: string;
+  /** ASCII. One of the four statuses. */
+  status: string;
+  /** ASCII. The line under it. */
+  detail: string;
+  /** ASCII. The clock, so the drawing reads as a Lock Screen. */
+  clock: string;
+  /** Translated. Describes the picture. */
+  ariaLabel: string;
+  class?: string;
+}
+
+const { agent, status, detail, clock, ariaLabel, class: className } = Astro.props;
+---
+
+{/*
+  Ink in both page themes, unlike the cards around it. A Lock Screen is not a
+  surface of this page -- it is a photograph of a phone that is asleep, and it
+  is the one drawing here that would be wrong on cream.
+*/}
+<div class:list={['mq-lockscreen', className]} role="img" aria-label={ariaLabel}>
+  <p class="mq-lockscreen__clock">{clock}</p>
+
+  <div class="mq-lockscreen__activity">
+    <span class="mq-lockscreen__dot" aria-hidden="true"></span>
+    <span class="mq-lockscreen__agent">{agent}</span>
+    <span class="mq-lockscreen__status">{status}</span>
+    <span class="mq-lockscreen__detail">{detail}</span>
+  </div>
+</div>
+
+<style>
+  .mq-lockscreen {
+    display: grid;
+    gap: var(--mq-space-4);
+    padding: var(--mq-space-6) var(--mq-space-4) var(--mq-space-4);
+    border-radius: var(--mq-radius-xl); /* a phone, so the corners are real */
+    border: 1px solid var(--mq-hairline);
+    background: var(--mq-p-ink);
+    box-shadow: var(--mq-shadow-raised);
+  }
+
+  .mq-lockscreen__clock {
+    text-align: center;
+    font-family: var(--mq-font-display);
+    font-size: 2.25rem;
+    font-weight: var(--mq-weight-display);
+    letter-spacing: -0.04em;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    color: var(--mq-p-offwhite);
+  }
+
+  /*
+   * The activity itself: a rounded slab on the wallpaper.
+   *
+   * The radius is a literal and not a token on purpose. `tokens.css` set
+   * `--mq-radius-lg` to 0 because panes on this page are square -- but this
+   * is not a pane on this page, it is a drawing of iOS chrome, and iOS
+   * rounds it. Borrowing this system's radius here would draw a Lock Screen
+   * that does not exist. Faithfulness to the other platform wins, and saying
+   * so is cheaper than someone later "fixing" it back to a token.
+   */
+  .mq-lockscreen__activity {
+    display: grid;
+    grid-template-columns: 7px auto minmax(0, 1fr);
+    align-items: baseline;
+    gap: var(--mq-space-1) var(--mq-space-2);
+    padding: var(--mq-space-3) var(--mq-space-4);
+    border-radius: 14px;
+    background: color-mix(in srgb, var(--mq-p-offwhite) 10%, transparent);
+    font-family: var(--mq-font-mono);
+    font-size: var(--mq-size-mono-sm);
+    letter-spacing: var(--mq-tracking-mono);
+  }
+
+  .mq-lockscreen__dot {
+    inline-size: 7px;
+    block-size: 7px;
+    border-radius: var(--mq-radius-full);
+    background: var(--mq-p-coral);
+    transform: translateY(-1px);
+  }
+
+  .mq-lockscreen__agent {
+    color: var(--mq-p-offwhite);
+  }
+
+  .mq-lockscreen__status {
+    color: var(--mq-p-coral-text-dark);
+  }
+
+  .mq-lockscreen__detail {
+    grid-column: 2 / -1;
+    color: var(--mq-p-slate-light);
+  }
+</style>

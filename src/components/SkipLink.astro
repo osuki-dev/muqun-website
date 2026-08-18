@@ -1,0 +1,47 @@
+---
+/**
+ * The first focusable thing on the page.
+ *
+ * Non-optional here: with the navigation docked at the bottom, a keyboard
+ * reader who lands at the top has no way to reach it early, so the skip link
+ * carries more weight than it does on an ordinary site.
+ *
+ * It is hidden until focused, not hidden from focus. `clip-path` rather than
+ * `display: none`.
+ */
+interface Props {
+  /** Where to jump. Must match the id on the page's `<main>`. */
+  href?: string;
+  /** Translated. */
+  label: string;
+}
+
+const { href = '#main', label } = Astro.props;
+---
+
+<a class="mq-skip" href={href}>{label}</a>
+
+<style>
+  .mq-skip {
+    position: fixed;
+    inset-block-start: var(--mq-space-3);
+    inset-inline-start: var(--mq-space-3);
+    z-index: var(--mq-z-skiplink);
+
+    padding: var(--mq-space-3) var(--mq-space-5);
+    border-radius: var(--mq-radius-full);
+    background: var(--mq-accent);
+    color: var(--mq-on-accent); /* ink on coral, 6.17:1 */
+    font-weight: var(--mq-weight-strong);
+    font-size: var(--mq-size-small);
+    text-decoration: none;
+
+    /* Out of sight, still in the tab order and still in the a11y tree. */
+    transform: translateY(calc(-100% - var(--mq-space-4)));
+    transition: transform var(--mq-duration-fast) var(--mq-ease-standard);
+  }
+
+  .mq-skip:focus-visible {
+    transform: translateY(0);
+  }
+</style>

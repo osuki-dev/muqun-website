@@ -1,0 +1,68 @@
+---
+/**
+ * A full-bleed horizontal band.
+ *
+ * The `tone` is the point. It is not a decoration slot -- it is a claim
+ * about who is speaking in this section, and the reader learns the code
+ * within two scrolls:
+ *
+ *   cream    Muqun's voice.        What we assert.
+ *   recessed procedure.            What you do: install steps, commands.
+ *   ink      the machine's voice.  Real output, dark in both page themes.
+ *
+ * Bands are full width; the inner `Container` constrains the content. Pass
+ * `contain={false}` when the child needs the whole viewport (the aperture
+ * does).
+ */
+import Container from './Container.astro';
+import type { BandTone, ContainerWidth } from './types';
+import type { HTMLTag, Polymorphic } from 'astro/types';
+
+type Props<Tag extends HTMLTag = 'section'> = Polymorphic<{ as: Tag }> & {
+  tone: BandTone;
+  /** Set this when the band is a status-line target. */
+  id?: string;
+  /** `false` bleeds the content to the viewport edge. */
+  contain?: false | ContainerWidth;
+  /** Shorter vertical rhythm, for a band that continues the one above it. */
+  tight?: boolean;
+  /** No vertical padding at all. The aperture manages its own. */
+  flush?: boolean;
+  class?: string;
+  containerClass?: string;
+};
+
+const {
+  as: Tag = 'section',
+  tone,
+  id,
+  contain = 'default',
+  tight = false,
+  flush = false,
+  class: className,
+  containerClass,
+  ...rest
+} = Astro.props;
+
+const classes = [
+  'mq-band',
+  `mq-band--${tone}`,
+  tight && 'mq-band--tight',
+  flush && 'mq-band--flush',
+  className,
+]
+  .filter(Boolean)
+  .join(' ');
+---
+
+<Tag class={classes} id={id} {...rest}>
+  {
+    contain === false ? (
+      <slot />
+    ) : (
+      <Container width={contain} class={containerClass}>
+        <slot />
+      </Container>
+    )
+  }
+</Tag>

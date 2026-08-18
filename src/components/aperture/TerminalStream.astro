@@ -1,0 +1,105 @@
+---
+/**
+ * A block of machine output.
+ *
+ * Written once with colour ROLES rather than colours, so the same stream
+ * renders correctly under every theme pack. Never translated: this is the
+ * machine talking, and the machine talks ASCII.
+ *
+ * Geometry matters more than it looks like it should. The aperture stacks
+ * two copies of this component and clips one of them into the shape of a
+ * device; a line of output crossing the device edge has to continue
+ * unbroken on the other side. That only holds if both copies lay out
+ * identically, so everything here is deterministic: no `text-wrap`, no
+ * `balance`, no auto-hyphenation, `white-space: pre`, and a fixed
+ * `ch`-derived column width.
+ */
+import type { StreamLine, StreamSpan } from '../types';
+
+interface Props {
+  lines: readonly StreamLine[];
+  /** Columns of output. The block is exactly this wide; it does not reflow. */
+  cols?: number;
+  /** Repeat the stream to fill a taller band. Whole copies only. */
+  repeat?: number;
+  class?: string;
+}
+
+const { lines, cols = 96, repeat = 1, class: className } = Astro.props;
+
+function spans(line: StreamLine): StreamSpan[] {
+  return typeof line === 'string' ? [{ t: line }] : line;
+}
+
+// Flattened in the frontmatter rather than in the template, because a `<pre>`
+// keeps every character between its tags: an expression laid out across
+// several lines would put that indentation into the output.
+const rendered: StreamSpan[][] = Array.from(
+  { length: Math.max(1, repeat) },
+  () => lines.map(spans),
+).flat();
+---
+
+<pre class:list={['mq-stream', className]} style={`--mq-stream-cols:${cols}`}><code>{rendered.map((line) => (<span class="mq-stream__line">{line.map((span) => (<span class={`mq-stream__t mq-stream__t--${span.c ?? 'fg'}`}>{span.t}</span>))}</span>))}</code></pre>
+
+<style>
+  .mq-stream {
+    margin: 0;
+    font-family: var(--mq-font-mono);
+    font-size: var(--mq-aperture-mono-size);
+    line-height: var(--mq-leading-mono);
+    /* `pre`, not `pre-wrap`. A wrapped line would wrap at a different point
+       in the clipped copy than in the full-bleed one, and the two layers
+       would come apart -- which is the one thing the aperture cannot do. */
+    white-space: pre;
+    inline-size: calc(var(--mq-stream-cols) * 1ch);
+    color: var(--mq-term-fg);
+    /* Recolouring is a cross-fade in place. The page must not move. */
+    transition: color var(--mq-duration-medium) var(--mq-ease-standard);
+    font-variant-ligatures: none;
+    tab-size: 4;
+  }
+
+  /*
+   * `min-block-size` rather than a newline character in the markup. An empty
+   * line under `white-space: pre` collapses to zero height, and a blank line
+   * in terminal output is content -- it is the gap between one command and
+   * the next. Holding the line box open here keeps the two layers' line
+   * counts identical, which is what the register depends on.
+   */
+  .mq-stream__line {
+    display: block;
+    min-block-size: calc(var(--mq-leading-mono) * 1em);
+  }
+
+  .mq-stream__t {
+    transition: color var(--mq-duration-medium) var(--mq-ease-standard);
+  }
+
+  .mq-stream__t--fg {
+    color: var(--mq-term-fg);
+  }
+  .mq-stream__t--dim {
+    color: var(--mq-term-dim);
+  }
+  .mq-stream__t--accent {
+    color: var(--mq-term-accent);
+  }
+  .mq-stream__t--ok {
+    color: var(--mq-term-ok);
+  }
+  .mq-stream__t--warn {
+    color: var(--mq-term-warn);
+  }
+  .mq-stream__t--err {
+    color: var(--mq-term-err);
+  }
+  .mq-stream__t--info {
+    color: var(--mq-term-info);
+  }
+  .mq-stream__t--link {
+    color: var(--mq-term-link);
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+  }
+</style>

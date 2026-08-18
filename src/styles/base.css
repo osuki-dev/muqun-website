@@ -1,0 +1,391 @@
+/*
+ * Base
+ * ====
+ * Element defaults, the focus ring, the type primitives, and the
+ * per-language headline handling. Everything here is unlayered, so it wins
+ * against Tailwind's preflight (which lives in `@layer base`) without a
+ * single `!important`.
+ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  /* Anchors from the status line must not land under the docked bar. */
+  scroll-padding-block-end: calc(var(--mq-statusline-height) + var(--mq-space-6));
+  /*
+   * Both edges of the chrome are subtracted from the scrollport, so a
+   * destination is a destination whichever bar it would otherwise have
+   * landed under. This one number does three jobs -- `#anchor` from the
+   * status line, the keyboard's own scroll-into-view, and where a band comes
+   * to rest when the snap below catches it -- which is why the header's
+   * height is a token rather than a literal in the header's own file.
+   */
+  scroll-padding-block-start: calc(var(--mq-header-height) + var(--mq-space-4));
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+
+  /*
+   * Deliberately no `scroll-snap-type` and no `scroll-behavior: smooth`.
+   *
+   * Section-at-a-time scrolling is ScrollTrigger's, in
+   * `src/scripts/scroll.ts`. Both of these properties would fight it: CSS
+   * snapping is a second engine deciding where the page comes to rest, and
+   * `scroll-behavior: smooth` makes the browser animate every programmatic
+   * scroll, including the ones GSAP is already tweening -- the documented
+   * way to get a settle that overshoots, stalls, or never arrives.
+   *
+   * The scroll padding above stays, because it is not motion. It is where a
+   * destination sits once reached, and it has to be right for the plain
+   * `#anchor` path that runs with this script absent.
+   */
+}
+
+body {
+  margin: 0;
+  background: var(--mq-canvas);
+  color: var(--mq-text);
+  font-family: var(--mq-font-body);
+  font-size: var(--mq-size-body);
+  font-weight: var(--mq-weight-body);
+  line-height: var(--mq-leading-body);
+  font-synthesis-weight: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  /* The docked status line is 32px of chrome the page must not hide behind. */
+  padding-block-end: calc(var(--mq-statusline-height) + env(safe-area-inset-bottom, 0px));
+}
+
+/*
+ * CJK body leading rises to 1.85. Han glyphs fill their em box where Latin
+ * lowercase sits well inside it, so the same 1.65 that feels open in English
+ * reads as cramped in Japanese.
+ */
+:lang(zh-TW),
+:lang(ja),
+:lang(ko) {
+  --mq-leading-body: 1.85;
+  --mq-leading-lead: 1.7;
+}
+
+img,
+svg,
+video,
+canvas {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration-color: var(--mq-rule);
+  text-underline-offset: 0.18em;
+  text-decoration-thickness: from-font;
+}
+
+h1,
+h2,
+h3,
+h4,
+p,
+figure,
+blockquote,
+fieldset,
+ul,
+ol,
+dl,
+dd,
+pre {
+  margin: 0;
+}
+
+fieldset {
+  border: 0;
+  padding: 0;
+  min-inline-size: 0;
+}
+
+ul,
+ol {
+  padding-inline-start: 0;
+  list-style: none;
+}
+
+/* ==========================================================================
+   Focus — 2px solid ink, 2px canvas-coloured offset. Never removed.
+   ==========================================================================
+   The offset is painted in the *surface* colour rather than left transparent
+   so the ring reads as a gap on every band, including the ink one where the
+   page canvas is the wrong colour to show through.
+   ========================================================================== */
+
+:focus-visible {
+  outline: var(--mq-focus-width) solid var(--mq-focus);
+  outline-offset: var(--mq-focus-offset-width);
+  border-radius: var(--mq-radius-sm);
+}
+
+/* Anything with its own radius keeps it; the ring follows the shape. */
+.mq-btn:focus-visible,
+.mq-statusline a:focus-visible {
+  border-radius: var(--mq-control-radius);
+}
+
+::selection {
+  background: var(--mq-accent-wash);
+  color: var(--mq-text);
+}
+
+/* ==========================================================================
+   Type primitives
+   ========================================================================== */
+
+.mq-display {
+  font-family: var(--mq-font-display);
+  font-weight: var(--mq-weight-display);
+  font-size: var(--mq-size-display);
+  line-height: var(--mq-leading-display);
+  letter-spacing: var(--mq-tracking-display);
+  text-wrap: balance;
+  /*
+   * `ch` is the advance of "0", and in the mono display face every character
+   * has that same advance -- so this is 22 characters exactly, which is the
+   * one case where `ch` means what it looks like it means. Two lines of 22
+   * hold the longest English headline on the site.
+   */
+  max-inline-size: 22ch;
+  /* Mono ligatures turn `->` and `!=` into arrows, which is right in a code
+     block and wrong in a sentence. */
+  font-variant-ligatures: none;
+  /* Reserve the tallest translation's box so switching language does not
+     shove the rest of the hero down the page. `--mq-display-lines` is set
+     per language below and can be overridden per instance. */
+  min-block-size: calc(var(--mq-display-lines, 2) * var(--mq-leading-display) * 1em);
+}
+
+.mq-display--sm {
+  font-size: var(--mq-size-display-sm);
+}
+
+/*
+ * Section headings take the display face too -- which is now mono.
+ *
+ * The alternative was mono for the hero only, and that produced a page whose
+ * first screen was a terminal and whose remaining five panes were a normal
+ * marketing site in a different typeface. A window's panes are set in one
+ * face; that is what makes them panes of one window.
+ *
+ * The CJK rules further down switch this back to the body face for exactly
+ * the reason they switch `.mq-display` back: Plex Mono has no Han or Hangul.
+ */
+.mq-heading {
+  font-family: var(--mq-font-display);
+  font-weight: var(--mq-weight-strong);
+  font-size: var(--mq-size-heading);
+  line-height: var(--mq-leading-heading);
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+  font-variant-ligatures: none;
+  max-inline-size: 30ch;
+}
+
+.mq-subheading {
+  font-weight: var(--mq-weight-medium);
+  font-size: var(--mq-size-subheading);
+  line-height: var(--mq-leading-heading);
+}
+
+.mq-lead {
+  font-size: var(--mq-size-lead);
+  line-height: var(--mq-leading-lead);
+  color: var(--mq-text-muted);
+  max-inline-size: var(--mq-measure);
+  text-wrap: pretty;
+}
+
+.mq-body {
+  max-inline-size: var(--mq-measure);
+  text-wrap: pretty;
+}
+
+.mq-small {
+  font-size: var(--mq-size-small);
+  color: var(--mq-text-muted);
+}
+
+/*
+ * The machine voice. Uppercase and positive tracking are defined ONLY here,
+ * which is the mechanical guarantee that neither can ever land on a Korean
+ * or Japanese string: this class is reserved for untranslated ASCII.
+ */
+.mq-mono {
+  font-family: var(--mq-font-mono);
+  font-size: var(--mq-size-mono);
+  line-height: var(--mq-leading-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--mq-tracking-mono-tight);
+}
+
+.mq-mono-label {
+  font-family: var(--mq-font-mono);
+  font-size: var(--mq-size-mono-sm);
+  font-weight: var(--mq-weight-strong);
+  line-height: 1.4;
+  letter-spacing: var(--mq-tracking-mono);
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+  color: var(--mq-text-muted);
+}
+
+.mq-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ==========================================================================
+   Per-language headline handling
+   ==========================================================================
+   Eight locales, no RTL. Each rule below exists because a specific language
+   breaks the headline in a specific way.
+   ========================================================================== */
+
+/* English and the default: two lines is the design target. */
+:lang(en) .mq-display {
+  --mq-display-lines: 2;
+}
+
+/*
+ * German. Compounds -- Bildschirmfreigabe, Verbindungseinstellungen -- are
+ * long enough to overflow a two-line hero at display size, and shrinking the
+ * type to fit is how a page ends up with eight different headline sizes.
+ * Hyphenate instead, and reserve the third line so the layout is stable.
+ */
+:lang(de) .mq-display {
+  --mq-display-lines: 3;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+  hyphenate-limit-chars: 8 4 4;
+}
+
+/*
+ * French, Spanish, Portuguese run roughly 20-25% longer than English but
+ * break at ordinary word boundaries. Give them the third line; do not shrink
+ * the face, because a Spanish reader should get the same headline weight an
+ * English one does.
+ */
+:lang(fr) .mq-display,
+:lang(es) .mq-display,
+:lang(pt) .mq-display {
+  --mq-display-lines: 3;
+}
+
+/*
+ * Traditional Chinese and Japanese. Four things change together:
+ *   - one size down, because Han glyphs at display size are much heavier
+ *     than Latin caps at the same nominal size;
+ *   - line-height 1.3, because 1.02 clips ascenders on stacked Han;
+ *   - tracking to zero, because negative tracking on Han collides strokes;
+ *   - off the condensed face, which has no CJK coverage and would therefore
+ *     mix a condensed Latin word into a normal-width Han line.
+ * `line-break: strict` stops small kana and the prolonged sound mark from
+ * starting a line.
+ */
+:lang(zh-TW) .mq-display,
+:lang(ja) .mq-display {
+  --mq-display-lines: 3;
+  font-family: var(--mq-font-body);
+  font-size: var(--mq-size-display-sm);
+  line-height: 1.3;
+  letter-spacing: 0;
+  line-break: strict;
+  text-wrap: initial;
+  /* `em`, not `ch`. `ch` is the advance of "0", which in a CJK face is a
+     half-width glyph -- so `16ch` is eight Han characters and the headline
+     ends up using less than half the column it was given. */
+  max-inline-size: 15em;
+}
+
+/*
+ * Korean gets everything Japanese gets, plus the one rule without which
+ * Korean headlines break mid-word: `word-break: keep-all`. Hangul is
+ * written with spaces, but the default breaking treats every syllable block
+ * as a break opportunity, so a headline splits inside eojeol.
+ */
+:lang(ko) .mq-display {
+  --mq-display-lines: 3;
+  font-family: var(--mq-font-body);
+  font-size: var(--mq-size-display-sm);
+  line-height: 1.3;
+  letter-spacing: 0;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  text-wrap: initial;
+  /* Wider than zh-TW/ja: `keep-all` refuses to break inside an eojeol, so
+     a narrow column leaves large ragged gaps at the end of every line. */
+  max-inline-size: 19em;
+}
+
+:lang(ko) .mq-heading,
+:lang(ko) .mq-lead,
+:lang(ko) .mq-body {
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
+/* Off the mono display face, for the same reason `.mq-display` comes off it:
+   no Han, no Hangul, and a mono Latin word dropped into a Han line sets at a
+   different width from everything around it. */
+:lang(zh-TW) .mq-heading,
+:lang(ja) .mq-heading,
+:lang(ko) .mq-heading {
+  font-family: var(--mq-font-body);
+  letter-spacing: 0;
+  line-height: 1.4;
+}
+
+:lang(zh-TW) .mq-heading,
+:lang(ja) .mq-heading {
+  line-break: strict;
+}
+
+/* ==========================================================================
+   Motion
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /*
+   * The scroll script reads this preference itself, through
+   * `gsap.matchMedia()`, and does not register the reveals or the settle at
+   * all when it is set. That is a stronger guarantee than the blanket
+   * `1ms` above: a tween that has been shortened to nothing still runs, and
+   * still leaves whatever it was going to leave on the element.
+   */
+}

@@ -1,0 +1,79 @@
+---
+/**
+ * The foot of the page. A shell: the content side fills the slots.
+ *
+ * ── The tone, and the edge above it ─────────────────────────────────────────
+ * This sat on the recessed band, on the reasoning that the reading surface
+ * should end before the housekeeping starts. Two things were wrong with that.
+ *
+ * The first is the code itself: recessed means procedure — install steps,
+ * commands, something you follow — and there is nothing to follow down here.
+ * Housekeeping is not procedure, so it should not be wearing procedure's
+ * colour. It goes back to the page's own canvas.
+ *
+ * The second is that it did not even work. The product page and the support
+ * page both end on a recessed band, so recessed-on-recessed left a seam
+ * marked by a 1.20:1 hairline, which at any real viewport is one continuous
+ * tan area with a footer somewhere in it. The tone change fixes those two
+ * pages; the rule above the band — `--mq-rule`, 3.36:1 light and 4.00:1 dark,
+ * the same weight this system gives a control edge — fixes all four, including
+ * the two that end on cream and would otherwise have swapped one invisible
+ * same-tone seam for another. It lives in `layout.css` next to the band seam
+ * rules it has to outrank.
+ */
+import Band from './Band.astro';
+
+interface Props {
+  class?: string;
+}
+const { class: className } = Astro.props;
+---
+
+<Band as="footer" tone="cream" tight class:list={['mq-footer', className]}>
+  <div class="mq-footer__grid">
+    <div class="mq-footer__primary">
+      <slot />
+    </div>
+    <div class="mq-footer__meta">
+      <slot name="meta" />
+    </div>
+  </div>
+  <hr class="mq-rule mq-footer__rule" />
+  <div class="mq-footer__legal">
+    <slot name="legal" />
+  </div>
+</Band>
+
+<style>
+  .mq-footer__grid {
+    display: grid;
+    gap: var(--mq-space-8);
+  }
+
+  @media (min-width: 900px) {
+    .mq-footer__grid {
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: start;
+    }
+  }
+
+  .mq-footer__primary,
+  .mq-footer__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--mq-space-4);
+    align-items: center;
+  }
+
+  .mq-footer__rule {
+    margin-block: var(--mq-space-8);
+  }
+
+  .mq-footer__legal {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--mq-space-2) var(--mq-space-6);
+    font-size: var(--mq-size-small);
+    color: var(--mq-text-muted);
+  }
+</style>

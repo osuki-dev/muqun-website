@@ -1,0 +1,28 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "muqun-website",
+  "main": "worker/index.ts",
+  "compatibility_date": "2026-08-01",
+
+  // Static Assets rather than a framework adapter. `astro build` writes a
+  // directory of files; this serves them, and `worker/index.ts` sits in front
+  // for the one redirect and the security headers.
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    // Astro emits a real 404 page; let it be the one readers see.
+    "not_found_handling": "404-page"
+  },
+
+  // `muqun.dev` is registered on Cloudflare, so the zone and the certificate
+  // are already here. Add the routes in the dashboard, or uncomment once the
+  // zone id is known:
+  // "routes": [
+  //   { "pattern": "muqun.dev", "custom_domain": true },
+  //   { "pattern": "www.muqun.dev", "custom_domain": true }
+  // ],
+
+  "observability": {
+    "enabled": true
+  }
+}

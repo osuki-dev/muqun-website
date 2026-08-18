@@ -1,0 +1,56 @@
+/*
+ * The one stylesheet. `astro.config.mjs` sets `inlineStylesheets: 'always'`,
+ * so this ends up in the document rather than behind a round trip -- which
+ * is only true while it stays small. Keep it that way.
+ *
+ * Import order is the cascade order. Tailwind first (its preflight is a
+ * decent reset and it lives in `@layer base`), then our own unlayered rules,
+ * which therefore win without `!important` anywhere.
+ */
+
+@import 'tailwindcss';
+@import './fonts.css';
+@import './tokens.css';
+@import './base.css';
+@import './layout.css';
+
+/*
+ * Hand Tailwind the tokens it needs so a utility like `text-muted` or
+ * `gap-6` resolves to the same value the hand-written CSS uses. `inline`
+ * means the generated utilities reference our custom properties rather than
+ * copying their values, so a theme swap moves them too.
+ */
+@theme inline {
+  --default-font-family: var(--mq-font-body);
+  --default-mono-font-family: var(--mq-font-mono);
+
+  --color-canvas: var(--mq-canvas);
+  --color-recessed: var(--mq-recessed);
+  --color-card: var(--mq-card);
+  --color-ink-ground: var(--mq-ink-ground);
+  --color-ink: var(--mq-text);
+  --color-muted: var(--mq-text-muted);
+  --color-hairline: var(--mq-hairline);
+  --color-rule: var(--mq-rule);
+  --color-coral: var(--mq-accent);
+  --color-coral-text: var(--mq-text-accent);
+  --color-on-coral: var(--mq-on-accent);
+  --color-verified: var(--mq-verified);
+
+  --radius-sm: var(--mq-radius-sm);
+  --radius-md: var(--mq-radius-md);
+  --radius-lg: var(--mq-radius-lg);
+  --radius-xl: var(--mq-radius-xl);
+
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 900px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1200px;
+}
+
+/*
+ * The dark theme is driven by `[data-theme]` on <html>, set before first
+ * paint by the guard in BaseLayout. Tailwind's `dark:` variant is pointed at
+ * the same attribute so the two never disagree.
+ */
+@custom-variant dark ([data-theme='dark'] &);

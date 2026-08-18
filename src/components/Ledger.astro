@@ -1,0 +1,33 @@
+---
+/**
+ * A plain accounting of what something does and does not do. Built for "the
+ * deal" section, where a marketing page would put three reassuring
+ * sentences and this page puts a list you can check.
+ *
+ * A description list, because that is what it is: a term and its answer.
+ */
+interface Props {
+  /** Mono, ASCII. The scope of the accounting, e.g. `PERMISSIONS`. */
+  caption?: string;
+  class?: string;
+}
+const { caption, class: className } = Astro.props;
+---
+
+<div class:list={['mq-ledger', className]}>
+  {caption && <p class="mq-mono-label mq-ledger__caption">{caption}</p>}
+  <dl class="mq-ledger__list">
+    <slot />
+  </dl>
+</div>
+
+<style>
+  .mq-ledger__caption {
+    padding-block-end: var(--mq-space-3);
+    border-block-end: 1px solid var(--mq-hairline);
+  }
+
+  .mq-ledger__list {
+    margin: 0;
+  }
+</style>

@@ -1,0 +1,28 @@
+{
+  "name": "muqun-website",
+  "type": "module",
+  "private": true,
+  "license": "Apache-2.0",
+  "packageManager": "bun@1.3.14",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "wrangler dev",
+    "deploy": "astro build && wrangler deploy",
+    "check": "astro check",
+    "shots:generate": "bun scripts/shots.ts"
+  },
+  "dependencies": {
+    "astro": "^6.4.5",
+    "gsap": "^3.15.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.4",
+    "@cloudflare/workers-types": "^4.20250801.0",
+    "@tailwindcss/vite": "^4.3.0",
+    "sharp": "^0.34.0",
+    "tailwindcss": "^4.3.0",
+    "typescript": "^5.6.3",
+    "wrangler": "^4.0.0"
+  }
+}

@@ -1,0 +1,111 @@
+---
+/**
+ * A block of Muqun's own prose. Proportional face, one measure token, and
+ * the CJK leading bump inherited from `:lang()`.
+ *
+ * `--mq-measure: 34em` is deliberately expressed in `em` rather than `ch`:
+ * 34em is about 68 Latin characters and about 34 Han characters, and those
+ * two land within a line of each other at the same measure. A `ch` measure
+ * would give CJK a line twice as long as the Latin one.
+ */
+import type { HTMLTag, Polymorphic } from 'astro/types';
+
+type Props<Tag extends HTMLTag = 'div'> = Polymorphic<{ as: Tag }> & {
+  size?: 'body' | 'lead' | 'small';
+  /** Let the text run to the container width instead of the measure. */
+  full?: boolean;
+  class?: string;
+};
+
+const {
+  as: Tag = 'div',
+  size = 'body',
+  full = false,
+  class: className,
+  ...rest
+} = Astro.props;
+---
+
+<Tag
+  class:list={[
+    'mq-prose',
+    size === 'lead' ? 'mq-lead' : size === 'small' ? 'mq-small' : 'mq-body',
+    full && 'mq-prose--full',
+    className,
+  ]}
+  {...rest}
+>
+  <slot />
+</Tag>
+
+<style>
+  .mq-prose :global(p + p) {
+    margin-block-start: 1em;
+  }
+
+  .mq-prose :global(strong) {
+    font-weight: var(--mq-weight-strong);
+    color: var(--mq-text);
+  }
+
+  /* Coral is a fill, not a reading colour, in light mode. `--mq-text-accent`
+     resolves to #C2371F there and to #FF7A66 in dark, and the recessed band
+     pushes it one step darker again. Nothing here picks a hex. */
+  .mq-prose :global(a) {
+    color: var(--mq-text-accent);
+    text-decoration: underline;
+    text-decoration-color: currentColor;
+    text-decoration-thickness: 1px;
+  }
+
+  .mq-prose :global(code) {
+    font-family: var(--mq-font-mono);
+    font-size: 0.9em;
+    background: var(--mq-recessed);
+    border: 1px solid var(--mq-hairline);
+    border-radius: var(--mq-radius-sm);
+    padding: 0.1em 0.35em;
+  }
+
+  /*
+   * Long-form. The privacy policy is the one document on this site that is a
+   * document -- headings, lists, ten paragraphs -- and it arrives as ordinary
+   * markup rather than as a stack of components. These rules are what make
+   * that markup readable without a single class on it.
+   */
+  .mq-prose :global(h2) {
+    font-weight: var(--mq-weight-strong);
+    font-size: var(--mq-size-subheading);
+    line-height: var(--mq-leading-heading);
+    margin-block: var(--mq-space-10) var(--mq-space-4);
+  }
+
+  .mq-prose :global(h2:first-child) {
+    margin-block-start: 0;
+  }
+
+  .mq-prose :global(ul) {
+    display: grid;
+    gap: var(--mq-space-2);
+    margin-block: var(--mq-space-4);
+  }
+
+  /* The marker is drawn rather than inherited: `list-style` is off globally
+     in `base.css`, and a policy's list of what is stored needs its items to
+     be countable at a glance. */
+  .mq-prose :global(li) {
+    display: grid;
+    grid-template-columns: 1em minmax(0, 1fr);
+    gap: var(--mq-space-2);
+  }
+
+  .mq-prose :global(li)::before {
+    content: '·';
+    font-family: var(--mq-font-mono);
+    color: var(--mq-text-muted);
+  }
+
+  .mq-prose--full {
+    max-inline-size: none;
+  }
+</style>

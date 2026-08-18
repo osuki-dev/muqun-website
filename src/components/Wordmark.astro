@@ -1,0 +1,56 @@
+---
+/**
+ * The wordmark, top-left, always a home link.
+ *
+ * This exists because the navigation is docked to the bottom of the screen,
+ * which is unusual enough that the one convention people do rely on -- a
+ * clickable name in the top-left corner -- has to be exactly where they
+ * expect it. It is a mitigation with a job, not decoration.
+ *
+ * Set in mono, because the product's name in a terminal is machine output.
+ * It is a proper noun and identical in all eight locales, so the mono
+ * register costs nothing and the tight tracking is safe.
+ */
+interface Props {
+  href?: string;
+  /** Translated. Announced instead of the wordmark, e.g. "Muqun, home". */
+  label?: string;
+  class?: string;
+}
+
+const { href = '/', label, class: className } = Astro.props;
+---
+
+<a class:list={['mq-wordmark', className]} href={href} aria-label={label}>
+  <span class="mq-wordmark__mark" aria-hidden="true">muqun</span>
+  <span class="mq-wordmark__cursor" aria-hidden="true"></span>
+</a>
+
+<style>
+  .mq-wordmark {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    min-block-size: var(--mq-control-height-sm);
+    padding-inline: var(--mq-space-1);
+    font-family: var(--mq-font-mono);
+    font-size: var(--mq-size-mono);
+    font-weight: var(--mq-weight-strong);
+    letter-spacing: var(--mq-tracking-mono);
+    text-decoration: none;
+    color: var(--mq-text);
+  }
+
+  /* A block cursor sitting after the name. Static -- a blinking one would be
+     an animation that loops forever, which this site does not do. */
+  .mq-wordmark__cursor {
+    inline-size: 0.55em;
+    block-size: 1.05em;
+    background: var(--mq-accent);
+  }
+
+  .mq-wordmark:hover .mq-wordmark__mark {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+</style>

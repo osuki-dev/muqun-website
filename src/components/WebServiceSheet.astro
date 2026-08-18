@@ -1,0 +1,125 @@
+---
+/**
+ * "Open a web service", drawn.
+ *
+ * The app's own sheet, from `app/web-service.tsx` and
+ * `components/open-web-service-sheet.tsx`: type a port, and the dev server
+ * running on your machine opens in your phone's browser -- over the same
+ * private address the terminal is already using, so there is no tunnel to
+ * stand up and nothing published to the internet.
+ *
+ * The sheet is the one part of the app that never talks to the gateway at
+ * all: it reads an address out of a paired record and hands a URL to the
+ * browser. Recent ports are offered as chips because a developer opens the
+ * same three ports for months.
+ */
+interface Props {
+  /** ASCII. The machine the port is on, as the app labels it. */
+  server: string;
+  /** ASCII. What is in the port field. */
+  port: string;
+  /** ASCII. The chips above the field. */
+  recent: readonly string[];
+  /** ASCII. The confirm button. */
+  action: string;
+  /** Translated. Describes the picture. */
+  ariaLabel: string;
+  class?: string;
+}
+
+const { server, port, recent, action, ariaLabel, class: className } = Astro.props;
+---
+
+<div class:list={['mq-card', 'mq-serve', className]} role="img" aria-label={ariaLabel}>
+  <p class="mq-serve__title">Open a web service</p>
+  <p class="mq-serve__lead">Reach a server running on {server} from this phone.</p>
+
+  <p class="mq-mono-label mq-serve__label">Port</p>
+
+  <ul class="mq-serve__recent">
+    {recent.map((item) => <li class="mq-serve__chip">{item}</li>)}
+  </ul>
+
+  {/* A drawing of a field, not a field. Nothing here is focusable -- see
+      `PushNotice` for why the whole family is `role="img"`. */}
+  <p class="mq-serve__field">
+    <span class="mq-serve__port">{port}</span>
+    <span class="mq-serve__caret" aria-hidden="true"></span>
+  </p>
+
+  <p class="mq-serve__action">{action}</p>
+</div>
+
+<style>
+  .mq-serve {
+    display: grid;
+    gap: var(--mq-space-2);
+    padding: var(--mq-space-5);
+    box-shadow: var(--mq-shadow-raised);
+  }
+
+  .mq-serve__title {
+    font-weight: var(--mq-weight-strong);
+    font-size: var(--mq-size-subheading);
+    line-height: var(--mq-leading-heading);
+  }
+
+  .mq-serve__lead {
+    font-size: var(--mq-size-small);
+    color: var(--mq-text-muted);
+  }
+
+  .mq-serve__label {
+    margin-block-start: var(--mq-space-2);
+  }
+
+  .mq-serve__recent {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--mq-space-2);
+    margin: 0;
+    padding: 0;
+  }
+
+  .mq-serve__chip {
+    padding: var(--mq-space-1) var(--mq-space-3);
+    border: 1px solid var(--mq-hairline);
+    font-family: var(--mq-font-mono);
+    font-size: var(--mq-size-mono-sm);
+    letter-spacing: var(--mq-tracking-mono);
+    color: var(--mq-text-muted);
+  }
+
+  .mq-serve__field {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    min-block-size: var(--mq-control-height);
+    padding-inline: var(--mq-space-3);
+    border: 1px solid var(--mq-rule);
+    font-family: var(--mq-font-mono);
+    font-variant-numeric: tabular-nums;
+    color: var(--mq-text);
+  }
+
+  /* The cursor sits where a typed port ends. It does not blink: the one thing
+     on this page allowed to blink is the prompt the reader can answer. */
+  .mq-serve__caret {
+    inline-size: 2px;
+    block-size: 1.1em;
+    background: var(--mq-accent);
+  }
+
+  .mq-serve__action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-block-size: var(--mq-control-height);
+    margin-block-start: var(--mq-space-1);
+    border-radius: var(--mq-control-radius);
+    background: var(--mq-accent);
+    color: var(--mq-on-accent); /* ink on coral, 6.17:1 */
+    font-weight: var(--mq-weight-strong);
+    font-size: var(--mq-size-small);
+  }
+</style>

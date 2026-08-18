@@ -1,0 +1,134 @@
+---
+/**
+ * The intro film, behind its own poster.
+ *
+ * The poster is the themed screenshot rather than a `<video poster>`
+ * attribute, because a poster attribute is one file and this site has two of
+ * everything: a reader in light mode would get the dark frame. `MuqunShot`
+ * already picks the right one off `html[data-theme]`.
+ *
+ * Nothing autoplays and nothing is fetched until it is asked for. The
+ * `<video>` element is created on the press, so the four megabytes are never
+ * spent on a visitor who scrolled past. Without JavaScript the button is
+ * never revealed and the panel is simply a screenshot -- which is a smaller
+ * page, not a broken one.
+ */
+import MuqunShot from './ui/muqun-shot.astro';
+import type { MuqunShotBase } from '@/lib/muqun-shots';
+
+interface Props {
+  /** The film. Loaded on the press and never before it. */
+  src: string;
+  /** The poster, as a shot name from the generated manifest. */
+  shot: MuqunShotBase;
+  /** Translated. What is on the screen, not "a screenshot". */
+  alt: string;
+  /** Translated. The play control's accessible name. */
+  playLabel: string;
+  /** The runtime. Digits stay digits in every locale. */
+  length: string;
+  class?: string;
+}
+
+const { src, shot, alt, playLabel, length, class: className } = Astro.props;
+---
+
+<figure class:list={['mq-film', className]} data-film data-film-src={src}>
+  <div class="mq-film__frame">
+    <MuqunShot name={shot} alt={alt} />
+    <button class="mq-film__play" type="button" data-film-play aria-label={playLabel} hidden>
+      <span class="mq-film__disc" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M8 5.5v13a1 1 0 0 0 1.53.85l10-6.5a1 1 0 0 0 0-1.7l-10-6.5A1 1 0 0 0 8 5.5Z" />
+        </svg>
+      </span>
+      <span class="mq-film__length">{length}</span>
+    </button>
+  </div>
+</figure>
+
+<style>
+  .mq-film {
+    inline-size: 100%;
+    max-inline-size: 17rem;
+    margin: 0;
+  }
+
+  /*
+   * `--mq-canvas`, not the ink ground -- see the note in `DeviceShot`, which
+   * had the same bug. The poster is an `auto` capture, so the frame behind it
+   * has to follow the reader's theme too; ink here put a black rectangle on
+   * the cream band for as long as the poster took to arrive. Once the film is
+   * playing the video covers this entirely.
+   */
+  .mq-film__frame {
+    position: relative;
+    border-radius: var(--mq-radius-xl);
+    border: 1px solid var(--mq-hairline);
+    overflow: clip;
+    background: var(--mq-canvas);
+    box-shadow: var(--mq-shadow-raised);
+  }
+
+  .mq-film__frame :global(video) {
+    inline-size: 100%;
+    block-size: auto;
+    display: block;
+  }
+
+  .mq-film__play {
+    position: absolute;
+    inset-block-end: var(--mq-space-4);
+    inset-inline-start: 50%;
+    translate: -50% 0;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--mq-space-2);
+    min-block-size: var(--mq-control-height);
+    padding-inline: var(--mq-space-4);
+    border: 0;
+    border-radius: var(--mq-radius-full);
+    background: var(--mq-accent);
+    color: var(--mq-on-accent); /* ink on coral, 6.17:1 */
+    font-family: var(--mq-font-mono);
+    font-size: var(--mq-size-mono);
+    font-variant-numeric: tabular-nums;
+    font-weight: var(--mq-weight-strong);
+    cursor: pointer;
+  }
+
+  .mq-film__disc svg {
+    inline-size: 18px;
+    block-size: 18px;
+  }
+</style>
+
+<script>
+  /**
+   * Reveal the control, then trade the poster for the film on the press.
+   *
+   * The `<video>` is built here rather than served hidden in the markup:
+   * a hidden `<video src>` still hands the browser a URL it may decide to
+   * fetch, and this file is four megabytes.
+   */
+  for (const panel of document.querySelectorAll<HTMLElement>('[data-film]')) {
+    const button = panel.querySelector<HTMLButtonElement>('[data-film-play]');
+    const frame = button?.parentElement;
+    const src = panel.dataset.filmSrc;
+    if (!button || !frame || !src) continue;
+
+    button.hidden = false;
+    button.addEventListener(
+      'click',
+      () => {
+        const video = document.createElement('video');
+        video.src = src;
+        video.controls = true;
+        video.autoplay = true;
+        video.playsInline = true;
+        frame.replaceChildren(video);
+      },
+      { once: true },
+    );
+  }
+</script>

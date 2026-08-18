@@ -1,0 +1,105 @@
+---
+/**
+ * The server card a second after pairing, drawn.
+ *
+ * This is the payoff of the third setup step and the one picture on the page
+ * that cannot be a capture: a real one carries the address of whichever
+ * machine took it, which is the single thing on this site nobody should be
+ * publishing.
+ *
+ * The online state is a word AND a colour AND a dot, never a colour alone,
+ * and the word is the app's own -- `onlineLabel` from the catalogue, in the
+ * reader's language, because that is what the app shows them.
+ */
+interface Props {
+  /** ASCII. The gateway's name as the app lists it. */
+  name: string;
+  /** Translated. The app's own word for a connected server. */
+  status: string;
+  /** ASCII both sides: an agent's name and the state the app shows. */
+  agents: readonly { name: string; state: string }[];
+  /** Translated. Describes the picture. */
+  ariaLabel: string;
+  class?: string;
+}
+
+const { name, status, agents, ariaLabel, class: className } = Astro.props;
+---
+
+<div class:list={['mq-card', 'mq-server', className]} role="img" aria-label={ariaLabel}>
+  <div class="mq-server__head">
+    <span class="mq-server__name">{name}</span>
+    <span class="mq-server__status">
+      <span class="mq-server__dot" aria-hidden="true"></span>
+      {status}
+    </span>
+  </div>
+  <ul class="mq-server__agents">
+    {
+      agents.map((agent) => (
+        <li class="mq-server__agent">
+          <span class="mq-server__agent-name">{agent.name}</span>
+          <span class="mq-server__agent-state">{agent.state}</span>
+        </li>
+      ))
+    }
+  </ul>
+</div>
+
+<style>
+  .mq-server {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--mq-space-4);
+    padding: var(--mq-space-5);
+  }
+
+  .mq-server__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--mq-space-4);
+    padding-block-end: var(--mq-space-3);
+    border-block-end: 1px solid var(--mq-hairline);
+  }
+
+  .mq-server__name {
+    font-weight: var(--mq-weight-strong);
+  }
+
+  .mq-server__status {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--mq-space-2);
+    font-size: var(--mq-size-small);
+    /* 6.47:1 on cream, 8.17:1 on the dark canvas. */
+    color: var(--mq-verified);
+  }
+
+  .mq-server__dot {
+    inline-size: 8px;
+    block-size: 8px;
+    border-radius: var(--mq-radius-full);
+    background: currentColor;
+  }
+
+  .mq-server__agents {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--mq-space-2);
+    margin: 0;
+  }
+
+  .mq-server__agent {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--mq-space-4);
+    font-family: var(--mq-font-mono);
+    font-size: var(--mq-size-mono);
+  }
+
+  .mq-server__agent-state {
+    color: var(--mq-text-muted);
+  }
+</style>
