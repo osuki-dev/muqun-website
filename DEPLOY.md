@@ -14,6 +14,11 @@ bun run deploy         # astro build && wrangler deploy
 the real Worker — use it to check `/gateway.sh` and the headers, because
 `astro dev` does not run the Worker at all.
 
+Test `/gateway.sh` with a browser-style HTML request as well as ordinary curl.
+Cloudflare Static Assets routes `Accept: text/html` differently; the
+`assets.run_worker_first` setting in `wrangler.jsonc` is what keeps browser
+navigations from bypassing the redirect Worker and landing on the static 404.
+
 ## Cloudflare Workers Builds
 
 Connect the repository and set **one** build variable, under

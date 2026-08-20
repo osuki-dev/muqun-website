@@ -10,6 +10,12 @@
   "assets": {
     "directory": "./dist",
     "binding": "ASSETS",
+    // Browser navigations advertise `Accept: text/html`. Without this flag,
+    // Static Assets handles a missing `/gateway.sh` before the Worker sees it
+    // and serves Astro's 404, even though curl's default `*/*` reaches the 302.
+    // The Worker also owns the security headers for every static response, so
+    // it must run first for the whole site rather than for one route only.
+    "run_worker_first": true,
     // Astro emits a real 404 page; let it be the one readers see.
     "not_found_handling": "404-page"
   },
