@@ -6,7 +6,7 @@ export const chrome: ChromeCopy = {
   nav: { home: '首頁', support: '支援', privacy: '隱私' },
   theme: { light: '淺色', dark: '深色', system: '跟隨系統' },
   header: { aria: { language: '語言', theme: '主題', menu: '選單' } },
-  footer: { copyright: '© {year} osuki.dev. 版權所有。', github: 'GitHub' },
+  footer: { copyright: '© {year} muqun.dev. 版權所有。', github: 'GitHub' },
   error: {
     notFound: {
       title: '找不到頁面',

@@ -6,7 +6,7 @@ export const chrome: ChromeCopy = {
   nav: { home: 'Início', support: 'Suporte', privacy: 'Privacidade' },
   theme: { light: 'Claro', dark: 'Escuro', system: 'Sistema' },
   header: { aria: { language: 'Idioma', theme: 'Tema', menu: 'Menu' } },
-  footer: { copyright: '© {year} osuki.dev. Todos os direitos reservados.', github: 'GitHub' },
+  footer: { copyright: '© {year} muqun.dev. Todos os direitos reservados.', github: 'GitHub' },
   error: {
     notFound: {
       title: 'Página não encontrada',
