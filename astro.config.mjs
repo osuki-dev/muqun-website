@@ -1,4 +1,5 @@
 // @ts-check
+import react from '@astrojs/react';
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'astro/config';
 
@@ -22,10 +23,11 @@ import { defineConfig } from 'astro/config';
  */
 export default defineConfig({
   site: 'https://muqun.dev',
+  integrations: [react()],
   trailingSlash: 'always',
   i18n: {
     defaultLocale: 'en',
-    locales: ['en', 'zh-TW', 'ja', 'ko', 'de', 'fr', 'es', 'pt'],
+    locales: ['en', 'zh-CN', 'zh-TW', 'ja', 'ko', 'de', 'fr', 'es', 'pt', 'ru', 'vi'],
     routing: {
       prefixDefaultLocale: false,
     },

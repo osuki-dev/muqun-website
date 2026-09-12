@@ -60,7 +60,7 @@ const {
 ---
 
 <!doctype html>
-<html lang={lang}>
+<html lang={lang} data-theme="dark">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -103,28 +103,7 @@ const {
       This is the PAGE's mode only. The terminal's theme is a separate
       control and is not read or written here.
     */}
-    <script is:inline>
-      (() => {
-        try {
-          const stored = localStorage.getItem('mq-theme');
-          const mode = stored === 'light' || stored === 'dark' ? stored : 'auto';
-          const dark =
-            mode === 'auto'
-              ? window.matchMedia('(prefers-color-scheme: dark)').matches
-              : mode === 'dark';
-          document.documentElement.dataset.theme = dark ? 'dark' : 'light';
-          document.documentElement.dataset.themeMode = mode;
-        } catch {
-          // Storage blocked (private mode, embedded webview). Fall back to
-          // the media query alone rather than leaving the page unthemed.
-          document.documentElement.dataset.theme = window.matchMedia(
-            '(prefers-color-scheme: dark)',
-          ).matches
-            ? 'dark'
-            : 'light';
-        }
-      })();
-    </script>
+
 
     {/*
       Two preloads, not nine. Body 400 and the condensed display weight are

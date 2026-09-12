@@ -1,0 +1,114 @@
+---
+import type { LocaleOption } from "./types";
+interface Props {
+  locales: LocaleOption[];
+  current: string;
+  label: string;
+}
+const { locales, current, label } = Astro.props;
+const selected = locales.find((locale) => locale.code === current);
+---
+
+<details class="header-language">
+  <summary aria-label={label}>
+    <svg
+      aria-hidden="true"
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.5"
+    >
+      <circle cx="12" cy="12" r="9" />
+      <ellipse cx="12" cy="12" rx="4" ry="9" />
+      <path d="M3 12h18" />
+    </svg>
+    <span>{selected?.label}</span>
+    <span aria-hidden="true">⌄</span>
+  </summary>
+  <nav aria-label={label}>
+    {locales.map((locale) => (
+      <a
+        href={locale.href}
+        aria-current={locale.code === current ? "page" : undefined}
+        lang={locale.code}
+      >
+        {locale.label}
+        <span aria-hidden="true">{locale.code === current ? "✓" : ""}</span>
+      </a>
+    ))}
+  </nav>
+</details>
+<script>
+  document
+    .querySelectorAll<HTMLDetailsElement>(".header-language")
+    .forEach((menu) => {
+      document.addEventListener("click", (event) => {
+        if (!menu.contains(event.target as Node)) menu.open = false;
+      });
+      menu.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+          menu.open = false;
+          menu.querySelector("summary")?.focus();
+        }
+      });
+    });
+</script>
+<style>
+  .header-language {
+    position: relative;
+    font-size: 12px;
+    color: #d5cbdf;
+  }
+  .header-language summary {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 0 13px;
+    border: 1px solid #ffffff20;
+    border-radius: 30px;
+    list-style: none;
+  }
+  .header-language summary::-webkit-details-marker {
+    display: none;
+  }
+  .header-language nav {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 10px);
+    width: 185px;
+    border: 1px solid #ffffff20;
+    border-radius: 16px;
+    background: #181725;
+    box-shadow: 0 15px 50px #0009;
+    padding: 8px;
+  }
+  .header-language nav a {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 14px;
+    min-height: 44px;
+    border-radius: 8px;
+    color: #ccc5d8;
+    text-decoration: none;
+  }
+  .header-language nav a:hover,
+  .header-language nav a[aria-current] {
+    background: #ffffff0c;
+    color: #ffb19e;
+  }
+  .header-language summary:focus-visible {
+    outline: 2px solid #eac5ff;
+    outline-offset: 3px;
+  }
+  @media (max-width: 450px) {
+    .header-language summary {
+      gap: 5px;
+      padding-inline: 10px;
+      font-size: 11px;
+    }
+  }
+</style>

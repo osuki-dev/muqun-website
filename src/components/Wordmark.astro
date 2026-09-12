@@ -23,7 +23,7 @@ const { href = '/', label, class: className } = Astro.props;
 
 <a class:list={['mq-wordmark', className]} href={href} aria-label={label}>
   <span class="mq-wordmark__mark" aria-hidden="true">muqun</span>
-  <span class="mq-wordmark__cursor" aria-hidden="true"></span>
+
 </a>
 
 <style>
@@ -33,10 +33,10 @@ const { href = '/', label, class: className } = Astro.props;
     gap: 3px;
     min-block-size: var(--mq-control-height-sm);
     padding-inline: var(--mq-space-1);
-    font-family: var(--mq-font-mono);
-    font-size: var(--mq-size-mono);
-    font-weight: var(--mq-weight-strong);
-    letter-spacing: var(--mq-tracking-mono);
+    font-family: var(--mq-font-sans);
+    font-size: clamp(30px, 2.7vw, 42px);
+    font-weight: 800;
+    letter-spacing: -1px;
     text-decoration: none;
     color: var(--mq-text);
   }

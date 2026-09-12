@@ -13,16 +13,31 @@
     "shots:generate": "bun scripts/shots.ts"
   },
   "dependencies": {
+    "@astrojs/react": "5.0.7",
+    "@react-three/fiber": "^9.7.0",
     "astro": "^6.4.5",
-    "gsap": "^3.15.0"
+    "gsap": "^3.15.0",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "three": "^0.186.0"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.4",
     "@cloudflare/workers-types": "^4.20250801.0",
     "@tailwindcss/vite": "^4.3.0",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@types/three": "^0.186.0",
+    "prettier": "^3.9.6",
+    "prettier-plugin-astro": "^1.0.0",
     "sharp": "^0.34.0",
     "tailwindcss": "^4.3.0",
     "typescript": "^5.6.3",
+    "vite": "^7.3.2",
     "wrangler": "^4.0.0"
+  },
+  "overrides": {
+    "vite": "7.3.6",
+    "@vitejs/plugin-react": "5.0.4"
   }
 }

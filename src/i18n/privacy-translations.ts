@@ -1,0 +1,151 @@
+import type { SiteLocale } from "@/lib/locales";
+interface Policy {
+  intro: string;
+  sections: { title: string; paragraphs: string[] }[];
+}
+export const privacyTranslations: Partial<Record<SiteLocale, Policy>> = {
+  "zh-CN": {
+    intro:
+      "牧群是连接用户自行管理的 Gateway（基于 tmux 或 Herdr）的移动客户端。没有牧群账号、广告、分析或追踪 SDK。",
+    sections: [
+      {
+        title: "设备上保存的数据",
+        paragraphs: [
+          "牧群保存提供功能所需的信息：Gateway 名称、地址、配对时间和访问令牌，应用偏好、自定义快捷命令，以及当前选中的 Gateway。",
+          "Gateway 记录经加密后保存在操作系统的安全凭据存储中，标记为仅限本设备，不会同步到其他设备或从备份恢复。",
+        ],
+      },
+      {
+        title: "Gateway 连接",
+        paragraphs: [
+          "终端会话在牧群和你配对的 Gateway 地址之间直接传输。Osuki 不中继、接收或存储终端输出、命令、源代码、对话、Gateway 地址或访问令牌。",
+          "发往 Gateway 的请求可能包含所用功能必需的访问令牌、工作区与窗格标识、终端输入、命令和代理输出。开启通知后，牧群还会向 Gateway 发送设备通知令牌、设备名称和平台。",
+          "你负责管理 Gateway 及其网络。请使用安全连接。HTTP 本身不加密流量，只应在可信的加密私有网络内使用。",
+        ],
+      },
+      {
+        title: "相机与应用锁",
+        paragraphs: [
+          "只有打开二维码扫描器时才会请求相机权限。画面在设备上处理，用于读取配对码，不会保存或上传。你也可以手动输入 Gateway 地址配对。",
+          "启用应用锁后，由操作系统完成 Face ID、Touch ID、指纹、人脸或密码验证。牧群只接收验证是否成功的结果，不接收或保存生物识别数据及密码。",
+        ],
+      },
+      {
+        title: "通知",
+        paragraphs: [
+          "Gateway 通知为可选功能。启用后，通知服务处理发送提醒所需的设备通知令牌、平台、最少量通知内容和投递元数据。这些信息仅用于应用功能，不用于广告或追踪。关闭通知会从已配对 Gateway 注销设备。",
+        ],
+      },
+      {
+        title: "保留与删除",
+        paragraphs: [
+          "本地 Gateway 数据保留至你移除该 Gateway 或卸载牧群。偏好设置和快捷命令保留至修改或卸载应用。Gateway 端的数据由其管理者控制；从 Gateway 撤销设备可使令牌失效。",
+          "如果你联系 Osuki，我们仅使用你提供的信息回复该请求。",
+        ],
+      },
+      {
+        title: "变更与联系",
+        paragraphs: [
+          "当牧群的功能或服务提供商变化时，我们可能更新本政策。当前版本和修订日期将一直在此页面提供。",
+          "如对本政策有疑问，请联系 muqun@osuki.dev。",
+        ],
+      },
+    ],
+  },
+  ru: {
+    intro:
+      "Muqun — мобильный клиент для управляемых вами экземпляров Gateway на базе tmux или Herdr. В приложении нет аккаунтов Muqun, рекламы, аналитики или SDK отслеживания.",
+    sections: [
+      {
+        title: "Данные на вашем устройстве",
+        paragraphs: [
+          "Muqun сохраняет сведения, необходимые для работы: имена и адреса Gateway, время сопряжения, токены доступа, настройки приложения, собственные быстрые команды и выбранный Gateway.",
+          "Записи Gateway зашифрованы и хранятся в защищённом хранилище учётных данных ОС. Они привязаны к устройству, не синхронизируются с другими устройствами и не восстанавливаются из резервной копии.",
+        ],
+      },
+      {
+        title: "Подключения к Gateway",
+        paragraphs: [
+          "Сеансы терминала передаются напрямую между Muqun и сопряжённым адресом Gateway. Osuki не пересылает, не получает и не хранит вывод терминала, команды, исходный код, разговоры, адреса Gateway или токены доступа.",
+          "Запросы к Gateway могут содержать токен доступа, идентификаторы рабочих пространств и панелей, ввод терминала, команды и вывод агента, необходимые для выбранной функции. При включённых уведомлениях Muqun также отправляет Gateway токен уведомлений устройства, его имя и платформу.",
+          "Вы управляете Gateway и его сетью. Мы рекомендуем общую сеть Tailscale с частным HTTPS-адресом через Tailscale Serve. HTTP сам по себе не шифрует трафик; используйте его только в доверенной зашифрованной частной сети.",
+        ],
+      },
+      {
+        title: "Камера и блокировка приложения",
+        paragraphs: [
+          "Доступ к камере запрашивается только при открытии сканера QR-кодов. Кадры обрабатываются на устройстве для чтения кода сопряжения, не сохраняются и не загружаются. Адрес Gateway можно ввести вручную.",
+          "При включённой блокировке приложения ОС выполняет проверку Face ID, Touch ID, отпечатка пальца, лица или кода доступа. Muqun получает только результат проверки и не получает и не хранит биометрические данные или код доступа.",
+        ],
+      },
+      {
+        title: "Уведомления",
+        paragraphs: [
+          "Уведомления Gateway необязательны. При их включении служба уведомлений обрабатывает токен устройства, платформу, минимальное содержимое уведомления и метаданные доставки. Эти данные нужны только для работы приложения, а не для рекламы или отслеживания. Отключение уведомлений отменяет регистрацию устройства на сопряжённом Gateway.",
+        ],
+      },
+      {
+        title: "Хранение и удаление",
+        paragraphs: [
+          "Локальные данные Gateway хранятся до удаления Gateway или приложения. Настройки и быстрые команды сохраняются до их изменения или удаления приложения. Данные на стороне Gateway контролирует его оператор; отзовите доступ устройства на Gateway, чтобы аннулировать токен.",
+          "Если вы связываетесь с Osuki, предоставленная информация используется только для ответа на ваш запрос.",
+        ],
+      },
+      {
+        title: "Изменения и связь",
+        paragraphs: [
+          "Мы можем обновлять политику при изменении функций Muqun или поставщиков услуг. Актуальная версия и дата изменения будут доступны по этому адресу.",
+          "Вопросы о политике можно направить на muqun@osuki.dev.",
+        ],
+      },
+    ],
+  },
+  vi: {
+    intro:
+      "Muqun là ứng dụng di động kết nối đến Gateway do bạn quản lý, chạy trên tmux hoặc Herdr. Ứng dụng không có tài khoản Muqun, quảng cáo, phân tích hay SDK theo dõi.",
+    sections: [
+      {
+        title: "Dữ liệu lưu trên thiết bị",
+        paragraphs: [
+          "Muqun lưu thông tin cần thiết cho các tính năng: tên và địa chỉ Gateway, thời gian ghép đôi, token truy cập, tùy chọn ứng dụng, lệnh nhanh tùy chỉnh và Gateway đang chọn.",
+          "Bản ghi Gateway được mã hóa và lưu trong kho thông tin xác thực an toàn của hệ điều hành. Dữ liệu chỉ dành cho thiết bị hiện tại, không đồng bộ sang thiết bị khác hoặc khôi phục từ bản sao lưu.",
+        ],
+      },
+      {
+        title: "Kết nối Gateway",
+        paragraphs: [
+          "Phiên terminal truyền trực tiếp giữa Muqun và địa chỉ Gateway bạn ghép đôi. Osuki không chuyển tiếp, nhận hoặc lưu đầu ra terminal, lệnh, mã nguồn, hội thoại, địa chỉ Gateway hay token truy cập.",
+          "Yêu cầu gửi tới Gateway có thể chứa token truy cập, mã định danh không gian làm việc và khung terminal, nội dung nhập, lệnh và đầu ra trợ lý cần cho tính năng đang dùng. Khi bật thông báo, Muqun còn gửi token thông báo, tên và nền tảng của thiết bị tới Gateway.",
+          "Bạn quản lý Gateway và mạng của mình. Chúng tôi khuyến nghị dùng chung mạng Tailscale với địa chỉ HTTPS riêng qua Tailscale Serve. HTTP không tự mã hóa lưu lượng; chỉ dùng trong mạng riêng đáng tin cậy có mã hóa.",
+        ],
+      },
+      {
+        title: "Camera và khóa ứng dụng",
+        paragraphs: [
+          "Quyền camera chỉ được yêu cầu khi bạn mở trình quét QR. Khung hình được xử lý trên thiết bị để đọc mã ghép đôi, không được lưu hoặc tải lên. Bạn cũng có thể nhập địa chỉ Gateway thủ công.",
+          "Khi bật khóa ứng dụng, hệ điều hành thực hiện xác thực Face ID, Touch ID, vân tay, khuôn mặt hoặc mật mã. Muqun chỉ nhận kết quả thành công hay thất bại, không nhận hay lưu dữ liệu sinh trắc học hoặc mật mã.",
+        ],
+      },
+      {
+        title: "Thông báo",
+        paragraphs: [
+          "Thông báo Gateway là tùy chọn. Khi bật, dịch vụ thông báo xử lý token thiết bị, nền tảng, nội dung thông báo tối thiểu và siêu dữ liệu cần để gửi cảnh báo. Thông tin chỉ dùng cho chức năng ứng dụng, không cho quảng cáo hoặc theo dõi. Tắt thông báo sẽ hủy đăng ký thiết bị khỏi Gateway đã ghép đôi.",
+        ],
+      },
+      {
+        title: "Lưu giữ và xóa",
+        paragraphs: [
+          "Dữ liệu Gateway cục bộ được giữ đến khi bạn xóa Gateway hoặc gỡ Muqun. Tùy chọn và lệnh nhanh được giữ đến khi thay đổi hoặc gỡ ứng dụng. Dữ liệu phía Gateway do người vận hành quản lý; thu hồi thiết bị trên Gateway để vô hiệu hóa token.",
+          "Nếu bạn liên hệ Osuki, thông tin bạn cung cấp chỉ được dùng để trả lời yêu cầu đó.",
+        ],
+      },
+      {
+        title: "Thay đổi và liên hệ",
+        paragraphs: [
+          "Chính sách có thể được cập nhật khi tính năng Muqun hoặc nhà cung cấp dịch vụ thay đổi. Phiên bản hiện tại và ngày sửa đổi luôn có tại địa chỉ này.",
+          "Vui lòng gửi câu hỏi về chính sách đến muqun@osuki.dev.",
+        ],
+      },
+    ],
+  },
+};

@@ -1,3 +1,6 @@
+import { chrome as zhCN } from "./zh-CN";
+import { chrome as ru } from "./ru";
+import { chrome as vi } from "./vi";
 import { normalizeSiteLocale, type SiteLocale } from '../../lib/locales';
 import { getMuqunCopy } from '../muqun';
 import type { ChromeCopy } from './types';
@@ -12,6 +15,7 @@ import { chrome as pt } from './pt';
 import { chrome as zhTW } from './zh-TW';
 
 const catalogues: Record<SiteLocale, ChromeCopy> = {
+  "zh-CN": zhCN, ru, vi,
   en,
   'zh-TW': zhTW,
   ja,

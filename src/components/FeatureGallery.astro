@@ -1,0 +1,127 @@
+---
+import type { Feature } from "@/lib/features";
+interface Props {
+  features: Feature[];
+  sourceLabel: string;
+  developmentLabel: string;
+}
+const { features, sourceLabel, developmentLabel } = Astro.props;
+---
+
+<div class="feature-grid">
+  {features.map((feature, index) => (
+    <article
+      class:list={[
+        "feature-card",
+        feature.spotlight && "feature-card--spotlight",
+      ]}
+      id={`feature-${feature.id}`}
+      data-world-reveal
+    >
+      <div class="feature-top">
+        <span class="feature-symbol" aria-hidden="true">
+          {feature.icon}
+        </span>
+        <span class="feature-number">{String(index + 1).padStart(2, "0")}</span>
+      </div>
+      {feature.spotlight && (
+        <div
+          class:list={["feature-demo", `feature-demo--${feature.spotlight}`]}
+          aria-hidden="true"
+        >
+          {feature.spotlight === "ssh" && (
+            <div class="ssh-window">
+              <div class="mini-window-bar">
+                <i></i>
+                <i></i>
+                <i></i>
+                <span>SSH</span>
+              </div>
+              <code>
+                <span class="code-muted">you@your-machine</span>
+                <br />
+                <span class="code-mint">❯</span> ssh studio
+                <br />
+                <br />
+                <span class="code-muted">ED25519 · SHA256</span>
+                <br />
+                <span class="code-mint">●</span> connected
+                <span class="terminal-cursor">_</span>
+              </code>
+              <div class="ssh-connection">
+                <span>⌘</span>
+                <b>··········</b>
+                <span>▣</span>
+              </div>
+            </div>
+          )}
+          {feature.spotlight === "theme" && (
+            <div class="theme-demo-art">
+              <div class="theme-orb"></div>
+              <div class="theme-mini-phone">
+                <div class="phone-camera"></div>
+                <span>muqun</span>
+                <div class="theme-preview-label">~/your-world</div>
+                <div class="theme-colors">
+                  {["#b6a2ff", "#fd927b", "#b3d8bf", "#7e9ddb", "#d6ae81"].map(
+                    (color) => (
+                      <i style={`background:${color}`}></i>
+                    ),
+                  )}
+                </div>
+                <div class="theme-mini-line"></div>
+                <div class="theme-mini-line short"></div>
+                <div class="theme-mini-bottom">
+                  ❯ <span>_</span>
+                </div>
+              </div>
+              <div class="theme-swatches">
+                <i></i>
+                <i></i>
+                <i></i>
+                <i></i>
+              </div>
+            </div>
+          )}
+          {feature.spotlight === "simfarm" && (
+            <div class="simfarm-demo">
+              <div class="simfarm-laptop">
+                <div class="mini-window-bar">
+                  <i></i>
+                  <i></i>
+                  <i></i>
+                  <span>simfarm</span>
+                </div>
+                <div class="simfarm-device">
+                  <div class="phone-camera"></div>
+                  <span>✳</span>
+                  <div></div>
+                  <div></div>
+                </div>
+                <span class="simfarm-signal">↗</span>
+              </div>
+              <div class="simfarm-phone">
+                <div class="phone-camera"></div>
+                <span>✳</span>
+                <i></i>
+                <i></i>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+      {feature.status === "source" && !feature.link && (
+        <span class="feature-badge">{sourceLabel}</span>
+      )}
+      {feature.status === "development" && !feature.link && (
+        <span class="feature-badge">{developmentLabel}</span>
+      )}
+      <h3>{feature.title}</h3>
+      <p>{feature.description}</p>
+      {feature.media && (
+        <img src={feature.media.src} alt={feature.media.alt} loading="lazy" />
+      )}
+      {feature.link && <a href={feature.link.href}>{feature.link.label} ↗</a>}
+    </article>
+  ))}
+</div>

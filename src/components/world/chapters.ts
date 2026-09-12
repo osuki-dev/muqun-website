@@ -1,0 +1,52 @@
+/** One timeline second per semantic chapter. Values are reversible, not wheel deltas. */
+export const chapters = [
+  {
+    id: "pocket",
+    camera: [0, 3.4, 10],
+    target: [0, 1.3, 0],
+    turn: -0.18,
+    orbit: 0.18,
+    lift: 0,
+    scale: 1,
+    tilt: 0,
+  },
+  {
+    id: "terminal",
+    camera: [2.8, 3.1, 9.8],
+    target: [0, 1.4, 0],
+    turn: 0.3,
+    orbit: 1,
+    lift: 0.12,
+    scale: 0.93,
+    tilt: -0.08,
+  },
+  {
+    id: "connect",
+    camera: [-2.2, 5.4, 10.4],
+    target: [0, 1, 0],
+    turn: 6.05,
+    orbit: 0.65,
+    lift: 0.22,
+    scale: 0.9,
+    tilt: 0.08,
+  },
+  {
+    id: "anywhere",
+    camera: [0, 3.5, 10.4],
+    target: [0, 1.3, 0],
+    turn: 6.12,
+    orbit: 0.12,
+    lift: 0,
+    scale: 1,
+    tilt: 0,
+  },
+] as const;
+export const expressionBeats = [
+  { progress: 0, mood: "success" },
+  { progress: 0.25, mood: "idle" },
+  { progress: 0.65, mood: "waiting" },
+  { progress: 1.05, mood: "working" },
+  { progress: 1.55, mood: "thinking" },
+  { progress: 2.15, mood: "walk" },
+  { progress: 2.7, mood: "success" },
+] as const;

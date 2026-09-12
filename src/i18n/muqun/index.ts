@@ -1,3 +1,6 @@
+import { copy as zhCN } from "./zh-CN";
+import { copy as ru } from "./ru";
+import { copy as vi } from "./vi";
 import { normalizeSiteLocale } from '../../lib/locales';
 import type { MuqunCopy } from './types';
 
@@ -17,6 +20,7 @@ import { copy as zhTW } from './zh-TW';
  * carried two locales the app does not ship.
  */
 const copies: Record<import('../../lib/locales').SiteLocale, MuqunCopy> = {
+  "zh-CN": zhCN, ru, vi,
   en,
   'zh-TW': zhTW,
   ja,

@@ -21,7 +21,7 @@ import Grid from '@/components/Grid.astro';
 import Prose from '@/components/Prose.astro';
 import SectionHeading from '@/components/SectionHeading.astro';
 import { getMuqunCopy } from '@/i18n/muqun';
-import { feedbackIssueUrl, supportEmail } from '@/lib/muqun-links';
+import { feedbackIssueUrl } from '@/lib/muqun-links';
 import { localizedPath, siteLocaleCodes, defaultLocale } from '@/lib/locales';
 
 export function getStaticPaths() {
@@ -40,7 +40,7 @@ const { locale } = Astro.props;
 const copy = getMuqunCopy(locale).support;
 
 const privacyPath = localizedPath('/privacy', locale);
-const mailto = `mailto:${supportEmail}?subject=Muqun%20support`;
+
 ---
 
 <Layout lang={locale} title={copy.metaTitle} description={copy.metaDescription}>
@@ -54,46 +54,7 @@ const mailto = `mailto:${supportEmail}?subject=Muqun%20support`;
     <div class="mq-support-lead"><Prose size="lead">{copy.lead}</Prose></div>
 
     <div class="mq-support-actions">
-      <Button href={mailto} variant="primary" size="lg">{copy.emailCta}</Button>
-      <Button href={feedbackIssueUrl} variant="secondary" size="lg">{copy.issueCta}</Button>
-    </div>
-
-    <Prose size="small">
-      {copy.contactBefore}
-      {' '}<a href={`mailto:${supportEmail}`}>{supportEmail}</a>
-      {' · '}{copy.contactAfter}
-    </Prose>
-  </Band>
-
-  {/* The network recommendation sits above the checks because it is the
-      answer to most of them: a Gateway that cannot be reached is nearly
-      always a Gateway on the wrong side of a router. */}
-  <Band tone="recessed">
-    {/* "Recommended network" is translated, so it sits above the heading as
-        ordinary small text rather than in the mono eyebrow, which is reserved
-        for untranslated ASCII. This section has no ASCII of its own to put
-        there -- "Tailscale" is a product name in the heading already -- so it
-        has no eyebrow rather than a translated one. */}
-    <div class="mq-support-eyebrow"><Prose size="small">{copy.networkEyebrow}</Prose></div>
-
-    <SectionHeading title={copy.networkHeading} level={2}>
-      {/* The badge is a translated phrase with an arrow in it, so it stays
-          proportional; only its shape is borrowed from the machine register. */}
-      <p class="mq-support-badge">{copy.networkBadge}</p>
-    </SectionHeading>
-
-    <Prose>{copy.networkBody}</Prose>
-
-    <div class="mq-support-link">
-      <Button
-        href="https://tailscale.com/docs/features/tailscale-serve"
-        variant="quiet"
-        arrow
-        target="_blank"
-        rel="noreferrer"
-      >
-        {copy.networkLink}
-      </Button>
+      <Button href={feedbackIssueUrl} variant="primary" size="lg">{copy.issueCta}</Button>
     </div>
   </Band>
 

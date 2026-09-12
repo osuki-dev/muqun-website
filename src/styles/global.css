@@ -13,6 +13,7 @@
 @import './tokens.css';
 @import './base.css';
 @import './layout.css';
+@import './site-theme.css';
 
 /*
  * Hand Tailwind the tokens it needs so a utility like `text-muted` or

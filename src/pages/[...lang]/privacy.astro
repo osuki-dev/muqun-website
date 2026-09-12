@@ -22,6 +22,7 @@
  * understood by someone who cannot read the rest.
  */
 import Layout from '@/layouts/Layout.astro';
+import { privacyTranslations } from '@/i18n/privacy-translations';
 import Band from '@/components/Band.astro';
 import Display from '@/components/Display.astro';
 import Prose from '@/components/Prose.astro';
@@ -44,6 +45,7 @@ export function getStaticPaths() {
  */
 const { locale } = Astro.props;
 const chrome = getChrome(locale);
+const translated = privacyTranslations[locale];
 
 /**
  * Edited by hand when the policy is. Not a build date: a page that claims to
@@ -83,7 +85,10 @@ const description = getMuqunCopy(locale).meta.description;
     <!-- `lang="en"` on the body, because it is English inside a page whose
          document language is not: without it a screen reader reads the whole
          policy in the reader's own phonology and it is unintelligible. -->
-    <Prose as="article" full lang="en">
+    {translated ? <Prose as="article" full lang={locale}>
+      <p>{translated.intro}</p>
+      {translated.sections.map(section => <section><h2>{section.title}</h2>{section.paragraphs.map(paragraph => <p>{paragraph}</p>)}</section>)}
+    </Prose> : <Prose as="article" full lang="en">
       <p>
         Muqun is a mobile client for Gateway instances that you control, running on tmux or
         Herdr. It has no Muqun account, advertising, analytics, or tracking SDKs.
@@ -164,7 +169,7 @@ const description = getMuqunCopy(locale).meta.description;
         Questions about this policy may be sent to
         <a href={`mailto:${supportEmail}`}>{supportEmail}</a>.
       </p>
-    </Prose>
+    </Prose>}
   </Band>
 </Layout>
 

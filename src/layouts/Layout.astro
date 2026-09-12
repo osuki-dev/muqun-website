@@ -27,12 +27,13 @@
  * pushes the aperture -- which is the page's whole argument -- off the first
  * screen on a phone.
  */
+import HeaderLanguage from '@/components/HeaderLanguage.astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Button from '@/components/Button.astro';
 import LocaleMenu from '@/components/LocaleMenu.astro';
 import PageHeader from '@/components/PageHeader.astro';
 import SiteFooter from '@/components/SiteFooter.astro';
-import ThemeToggle from '@/components/ThemeToggle.astro';
+
 import type { LocaleOption, StatusLineItem } from '@/components/types';
 import { getChrome } from '@/i18n/chrome';
 import { appRepoUrl } from '@/lib/muqun-links';
@@ -120,10 +121,9 @@ const year = new Date().getFullYear();
   </Fragment>
 
   <PageHeader slot="header" homeHref={home} homeLabel={chrome.site.name}>
-    <ThemeToggle
-      legend={chrome.header.aria.theme}
-      labels={{ auto: chrome.theme.system, light: chrome.theme.light, dark: chrome.theme.dark }}
-    />
+    <HeaderLanguage locales={locales} current={locale} label={chrome.header.aria.language} />
+    <Button href={support} variant="quiet">{chrome.nav.support}</Button>
+    <Button href={appRepoUrl} variant="quiet">GitHub ↗</Button>
   </PageHeader>
 
   <slot />

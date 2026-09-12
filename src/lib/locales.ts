@@ -16,6 +16,9 @@
  */
 
 export const siteLanguages = [
+  { code: 'zh-CN', label: '简体中文' },
+  { code: 'ru', label: 'Русский' },
+  { code: 'vi', label: 'Tiếng Việt' },
   { code: 'en', label: 'English' },
   { code: 'zh-TW', label: '繁體中文' },
   { code: 'ja', label: '日本語' },
