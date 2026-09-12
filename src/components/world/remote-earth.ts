@@ -215,9 +215,24 @@ export function createRemoteEarth() {
       }),
     ),
   );
+  const screenTexture = new T.TextureLoader().load(
+    "/images/terminal-screen.webp",
+  );
+  screenTexture.colorSpace = T.SRGBColorSpace;
+  screenTexture.anisotropy = 2;
+  const screenGeometry = new T.ShapeGeometry(rounded(0.52, 1.055, 0.06));
+  const positions = screenGeometry.attributes.position;
+  const uv = screenGeometry.attributes.uv as T.BufferAttribute;
+  for (let i = 0; i < positions.count; i++) {
+    uv.setXY(
+      i,
+      positions.getX(i) / 0.52 + 0.5,
+      positions.getY(i) / 1.055 + 0.5,
+    );
+  }
   const screen = new T.Mesh(
-    new T.ShapeGeometry(rounded(0.52, 1.055, 0.06)),
-    new T.MeshBasicMaterial({ color: "#081727" }),
+    screenGeometry,
+    new T.MeshBasicMaterial({ map: screenTexture, toneMapped: false }),
   );
   screen.position.z = 0.06;
   phone.add(screen);
@@ -233,20 +248,12 @@ export function createRemoteEarth() {
   );
   border.position.z = 0.065;
   phone.add(border);
-  const screenGlow = new T.MeshBasicMaterial({ color: "#67e2e0" });
-  for (let i = 0; i < 3; i++) {
-    const row = new T.Mesh(
-      new T.PlaneGeometry(0.3 - i * 0.04, 0.018),
-      i === 0 ? screenGlow : new T.MeshBasicMaterial({ color: "#487f9b" }),
-    );
-    row.position.set(-0.025, 0.12 - i * 0.13, 0.07);
-    phone.add(row);
-  }
+  const screenGlow = border.material;
   const notch = new T.Mesh(
     new T.ShapeGeometry(rounded(0.14, 0.025, 0.012)),
     new T.MeshBasicMaterial({ color: "#030a13" }),
   );
-  notch.position.set(0, 0.45, 0.07);
+  notch.position.set(0, 0.5, 0.07);
   phone.add(notch);
   const routeMaterial = new T.LineBasicMaterial({
     color: "#4fc5e8",
