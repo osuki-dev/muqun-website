@@ -194,7 +194,7 @@ export default function WorldScene({
             .addLabel("approach", 0)
             .to(
               jump.current,
-              { stageReveal: 1, duration: 0.95, ease: "power2.out" },
+              { stageReveal: 1, duration: 2.8, ease: "power1.inOut" },
               "approach",
             )
             .to(
@@ -214,10 +214,11 @@ export default function WorldScene({
               duration: 0.35,
               ease: "back.out(1.4)",
             })
-            .addLabel("reveal", 3.35)
+            .addLabel("settled")
+            .addLabel("reveal", "settled+=0.08")
             .to(
               jump.current,
-              { reveal: 1, stageReveal: 1, duration: 0.85, ease: "power2.out" },
+              { reveal: 1, duration: 0.85, ease: "power2.out" },
               "reveal",
             );
         }
