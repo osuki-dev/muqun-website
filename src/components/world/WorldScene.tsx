@@ -58,6 +58,7 @@ export default function WorldScene({
     x: 0,
     z: 0,
     reveal: 1,
+    stageReveal: 1,
     y: 0,
     turn: 0,
     tilt: 0,
@@ -178,6 +179,7 @@ export default function WorldScene({
             y: -0.7,
             turn: 0,
             reveal: 0,
+            stageReveal: 0,
             walking: true,
           });
           state.current.interactionStart = Infinity;
@@ -190,6 +192,11 @@ export default function WorldScene({
               },
             })
             .addLabel("approach", 0)
+            .to(
+              jump.current,
+              { stageReveal: 1, duration: 0.95, ease: "power2.out" },
+              "approach",
+            )
             .to(
               jump.current,
               { z: 0, y: 0, duration: 2.8, ease: "power1.inOut" },
@@ -210,7 +217,7 @@ export default function WorldScene({
             .addLabel("reveal", 3.35)
             .to(
               jump.current,
-              { reveal: 1, duration: 0.85, ease: "power2.out" },
+              { reveal: 1, stageReveal: 1, duration: 0.85, ease: "power2.out" },
               "reveal",
             );
         }
@@ -284,6 +291,7 @@ export default function WorldScene({
       x: 0,
       z: 0,
       reveal: 1,
+      stageReveal: 1,
       y: 0,
       turn: 0,
       tilt: 0,
@@ -320,6 +328,7 @@ export default function WorldScene({
         x: 0,
         z: 0,
         reveal: 1,
+        stageReveal: 1,
         y: 0,
         turn: 0,
         tilt: 0,
@@ -363,6 +372,10 @@ export default function WorldScene({
     camera.lookAt(target);
     world.root.rotation.y = 0;
     world.orbit.rotation.y = s.smooth * 0.45;
+    world.revealPlatform(
+      jump.current.stageReveal,
+      T.MathUtils.smoothstep(jump.current.z, -2, 0),
+    );
     world.panels.visible = jump.current.reveal > 0.001;
     world.panels.scale.setScalar(0.9);
     world.panels.position.y = -0.2 * (1 - jump.current.reveal);
@@ -403,6 +416,7 @@ export default function WorldScene({
         mood,
         textures: String(gl.info.memory.textures),
         entryZ: jump.current.z.toFixed(2),
+        stageReveal: jump.current.stageReveal.toFixed(2),
         earthReveal: jump.current.reveal.toFixed(2),
       });
   });

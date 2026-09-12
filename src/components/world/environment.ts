@@ -9,20 +9,23 @@ export function createEnvironment() {
   const rim = new T.DirectionalLight("#9a8dff", 3);
   rim.position.set(4, 3, -3);
   root.add(rim);
+  const platform = new T.Group();
+  root.add(platform);
   const stone = new T.MeshStandardMaterial({
     color: "#24283c",
     roughness: 0.92,
+    transparent: true,
   });
   const stage = new T.Mesh(new T.CylinderGeometry(2.25, 1.75, 0.55, 64), stone);
   stage.position.y = -0.28;
-  root.add(stage);
+  platform.add(stage);
   const lip = new T.Mesh(
     new T.TorusGeometry(2.18, 0.018, 8, 120),
-    new T.MeshBasicMaterial({ color: "#8a81bd" }),
+    new T.MeshBasicMaterial({ color: "#8a81bd", transparent: true }),
   );
   lip.rotation.x = Math.PI / 2;
   lip.position.y = 0.01;
-  root.add(lip);
+  platform.add(lip);
   // A radial contact texture grounds the original model without a shadow pass.
   const shadowCanvas = document.createElement("canvas");
   shadowCanvas.width = shadowCanvas.height = 64;
@@ -42,7 +45,7 @@ export function createEnvironment() {
   );
   shadow.rotation.x = -Math.PI / 2;
   shadow.position.y = 0.025;
-  root.add(shadow);
+  platform.add(shadow);
   const orbit = new T.Group();
   const remote = createRemoteEarth();
   const panels = remote.group;
@@ -112,5 +115,17 @@ export function createEnvironment() {
       }),
     ),
   );
-  return { root, orbit, panels, update: remote.update };
+  return {
+    root,
+    orbit,
+    panels,
+    update: remote.update,
+    revealPlatform(progress: number, contact: number) {
+      platform.visible = progress > 0.001;
+      platform.position.y = -0.45 * (1 - progress);
+      stone.opacity = progress;
+      lip.material.opacity = progress;
+      shadow.material.opacity = progress * contact;
+    },
+  };
 }
