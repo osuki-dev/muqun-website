@@ -165,6 +165,17 @@ export default function WorldScene({
           disposeTree(gltf.scene);
           return;
         }
+        gltf.scene.traverse((object) => {
+          if (!(object instanceof T.Mesh)) return;
+          const materials = Array.isArray(object.material) ? object.material : [object.material];
+          for (const material of materials) {
+            if (material instanceof T.MeshPhysicalMaterial && material.color.r > 0.8 && material.color.g < 0.2) {
+              material.roughness = 0.46;
+              material.clearcoat = 0.16;
+              material.clearcoatRoughness = 0.42;
+            }
+          }
+        });
         model.current = gltf.scene;
         animate.current = createMascotMotion(gltf.scene);
         companion.current?.add(gltf.scene);

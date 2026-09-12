@@ -51,8 +51,40 @@ export default function PocketWorld() {
       visibility();
     });
     observer.observe(document.getElementById("world-story")!);
+    const brand = document.querySelector<HTMLAnchorElement>(".mq-page-header .mq-wordmark");
+    const homeHref = brand?.getAttribute("href") ?? "/";
+    const setBrandLink = (enabled: boolean) => {
+      if (!brand) return;
+      brand.dataset.linkActive = String(enabled);
+      if (enabled) {
+        brand.setAttribute("href", homeHref);
+        brand.removeAttribute("tabindex");
+      } else {
+        brand.removeAttribute("href");
+        brand.setAttribute("tabindex", "-1");
+      }
+    };
+    setBrandLink(false);
     const ctx = gsap.context(() => {
+      gsap.to(".mq-page-header", {
+        "--brand-scale": 1,
+        "--brand-offset": "0px",
+        "--brand-color": "#f2f0f6",
+        ease: "none",
+        onUpdate() { setBrandLink(this.progress() > 0.995); },
+        scrollTrigger: {
+          trigger: "#pocket",
+          start: "top top",
+          end: "+=240",
+          scrub: media.matches ? true : 0.35,
+          invalidateOnRefresh: true,
+        },
+      });
       if (media.matches) return;
+      gsap.timeline({ defaults: { ease: "power3.out" } }).from(
+        ".mq-page-header .mq-wordmark__mark",
+        { y: 14, opacity: 0, duration: 1.1, delay: 0.08 },
+      );
       gsap
         .timeline({ defaults: { ease: "power3.out" } })
         .from(
@@ -178,6 +210,7 @@ export default function PocketWorld() {
     };
     media.addEventListener("change", resetMotion);
     return () => {
+      setBrandLink(true);
       media.removeEventListener("change", motion);
       media.removeEventListener("change", resetMotion);
       document.removeEventListener("visibilitychange", visibility);

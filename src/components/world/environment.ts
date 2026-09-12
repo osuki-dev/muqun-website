@@ -1,37 +1,65 @@
 import * as T from "three";
+import { RectAreaLightUniformsLib } from "three/addons/lights/RectAreaLightUniformsLib.js";
 import { createRemoteEarth } from "./remote-earth";
 export function createEnvironment() {
   const root = new T.Group();
-  root.add(new T.HemisphereLight("#d5d4ff", "#30202b", 2));
-  const key = new T.DirectionalLight("#ffe0c3", 4);
-  key.position.set(-3, 6, 5);
+  RectAreaLightUniformsLib.init();
+  root.add(new T.HemisphereLight("#e7edff", "#958078", 1.35));
+  const key = new T.RectAreaLight("#ffe6d2", 5, 4, 5);
+  key.position.set(-3.5, 5, 5);
+  key.lookAt(0, 1.3, 0);
   root.add(key);
-  const rim = new T.DirectionalLight("#9a8dff", 3);
-  rim.position.set(4, 3, -3);
+  const fill = new T.DirectionalLight("#e5eeff", 1.65);
+  fill.position.set(2, 1, 5);
+  root.add(fill);
+  const rim = new T.DirectionalLight("#a8dfff", 2.4);
+  rim.position.set(3, 4, -3);
   root.add(rim);
   const platform = new T.Group();
   root.add(platform);
   const stone = new T.MeshStandardMaterial({
-    color: "#24283c",
-    roughness: 0.92,
-    transparent: true,
+    color: "#273342", metalness: 0.35, roughness: 0.38, transparent: true,
   });
-  const stage = new T.Mesh(new T.CylinderGeometry(2.25, 1.75, 0.55, 64), stone);
-  stage.position.y = -0.28;
+  // A rounded profile replaces the heavy tapered drum; the top stays at y=0.
+  const profile = [
+    [0, -0.18], [2.04, -0.18], [2.13, -0.15], [2.17, -0.1],
+    [2.17, -0.055], [2.14, -0.018], [2.08, 0], [0, 0],
+  ].map(([r, y]) => new T.Vector2(r, y));
+  const stage = new T.Mesh(new T.LatheGeometry(profile, 96), stone);
   platform.add(stage);
   const lip = new T.Mesh(
-    new T.TorusGeometry(2.18, 0.018, 8, 120),
-    new T.MeshBasicMaterial({ color: "#8a81bd", transparent: true }),
+    new T.TorusGeometry(2.153, 0.009, 8, 128),
+    new T.MeshBasicMaterial({ color: "#91e6ee", transparent: true }),
   );
   lip.rotation.x = Math.PI / 2;
-  lip.position.y = 0.01;
+  lip.position.y = -0.035;
   platform.add(lip);
+  const inset = new T.Mesh(
+    new T.RingGeometry(1.96, 1.965, 128),
+    new T.MeshBasicMaterial({ color: "#647e8f", transparent: true, opacity: 0.35 }),
+  );
+  inset.rotation.x = -Math.PI / 2;
+  inset.position.y = 0.006;
+  platform.add(inset);
+  const halo = new T.Mesh(
+    new T.RingGeometry(2.06, 2.32, 128),
+    new T.ShaderMaterial({
+      transparent: true, depthWrite: false, side: T.DoubleSide,
+      blending: T.AdditiveBlending,
+      uniforms: { reveal: { value: 0 } },
+      vertexShader: `varying vec3 local; void main(){local=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
+      fragmentShader: `varying vec3 local; uniform float reveal; void main(){float r=length(local.xy);float glow=exp(-pow((r-2.15)*17.,2.));gl_FragColor=vec4(.23,.75,.86,glow*.16*reveal);}`,
+    }),
+  );
+  halo.rotation.x = -Math.PI / 2;
+  halo.position.y = -0.12;
+  platform.add(halo);
   // A radial contact texture grounds the original model without a shadow pass.
   const shadowCanvas = document.createElement("canvas");
   shadowCanvas.width = shadowCanvas.height = 64;
   const context = shadowCanvas.getContext("2d")!;
   const gradient = context.createRadialGradient(32, 32, 2, 32, 32, 32);
-  gradient.addColorStop(0, "rgba(0,0,0,.75)");
+  gradient.addColorStop(0, "rgba(5,9,16,.48)");
   gradient.addColorStop(1, "rgba(0,0,0,0)");
   context.fillStyle = gradient;
   context.fillRect(0, 0, 64, 64);
@@ -124,7 +152,9 @@ export function createEnvironment() {
       platform.visible = progress > 0.001;
       platform.position.y = -0.45 * (1 - progress);
       stone.opacity = progress;
-      lip.material.opacity = progress;
+      lip.material.opacity = progress * 0.8;
+      inset.material.opacity = progress * 0.35;
+      halo.material.uniforms.reveal.value = progress;
       shadow.material.opacity = progress * contact;
     },
   };
