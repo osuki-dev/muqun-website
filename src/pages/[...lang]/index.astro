@@ -4,6 +4,7 @@ import PocketWorld from "@/components/world/PocketWorld";
 import FeatureGallery from "@/components/FeatureGallery.astro";
 import CodeBlock from "@/components/CodeBlock.astro";
 import { getMuqunCopy } from "@/i18n/muqun";
+import { gatewayHelp, gatewayCommands } from "@/i18n/gateway-help";
 import { worldCopy } from "@/i18n/world";
 import { getFeatures } from "@/lib/features";
 import { localizedPath, siteLocaleCodes, defaultLocale } from "@/lib/locales";
@@ -25,6 +26,7 @@ const { locale } = Astro.props;
 const copy = getMuqunCopy(locale),
   world = worldCopy[locale];
 const features = getFeatures(locale);
+const help = gatewayHelp[locale];
 ---
 
 <Layout lang={locale} title={copy.meta.title} description={world.intro}>
@@ -116,15 +118,27 @@ const features = getFeatures(locale);
             />
           </div>
           <ol class="world-steps">
-            {copy.setup.steps.map((step, index) => (
+            {help.steps.map((step, index) => (
               <li>
                 <span>{String(index + 1).padStart(2, "0")}</span>
                 <div>
-                  <h3>{step.title}</h3>
+                  <h3>{step}</h3>
+                  {index === 0 && <CodeBlock copy wrap code="muqun-gateway manage" copyLabel={world.copyLabel} copiedLabel={copy.hero.copiedLabel} /> }
                 </div>
               </li>
             ))}
           </ol>
+          <p class="pairing-note">{help.manual}</p>
+          <details class="gateway-help">
+            <summary>{help.heading}<span aria-hidden="true">+</span></summary>
+            <div class="gateway-help-content">
+              <p>{help.keys}</p>
+              {gatewayCommands.map((command, index) => (
+                <CodeBlock copy wrap code={`muqun-gateway ${command}`} label={help.labels[index]} copyLabel={world.copyLabel} copiedLabel={copy.hero.copiedLabel} />
+              ))}
+              <p>{help.serviceNote}</p>
+            </div>
+          </details>
           <ul class="world-requirements">
             {copy.setup.requirements.slice(0, 2).map((item) => (
               <li>{item}</li>

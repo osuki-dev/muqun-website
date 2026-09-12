@@ -1196,3 +1196,25 @@ body:has(.world-story) .mq-wordmark:not([data-link-active="true"]) .mq-wordmark_
 @media (max-width: 359px) {
   body:has(.world-story) .mq-page-header { --brand-scale: 2.2; }
 }
+.world-steps li > div { min-width: 0; width: 100%; }
+.world-steps .mq-code { margin: 16px 0 0; }
+.pairing-note { font-size: 14px !important; line-height: 1.7; }
+.gateway-help { pointer-events: auto; border: 1px solid #ffffff20; border-radius: 20px; background: #111521e8; margin: 24px 0; overflow: hidden; }
+.gateway-help summary { cursor: pointer; list-style: none; padding: 18px 20px; display: flex; justify-content: space-between; gap: 16px; align-items: center; font-size: 16px; }
+.gateway-help summary::-webkit-details-marker { display: none; }
+.gateway-help summary > span { color: #9cdae7; transition: transform .2s; }
+.gateway-help[open] summary > span { transform: rotate(45deg); }
+.gateway-help summary:hover { background: #ffffff05; }
+.gateway-help summary:focus-visible { outline: 2px solid #9cdae7; outline-offset: -4px; }
+.gateway-help-content { padding: 0 20px 20px; }
+.gateway-help-content > p { color: #b2afc0; font-size: 14px; line-height: 1.7; margin: 0 0 20px; }
+.gateway-help-content > p:last-child { margin: 20px 0 0; }
+.gateway-help .mq-code { margin: 12px 0 0; }
+.gateway-help .mq-code__bar { flex-wrap: wrap; gap: 8px; }
+.gateway-help .mq-code__label { flex: 1 1 180px; }
+@media(max-width:699px) {
+  .gateway-help-content { padding: 0 12px 16px; }
+  .gateway-help-content > p { padding-inline: 4px; }
+  .gateway-help .mq-code__bar { padding: 12px; }
+  .gateway-help .mq-code pre { padding: 14px 12px; }
+}

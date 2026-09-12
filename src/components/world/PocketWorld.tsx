@@ -205,12 +205,16 @@ export default function PocketWorld() {
           "-=.35",
         );
     });
+    const helpPanel = document.querySelector(".gateway-help");
+    const refreshLayout = () => ScrollTrigger.refresh();
+    helpPanel?.addEventListener("toggle", refreshLayout);
     const resetMotion = () => {
       if (media.matches) ctx.revert();
     };
     media.addEventListener("change", resetMotion);
     return () => {
       setBrandLink(true);
+      helpPanel?.removeEventListener("toggle", refreshLayout);
       media.removeEventListener("change", motion);
       media.removeEventListener("change", resetMotion);
       document.removeEventListener("visibilitychange", visibility);
