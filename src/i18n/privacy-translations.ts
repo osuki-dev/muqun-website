@@ -4,6 +4,54 @@ interface Policy {
   sections: { title: string; paragraphs: string[] }[];
 }
 export const privacyTranslations: Partial<Record<SiteLocale, Policy>> = {
+  "zh-TW": {
+    intro:
+      "牧群是連接自主管理 Gateway 的行動應用程式，Gateway 可搭配 tmux 或 Herdr 使用。牧群不設帳號，也沒有廣告、分析或追蹤 SDK。",
+    sections: [
+      {
+        title: "儲存在裝置上的資料",
+        paragraphs: [
+          "牧群會儲存提供功能所需的資料：Gateway 名稱、位址、配對時間與存取權杖、應用程式偏好設定、自訂快速指令，以及目前選取的 Gateway。",
+          "Gateway 記錄會加密後儲存在作業系統的安全憑證儲存空間，並標記為僅限本機使用，不會同步至其他裝置，也不會從備份還原。",
+        ],
+      },
+      {
+        title: "Gateway 連線",
+        paragraphs: [
+          "終端機工作階段直接在牧群與你配對的 Gateway 位址之間傳輸。Osuki 不會中繼、接收或儲存終端機輸出、指令、原始碼、對話、Gateway 位址或存取權杖。",
+          "傳送至 Gateway 的要求可能包含目前功能所需的存取權杖、工作區與窗格識別碼、終端機輸入、指令及代理程式輸出。啟用通知後，牧群也會將裝置通知權杖、裝置名稱及平台傳送至 Gateway。",
+          "Gateway 及其網路由你管理。我們建議透過 Tailscale 私有網路連線，並使用 Tailscale Serve 提供私有 HTTPS 位址。HTTP 本身不會加密流量，僅應在可信任的加密私有網路中使用。",
+        ],
+      },
+      {
+        title: "相機與應用程式鎖定",
+        paragraphs: [
+          "只有開啟 QR 碼掃描器時，牧群才會要求相機權限。影像會在裝置上處理，用來讀取配對碼，不會儲存或上傳。你也可以手動輸入 Gateway 位址進行配對。",
+          "啟用應用程式鎖定後，由作業系統執行 Face ID、Touch ID、指紋、臉部辨識或密碼驗證。牧群只會得知驗證是否成功，不會接收或儲存生物辨識資料或密碼。",
+        ],
+      },
+      {
+        title: "通知",
+        paragraphs: [
+          "Gateway 通知是選用功能。啟用後，通知服務會處理傳送提醒所需的裝置通知權杖、平台、最少量的通知內容及傳送中繼資料。這些資料僅用於應用程式功能，不用於廣告或追蹤。關閉通知後，裝置會從已配對的 Gateway 取消通知註冊。",
+        ],
+      },
+      {
+        title: "資料保留與刪除",
+        paragraphs: [
+          "本機 Gateway 資料會保留至你移除該 Gateway 或解除安裝牧群為止。偏好設定與快速指令會保留至修改或解除安裝應用程式為止。Gateway 端的資料由管理者控制；從 Gateway 撤銷裝置授權即可讓權杖失效。",
+          "若你聯絡 Osuki，我們只會使用你提供的資訊回覆該次詢問。",
+        ],
+      },
+      {
+        title: "政策變更與聯絡方式",
+        paragraphs: [
+          "牧群的功能或服務供應商變更時，我們可能更新本政策。最新版本與修訂日期會持續在此頁面提供。",
+          "如對本政策有疑問，請來信 muqun@osuki.dev。",
+        ],
+      },
+    ],
+  },
   "zh-CN": {
     intro:
       "牧群是连接用户自行管理的 Gateway（基于 tmux 或 Herdr）的移动客户端。没有牧群账号、广告、分析或追踪 SDK。",

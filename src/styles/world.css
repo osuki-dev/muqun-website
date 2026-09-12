@@ -991,3 +991,15 @@ button:focus-visible {
 .world-command .mq-code__code {
   font-size: clamp(11px, 0.95vw, 14px);
 }
+/* Separate scale feedback composes with GSAP's entrance transform. */
+.world-button { transition: background-color .2s, border-color .2s, box-shadow .2s, scale .16s; }
+.world-button:active { scale: .97; }
+.text-link:active { opacity: .7; }
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .world-button:hover { scale: 1.025; }
+  .world-button:active { scale: .97; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .world-button { transition: none; }
+  .world-button:active { scale: 1; }
+}

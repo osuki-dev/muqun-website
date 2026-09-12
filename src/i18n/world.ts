@@ -79,10 +79,10 @@ export const worldCopy: Record<SiteLocale, WorldCopy> = {
   },
   "zh-TW": {
     copyLabel: "複製",
-    eyebrow: "讓你的代理，離你近一點",
-    title: "你的代理，",
+    eyebrow: "讓你的 AI 助手，離你近一點",
+    title: "你的 AI 助手，",
     accent: "隨身同行。",
-    intro: "終端、審批、檔案。從你的電腦，直達手機。",
+    intro: "終端機、授權、檔案。從你的電腦，直接連到手機。",
     explore: "認識牧群",
     features: "把工作，放進口袋。",
     featureIntro: "SSH、模擬器、主題，一手掌握。",
@@ -90,7 +90,7 @@ export const worldCopy: Record<SiteLocale, WorldCopy> = {
     development: "開發版預覽",
     privacy: "你的電腦，直接連線。",
     end: "帶上牧群，出發。",
-    simulated: "示意工作階段",
+    simulated: "工作階段示意",
   },
   ja: {
     copyLabel: "コピー",

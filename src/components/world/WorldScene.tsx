@@ -52,9 +52,12 @@ export default function WorldScene({
     pointerX: 0,
     pointerY: 0,
     last: 0,
+    interactionStart: 0,
   });
   const jump = useRef({
     x: 0,
+    z: 0,
+    reveal: 1,
     y: 0,
     turn: 0,
     tilt: 0,
@@ -77,6 +80,51 @@ export default function WorldScene({
     tilt: 0,
   });
   const choreography = useRef<gsap.core.Timeline | null>(null);
+  const interaction = useRef({ lean: 0, approach: 0, look: 0, energy: 0 });
+  const interactionTimeline = useRef<gsap.core.Timeline | null>(null);
+  useEffect(() => {
+    const tl = gsap.timeline({ paused: true });
+    tl.to(
+      interaction.current,
+      { look: -0.42, duration: 0.7, ease: "sine.inOut" },
+      4,
+    )
+      .to(
+        interaction.current,
+        { approach: -0.32, lean: 0.13, duration: 0.8, ease: "power2.inOut" },
+        4.7,
+      )
+      .to(
+        interaction.current,
+        { energy: 1, duration: 0.18, ease: "power2.out" },
+        5.4,
+      )
+      .to(
+        interaction.current,
+        { lean: -0.04, approach: -0.1, duration: 0.5, ease: "back.out(1.4)" },
+        5.55,
+      )
+      .to(
+        interaction.current,
+        { energy: 0, duration: 2, ease: "power2.out" },
+        5.65,
+      )
+      .to(
+        interaction.current,
+        { look: 0, lean: 0, approach: 0, duration: 0.7, ease: "sine.inOut" },
+        6.4,
+      )
+      .set(
+        interaction.current,
+        { look: 0, lean: 0, approach: 0, energy: 0 },
+        12,
+      );
+    interactionTimeline.current = tl;
+    return () => {
+      tl.kill();
+    };
+  }, []);
+
   useEffect(() => {
     const timeline = gsap.timeline({ paused: true });
     chapters.forEach((chapter, index) => {
@@ -125,38 +173,46 @@ export default function WorldScene({
           window.scrollY < 100
         ) {
           Object.assign(jump.current, {
-            x: 6,
-            turn: -Math.PI / 2,
+            x: 0,
+            z: -8,
+            y: -0.7,
+            turn: 0,
+            reveal: 0,
             walking: true,
           });
+          state.current.interactionStart = Infinity;
           greeting.current = gsap
             .timeline({
               onUpdate: invalidate,
               onComplete: () => {
-                jump.current.walking = false;
+                state.current.interactionStart = state.current.time;
                 invalidate();
               },
             })
+            .addLabel("approach", 0)
             .to(
               jump.current,
-              { x: 0, duration: 2.4, ease: "power1.inOut" },
-              0.15,
+              { z: 0, y: 0, duration: 2.8, ease: "power1.inOut" },
+              "approach",
             )
-            .to(
-              jump.current,
-              { turn: 0, duration: 0.55, ease: "sine.inOut" },
-              2.2,
-            )
+            .addLabel("arrive", 2.8)
+            .set(jump.current, { walking: false }, "arrive")
             .to(
               jump.current,
               { squash: 0.94, duration: 0.12, ease: "sine.out" },
-              2.55,
+              "arrive",
             )
             .to(jump.current, {
               squash: 1,
               duration: 0.35,
-              ease: "back.out(1.5)",
-            });
+              ease: "back.out(1.4)",
+            })
+            .addLabel("reveal", 3.35)
+            .to(
+              jump.current,
+              { reveal: 1, duration: 0.85, ease: "power2.out" },
+              "reveal",
+            );
         }
         invalidate();
       },
@@ -223,8 +279,11 @@ export default function WorldScene({
 
   useEffect(() => {
     greeting.current?.kill();
+    state.current.interactionStart = state.current.time;
     Object.assign(jump.current, {
       x: 0,
+      z: 0,
+      reveal: 1,
       y: 0,
       turn: 0,
       tilt: 0,
@@ -244,13 +303,23 @@ export default function WorldScene({
       dt = Math.min(delta, 1 / 30),
       mobile = size.width < 700;
     if (!reduced) s.time += dt;
+    const chapterPhase = s.exact * 1.6;
+    interactionTimeline.current?.time(
+      reduced || jump.current.reveal < 1 || !Number.isFinite(s.interactionStart)
+        ? 0
+        : Math.max(0, s.time - s.interactionStart + chapterPhase) % 12,
+    );
+    const play = interaction.current;
     const mood = [...expressionBeats]
       .reverse()
       .find((beat) => s.exact >= beat.progress)!.mood;
-    if (jump.current.walking && s.exact > 0.08) {
+    if ((jump.current.walking || jump.current.reveal < 1) && s.exact > 0.08) {
       greeting.current?.kill();
+      s.interactionStart = s.time;
       Object.assign(jump.current, {
         x: 0,
+        z: 0,
+        reveal: 1,
         y: 0,
         turn: 0,
         tilt: 0,
@@ -261,11 +330,17 @@ export default function WorldScene({
     if (moodClock.current.mood !== mood)
       moodClock.current = { mood, start: s.time };
     animate.current?.(
-      jump.current.walking ? "walk" : mood,
+      jump.current.walking
+        ? "walk"
+        : play.energy > 0.1
+          ? "happy"
+          : play.look < -0.1
+            ? "idle"
+            : mood,
       s.time - moodClock.current.start,
       dt,
       reduced,
-      s.pointerX,
+      s.pointerX + play.look,
     );
     s.smooth = reduced
       ? Math.round(s.exact)
@@ -286,20 +361,29 @@ export default function WorldScene({
       camera.position.x -= 2.45;
     }
     camera.lookAt(target);
-    world.root.rotation.y = p.turn * 0.2;
+    world.root.rotation.y = 0;
     world.orbit.rotation.y = s.smooth * 0.45;
-    world.panels.scale.setScalar(0.85 + p.orbit * 0.15);
-    world.update(reduced ? 0 : s.time);
+    world.panels.visible = jump.current.reveal > 0.001;
+    world.panels.scale.setScalar(0.9);
+    world.panels.position.y = -0.2 * (1 - jump.current.reveal);
+    world.update(
+      reduced ? 0 : s.time,
+      dt,
+      play.energy,
+      reduced,
+      jump.current.reveal,
+    );
     if (companion.current) {
-      companion.current.position.x = jump.current.x;
+      companion.current.position.x = jump.current.x + play.approach;
+      companion.current.position.z = jump.current.z;
       companion.current.rotation.y =
-        p.turn + jump.current.turn + (reduced ? 0 : s.pointerX);
+        p.turn + jump.current.turn + play.look + (reduced ? 0 : s.pointerX);
       companion.current.position.y = reduced
         ? 0
         : Math.sin(s.time * 1.6) * 0.055 + jump.current.y + p.lift;
       companion.current.rotation.z = reduced
         ? 0
-        : Math.sin(s.time) * 0.025 + jump.current.tilt + p.tilt;
+        : Math.sin(s.time) * 0.025 + jump.current.tilt + p.tilt + play.lean;
       const squash = reduced ? 1 : jump.current.squash;
       companion.current.scale.set(
         p.scale / Math.sqrt(squash),
@@ -318,6 +402,8 @@ export default function WorldScene({
         progress: s.exact.toFixed(3),
         mood,
         textures: String(gl.info.memory.textures),
+        entryZ: jump.current.z.toFixed(2),
+        earthReveal: jump.current.reveal.toFixed(2),
       });
   });
   return (

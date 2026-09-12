@@ -12,7 +12,7 @@ export const chapters = [
   },
   {
     id: "terminal",
-    camera: [2.8, 3.1, 9.8],
+    camera: [0.65, 3.1, 10.2],
     target: [0, 1.4, 0],
     turn: 0.3,
     orbit: 1,
@@ -22,7 +22,7 @@ export const chapters = [
   },
   {
     id: "connect",
-    camera: [-2.2, 5.4, 10.4],
+    camera: [-0.65, 4.4, 10.8],
     target: [0, 1, 0],
     turn: 6.05,
     orbit: 0.65,

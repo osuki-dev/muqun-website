@@ -17,6 +17,6 @@ export const chrome: ChromeCopy = {
   privacy: {
     title: '隱私權政策',
     lastUpdatedLabel: '最後更新',
-    sourceNote: '本政策以英文發布，如有疑義，以英文版本為準。',
+    sourceNote: '本譯文供參考；如有歧義，以英文原文為準。',
   },
 };

@@ -10,9 +10,9 @@ import type { MuqunCopy } from './types';
  */
 export const copy: MuqunCopy = {
   meta: {
-    title: '牧群 — 你的代理程式，隨時隨地',
+    title: '牧群 — 隨身的遠端工作台',
     description:
-      '你人不在桌前的時候，程式開發代理程式停下來請求授權。牧群把那個回答放進你的手機：真正的終端機、鎖定畫面上的核准，以及從口袋裡開始的新任務——直連你自己的 Mac 或 Linux 電腦。',
+      '用手機連上自己的電腦或伺服器，操作 SSH、終端機、授權、檔案與模擬器。',
   },
   hero: {
     paneLabel: '牧群',
@@ -20,9 +20,9 @@ export const copy: MuqunCopy = {
     eyebrow: '面板 2 · claude code · 等待回應 00:14',
     heading: '你的代理程式在等一個按鍵。',
     sub: '一行指令、一次掃描——之後你電腦上的每個代理程式，都會把狀況回報到你的手機。',
-    appStore: '取得牧群',
+    appStore: 'App Store',
     googlePlay: '在 Google Play 取得',
-    installLabel: '接著，在你自己的電腦上：',
+    installLabel: '在你的電腦或伺服器上執行：',
     copyLabel: '複製安裝指令',
     copiedLabel: '已複製',
     terminalAlt:
@@ -37,7 +37,7 @@ export const copy: MuqunCopy = {
       '停在權限詢問上的終端機窗格：一個編碼代理要求編輯 src/theme.ts，正在等三個回答的其中一個。',
   },
   pillars: {
-    paneLabel: '這是拿來做什麼的',
+    paneLabel: '隨身工具',
     items: [
       {
         pane: '核准',
@@ -138,11 +138,11 @@ export const copy: MuqunCopy = {
         body: '它會下載編譯好的程式——不需要 Rust，也不需要編譯器——接著完成設定、啟動它，並開啟配對面板。',
       },
       {
-        title: 'QR 碼已經在畫面上了',
+        title: '開啟牧群，掃描配對 QR 碼',
         body: '第一次安裝時，Gateway 會開啟自己的面板，就在其他面板旁邊，碼已經在裡面了。',
       },
       {
-        title: '掃描它，你就進去了',
+        title: '確認配對，開啟工作區',
         body: '把牧群的相機對準那個面板，再把電腦上顯示的短碼輸入回去。伺服器會轉綠，它的面板就在你的手機上了。',
       },
     ],
@@ -188,12 +188,12 @@ export const copy: MuqunCopy = {
     themeAlt: '同一個牧群工作階段，套用 {pack} 套件。',
   },
   promise: {
-    paneLabel: '說好的事',
+    paneLabel: '你的隱私權',
     lines: [
       '你的手機直接和你自己的電腦配對。',
-      '沒有牧群帳號，中間也沒有任何屬於我們的中繼伺服器。',
-      '沒有廣告、沒有分析追蹤、沒有第三方追蹤 SDK。',
-      '買斷一次，之後的每一次更新都免費。',
+      '不需牧群帳號，也不經過我們的中繼伺服器。',
+      '沒有廣告、分析或第三方追蹤 SDK。',
+      '一次買斷，後續更新免費。',
       '想要什麼功能、遇到什麼問題都可以提；下一版就是從那裡長出來的。',
     ],
     link: '閱讀隱私權政策',
@@ -201,7 +201,7 @@ export const copy: MuqunCopy = {
   },
   footer: {
     heading: '你的代理程式，隨時隨地。',
-    appStore: '取得牧群',
+    appStore: 'App Store',
     googlePlay: 'Google Play',
     installLabel: '安裝 Gateway',
     support: '支援',
@@ -209,12 +209,12 @@ export const copy: MuqunCopy = {
   support: {
     metaTitle: '牧群支援',
     metaDescription:
-      '協助你安裝 Gateway、配對牧群、建立安全的 Tailscale 連線，以及處理通知與裝置存取權。',
+      '查看安裝、配對、連線與通知的排解方式，或到 GitHub Issues 回報問題。',
     eyebrow: '牧群 · 支援',
-    heading: '讓你自己的電腦隨時觸手可及。',
-    lead: '先從下方的檢查項目開始。如果牧群仍然無法連線，請提供裝置型號、iOS 或 Android 版本、你使用的後端（tmux 或 Herdr）與其版本、Gateway 版本，以及應用程式中顯示的完整訊息。切勿傳送 Gateway 權杖或配對用的 QR 碼。',
+    heading: '遇到問題？從這裡開始。',
+    lead: '先檢查下列項目。若問題仍未解決，請到 GitHub Issues 提供裝置型號、系統與 Gateway 版本，以及重現步驟。請勿附上存取權杖或配對 QR 碼。',
     emailCta: '寄信給牧群支援',
-    issueCta: '建立 issue',
+    issueCta: '前往 GitHub Issues',
     contactBefore: '電子郵件：',
     contactAfter: '一般回覆時間：兩個工作天內。',
     networkEyebrow: '建議的網路設定',
@@ -231,7 +231,7 @@ export const copy: MuqunCopy = {
       },
       {
         title: '修復連線',
-        body: '確認正在執行的是 tmux，或 Herdr 0.7.5 或更新版本，以及最新版的 Gateway。確認手機和電腦連得到同一個私有位址，然後在牧群裡重新開啟該伺服器。',
+        body: '確認正在執行的是 tmux，或 Herdr 0.7.5 或更新版本，以及最新版的 Gateway。確認手機可連上已配對的伺服器位址，然後在牧群裡重新開啟該伺服器。',
       },
       {
         title: '移除裝置',
@@ -244,7 +244,7 @@ export const copy: MuqunCopy = {
     ],
     safetyHeading: '隱私與安全回報',
     safetyBody:
-      '支援團隊絕不需要你的存取權杖、完整終端機輸出、原始碼或配對用的 QR 碼。附上截圖或紀錄檔之前，請先移除機密資訊。',
+      '附上螢幕截圖或記錄檔前，請移除存取權杖、配對 QR 碼、私人程式碼與其他機密資訊。',
     safetyLink: '閱讀隱私權政策',
   },
 };

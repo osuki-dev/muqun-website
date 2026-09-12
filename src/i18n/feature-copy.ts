@@ -23,7 +23,7 @@ export const featureCopy: Record<SiteLocale, Record<FeatureId, Entry>> = {
     ],
     approve: ["轻点，继续工作", "在锁屏上回复代理的权限请求。"],
     watch: ["真正的终端", "实时输出、精准选取、回看历史，保留代理原本的配色。"],
-    send: ["发出下一个想法", "附上照片和文件，打字或语音输入提示。"],
+    send: ["发出下一个想法", "把照片和文件发送给代理。"],
     files: ["查看它的成果", "阅读代码、检查差异、预览图片，无需离开 App。"],
     serve: ["预览你的网页", "输入端口，通过已有连接打开开发服务器。"],
     away: ["离开桌面，保持连接", "从手机切换工作区，查看代理进度。"],
@@ -49,10 +49,7 @@ export const featureCopy: Record<SiteLocale, Record<FeatureId, Entry>> = {
       "Настоящий терминал",
       "Вывод в реальном времени, точное выделение и история. С цветами вашего агента.",
     ],
-    send: [
-      "Отправьте новую идею",
-      "Прикрепите фото и файлы. Напишите или продиктуйте запрос.",
-    ],
+    send: ["Отправьте новую идею", "Отправляйте агенту фотографии и файлы."],
     files: [
       "Откройте результат",
       "Читайте код, проверяйте изменения и смотрите изображения прямо в приложении.",
@@ -87,10 +84,7 @@ export const featureCopy: Record<SiteLocale, Record<FeatureId, Entry>> = {
       "Terminal thực thụ",
       "Đầu ra trực tiếp, chọn văn bản chính xác và lịch sử cuộn. Giữ nguyên màu của trợ lý.",
     ],
-    send: [
-      "Gửi ý tưởng tiếp theo",
-      "Đính kèm ảnh và tệp. Nhập hoặc đọc lời nhắc.",
-    ],
+    send: ["Gửi ý tưởng tiếp theo", "Gửi ảnh và tệp cho trợ lý."],
     files: [
       "Xem thành quả",
       "Đọc mã, kiểm tra thay đổi và xem ảnh ngay trong ứng dụng.",
@@ -125,10 +119,7 @@ export const featureCopy: Record<SiteLocale, Record<FeatureId, Entry>> = {
       "The real terminal",
       "Live output, exact text selection and scrollback. Your agent’s colours included.",
     ],
-    send: [
-      "Send the next idea",
-      "Attach photos and files. Type or dictate a prompt.",
-    ],
+    send: ["Send the next idea", "Send photos and files to your agent."],
     files: [
       "Open what it made",
       "Read code, inspect diffs and preview images without leaving the app.",
@@ -145,22 +136,22 @@ export const featureCopy: Record<SiteLocale, Record<FeatureId, Entry>> = {
   "zh-TW": {
     ssh: [
       "SSH，隨時連線",
-      "密碼、金鑰、主機驗證。開啟終端，或用通道連上 Gateway。",
+      "密碼、金鑰、主機驗證。開啟終端機，或透過 SSH 通道連上 Gateway。",
     ],
     themes: [
       "換成你的樣子",
-      "自己的圖片、配色、終端色彩。預覽、調整，再套用。",
+      "自訂背景圖片、配色與終端機色彩。預覽、調整，再套用。",
     ],
     simulator: [
       "手機，就是預覽視窗",
       "透過自己的 simfarm 服務，啟動、預覽並操作模擬器。",
     ],
-    approve: ["點一下，繼續工作", "直接從鎖定畫面回應代理的權限請求。"],
-    watch: ["真正的終端", "即時輸出、精準選字、回看紀錄，保留代理原有配色。"],
-    send: ["傳送下一個靈感", "附上照片或檔案，用打字或語音交代任務。"],
+    approve: ["點一下，繼續工作", "直接在鎖定畫面回應 AI 助手的授權要求。"],
+    watch: ["完整的終端機", "即時輸出、精準選取、捲動回看，保留原有配色。"],
+    send: ["傳送下一個靈感", "將照片與檔案傳給 AI 助手。"],
     files: ["看看它做了什麼", "程式碼、差異、圖片，不離開 App 就能查看。"],
-    serve: ["預覽你的網頁", "輸入連接埠，透過同一條私人連線開啟開發伺服器。"],
-    away: ["一眼，接上進度", "回來就知道哪些已完成、哪些正等你。"],
+    serve: ["預覽你的網頁", "輸入通訊埠，透過現有連線開啟開發伺服器。"],
+    away: ["一眼掌握進度", "回來就知道哪些已完成、哪些正等你。"],
   },
   ja: {
     ssh: [
@@ -183,7 +174,7 @@ export const featureCopy: Record<SiteLocale, Record<FeatureId, Entry>> = {
       "本物のターミナル",
       "ライブ出力、正確なテキスト選択、履歴。エージェントの色もそのまま。",
     ],
-    send: ["次のアイデアを送る", "写真やファイルを添付。入力でも音声でも。"],
+    send: ["次のアイデアを送る", "写真やファイルをエージェントに送信。"],
     files: ["できたものを見る", "コード、差分、画像をアプリ内で確認。"],
     serve: [
       "Webアプリをプレビュー",
@@ -215,10 +206,7 @@ export const featureCopy: Record<SiteLocale, Record<FeatureId, Entry>> = {
       "진짜 터미널",
       "실시간 출력, 정확한 텍스트 선택과 기록. 원래 색상 그대로.",
     ],
-    send: [
-      "다음 아이디어 보내기",
-      "사진과 파일을 첨부하고, 입력하거나 말하세요.",
-    ],
+    send: ["다음 아이디어 보내기", "에이전트에게 사진과 파일을 보내세요."],
     files: ["결과물 확인", "코드, 변경 사항, 이미지를 앱 안에서 확인하세요."],
     serve: [
       "웹 앱 미리보기",
@@ -252,7 +240,7 @@ export const featureCopy: Record<SiteLocale, Record<FeatureId, Entry>> = {
     ],
     send: [
       "Die nächste Idee senden",
-      "Fotos und Dateien anhängen. Tippen oder diktieren.",
+      "Fotos und Dateien an deinen Agenten senden.",
     ],
     files: [
       "Ergebnisse ansehen",
@@ -290,7 +278,7 @@ export const featureCopy: Record<SiteLocale, Record<FeatureId, Entry>> = {
     ],
     send: [
       "Envoyez votre prochaine idée",
-      "Joignez photos et fichiers. Écrivez ou dictez.",
+      "Envoyez des photos et des fichiers à votre agent.",
     ],
     files: [
       "Ouvrez le résultat",
@@ -326,10 +314,7 @@ export const featureCopy: Record<SiteLocale, Record<FeatureId, Entry>> = {
       "El terminal real",
       "Salida en directo, selección exacta e historial. Con los colores de tu agente.",
     ],
-    send: [
-      "Envía la próxima idea",
-      "Adjunta fotos y archivos. Escribe o dicta.",
-    ],
+    send: ["Envía la próxima idea", "Envía fotos y archivos a tu agente."],
     files: [
       "Abre el resultado",
       "Código, diferencias e imágenes, sin salir de la app.",
@@ -364,7 +349,7 @@ export const featureCopy: Record<SiteLocale, Record<FeatureId, Entry>> = {
       "O terminal de verdade",
       "Saída ao vivo, seleção exata e histórico. Com as cores do seu agente.",
     ],
-    send: ["Envie a próxima ideia", "Anexe fotos e arquivos. Digite ou dite."],
+    send: ["Envie a próxima ideia", "Envie fotos e arquivos ao seu agente."],
     files: [
       "Abra o resultado",
       "Código, diferenças e imagens sem sair do app.",
