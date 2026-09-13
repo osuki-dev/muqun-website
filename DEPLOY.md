@@ -64,9 +64,27 @@ same way, so leaving `BUN_VERSION` unset is not an option either.
 already in the same account. Add the routes in the dashboard, or uncomment the
 `routes` block in `wrangler.jsonc` once the zone id is known.
 
+## The themes API and its bucket
+
+`/api/themes/` is served by the Worker from the R2 bucket `muqun-themes`,
+bound as `THEMES` in `wrangler.jsonc`. The bucket is filled by the
+`osuki-dev/muqun-themes` repository: after every merge its Build workflow
+packs the sources and mirrors `index.json` and `dist/*.muqun-theme` into the
+bucket at those exact keys (`.github/workflows/build.yml` there). Nothing in
+this repository writes to it, and the site needs no token to read it; the
+binding is the credential.
+
+The bucket needs no public URL and no custom domain. The Worker is the only
+reader, adds the CORS and cache headers, and puts answers in the edge cache
+(the index for a minute, packages for an hour). `wrangler dev` binds a local,
+empty simulation of the bucket, so the gallery is empty under `bun run
+preview`; use `bun run dev:fixture` to see it populated.
+
 ## What the Worker is for
 
-Two things, both in `worker/index.ts`:
+Three things, all in `worker/index.ts`:
+
+- **`/api/themes/`** — the themes catalogue and packages, above.
 
 - **`/gateway.sh`** — a 302 straight to the installer on GitHub. The same file
   is published at `osuki.dev/muqun/gateway.sh`, which keeps its own direct

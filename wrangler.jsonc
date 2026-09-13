@@ -28,6 +28,13 @@
   //   { "pattern": "www.muqun.dev", "custom_domain": true }
   // ],
 
+  // The themes catalogue and packages, mirrored into R2 by the muqun-themes
+  // repository's CI after every merge and served at /api/themes/ by the
+  // Worker. Read-only from here; nothing on this site writes to it.
+  "r2_buckets": [
+    { "binding": "THEMES", "bucket_name": "muqun-themes" }
+  ],
+
   "observability": {
     "enabled": true
   }

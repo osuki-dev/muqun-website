@@ -154,8 +154,17 @@ const themesRepo = themesRepoConfig(import.meta.env);
 
 export const themesRepoUrl = themesRepo.repoUrl;
 
-/** Root of the release ref's files on the raw host, trailing slash included. */
+/** Root of the release ref's files on the raw host, trailing slash included. Dev proxy only. */
 export const themesRawBase = themesRepo.rawBase;
+
+/**
+ * What the gallery actually reads: this site's own themes API, served by the
+ * Worker from the R2 bucket the themes repository's CI mirrors into. Relative
+ * in production, so it follows whatever host the site is on; absolute in
+ * `astro dev`, which does not run the Worker, so a fresh checkout with no
+ * `.env` still shows the real catalogue.
+ */
+export const themesApiBase = import.meta.env.PROD ? '/api/themes/' : 'https://muqun.dev/api/themes/';
 
 /** A theme's authored source is this plus its id. */
 export const themesSourceBase = themesRepo.sourceBase;

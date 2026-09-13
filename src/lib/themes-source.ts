@@ -3,29 +3,31 @@
  *
  * Two fetches, both from the browser and both from the same base URL:
  *
- *   <base>index.json                 the list, written by `muqun-theme index`
+ *   <base>index.json                 the list, written by `muqun-theme build`
  *   <base>dist/<id>.muqun-theme      one package, read by `theme-package.ts`
  *
- * In production `<base>` is the repository on GitHub's raw host, which sends
- * `Access-Control-Allow-Origin: *` and so can be read from this origin with
- * no server of ours in between. The index carries everything a card needs --
- * name, description, tags, size -- so nothing is unzipped until a preview is
- * actually on screen.
+ * In production `<base>` is this site's own `/api/themes/`: the Worker in
+ * `worker/index.ts` serves an R2 bucket that the themes repository's CI
+ * fills after every merge. Same origin, so no CORS, no GitHub token, and no
+ * dependency on whether that repository is public. The CLI's `list` and the
+ * app read the same address, so there is one catalogue, not one per reader.
+ * The index carries everything a card needs -- name, description, tags,
+ * size -- so nothing is unzipped until a preview is actually on screen.
  *
  * ── Local development ────────────────────────────────────────────────────────
- * The repository is private until launch, and a token must never reach the
- * client. So the dev server, and only the dev server, can stand in for the
- * raw host: `scripts/themes-dev-source.mjs` serves `/__muqun-themes/` either
- * from a fixture directory or by proxying to GitHub with a token it reads
- * from the environment. It swaps `__MUQUN_THEMES_DEV_BASE__` in at that point;
- * a production build always defines it `null` and the public base wins.
+ * `astro dev` does not run the Worker, so a relative `/api/themes/` would hit
+ * nothing. With no configuration, dev reads the production API. Otherwise
+ * `scripts/themes-dev-source.mjs` serves `/__muqun-themes/` from a fixture
+ * directory or by proxying GitHub with a token it reads from the environment,
+ * and swaps `__MUQUN_THEMES_DEV_BASE__` in; a production build always defines
+ * it `null`.
  * ────────────────────────────────────────────────────────────────────────────
  */
-import { themesRawBase, themesSourceBase } from './muqun-links';
+import { themesApiBase, themesSourceBase } from './muqun-links';
 
 declare const __MUQUN_THEMES_DEV_BASE__: string | null;
 
-const base: string = __MUQUN_THEMES_DEV_BASE__ ?? themesRawBase;
+const base: string = __MUQUN_THEMES_DEV_BASE__ ?? themesApiBase;
 
 /** One row of `index.json`. The optional fields are the manifest's own. */
 export interface ThemeIndexEntry {
