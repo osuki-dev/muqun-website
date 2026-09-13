@@ -74,7 +74,10 @@ export function themeIndexUrl(): string {
 }
 
 export function themePackageUrl(entry: ThemeIndexEntry): string {
-  return `${base}${entry.package}`;
+  // The API serves a package by its public name, without the repository's
+  // dist/ prefix; a dev source (fixture or raw host) keeps the repository
+  // layout, so there the `package` path is the URL.
+  return __MUQUN_THEMES_DEV_BASE__ ? `${base}${entry.package}` : `${base}${entry.id}.muqun-theme`;
 }
 
 /** The theme's authored source in the repository (on `main`), for the "source" link. */

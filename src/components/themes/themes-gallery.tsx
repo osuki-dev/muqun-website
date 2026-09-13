@@ -21,6 +21,7 @@
  * ────────────────────────────────────────────────────────────────────────────
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { flushSync } from 'react-dom';
 
 import type { ThemesCopy } from '@/i18n/themes';
 import { unpackTheme, type ThemePackage } from '@/lib/theme-package';
@@ -85,23 +86,60 @@ function usePackage(entry: ThemeIndexEntry | null, wanted: boolean): PackState {
   return state;
 }
 
-function useHash(): [string, (next: string) => void] {
-  const [hash, setHash] = useState('');
+/**
+ * Which theme is open is the path: `/themes/<id>/`, under whatever locale
+ * prefix the page has. The Worker serves the gallery page for any such path,
+ * so a detail link works cold; here it is read from the URL on load and on
+ * back/forward, and written with `pushState` when a card is opened. An old
+ * `#<id>` link still opens the theme, and is rewritten to its path.
+ */
+const THEME_ID = /^[a-z][a-z0-9-]*$/;
+const THEME_PATH = /^((?:\/[a-z]{2}(?:-[A-Z]{2})?)?\/themes)(?:\/([a-z][a-z0-9-]*))?\/?$/;
+
+function readRoute(): { base: string; id: string } {
+  const match = THEME_PATH.exec(window.location.pathname);
+  const base = match?.[1] ?? '/themes';
+  const fromPath = match?.[2] ?? '';
+  const fromHash = decodeURIComponent(window.location.hash.replace(/^#/, ''));
+  return { base, id: fromPath || (THEME_ID.test(fromHash) ? fromHash : '') };
+}
+
+function useRoute(): [string, (next: string) => void, string] {
+  const [route, setRoute] = useState({ base: '/themes', id: '' });
   useEffect(() => {
-    const read = () => setHash(decodeURIComponent(window.location.hash.replace(/^#/, '')));
+    const read = () => {
+      const next = readRoute();
+      if (next.id && window.location.hash) history.replaceState(null, '', `${next.base}/${next.id}/`);
+      setRoute(next);
+    };
     read();
+    window.addEventListener('popstate', read);
     window.addEventListener('hashchange', read);
-    return () => window.removeEventListener('hashchange', read);
+    return () => {
+      window.removeEventListener('popstate', read);
+      window.removeEventListener('hashchange', read);
+    };
   }, []);
-  const navigate = useCallback((next: string) => {
-    if (next) {
-      window.location.hash = next;
-    } else {
-      history.pushState(null, '', window.location.pathname + window.location.search);
-      setHash('');
-    }
-  }, []);
-  return [hash, navigate];
+  const navigate = useCallback(
+    (id: string) => {
+      const go = () => {
+        history.pushState(null, '', id ? `${route.base}/${id}/` : `${route.base}/`);
+        flushSync(() => setRoute((current) => ({ ...current, id })));
+        if (id) window.scrollTo({ top: 0 });
+      };
+      // A cross-fade between list and detail where the browser offers one,
+      // and none for anyone who asked for less motion.
+      const transition = (document as Document & { startViewTransition?: (update: () => void) => unknown })
+        .startViewTransition;
+      if (transition && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        transition.call(document, go);
+      } else {
+        go();
+      }
+    },
+    [route.base],
+  );
+  return [route.id, navigate, route.base];
 }
 
 function useInView<T extends Element>(): [React.RefObject<T | null>, boolean] {
@@ -141,7 +179,7 @@ function formatBytes(bytes: number, locale: string): string {
 export default function ThemesGallery({ locale, copy, repoUrl }: Props) {
   const [index, setIndex] = useState<IndexState>({ status: 'loading' });
   const [attempt, setAttempt] = useState(0);
-  const [hash, navigate] = useHash();
+  const [hash, navigate, base] = useRoute();
 
   useEffect(() => {
     const controller = new AbortController();
@@ -158,6 +196,24 @@ export default function ThemesGallery({ locale, copy, repoUrl }: Props) {
 
   const entries = index.status === 'ready' ? index.entries : [];
   const selected = useMemo(() => entries.find((entry) => entry.id === hash) ?? null, [entries, hash]);
+
+  // The same search `muqun-theme list --search` does: a case-insensitive
+  // substring over id, name, author, description and tags.
+  const [query, setQuery] = useState('');
+  const needle = query.trim().toLowerCase();
+  const visible = useMemo(
+    () =>
+      needle
+        ? entries.filter((entry) =>
+            [entry.id, entry.name, entry.author, entry.description, ...(entry.tags ?? [])]
+              .filter((part): part is string => typeof part === 'string')
+              .join('\n')
+              .toLowerCase()
+              .includes(needle),
+          )
+        : entries,
+    [entries, needle],
+  );
 
   if (index.status === 'loading') {
     return (
@@ -202,15 +258,33 @@ export default function ThemesGallery({ locale, copy, repoUrl }: Props) {
       {selected && (
         <ThemeDetail key={selected.id} entry={selected} locale={locale} copy={copy} onBack={() => navigate('')} />
       )}
-      <p className="themes-count mq-mono-label">{copy.count.replace('{count}', String(entries.length))}</p>
+      <div className="themes-toolbar">
+        <p className="themes-count mq-mono-label">{copy.count.replace('{count}', String(visible.length))}</p>
+        <input
+          type="search"
+          className="themes-search"
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          placeholder={copy.search}
+          aria-label={copy.search}
+          autoComplete="off"
+          spellCheck={false}
+        />
+      </div>
+      {visible.length === 0 && (
+        <p className="themes-status" role="status">
+          {copy.noMatch.replace('{query}', query.trim())}
+        </p>
+      )}
       <ul className="themes-grid">
-        {entries.map((entry) => (
+        {visible.map((entry) => (
           <ThemeCard
             key={entry.id}
             entry={entry}
             locale={locale}
             copy={copy}
             current={entry.id === hash}
+            href={`${base}/${entry.id}/`}
             onOpen={() => navigate(entry.id)}
           />
         ))}
@@ -224,12 +298,14 @@ function ThemeCard({
   locale,
   copy,
   current,
+  href,
   onOpen,
 }: {
   entry: ThemeIndexEntry;
   locale: string;
   copy: ThemesCopy;
   current: boolean;
+  href: string;
   onOpen: () => void;
 }) {
   const [ref, inView] = useInView<HTMLLIElement>();
@@ -265,7 +341,7 @@ function ThemeCard({
       </div>
       <div className="themes-card__body">
         <h3 className="themes-card__name">
-          <a href={`#${entry.id}`} onClick={(event) => (event.preventDefault(), onOpen())}>
+          <a href={href} onClick={(event) => (event.preventDefault(), onOpen())}>
             {entry.name}
           </a>
         </h3>

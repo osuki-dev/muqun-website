@@ -63,7 +63,9 @@ const SECURITY_HEADERS: Record<string, string> = {
  * on purpose: the whole point is that other origins can read this.
  */
 const THEMES_API = '/api/themes/';
-const THEME_KEY = /^(index\.json|dist\/[a-z][a-z0-9-]*\.muqun-theme)$/;
+const THEME_DETAIL = /^((?:\/[a-z]{2}(?:-[A-Z]{2})?)?\/themes)\/([a-z][a-z0-9-]*)\/?$/;
+/** `index.json`, or a package by its public name; `dist/<id>.muqun-theme` is the bucket key. */
+const THEME_KEY = /^(index\.json|(?:dist\/)?[a-z][a-z0-9-]*\.muqun-theme)$/;
 const INDEX_MAX_AGE = 60;
 const PACKAGE_MAX_AGE = 3600;
 
@@ -90,7 +92,10 @@ function apiError(status: number, error: string): Response {
 function themeKey(pathname: string): string | null {
   const rest = pathname.slice(THEMES_API.length);
   if (rest === '') return 'index.json';
-  return THEME_KEY.test(rest) ? rest : null;
+  if (!THEME_KEY.test(rest)) return null;
+  // The public URL is /api/themes/<id>.muqun-theme; the bucket keeps the
+  // repository's layout, dist/<id>.muqun-theme, which also still answers.
+  return rest === 'index.json' || rest.startsWith('dist/') ? rest : `dist/${rest}`;
 }
 
 async function serveTheme(
@@ -163,7 +168,15 @@ export default {
       return key ? serveTheme(request, env, ctx, key) : apiError(404, 'not found');
     }
 
-    const response = await env.ASSETS.fetch(request);
+    // `/themes/<id>/`, in any locale, is the gallery page with that theme
+    // open. The page is static and the theme list is not, so the same file
+    // answers for every id and the page reads the id from its own path.
+    const detail = THEME_DETAIL.exec(url.pathname);
+    const asset =
+      detail && detail[2] !== 'preview'
+        ? await env.ASSETS.fetch(new Request(new URL(`${detail[1]}/`, url).toString(), request))
+        : await env.ASSETS.fetch(request);
+    const response = asset;
     // A new Response, because the one the asset binding hands back has
     // immutable headers.
     const headers = new Headers(response.headers);

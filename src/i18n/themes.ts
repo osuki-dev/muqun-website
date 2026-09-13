@@ -29,6 +29,10 @@ export interface ThemesCopy {
   retry: string;
   /** Takes `{count}`. */
   count: string;
+  /** Placeholder of the search field. */
+  search: string;
+  /** Takes `{query}`. Shown when the search matches nothing. */
+  noMatch: string;
   card: {
     preview: string;
     /** Takes `{size}`. For a package too large to fetch unasked. */
@@ -104,6 +108,8 @@ const en: ThemesCopy = {
   failed: 'The theme list could not be loaded right now.',
   retry: 'Try again',
   count: '{count} themes',
+  search: 'Search themes',
+  noMatch: 'No themes match “{query}”.',
   card: {
     preview: 'Preview',
     loadPreview: 'Load preview ({size})',
@@ -175,6 +181,8 @@ const zhCN: ThemesCopy = {
   failed: '暂时无法加载主题列表。',
   retry: '重试',
   count: '{count} 个主题',
+  search: '搜索主题',
+  noMatch: '没有与“{query}”匹配的主题。',
   card: {
     preview: '预览',
     loadPreview: '加载预览（{size}）',
@@ -246,6 +254,8 @@ const zhTW: ThemesCopy = {
   failed: '暫時無法載入主題清單。',
   retry: '再試一次',
   count: '{count} 個主題',
+  search: '搜尋主題',
+  noMatch: '沒有與「{query}」相符的主題。',
   card: {
     preview: '預覽',
     loadPreview: '載入預覽（{size}）',
@@ -317,6 +327,8 @@ const ja: ThemesCopy = {
   failed: '現在テーマ一覧を読み込めません。',
   retry: 'もう一度試す',
   count: '{count} 件のテーマ',
+  search: 'テーマを検索',
+  noMatch: '「{query}」に一致するテーマはありません。',
   card: {
     preview: 'プレビュー',
     loadPreview: 'プレビューを読み込む（{size}）',
@@ -388,6 +400,8 @@ const ko: ThemesCopy = {
   failed: '지금은 테마 목록을 불러올 수 없습니다.',
   retry: '다시 시도',
   count: '테마 {count}개',
+  search: '테마 검색',
+  noMatch: '“{query}”와 일치하는 테마가 없습니다.',
   card: {
     preview: '미리보기',
     loadPreview: '미리보기 불러오기 ({size})',
@@ -459,6 +473,8 @@ const de: ThemesCopy = {
   failed: 'Die Theme-Liste konnte gerade nicht geladen werden.',
   retry: 'Erneut versuchen',
   count: '{count} Themes',
+  search: 'Themes durchsuchen',
+  noMatch: 'Keine Themes passen zu „{query}“.',
   card: {
     preview: 'Vorschau',
     loadPreview: 'Vorschau laden ({size})',
@@ -530,6 +546,8 @@ const fr: ThemesCopy = {
   failed: 'La liste des thèmes n’a pas pu être chargée pour le moment.',
   retry: 'Réessayer',
   count: '{count} thèmes',
+  search: 'Rechercher un thème',
+  noMatch: 'Aucun thème ne correspond à « {query} ».',
   card: {
     preview: 'Aperçu',
     loadPreview: 'Charger l’aperçu ({size})',
@@ -601,6 +619,8 @@ const es: ThemesCopy = {
   failed: 'No se pudo cargar la lista de temas en este momento.',
   retry: 'Reintentar',
   count: '{count} temas',
+  search: 'Buscar temas',
+  noMatch: 'Ningún tema coincide con «{query}».',
   card: {
     preview: 'Vista previa',
     loadPreview: 'Cargar vista previa ({size})',
@@ -672,6 +692,8 @@ const pt: ThemesCopy = {
   failed: 'Não foi possível carregar a lista de temas agora.',
   retry: 'Tentar de novo',
   count: '{count} temas',
+  search: 'Pesquisar temas',
+  noMatch: 'Nenhum tema corresponde a “{query}”.',
   card: {
     preview: 'Pré-visualizar',
     loadPreview: 'Carregar pré-visualização ({size})',
@@ -743,6 +765,8 @@ const ru: ThemesCopy = {
   failed: 'Сейчас не удалось загрузить список тем.',
   retry: 'Повторить',
   count: 'Тем: {count}',
+  search: 'Поиск тем',
+  noMatch: 'Нет тем по запросу «{query}».',
   card: {
     preview: 'Предпросмотр',
     loadPreview: 'Загрузить предпросмотр ({size})',
@@ -814,6 +838,8 @@ const vi: ThemesCopy = {
   failed: 'Hiện không tải được danh sách chủ đề.',
   retry: 'Thử lại',
   count: '{count} chủ đề',
+  search: 'Tìm chủ đề',
+  noMatch: 'Không có chủ đề nào khớp với “{query}”.',
   card: {
     preview: 'Xem trước',
     loadPreview: 'Tải bản xem trước ({size})',
