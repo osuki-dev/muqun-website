@@ -61,8 +61,7 @@ export default function ThemeShowcase({ pack, copy, tokens = true }: Props) {
             className={`showcase__tab${mode === candidate ? ' showcase__tab--active' : ''}`}
             onClick={() => setMode(candidate)}
           >
-            <span>{modeName(copy, candidate)}</span>
-            <span className="showcase__id">{candidate}</span>
+            {modeName(copy, candidate)}
           </button>
         ))}
       </div>
