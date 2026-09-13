@@ -2,6 +2,7 @@
 import react from '@astrojs/react';
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'astro/config';
+import { muqunThemesDevSource } from './scripts/themes-dev-source.mjs';
 
 /**
  * Static output, on purpose.
@@ -38,6 +39,9 @@ export default defineConfig({
     inlineStylesheets: 'always',
   },
   vite: {
-    plugins: [tailwindcss()],
+    // The second plugin is dev-only by construction: it serves the theme
+    // gallery's data from a fixture or through a token while the themes
+    // repository is private, and defines its one constant `null` for a build.
+    plugins: [tailwindcss(), muqunThemesDevSource()],
   },
 });

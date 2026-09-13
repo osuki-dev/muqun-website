@@ -1,0 +1,233 @@
+{
+  "format": "muqun-theme",
+  "schemaVersion": 1,
+  "id": "sample",
+  "name": "Sample",
+  "version": "1.0.0",
+  "author": "Muqun contributors",
+  "license": "CC-BY-4.0",
+  "variants": {
+    "light": {
+      "colors": {
+        "background": "#F7F3EC",
+        "surface": "#FFFFFF",
+        "surfaceRaised": "#ECE7DF",
+        "border": "#E0DAD1",
+        "borderStrong": "#C2B9AE",
+        "text": "#050B12",
+        "textMuted": "#5D6679",
+        "textSubtle": "#5A6272",
+        "textDisabled": "#A7ADB8",
+        "primary": "#A62A18",
+        "onPrimary": "#FFFFFF",
+        "primarySubtle": "#A62A180F",
+        "danger": "#9E1F14",
+        "dangerSubtle": "#9E1F140F",
+        "success": "#177A53",
+        "warning": "#8A5710",
+        "info": "#3E63FF"
+      },
+      "terminal": {
+        "background": "#F7F3EC",
+        "foreground": "#050B12",
+        "cursor": "#C54337",
+        "link": "#3455DC",
+        "selection": "#FF5A4A24",
+        "ansi": [
+          "#050B12",
+          "#D93025",
+          "#027A48",
+          "#B54708",
+          "#3538CD",
+          "#6941C6",
+          "#0E7090",
+          "#475467",
+          "#6A7281",
+          "#B42318",
+          "#027A48",
+          "#B54708",
+          "#3E63FF",
+          "#7F56D9",
+          "#0E7090",
+          "#050B12"
+        ]
+      }
+    },
+    "dark": {
+      "colors": {
+        "background": "#050B12",
+        "surface": "#0B111A",
+        "surfaceRaised": "#131B26",
+        "border": "#1C2532",
+        "borderStrong": "#2E3A4A",
+        "text": "#FCFBFA",
+        "textMuted": "#B6BDC8",
+        "textSubtle": "#8B95A5",
+        "textDisabled": "#6B7585",
+        "primary": "#FF5A4A",
+        "onPrimary": "#050B12",
+        "primarySubtle": "#FF5A4A1F",
+        "danger": "#F2554A",
+        "dangerSubtle": "#F2554A14",
+        "success": "#34C08B",
+        "warning": "#F0A93C",
+        "info": "#6B87FF"
+      },
+      "terminal": {
+        "background": "#08111B",
+        "foreground": "#D8E1EA",
+        "cursor": "#FF5A4A",
+        "link": "#A4BCFD",
+        "selection": "#FF5A4A3D",
+        "ansi": [
+          "#0C121A",
+          "#F2554A",
+          "#34C08B",
+          "#F0A93C",
+          "#7DA2FF",
+          "#C7A0FF",
+          "#67E3F9",
+          "#B6BDC8",
+          "#6B7585",
+          "#FDA29B",
+          "#6CE9A6",
+          "#FEC84B",
+          "#A4BCFD",
+          "#D6BBFB",
+          "#A5F0FC",
+          "#FCFBFA"
+        ]
+      }
+    }
+  },
+  "materials": {
+    "default": "auto",
+    "navigation": "auto",
+    "composer": "auto",
+    "actions": "auto"
+  },
+  "assets": {
+    "shell-light": {
+      "path": "assets/shell-light.png"
+    },
+    "shell-dark": {
+      "path": "assets/shell-dark.png"
+    },
+    "home-background": {
+      "path": "assets/home-background.png"
+    },
+    "home-banner": {
+      "path": "assets/home-banner.png"
+    },
+    "navigation": {
+      "path": "assets/navigation.png"
+    },
+    "composer": {
+      "path": "assets/composer.png"
+    },
+    "actions": {
+      "path": "assets/actions.png"
+    },
+    "tabs": {
+      "path": "assets/tabs.png"
+    },
+    "cards": {
+      "path": "assets/cards.png"
+    },
+    "buttons": {
+      "path": "assets/buttons.png"
+    },
+    "empty-state": {
+      "path": "assets/empty-state.png"
+    },
+    "icon-back": {
+      "path": "assets/icon-back.png"
+    },
+    "icon-send": {
+      "path": "assets/icon-send.png"
+    },
+    "logo": {
+      "path": "assets/logo.png"
+    }
+  },
+  "decoration": {
+    "home.background": {
+      "asset": "home-background",
+      "fit": "cover"
+    },
+    "home.decoration": {
+      "asset": "home-banner",
+      "fit": "contain"
+    },
+    "navigation.background": {
+      "asset": "navigation",
+      "fit": "cover"
+    },
+    "composer.background": {
+      "asset": "composer",
+      "fit": "cover"
+    },
+    "actions.background": {
+      "asset": "actions",
+      "fit": "cover"
+    },
+    "tabs.background": {
+      "asset": "tabs",
+      "fit": "cover"
+    },
+    "cards.decoration": {
+      "asset": "cards",
+      "fit": "cover",
+      "opacity": 0.4
+    },
+    "buttons.primary.background": {
+      "asset": "buttons",
+      "fit": "cover"
+    },
+    "emptyState.illustration": {
+      "asset": "empty-state",
+      "fit": "contain"
+    }
+  },
+  "icons": {
+    "chrome.back": {
+      "asset": "icon-back",
+      "render": "template"
+    },
+    "chrome.send": {
+      "asset": "icon-send",
+      "render": "template"
+    }
+  },
+  "variantDecorations": {
+    "light": {
+      "shell.background": {
+        "asset": "shell-light",
+        "fit": "cover"
+      }
+    },
+    "dark": {
+      "shell.background": {
+        "asset": "shell-dark",
+        "fit": "cover"
+      }
+    }
+  },
+  "homeIdentity": {
+    "name": {
+      "mode": "custom",
+      "text": "sample"
+    },
+    "logo": {
+      "mode": "custom",
+      "asset": "logo"
+    }
+  },
+  "source": "https://github.com/osuki-dev/muqun-themes",
+  "description": "The scaffold `muqun-theme init` writes: every slot filled with a flat placeholder tint, both variants complete. A fixture for the gallery, not a theme to install.",
+  "tags": [
+    "sample",
+    "placeholder"
+  ],
+  "minAppVersion": "1.2.0"
+}

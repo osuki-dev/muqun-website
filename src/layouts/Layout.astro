@@ -19,7 +19,7 @@
  * will:
  *
  *   - the header: the wordmark, always a home link, and the light/dark control;
- *   - the footer: the eight languages, the other two pages, the copyright;
+ *   - the footer: the eight languages, the other pages, the copyright;
  *   - the status line, via `BaseLayout`, from the `sections` a page declares.
  *
  * The language list is in the footer rather than the header on purpose. Eight
@@ -79,6 +79,7 @@ const locale = normalizeSiteLocale(lang);
 const chrome = getChrome(locale);
 
 const home = localizedPath('/', locale);
+const themes = localizedPath('/themes', locale);
 const support = localizedPath('/support', locale);
 const privacy = localizedPath('/privacy', locale);
 
@@ -122,6 +123,10 @@ const year = new Date().getFullYear();
 
   <PageHeader slot="header" homeHref={home} homeLabel={chrome.site.name}>
     <HeaderLanguage locales={locales} current={locale} label={chrome.header.aria.language} />
+    {/* Hidden under 600px along with the GitHub link (`site-theme.css`):
+        with it the controls overrun a 390px viewport in every Latin locale
+        and the page scrolls sideways. The footer carries it everywhere. */}
+    <Button href={themes} variant="quiet" class="mq-header-themes">{chrome.nav.themes}</Button>
     <Button href={support} variant="quiet">{chrome.nav.support}</Button>
     <Button href={appRepoUrl} variant="quiet">GitHub ↗</Button>
   </PageHeader>
@@ -132,6 +137,7 @@ const year = new Date().getFullYear();
     <LocaleMenu locales={locales} current={locale} label={chrome.header.aria.language} />
 
     <Fragment slot="meta">
+      <Button href={themes} variant="quiet">{chrome.nav.themes}</Button>
       <Button href={support} variant="quiet">{chrome.nav.support}</Button>
       <Button href={privacy} variant="quiet">{chrome.nav.privacy}</Button>
       <Button href={appRepoUrl} variant="quiet">{chrome.footer.github}</Button>

@@ -12,6 +12,8 @@
  * what a careful reader will refuse to run.
  */
 
+import { themesRepoConfig } from './themes-repo';
+
 const GITHUB_OWNER = 'osuki-dev';
 
 /**
@@ -131,6 +133,35 @@ export const gatewayManageCommand = 'muqun-gateway manage';
  * before this site is deployed, or this button is a 404.
  */
 export const feedbackIssueUrl = `https://github.com/${GITHUB_OWNER}/muqun-app/issues/new/choose`;
+
+/**
+ * Where the themes live: sources under `src/<id>/` on `main`, and on the
+ * `release` branch the built `dist/*.muqun-theme` files with the `index.json`
+ * the CLI writes and CI keeps current. The gallery page reads the index and
+ * the packages straight from GitHub's raw host, in the browser, so a theme
+ * merged there is on the site without a deploy here.
+ *
+ * Repository and ref come from `themes-repo.ts`, where they can be overridden
+ * through the environment; the owner is deliberately not `GITHUB_OWNER` above
+ * so that a fork can be pointed at without touching the app's links.
+ *
+ * Same ordering rule as `appRepoUrl`: while this repository is private the
+ * raw host answers 404 and the gallery shows its empty state. The page is
+ * built against the public URL shape regardless; `scripts/themes-dev-source.mjs`
+ * is how a maintainer sees it populated before the flip.
+ */
+const themesRepo = themesRepoConfig(import.meta.env);
+
+export const themesRepoUrl = themesRepo.repoUrl;
+
+/** Root of the release ref's files on the raw host, trailing slash included. */
+export const themesRawBase = themesRepo.rawBase;
+
+/** A theme's authored source is this plus its id. */
+export const themesSourceBase = themesRepo.sourceBase;
+
+/** The toolchain: how a theme is made. Linked from the gallery's foot. */
+export const themeCliRepoUrl = `https://github.com/${GITHUB_OWNER}/muqun-theme-cli`;
 
 export const appStoreUrl = 'https://apps.apple.com/app/muqun/id6793419283';
 

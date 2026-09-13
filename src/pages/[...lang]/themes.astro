@@ -1,0 +1,91 @@
+---
+/**
+ * The themes gallery — every locale, one file, same arrangement as the
+ * support page beside it.
+ *
+ * The page itself is static like every other page here. What is on it is
+ * not: the list of themes is read from the community repository in the
+ * browser, and each theme is previewed by unzipping its own `.muqun-theme`
+ * and drawing the colours and artwork it declares. Nothing about a theme is
+ * copied into this repository, so a theme merged there is on this page
+ * without a deploy here. See `src/lib/themes-source.ts` for where the data
+ * comes from and how to point it somewhere else while developing.
+ *
+ * Bands as on the support page: cream where Muqun speaks, recessed for the
+ * part that is procedure — how to make one.
+ */
+import Layout from '@/layouts/Layout.astro';
+import Band from '@/components/Band.astro';
+import Button from '@/components/Button.astro';
+import Display from '@/components/Display.astro';
+import Prose from '@/components/Prose.astro';
+import SectionHeading from '@/components/SectionHeading.astro';
+import ThemesGallery from '@/components/themes/themes-gallery';
+import { themesCopy } from '@/i18n/themes';
+import { themeCliRepoUrl, themesRepoUrl } from '@/lib/muqun-links';
+import { siteLocaleCodes, defaultLocale } from '@/lib/locales';
+import '@/styles/themes.css';
+
+export function getStaticPaths() {
+  return siteLocaleCodes.map((code) => ({
+    params: { lang: code === defaultLocale ? undefined : code },
+    props: { locale: code },
+  }));
+}
+
+/**
+ * `locale` is inferred from `getStaticPaths` above rather than declared as a
+ * `Props` interface: with both, the interface is the one TypeScript ignores,
+ * so it is a second declaration of the same fact that nothing checks.
+ */
+const { locale } = Astro.props;
+const copy = themesCopy[locale];
+---
+
+<Layout lang={locale} title={copy.metaTitle} description={copy.metaDescription}>
+  <Band tone="cream">
+    {/* `eyebrow` is translated, so it is proportional text and not a mono,
+        letter-spaced label. */}
+    <div class="mq-themes-eyebrow"><Prose size="small">{copy.eyebrow}</Prose></div>
+
+    <Display level={1} size="display-sm" lines={1}>{copy.heading}</Display>
+
+    <div class="mq-themes-lead"><Prose size="lead">{copy.lead}</Prose></div>
+
+    <div class="mq-themes-actions">
+      <Button href={themesRepoUrl} variant="secondary" arrow>{copy.repoCta}</Button>
+    </div>
+  </Band>
+
+  <Band tone="cream" tight>
+    <ThemesGallery client:load locale={locale} copy={copy} repoUrl={themesRepoUrl} />
+  </Band>
+
+  <Band tone="recessed" tight>
+    <SectionHeading title={copy.making.heading} level={2} eyebrow="muqun-theme init" />
+    <Prose>{copy.making.body}</Prose>
+    <div class="mq-themes-actions">
+      <Button href={themesRepoUrl} variant="primary" arrow>{copy.making.repo}</Button>
+      <Button href={themeCliRepoUrl} variant="quiet" arrow>{copy.making.cli}</Button>
+    </div>
+  </Band>
+</Layout>
+
+<style>
+  /* Rhythm only; everything with a look of its own is a component or in
+     `styles/themes.css`. */
+  .mq-themes-eyebrow {
+    margin-block-end: var(--mq-space-4);
+  }
+
+  .mq-themes-lead {
+    margin-block-start: var(--mq-space-6);
+  }
+
+  .mq-themes-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--mq-space-3);
+    margin-block: var(--mq-space-8) 0;
+  }
+</style>

@@ -3,7 +3,7 @@ import type { ChromeCopy } from './types';
 /** Korean. The app keeps the name Muqun here. */
 export const chrome: ChromeCopy = {
   site: { name: 'Muqun' },
-  nav: { home: '홈', support: '지원', privacy: '개인정보' },
+  nav: { home: '홈', themes: '테마', support: '지원', privacy: '개인정보' },
   theme: { light: '라이트', dark: '다크', system: '시스템' },
   header: { aria: { language: '언어', theme: '테마', menu: '메뉴' } },
   footer: { copyright: '© {year} muqun.dev. All rights reserved.', github: 'GitHub' },

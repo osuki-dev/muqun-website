@@ -3,7 +3,7 @@ import type { ChromeCopy } from './types';
 /** Traditional Chinese (Taiwan). The app is called 牧群 here. */
 export const chrome: ChromeCopy = {
   site: { name: '牧群' },
-  nav: { home: '首頁', support: '支援', privacy: '隱私' },
+  nav: { home: '首頁', themes: '主題', support: '支援', privacy: '隱私' },
   theme: { light: '淺色', dark: '深色', system: '跟隨系統' },
   header: { aria: { language: '語言', theme: '主題', menu: '選單' } },
   footer: { copyright: '© {year} muqun.dev. 版權所有。', github: 'GitHub' },

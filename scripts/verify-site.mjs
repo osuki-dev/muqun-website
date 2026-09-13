@@ -4,7 +4,7 @@ const locales = ['en','zh-TW','ja','ko','de','fr','es','pt','zh-CN','ru','vi'];
 let routes = 0;
 for (const locale of locales) {
   const prefix = locale === 'en' ? '' : `${locale}/`;
-  for (const page of ['','support/','privacy/']) {
+  for (const page of ['','themes/','themes/preview/','support/','privacy/']) {
     const html = readFileSync(`dist/${prefix}${page}index.html`,'utf8');
     assert.match(html, new RegExp(`<html[^>]*lang="${locale}"`));
     assert.match(html, /data-theme-mode="system"/);

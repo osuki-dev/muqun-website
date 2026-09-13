@@ -35,7 +35,10 @@ body {
   overflow-y: auto;
 }
 @media (max-width: 600px) {
-  .mq-page-header__controls > a:last-child {
+  /* `a.` and not just the class: Button's own scoped `.mq-btn[data-astro-cid]`
+     is (0,2,0) and later in the cascade, so a bare class would tie and lose. */
+  .mq-page-header__controls > a:last-child,
+  .mq-page-header__controls > a.mq-header-themes {
     display: none;
   }
   .mq-page-header__controls {

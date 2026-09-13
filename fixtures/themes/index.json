@@ -1,0 +1,23 @@
+{
+  "format": "muqun-themes-index",
+  "themes": [
+    {
+      "id": "sample",
+      "name": "Sample",
+      "version": "1.0.0",
+      "author": "Muqun contributors",
+      "license": "CC-BY-4.0",
+      "source": "https://github.com/osuki-dev/muqun-themes",
+      "description": "The scaffold `muqun-theme init` writes: every slot filled with a flat placeholder tint, both variants complete. A fixture for the gallery, not a theme to install.",
+      "tags": [
+        "sample",
+        "placeholder"
+      ],
+      "minAppVersion": "1.2.0",
+      "package": "dist/sample.muqun-theme",
+      "bytes": 23803,
+      "sha256": "f842fb3bc299c3f7b6e9e655ea0215bf6f5384bc9284a4900f9862e970e0fb13",
+      "assets": 14
+    }
+  ]
+}

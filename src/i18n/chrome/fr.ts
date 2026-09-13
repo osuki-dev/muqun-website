@@ -3,7 +3,7 @@ import type { ChromeCopy } from './types';
 /** French. */
 export const chrome: ChromeCopy = {
   site: { name: 'Muqun' },
-  nav: { home: 'Accueil', support: 'Support', privacy: 'Confidentialité' },
+  nav: { home: 'Accueil', themes: 'Thèmes', support: 'Support', privacy: 'Confidentialité' },
   theme: { light: 'Clair', dark: 'Sombre', system: 'Système' },
   header: { aria: { language: 'Langue', theme: 'Thème', menu: 'Menu' } },
   footer: { copyright: '© {year} muqun.dev. Tous droits réservés.', github: 'GitHub' },

@@ -1,0 +1,55 @@
+---
+/**
+ * The standalone theme preview — `/themes/preview/?source=<url>`.
+ *
+ * The page the CLI's `muqun-theme preview` opens: it serves a working copy
+ * on localhost and points `source` at it, and this draws that theme exactly
+ * as the gallery draws a published one, re-reading it as the author edits.
+ * Every locale, one file, like the pages beside it; the frame is translated,
+ * the theme is not.
+ *
+ * Static like everything here. The address does all the work in the browser,
+ * so there is nothing for a server to do and nothing to deploy for a new
+ * theme to be previewable.
+ */
+import Layout from '@/layouts/Layout.astro';
+import Band from '@/components/Band.astro';
+import Display from '@/components/Display.astro';
+import Prose from '@/components/Prose.astro';
+import ThemePreviewer from '@/components/themes/theme-previewer';
+import { themesCopy } from '@/i18n/themes';
+import { siteLocaleCodes, defaultLocale } from '@/lib/locales';
+import '@/styles/themes.css';
+
+export function getStaticPaths() {
+  return siteLocaleCodes.map((code) => ({
+    params: { lang: code === defaultLocale ? undefined : code },
+    props: { locale: code },
+  }));
+}
+
+const { locale } = Astro.props;
+const copy = themesCopy[locale];
+---
+
+<Layout lang={locale} title={copy.preview.metaTitle} description={copy.preview.lead} noindex>
+  <Band tone="cream" tight>
+    <div class="mq-themes-eyebrow"><Prose size="small">{copy.eyebrow}</Prose></div>
+    <Display level={1} size="display-sm" lines={1}>{copy.preview.heading}</Display>
+    <div class="mq-themes-lead"><Prose size="lead">{copy.preview.lead}</Prose></div>
+  </Band>
+
+  <Band tone="cream" tight contain="wide">
+    <ThemePreviewer client:load locale={locale} copy={copy} />
+  </Band>
+</Layout>
+
+<style>
+  .mq-themes-eyebrow {
+    margin-block-end: var(--mq-space-4);
+  }
+
+  .mq-themes-lead {
+    margin-block-start: var(--mq-space-6);
+  }
+</style>

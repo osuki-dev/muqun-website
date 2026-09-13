@@ -37,9 +37,10 @@ export interface ChromeCopy {
     /** The wordmark, and the suffix on every page title. */
     name: string;
   };
-  /** The header's links. This site has three pages. */
+  /** The header's links. This site has four pages. */
   nav: {
     home: string;
+    themes: string;
     support: string;
     privacy: string;
   };

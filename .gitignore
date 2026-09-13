@@ -8,3 +8,7 @@ dist/
 .env.*
 !.env.example
 /docs
+# The theme gallery fixture ships its packed theme under a `dist/` on purpose:
+# `index.json` names packages as `dist/<id>.muqun-theme`, the same shape the
+# real repository uses. See `scripts/themes-dev-source.mjs`.
+!fixtures/themes/dist/

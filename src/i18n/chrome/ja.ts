@@ -3,7 +3,7 @@ import type { ChromeCopy } from './types';
 /** Japanese. The app is called 牧群（ぼくぐん）; the wordmark is 牧群. */
 export const chrome: ChromeCopy = {
   site: { name: '牧群' },
-  nav: { home: 'ホーム', support: 'サポート', privacy: 'プライバシー' },
+  nav: { home: 'ホーム', themes: 'テーマ', support: 'サポート', privacy: 'プライバシー' },
   theme: { light: 'ライト', dark: 'ダーク', system: 'システム設定' },
   header: { aria: { language: '言語', theme: 'テーマ', menu: 'メニュー' } },
   footer: { copyright: '© {year} muqun.dev。すべての権利を保有します。', github: 'GitHub' },
