@@ -8,33 +8,42 @@
  * React Native lays them out), then scales the whole thing to the width it
  * is given. Nothing inside is interactive; the device is one `role="img"`.
  *
- * The arrangement is the app's, read from its source rather than invented
- * (branch `feat/custom-theme-packs`):
+ * The arrangement is the app's, read from its source rather than invented:
  *
- *   Home          `app/(drawer)/index.tsx`, `components/pad-server-rail.tsx`
- *   Conversation  `components/pane-chat-view.tsx`, `pane-chat-blocks.tsx`
+ *   shell         `components/app-drawer.tsx`
+ *   Home          `app/(drawer)/index.tsx`, `lib/responsive-layout.ts`,
+ *                 `components/server-agent-rows.tsx`, `pad-server-rail.tsx`
+ *   Conversation  `components/pane-chat-view.tsx`, `pane-chat-blocks.tsx`,
+ *                 `approval-banner.tsx`
  *   Terminal      `components/server-terminal-workspace.tsx`
  *   chrome        `components/nav-header.tsx`, `glass-chrome.tsx`,
  *                 `terminal-composer.tsx`, `themed-surface.tsx`,
- *                 `themed-button.tsx`, `theme-artwork.tsx`
+ *                 `theme-artwork.tsx`, `theme-icon.tsx`
  *
  * and so are the rules: which token paints which plane, where each decoration
  * slot is drawn and over which base, that `surfaces.backgroundOpacity` fades
- * coloured planes and never text, that artwork is bounded by the contrast of
- * the labels over it (`theme-render.ts`), that `glass` blurs and `solid` does
- * not, that a `template` icon takes the theme's colour. Words on the screens
- * are fictional session content in the machine register, or the theme's own
+ * coloured planes and never text and is first raised to the pack's own
+ * readability floor, that artwork is bounded by the contrast of the labels
+ * over it (`theme-render.ts`), that `glass` blurs and `solid` does not, that
+ * a `template` icon takes the theme's colour, and that the only two glyphs a
+ * pack may replace are `chrome.back` and `chrome.send` -- every other icon is
+ * the app's own (lucide, at the app's sizes). Words on the screens are
+ * fictional session content in the machine register, or the theme's own
  * name; none of it is translated, exactly as the aperture's stream is not.
  */
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 
-import { cssColor, resolveHomeIdentity, type ThemeMode, type ThemePackage } from '@/lib/theme-package';
+import { resolveHomeIdentity, type ThemeManifest, type ThemeMode, type ThemePackage } from '@/lib/theme-package';
 import {
-  primaryButtonArtwork,
+  effectiveThemeManifest,
+  jointArtworkOpacity,
   resolveArtwork,
+  resolveArtworkOpacity,
   resolveThemeMaterial,
   surfaceFill,
   surfaceOpacity,
+  themeArtwork,
+  withAlpha,
   type ResolvedArtwork,
   type ThemeSurfaceRole,
 } from '@/lib/theme-render';
@@ -50,6 +59,19 @@ export const DEVICES: Record<DeviceKind, { width: number; height: number; radius
 
 /** `PAD_RAIL_*` from the app's `responsive-layout.ts`. */
 const RAIL_WIDTH = Math.min(288, Math.max(232, DEVICES.tablet.width * 0.25));
+/** `constants/nav-header.ts`: the gap between the safe area and any header's controls. */
+const NAV_HEADER_TOP_GAP = 10;
+/** The app's brand mark, which `homeIdentity.logo: default` shows (`assets/images/loading-mark.png`). */
+const BRAND_MARK = '/muqun-mark.png';
+
+/**
+ * `homeServerListLayout()` from `responsive-layout.ts`, for the two windows
+ * the mock-ups picture: a phone showing two servers, and a pad.
+ */
+const HOME_LAYOUT = {
+  phone: { gutter: 18, maxWidth: undefined, cardGap: 24, cardPadding: 14, cardRadius: 20, listGap: 22, rowMinHeight: 34 },
+  tablet: { gutter: 32, maxWidth: 680, cardGap: 24, cardPadding: 22, cardRadius: 24, listGap: 30, rowMinHeight: 44 },
+} as const;
 
 interface Props {
   pack: ThemePackage;
@@ -66,30 +88,37 @@ interface Props {
 
 interface Paint {
   pack: ThemePackage;
+  /** The manifest as the app installs it: the author's opacities raised to the readability floor. */
+  manifest: ThemeManifest;
   mode: ThemeMode;
   width: 'compact' | 'regular';
-  colors: ThemePackage['manifest']['variants']['light']['colors'];
-  terminal: ThemePackage['manifest']['variants']['light']['terminal'];
+  colors: ThemeManifest['variants']['light']['colors'];
+  terminal: ThemeManifest['variants']['light']['terminal'];
   alpha: number;
-  /** A coloured plane, faded by the variant's surface opacity. */
-  fill: (hex: string) => string;
+  /** A coloured plane, faded by the variant's surface opacity (`useSurfaceBackground`). */
+  fill: (color: string) => string;
   /** Artwork for a slot over a base colour, bounded the way the app bounds it. */
   art: (slot: string, base: string | null, fallback?: string) => ResolvedArtwork | null;
+  /** Whether a slot names an image the package carries (`useHasThemeArtwork`). */
+  has: (slot: string, fallback?: string) => boolean;
 }
 
 function paintFor(pack: ThemePackage, mode: ThemeMode, device: DeviceKind): Paint {
-  const variant = pack.manifest.variants[mode];
+  const manifest = effectiveThemeManifest(pack.manifest);
+  const variant = manifest.variants[mode];
   const alpha = surfaceOpacity(variant.surfaces?.backgroundOpacity);
   const width = device === 'tablet' ? 'regular' : 'compact';
   return {
     pack,
+    manifest,
     mode,
     width,
     colors: variant.colors,
     terminal: variant.terminal,
     alpha,
-    fill: (hex) => surfaceFill(hex, alpha),
-    art: (slot, base, fallback) => resolveArtwork(pack, slot, mode, width, base, alpha, fallback),
+    fill: (color) => surfaceFill(color, alpha),
+    art: (slot, base, fallback) => resolveArtwork(pack, manifest, slot, mode, width, base, alpha, fallback),
+    has: (slot, fallback) => Boolean(themeArtwork(pack, manifest, slot, mode, width, fallback)),
   };
 }
 
@@ -117,9 +146,13 @@ function Art({ art, banner = false }: { art: ResolvedArtwork | null; banner?: bo
 }
 
 /**
- * `GlassChrome`: the app's one piece of glass. Solid takes the raised plane;
- * glass takes the iOS 26 tint over a blur of what is underneath; artwork on
- * glass gets an opaque raised backing first, as the app gives it.
+ * `GlassChrome`: the app's one piece of glass. A translucent surface
+ * preference forces solid (native glass has its own fill and would hide the
+ * authored alpha); otherwise the material is `resolveThemeMaterial`'s, with
+ * `auto` drawn as the iOS 26 glass the app shows -- the platform tint over a
+ * blur of what is underneath. Solid takes the raised plane. Artwork on glass
+ * gets an opaque raised backing first, as the app gives it, and every piece
+ * of chrome on a faded pack takes a hairline in `border` so it keeps a shape.
  */
 function Chrome({
   paint,
@@ -134,18 +167,21 @@ function Chrome({
   style?: CSSProperties;
   children?: ReactNode;
 }) {
-  const { colors } = paint;
-  const art = paint.art(`${surface}.background`, colors.surfaceRaised);
-  const material = resolveThemeMaterial(paint.pack.manifest, surface, Boolean(art), paint.alpha);
+  const { colors, manifest, alpha } = paint;
+  const slot = `${surface}.background`;
+  const image = themeArtwork(paint.pack, manifest, slot, paint.mode, paint.width);
+  const material = alpha < 1 ? 'solid' : resolveThemeMaterial(manifest, surface, Boolean(image), true);
   const dark = paint.mode === 'dark';
   const background =
     material === 'solid'
       ? paint.fill(colors.surfaceRaised)
-      : cssColor(dark ? colors.background : colors.surface, dark ? 0.34 : 0.26);
+      : withAlpha(dark ? colors.background : colors.surface, dark ? 0.34 : 0.26);
+  const limit = image ? jointArtworkOpacity(resolveArtworkOpacity(colors), alpha, image.image.opacity ?? 1) : 0;
+  const art = image && limit > 0 ? { ...image, opacity: limit } : null;
   return (
     <div
       className={`dm-chrome ${material === 'solid' ? '' : 'dm-chrome--glass'} ${className}`}
-      style={{ background, color: colors.text, ...style }}
+      style={{ background, color: colors.text, boxShadow: alpha < 1 ? `inset 0 0 0 1px ${colors.border}` : undefined, ...style }}
     >
       {art && (
         <span className="dm-art-backing" style={material === 'glass' ? { background: colors.surfaceRaised } : undefined}>
@@ -181,53 +217,61 @@ function Surface({
   );
 }
 
-/** A chrome glyph: the pack's icon where it declares one, else the app's own. */
-function Glyph({ paint, name, color, fallback }: { paint: Paint; name: string; color: string; fallback: ReactNode }) {
-  const icon = paint.pack.manifest.icons?.[name];
+/**
+ * `ThemeIcon`: a chrome glyph the pack may have replaced -- only `chrome.back`
+ * and `chrome.send` exist -- else the app's own lucide drawing, same size,
+ * same colour, same place.
+ */
+function Glyph({ paint, name, size, color, fallback }: { paint: Paint; name: 'chrome.back' | 'chrome.send'; size: number; color: string; fallback: string[] }) {
+  const icon = paint.manifest.icons?.[name];
   const url = icon ? paint.pack.assets[icon.asset] : undefined;
-  if (!icon || !url) return <>{fallback}</>;
-  if (icon.render === 'original') return <img className="dm-icon" src={url} alt="" />;
+  if (!icon || !url) return <Lucide icon={fallback} size={size} color={color} />;
+  if (icon.render === 'original') return <img className="dm-icon" src={url} alt="" style={{ width: size, height: size }} />;
   return (
     <span
       className="dm-icon dm-icon--template"
-      style={{ WebkitMaskImage: `url("${url}")`, maskImage: `url("${url}")`, backgroundColor: color }}
+      style={{ width: size, height: size, WebkitMaskImage: `url("${url}")`, maskImage: `url("${url}")`, backgroundColor: color }}
     />
   );
 }
 
-const Svg = ({ d, size = 20, color, strokeWidth = 2 }: { d: string; size?: number; color: string; strokeWidth?: number }) => (
+/** A lucide icon (the app's `lucide-react-native` 1.28), as path data on a 24-grid. */
+const Lucide = ({ icon, size, color, strokeWidth = 2 }: { icon: string[]; size: number; color: string; strokeWidth?: number }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round">
-    <path d={d} />
+    {icon.map((d) => <path key={d} d={d} />)}
   </svg>
 );
 const ICON = {
-  chevronLeft: 'M15 18l-6-6 6-6',
-  server: 'M4 4h16v6H4zM4 14h16v6H4zM8 7h.01M8 17h.01',
-  terminal: 'M4 4h16v16H4zM8 9l3 3-3 3M13 15h4',
-  scan: 'M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2M7 12h10',
-  gear: 'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z',
-  panels: 'M3 5h18v14H3zM9 5v14M15 5v14',
-  plus: 'M12 5v14M5 12h14',
-  arrowUp: 'M12 19V5M5 12l7-7 7 7',
-  shield: 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z',
+  chevronLeft: ['m15 18-6-6 6-6'],
+  chevronRight: ['m9 18 6-6-6-6'],
+  send: ['M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z', 'm21.854 2.147-10.94 10.939'],
+  server: ['M4 2h16a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z', 'M4 14h16a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2z', 'M6 6h.01', 'M6 18h.01'],
+  squareTerminal: ['m7 11 2-2-2-2', 'M11 13h4', 'M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z'],
+  scanLine: ['M3 7V5a2 2 0 0 1 2-2h2', 'M17 3h2a2 2 0 0 1 2 2v2', 'M21 17v2a2 2 0 0 1-2 2h-2', 'M7 21H5a2 2 0 0 1-2-2v-2', 'M7 12h10'],
+  settings: ['M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915', 'M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0z'],
+  panelsTopLeft: ['M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z', 'M3 9h18', 'M9 21V9'],
+  paperclip: ['m16 6-8.414 8.586a2 2 0 0 0 2.829 2.829l8.414-8.586a4 4 0 1 0-5.657-5.657l-8.379 8.551a6 6 0 1 0 8.485 8.485l8.379-8.551'],
+  zap: ['M15.914 4a1.5 1.5 0 00-2.474-1.561l-9 9A1.5 1.5 0 005.5 14h4.002a.5.5 0 01.471.666L8.086 20a1.5 1.5 0 002.475 1.56l9-9A1.5 1.5 0 0018.5 10h-3.997a.5.5 0 01-.472-.667z'],
+  shieldAlert: ['M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z', 'M12 8v4', 'M12 16h.01'],
+  check: ['M20 6 9 17l-5-5'],
+  checkCheck: ['M18 6 7 17l-5-5', 'm22 10-7.5 7.5L13 16'],
+  x: ['M18 6 6 18', 'm6 6 12 12'],
 };
 
-/** The app's own mark, where a theme keeps the default logo. */
-function DefaultMark({ paint, size }: { paint: Paint; size: number }) {
-  return (
-    <span className="dm-mark" style={{ width: size, height: size, background: paint.colors.primary, borderRadius: size * 0.28 }}>
-      <Svg d={ICON.terminal} size={size * 0.56} color={paint.colors.onPrimary} strokeWidth={2.2} />
-    </span>
-  );
+/**
+ * The mark Home shows: the pack's own where `homeIdentity.logo` is `custom`,
+ * the app's brand mark where it is `default` (and where a custom asset is not
+ * in the package, the same fallback the app takes when the file fails).
+ */
+function Logo({ paint, size, className }: { paint: Paint; size: number; className?: string }) {
+  const identity = resolveHomeIdentity(paint.manifest);
+  if (!identity.logo) return null;
+  const url = (identity.logo.mode === 'custom' && paint.pack.assets[identity.logo.asset]) || BRAND_MARK;
+  return <img className={`dm-logo ${className ?? ''}`} src={url} alt="" style={{ width: size, height: size }} />;
 }
 
-function Logo({ paint, size }: { paint: Paint; size: number }) {
-  const identity = resolveHomeIdentity(paint.pack.manifest);
-  const url = identity.logoAsset ? paint.pack.assets[identity.logoAsset] : undefined;
-  return url ? <img className="dm-logo" src={url} alt="" style={{ width: size, height: size }} /> : <DefaultMark paint={paint} size={size} />;
-}
-
-function Dot({ color, size = 8, filled = true }: { color: string; size?: number; filled?: boolean }) {
+/** `StatusDot`: filled means the app has evidence, hollow means it has not asked. */
+function Dot({ color, size = 7, filled = true }: { color: string; size?: number; filled?: boolean }) {
   return (
     <span
       className="dm-dot"
@@ -240,79 +284,122 @@ function Dot({ color, size = 8, filled = true }: { color: string; size?: number;
    Home
    -------------------------------------------------------------------------- */
 
-const SERVERS = [
-  { name: 'studio', live: true, panes: [['claude', 'ok'], ['codex', 'busy'], ['nvim', 'idle']] },
-  { name: 'build-box', live: false, panes: [['tmux · main', 'idle']] },
-] as const;
+type Reachability = 'live' | 'offline' | 'unknown';
+type PaneStatus = 'working' | 'blocked' | 'done' | 'idle';
+interface Pane { name: string; cwd?: string; status: PaneStatus }
+interface Server { name: string; reachability: Reachability; panes: Pane[] }
 
-function ServerCard({ paint, server, radius, padding }: { paint: Paint; server: (typeof SERVERS)[number]; radius: number; padding: number }) {
+const SERVERS: Server[] = [
+  {
+    name: 'studio',
+    reachability: 'live',
+    panes: [
+      { name: 'claude', cwd: '~/project', status: 'working' },
+      { name: 'codex', cwd: '~/project/api', status: 'blocked' },
+      { name: 'nvim', status: 'idle' },
+    ],
+  },
+  { name: 'build-box', reachability: 'offline', panes: [{ name: 'tmux · main', status: 'idle' }] },
+];
+
+/** `reachabilityLabel` from `i18n/labels.ts`. */
+const REACHABILITY = { live: 'ONLINE', offline: 'OFFLINE', unknown: 'NOT CONNECTED' } as const;
+
+/**
+ * `ServerAgentRows`: a name, a caption where there is something to say, and a
+ * chevron. No dot: the app took the per-pane light away and kept only the
+ * server's own. `blocked` is the one status that still earns a word, and it
+ * is said only while the statuses are current (the server is reachable).
+ */
+function PaneRows({ paint, server, selected, compact, minHeight, style }: { paint: Paint; server: Server; selected?: string; compact: boolean; minHeight: number; style?: CSSProperties }) {
   const { colors } = paint;
-  const status = server.live ? colors.success : colors.textSubtle;
+  const current = server.reachability === 'live';
   return (
-    <Surface paint={paint} slot="cards.decoration" base={colors.surface} className="dm-card" style={{ borderRadius: radius, padding }}>
+    <ul className={`dm-panes ${compact ? 'dm-panes--compact' : ''}`} style={style}>
+      {server.panes.map((pane) => {
+        const active = selected === pane.name;
+        const blocked = current && pane.status === 'blocked';
+        const caption = blocked ? 'Blocked' : compact ? undefined : pane.cwd;
+        return (
+          <li key={pane.name} className="dm-pane" style={{ minHeight }}>
+            <span className="dm-pane__copy">
+              <span className="dm-pane__name" style={{ color: active ? colors.primary : colors.text, fontWeight: active ? 600 : undefined }}>{pane.name}</span>
+              {caption && <span className="dm-pane__caption" style={{ color: blocked ? colors.warning : colors.textSubtle }}>{caption}</span>}
+            </span>
+            <Lucide icon={ICON.chevronRight} size={15} color={active ? colors.primary : colors.textMuted} />
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
+function ServerCard({ paint, server, layout }: { paint: Paint; server: Server; layout: (typeof HOME_LAYOUT)[DeviceKind] }) {
+  const { colors } = paint;
+  const status = server.reachability === 'live' ? colors.success : colors.textSubtle;
+  return (
+    <Surface paint={paint} slot="cards.decoration" base={colors.surface} className="dm-card" style={{ borderRadius: layout.cardRadius, padding: layout.cardPadding }}>
       <div className="dm-card__identity">
         <span className="dm-card__avatar" style={{ background: paint.fill(colors.surfaceRaised) }}>
-          <Svg d={ICON.server} size={19} color={colors.textMuted} />
+          <Lucide icon={ICON.server} size={19} color={colors.textMuted} />
         </span>
         <div className="dm-card__copy">
           <span className="dm-card__name" style={{ color: colors.text }}>{server.name}</span>
           <span className="dm-card__status" style={{ color: status }}>
-            <Dot color={status} size={7} filled={server.live} />
-            {server.live ? 'ONLINE' : 'OFFLINE'}
+            <Dot color={status} size={7} filled={server.reachability !== 'unknown'} />
+            {REACHABILITY[server.reachability]}
           </span>
         </div>
       </div>
-      <ul className="dm-panes">
-        {server.panes.map(([pane, state]) => {
-          const light = state === 'ok' ? colors.success : state === 'busy' ? colors.warning : colors.textSubtle;
-          return (
-            <li key={pane} className="dm-pane">
-              <Dot color={light} size={7} />
-              <span className="dm-pane__name" style={{ color: colors.text }}>{pane}</span>
-              <span className="dm-pane__age" style={{ color: colors.textSubtle }}>{state === 'busy' ? 'running' : '2m'}</span>
-            </li>
-          );
-        })}
-      </ul>
+      <PaneRows paint={paint} server={server} compact={false} minHeight={layout.rowMinHeight} style={{ marginTop: layout.listGap }} />
     </Surface>
+  );
+}
+
+/** `HeaderButton`: a 40pt circle on `surface`, carrying `navigation.background`, a muted 20pt glyph. */
+function HeaderButton({ paint, icon }: { paint: Paint; icon: string[] }) {
+  const { colors } = paint;
+  return (
+    <span className="dm-home__control" style={{ background: paint.fill(colors.surface) }}>
+      <Art art={paint.art('navigation.background', colors.surface)} />
+      <Lucide icon={icon} size={20} color={colors.textMuted} />
+    </span>
   );
 }
 
 function HomeContent({ paint, pad, top }: { paint: Paint; pad: boolean; top: number }) {
   const { colors } = paint;
-  const identity = resolveHomeIdentity(paint.pack.manifest);
+  const identity = resolveHomeIdentity(paint.manifest);
+  const layout = HOME_LAYOUT[pad ? 'tablet' : 'phone'];
+  // The page paints its own plane over the shell's, then its wallpaper:
+  // `home.background`, or `shell.background` when the theme paints the whole
+  // shell and Home along with it.
   const scene = paint.art('home.background', null, 'shell.background');
+  const hasScene = paint.has('home.background', 'shell.background');
   const banner = paint.art('home.decoration', null);
-  const showBrand = identity.name !== null || identity.showLogo;
-  // The status-bar inset is padding on this box, not on its parent, so the
-  // wallpaper behind it reaches the top edge the way it does in the app.
   return (
-    <div className={`dm-home ${pad ? 'dm-home--pad' : ''}`} style={pad ? undefined : { paddingTop: top }}>
-      {/* The wallpaper: `home.background`, or `shell.background` when the
-          theme paints the whole shell and Home along with it, as the app's
-          Home screen does. */}
+    <div className={`dm-home ${pad ? 'dm-home--pad' : ''}`} style={{ background: paint.fill(colors.background) }}>
       <Art art={scene} />
       {!pad && (
-        <div className="dm-home__bar">
-          {(['terminal', 'scan', 'gear'] as const).map((icon) => (
-            <span key={icon} className="dm-home__control" style={{ background: paint.fill(colors.surface) }}>
-              <Art art={paint.art('navigation.background', colors.surface)} />
-              <Svg d={ICON[icon]} size={18} color={colors.text} />
-            </span>
-          ))}
+        <div className="dm-home__bar" style={{ paddingTop: top + NAV_HEADER_TOP_GAP }}>
+          <HeaderButton paint={paint} icon={ICON.squareTerminal} />
+          <HeaderButton paint={paint} icon={ICON.scanLine} />
+          <HeaderButton paint={paint} icon={ICON.settings} />
         </div>
       )}
-      <div className="dm-home__list" style={pad ? { maxWidth: 680 } : undefined}>
-        {!pad && showBrand && (
+      <div
+        className="dm-home__list"
+        style={{ paddingInline: layout.gutter, gap: layout.cardGap, maxWidth: layout.maxWidth, paddingTop: pad ? 32 : 10 }}
+      >
+        {/* The brand block at its `mark` weight -- the screen has servers, so
+            the name is the top of a page, not a poster. The mark stands on the
+            page with no tile; the name takes a plate only over a wallpaper. */}
+        {!pad && identity.showBrand && (
           <div className="dm-brand">
-            {identity.showLogo && (
-              <span className="dm-brand__tile" style={{ background: paint.fill(colors.surfaceRaised) }}>
-                <Logo paint={paint} size={32} />
-              </span>
-            )}
+            <Logo paint={paint} size={46} />
             {identity.name && (
-              <span className="dm-brand__copy" style={scene ? { background: paint.fill(colors.background) } : undefined}>
-                {scene && <Art art={paint.art('navigation.background', colors.background)} />}
+              <span className="dm-brand__copy" style={hasScene ? { background: paint.fill(colors.background) } : undefined}>
+                {hasScene && <Art art={paint.art('navigation.background', colors.background)} />}
                 <span className="dm-brand__name" style={{ color: colors.text }}>{identity.name}</span>
               </span>
             )}
@@ -324,7 +411,7 @@ function HomeContent({ paint, pad, top }: { paint: Paint; pad: boolean; top: num
           </div>
         )}
         {SERVERS.map((server) => (
-          <ServerCard key={server.name} paint={paint} server={server} radius={pad ? 24 : 22} padding={pad ? 18 : 16} />
+          <ServerCard key={server.name} paint={paint} server={server} layout={layout} />
         ))}
       </div>
     </div>
@@ -332,15 +419,15 @@ function HomeContent({ paint, pad, top }: { paint: Paint; pad: boolean; top: num
 }
 
 /** `PadServerRail`: the persistent master column on a wide window. */
-function Rail({ paint, selected }: { paint: Paint; selected?: string }) {
+function Rail({ paint, selected }: { paint: Paint; selected?: { server: string; pane: string } }) {
   const { colors } = paint;
-  const identity = resolveHomeIdentity(paint.pack.manifest);
+  const identity = resolveHomeIdentity(paint.manifest);
   return (
     <aside className="dm-rail" style={{ width: RAIL_WIDTH, background: paint.fill(colors.surface) }}>
       <Art art={paint.art('navigation.background', colors.surface)} />
-      {(identity.name !== null || identity.showLogo) && (
+      {identity.showBrand && (
         <div className="dm-rail__brand">
-          {identity.showLogo && (
+          {identity.logo && (
             <span className="dm-rail__tile" style={{ background: paint.fill(colors.surfaceRaised) }}>
               <Logo paint={paint} size={34} />
             </span>
@@ -354,29 +441,36 @@ function Rail({ paint, selected }: { paint: Paint; selected?: string }) {
         </div>
       )}
       <span className="dm-rail__label" style={{ color: colors.textMuted }}>Servers</span>
-      {SERVERS.map((server) => (
-        <div key={server.name} className="dm-rail__server">
-          <span className="dm-rail__row" style={{ color: colors.text }}>
-            <Dot color={server.live ? colors.success : colors.textSubtle} size={7} filled={server.live} />
-            {server.name}
+      <div className="dm-rail__groups">
+        {SERVERS.map((server) => {
+          const status = server.reachability === 'live' ? colors.success : colors.textSubtle;
+          const current = selected?.server === server.name;
+          return (
+            <div key={server.name} className="dm-rail__group">
+              <div className="dm-rail__pill" style={current ? { background: paint.fill(colors.primarySubtle) } : undefined}>
+                <span className="dm-rail__icon" style={{ background: paint.fill(colors.surfaceRaised) }}>
+                  <Lucide icon={ICON.server} size={17} color={colors.textMuted} />
+                </span>
+                <span className="dm-rail__server">
+                  <span className="dm-rail__server-name" style={{ color: colors.text }}>{server.name}</span>
+                  <span className="dm-rail__reach" style={{ color: status }}>
+                    <Dot color={status} size={7} filled={server.reachability !== 'unknown'} />
+                    {REACHABILITY[server.reachability]}
+                  </span>
+                </span>
+              </div>
+              <PaneRows paint={paint} server={server} selected={current ? selected?.pane : undefined} compact minHeight={34} />
+            </div>
+          );
+        })}
+      </div>
+      {/* Three glyphs, not three explained rows: the rail has servers in it. */}
+      <div className="dm-rail__actions">
+        {[ICON.scanLine, ICON.squareTerminal, ICON.settings].map((icon, index) => (
+          <span key={index} className="dm-rail__action" style={{ background: paint.fill(colors.background) }}>
+            <Lucide icon={icon} size={18} color={colors.textMuted} />
           </span>
-          {server.panes.map(([pane]) => {
-            const active = selected === pane;
-            return (
-              <span
-                key={pane}
-                className="dm-rail__agent"
-                style={{ color: active ? colors.primary : colors.textMuted, background: active ? paint.fill(colors.surfaceRaised) : undefined }}
-              >
-                {pane}
-              </span>
-            );
-          })}
-        </div>
-      ))}
-      <div className="dm-rail__foot" style={{ color: colors.textMuted }}>
-        <span><Svg d={ICON.scan} size={16} color={colors.textMuted} /> Pair a server</span>
-        <span><Svg d={ICON.gear} size={16} color={colors.textMuted} /> Settings</span>
+        ))}
       </div>
     </aside>
   );
@@ -389,15 +483,15 @@ function Rail({ paint, selected }: { paint: Paint; selected?: string }) {
 function NavHeader({ paint, title, top }: { paint: Paint; title: string; top: number }) {
   const { colors } = paint;
   return (
-    <div className="dm-nav" style={{ paddingTop: top + 6 }}>
+    <div className="dm-nav" style={{ paddingTop: top + NAV_HEADER_TOP_GAP }}>
       <Chrome paint={paint} surface="navigation" className="dm-nav__circle">
-        <Glyph paint={paint} name="chrome.back" color={colors.text} fallback={<Svg d={ICON.chevronLeft} size={21} color={colors.text} />} />
+        <Glyph paint={paint} name="chrome.back" size={21} color={colors.text} fallback={ICON.chevronLeft} />
       </Chrome>
       <Chrome paint={paint} surface="navigation" className="dm-nav__pill">
         <span className="dm-nav__title" style={{ color: colors.text }}>{title}</span>
       </Chrome>
       <Chrome paint={paint} surface="navigation" className="dm-nav__circle">
-        <Svg d={ICON.panels} size={19} color={colors.text} />
+        <Lucide icon={ICON.panelsTopLeft} size={18} color={colors.text} />
       </Chrome>
     </div>
   );
@@ -415,23 +509,25 @@ function ConnectionPill({ paint }: { paint: Paint }) {
   );
 }
 
+/**
+ * `TerminalComposer`: the faint field, the gateway's paperclip in front of it,
+ * and Send. Rest fills are `text` at the chrome-control alphas; the armed
+ * fill is `primary` and carries `buttons.primary.background`, bounded against
+ * the glyph colours the way `ThemedSurfaceArtwork` bounds it.
+ */
 function Composer({ paint, placeholder, armed }: { paint: Paint; placeholder: string; armed: boolean }) {
   const { colors } = paint;
-  const quiet = cssColor(colors.text, 0.06);
-  const control = cssColor(colors.text, 0.1);
+  const quiet = withAlpha(colors.text, 0.06);
+  const control = withAlpha(colors.text, 0.1);
   return (
     <div className="dm-composer" style={{ background: paint.fill(quiet) }}>
-      <span className="dm-composer__control" style={{ background: control }}>
-        <Svg d={ICON.plus} size={18} color={colors.text} />
+      <span className="dm-composer__control" style={{ background: paint.fill(control) }}>
+        <Lucide icon={ICON.paperclip} size={17} color={colors.primary} />
       </span>
-      <span className="dm-composer__input" style={{ color: armed ? colors.text : colors.textSubtle }}>{placeholder}</span>
-      <span className="dm-composer__control" style={{ background: armed ? colors.primary : control }}>
-        <Glyph
-          paint={paint}
-          name="chrome.send"
-          color={armed ? colors.onPrimary : colors.textMuted}
-          fallback={<Svg d={ICON.arrowUp} size={18} color={armed ? colors.onPrimary : colors.textMuted} strokeWidth={2.4} />}
-        />
+      <span className="dm-composer__input" style={{ color: armed ? colors.text : colors.textDisabled }}>{placeholder}</span>
+      <span className="dm-composer__control" style={{ background: paint.fill(armed ? colors.primary : control) }}>
+        {armed && <Art art={paint.art('buttons.primary.background', colors.primary)} />}
+        <Glyph paint={paint} name="chrome.send" size={18} color={armed ? colors.onPrimary : colors.textMuted} fallback={ICON.send} />
       </span>
     </div>
   );
@@ -440,22 +536,42 @@ function Composer({ paint, placeholder, armed }: { paint: Paint; placeholder: st
 function Dock({ paint, pad, bottom, children }: { paint: Paint; pad: boolean; bottom: number; children: ReactNode }) {
   return (
     <div className={`dm-dock-anchor ${pad ? 'dm-dock-anchor--pad' : ''}`}>
-      <Chrome paint={paint} surface="composer" className={`dm-dock ${pad ? 'dm-dock--pad' : ''}`} style={{ paddingBottom: pad ? 8 : bottom + 8 }}>
+      <Chrome paint={paint} surface="composer" className={`dm-dock ${pad ? 'dm-dock--pad' : ''}`} style={{ paddingBottom: pad ? 12 : bottom + 8 }}>
         {children}
       </Chrome>
     </div>
   );
 }
 
-/** `ThemedButton` primary: the one control that takes `buttons.primary.background`. */
-function PrimaryButton({ paint, children }: { paint: Paint; children: ReactNode }) {
+/**
+ * `ApprovalBanner`: the agent's question, inside the dock above the composer.
+ * A raised card; a shield in `warning`; the options as flat rows whose glyph
+ * is `primary`, or `danger` for a refusal.
+ */
+function ApprovalBanner({ paint }: { paint: Paint }) {
   const { colors } = paint;
-  const art = primaryButtonArtwork(paint.pack, paint.mode, paint.width, paint.alpha);
+  const options: [string[], string, boolean][] = [
+    [ICON.check, 'Yes', false],
+    [ICON.checkCheck, 'Yes, and don’t ask again this session', false],
+    [ICON.x, 'No', true],
+  ];
   return (
-    <span className="dm-button" style={{ background: paint.fill(colors.primary), color: colors.onPrimary }}>
-      <Art art={art} />
-      <span className="dm-button__label">{children}</span>
-    </span>
+    <div className="dm-approval" style={{ background: paint.fill(colors.surfaceRaised) }}>
+      <div className="dm-approval__head">
+        <Lucide icon={ICON.shieldAlert} size={16} color={colors.warning} />
+        <span className="dm-approval__copy">
+          <span className="dm-approval__prompt" style={{ color: colors.text }}>Allow Write to src/theme.json?</span>
+          <span className="dm-approval__context" style={{ color: colors.textMuted }}>41 lines · variants.dark.surfaces</span>
+        </span>
+      </div>
+      {options.map(([icon, label, deny]) => (
+        <span key={label} className="dm-approval__option">
+          <Lucide icon={icon} size={16} color={deny ? colors.danger : colors.primary} />
+          <span style={{ color: colors.text }}>{label}</span>
+        </span>
+      ))}
+      <span className="dm-approval__hint" style={{ color: colors.textSubtle }}>esc to cancel</span>
+    </div>
   );
 }
 
@@ -467,10 +583,9 @@ function ConversationContent({ paint, pad, top, bottom }: { paint: Paint; pad: b
   const { colors } = paint;
   return (
     <div className="dm-workspace">
-      <Art art={paint.art('shell.background', null)} />
       <NavHeader paint={paint} title="claude · ~/project" top={top} />
       <div className="dm-chat" style={pad ? { maxWidth: 720 } : undefined}>
-        <div className="dm-chat__prompt" style={{ background: paint.fill(cssColor(colors.primary, 0.16)), color: colors.text }}>
+        <div className="dm-chat__prompt" style={{ background: paint.fill(withAlpha(colors.primary, 0.16)), color: colors.text }}>
           Add a dark variant and keep the terminal readable at 80% opacity.
         </div>
         <p className="dm-chat__text" style={{ color: colors.text }}>
@@ -479,28 +594,23 @@ function ConversationContent({ paint, pad, top, bottom }: { paint: Paint; pad: b
         <ul className="dm-chat__activity">
           <li style={{ color: colors.textMuted }}><Dot color={colors.success} size={7} /> Read theme.json</li>
           <li style={{ color: colors.textMuted }}><Dot color={colors.success} size={7} /> Ran muqun-theme contrast</li>
-          <li style={{ color: colors.textMuted }}><Dot color={colors.warning} size={7} /> Editing variants.dark</li>
         </ul>
         <div className="dm-chat__card" style={{ background: paint.fill(colors.surfaceRaised) }}>
           <span className="dm-chat__card-title" style={{ color: colors.text }}>
-            <Svg d={ICON.shield} size={16} color={colors.warning} /> Approval needed
-          </span>
-          <span className="dm-chat__card-body" style={{ color: colors.textMuted }}>Write src/theme.json · 41 lines</span>
-          <span className="dm-chat__card-actions">
-            <PrimaryButton paint={paint}>Allow</PrimaryButton>
-            <span className="dm-flat" style={{ color: colors.danger }}>Deny</span>
-            <span className="dm-flat" style={{ color: colors.textSubtle }}>Always for this session</span>
+            <Dot color={colors.warning} size={7} /> Edit
+            <span className="dm-chat__card-body" style={{ color: colors.textMuted }}>src/theme.json</span>
           </span>
         </div>
         <div className="dm-chat__diff" style={{ borderColor: colors.border, background: paint.fill(colors.surface) }}>
-          <span className="dm-mono" style={{ color: colors.textSubtle }}>src/theme.json</span>
-          <span className="dm-mono" style={{ background: cssColor(paint.terminal.ansi[1]!, 0.14), color: paint.terminal.ansi[1] }}>- "backgroundOpacity": 1</span>
-          <span className="dm-mono" style={{ background: cssColor(paint.terminal.ansi[2]!, 0.14), color: paint.terminal.ansi[2] }}>+ "backgroundOpacity": 0.82</span>
+          <span className="dm-mono" style={{ color: colors.textMuted }}>src/theme.json</span>
+          <span className="dm-mono" style={{ background: withAlpha(paint.terminal.ansi[1]!, 0.14), color: paint.terminal.ansi[1] }}>- "backgroundOpacity": 1</span>
+          <span className="dm-mono" style={{ background: withAlpha(paint.terminal.ansi[2]!, 0.14), color: paint.terminal.ansi[2] }}>+ "backgroundOpacity": 0.82</span>
         </div>
       </div>
       <div className="dm-workspace__foot">
         <ConnectionPill paint={paint} />
         <Dock paint={paint} pad={pad} bottom={bottom}>
+          <ApprovalBanner paint={paint} />
           <Composer paint={paint} placeholder="Message claude…" armed={false} />
         </Dock>
       </div>
@@ -518,12 +628,13 @@ function TerminalContent({ paint, pad, top, bottom }: { paint: Paint; pad: boole
   const { colors, terminal } = paint;
   const a = terminal.ansi;
   const fg = terminal.foreground;
-  const fill = cssColor(terminal.background, surfaceOpacity(terminal.backgroundOpacity));
+  // `terminalBackgroundFill`: the pane's own colour at its (clamped) opacity.
+  const fill = withAlpha(terminal.background, surfaceOpacity(terminal.backgroundOpacity));
+  const key = paint.fill(withAlpha(colors.text, 0.1));
   return (
     <div className="dm-workspace">
-      <Art art={paint.art('shell.background', null)} />
       <div className="dm-term" style={{ background: fill, color: fg }}>
-        <pre className="dm-term__out" style={{ paddingTop: top + 6 + 46 + 16 }}>
+        <pre className="dm-term__out" style={{ paddingTop: top + NAV_HEADER_TOP_GAP + 46 + 16 }}>
           <span style={{ color: a[2] }}>❯</span> bun test{'\n'}
           <span style={{ color: a[8] }}>bun test v1.4.2 (linux x64)</span>{'\n'}
           {'\n'}
@@ -542,7 +653,7 @@ function TerminalContent({ paint, pad, top, bottom }: { paint: Paint; pad: boole
           {a.slice(0, 8).map((color, i) => <span key={i} style={{ color }}>{'▇▇ '}</span>)}{'\n'}
           {a.slice(8).map((color, i) => <span key={i} style={{ color }}>{'▇▇ '}</span>)}{'\n'}
           <span style={{ color: a[5] }}>{String(a.length).padStart(2, '0')}</span> colours ·{' '}
-          <span style={{ background: cssColor(terminal.selection), color: fg }}>selected text</span>{'\n'}
+          <span style={{ background: terminal.selection, color: fg }}>selected text</span>{'\n'}
           {'\n'}
           <span style={{ color: a[2] }}>❯</span> <span className="dm-term__cursor" style={{ background: terminal.cursor }} />
         </pre>
@@ -552,8 +663,11 @@ function TerminalContent({ paint, pad, top, bottom }: { paint: Paint; pad: boole
         <ConnectionPill paint={paint} />
         <Dock paint={paint} pad={pad} bottom={bottom}>
           <div className="dm-keys">
-            {KEYS.map((key) => (
-              <span key={key} className="dm-key" style={{ background: cssColor(colors.text, 0.1), color: colors.text }}>{key}</span>
+            <span className="dm-key dm-key--entry" style={{ background: key }}>
+              <Lucide icon={ICON.zap} size={16} color={colors.primary} />
+            </span>
+            {KEYS.map((label) => (
+              <span key={label} className="dm-key" style={{ background: key, color: colors.text }}>{label}</span>
             ))}
           </div>
           <Composer paint={paint} placeholder="bun test --watch" armed />
@@ -594,7 +708,7 @@ export default function DeviceMock({ pack, mode, device, screen, label }: Props)
     screen === 'home' ? (
       <HomeContent paint={paint} pad={pad} top={spec.top} />
     ) : screen === 'conversation' ? (
-      <ConversationContent paint={paint} pad={pad} top={pad ? spec.top : spec.top} bottom={spec.bottom} />
+      <ConversationContent paint={paint} pad={pad} top={spec.top} bottom={spec.bottom} />
     ) : (
       <TerminalContent paint={paint} pad={pad} top={spec.top} bottom={spec.bottom} />
     );
@@ -630,17 +744,19 @@ export default function DeviceMock({ pack, mode, device, screen, label }: Props)
             colorScheme: mode,
           }}
         >
+          {/* `AppDrawer`'s shell: the app's plane and `shell.background`, once,
+              under Home and the workspace alike, on both form factors. */}
+          <Art art={paint.art('shell.background', null)} />
           {pad ? (
-            <div className="dm-split" style={{ paddingTop: spec.top, paddingBottom: spec.bottom }}>
-              <Art art={paint.art('shell.background', null)} />
-              <Rail paint={paint} selected={screen === 'home' ? undefined : 'claude'} />
+            <div className="dm-split" style={{ paddingTop: spec.top + 12, paddingBottom: spec.bottom }}>
+              <Rail paint={paint} selected={screen === 'home' ? undefined : { server: 'studio', pane: 'claude' }} />
               <div className="dm-split__detail">{content}</div>
             </div>
           ) : (
             <div className="dm-compact">{content}</div>
           )}
           {device === 'phone' && <span className="dm-island" />}
-          <span className="dm-home-indicator" style={{ background: cssColor(colors.text, 0.5) }} />
+          <span className="dm-home-indicator" style={{ background: withAlpha(colors.text, 0.5) }} />
         </div>
       </div>
     </div>

@@ -437,18 +437,28 @@ export async function unpackTheme(bytes: Uint8Array): Promise<ThemePackage> {
    -------------------------------------------------------------------------- */
 
 /**
- * The image a slot shows in one mode at one width. Undefined inherits from
- * the shared `decoration`; `null` explicitly removes it at that layer.
+ * The image a slot shows in one mode at one width, exactly as the app's
+ * `resolveThemeImage` (`src/theme/resolve.ts`) chooses it: undefined inherits
+ * from the shared `decoration`, `null` explicitly removes it at that layer,
+ * and `fallbackSlot` is consulted only when the slot says nothing at all --
+ * a slot the pack removed does not fall through to another one.
  */
 export function resolveThemeImage(
   manifest: ThemeManifest,
   slot: string,
   mode: ThemeMode,
   width: 'compact' | 'regular' = 'compact',
+  decorationsEnabled = true,
+  fallbackSlot?: string,
 ): ThemeImage | null {
+  if (!decorationsEnabled) return null;
   const variant = manifest.variantDecorations?.[mode]?.[slot];
   const shared = manifest.decoration?.[slot];
-  const selected = variant === undefined ? shared : variant;
+  let selected = variant === undefined ? shared : variant;
+  if (selected === undefined && fallbackSlot) {
+    const fallbackVariant = manifest.variantDecorations?.[mode]?.[fallbackSlot];
+    selected = fallbackVariant === undefined ? manifest.decoration?.[fallbackSlot] : fallbackVariant;
+  }
   if (!selected || !isString(selected.asset)) return null;
   const responsive = selected[width];
   if (responsive !== undefined) return responsive && isString(responsive.asset) ? responsive : null;
@@ -471,13 +481,29 @@ export function declaredSlots(manifest: ThemeManifest): string[] {
   return [...known, ...unknown];
 }
 
-export function resolveHomeIdentity(manifest: ThemeManifest) {
-  const name = manifest.homeIdentity?.name;
-  const logo = manifest.homeIdentity?.logo;
+/**
+ * What Home says the app is called, and what mark it shows. The app's
+ * `resolveHomeIdentity` (`src/theme/resolve.ts`), verbatim.
+ *
+ * A pack that says nothing gets nothing: with no custom theme (`manifest`
+ * absent) Home is the app's own, but once a pack is applied the branding is
+ * opt-in -- an undeclared name or logo is hidden, and a pack that wants the
+ * app's own back asks by declaring `mode: 'default'`.
+ */
+export function resolveHomeIdentity(manifest?: ThemeManifest) {
+  const name = manifest?.homeIdentity?.name;
+  const logo = manifest?.homeIdentity?.logo;
+  // Undeclared means hidden for a pack, and means the app's own for no pack.
+  const nameHidden = manifest ? name === undefined || name.mode === 'hidden' : false;
+  const logoHidden = manifest ? logo === undefined || logo.mode === 'hidden' : false;
   return {
-    name: name?.mode === 'hidden' ? null : name?.mode === 'custom' ? name.text : 'Muqun',
-    logoAsset: logo?.mode === 'custom' ? logo.asset : null,
-    showLogo: logo?.mode !== 'hidden',
+    name: nameHidden ? null : name?.mode === 'custom' ? name.text : 'Muqun',
+    logo: logoHidden
+      ? null
+      : logo?.mode === 'custom'
+        ? { mode: 'custom' as const, asset: logo.asset }
+        : { mode: 'default' as const },
+    showBrand: !nameHidden || !logoHidden,
   };
 }
 
