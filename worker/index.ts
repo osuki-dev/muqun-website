@@ -103,6 +103,11 @@ async function serveTheme(
   if (request.method !== 'GET' && request.method !== 'HEAD') return apiError(405, 'method not allowed');
 
   const isIndex = key === 'index.json';
+  const maxAge = isIndex ? INDEX_MAX_AGE : PACKAGE_MAX_AGE;
+  // `s-maxage` is what the edge honours when storing; `max-age` is for the
+  // client. Kept separate so the zone's Browser Cache TTL cannot stretch the
+  // edge's idea of fresh.
+  const cacheControl = `public, max-age=${maxAge}, s-maxage=${maxAge}${isIndex ? ', must-revalidate' : ''}`;
   // One cache entry per key, whatever alias or method reached it.
   const cacheKey = new Request(new URL(THEMES_API + key, request.url).toString(), { method: 'GET' });
   // The Workers edge cache. Astro's DOM typings are in scope for this file
@@ -117,9 +122,7 @@ async function serveTheme(
       ETag: object.httpEtag,
       'Last-Modified': object.uploaded.toUTCString(),
       'Content-Length': String(object.size),
-      'Cache-Control': isIndex
-        ? `public, max-age=${INDEX_MAX_AGE}, must-revalidate`
-        : `public, max-age=${PACKAGE_MAX_AGE}`,
+      'Cache-Control': cacheControl,
       'Content-Type': isIndex ? 'application/json; charset=utf-8' : 'application/zip',
     });
     if (!isIndex) headers.set('Content-Disposition', `attachment; filename="${key.slice('dist/'.length)}"`);
@@ -127,11 +130,18 @@ async function serveTheme(
     ctx.waitUntil(cache.put(cacheKey, response.clone()));
   }
 
-  const etag = response.headers.get('ETag');
+  // A response that comes back out of the edge cache carries the zone's
+  // Browser Cache TTL in place of the Cache-Control it went in with (the zone
+  // says four hours; a merged theme should not take four hours to appear).
+  // Headers a Worker returns are not rewritten, so set ours again here.
+  const headers = new Headers(response.headers);
+  headers.set('Cache-Control', cacheControl);
+
+  const etag = headers.get('ETag');
   if (etag && request.headers.get('If-None-Match') === etag)
-    return new Response(null, { status: 304, headers: response.headers });
-  if (request.method === 'HEAD') return new Response(null, { status: 200, headers: response.headers });
-  return response;
+    return new Response(null, { status: 304, headers });
+  if (request.method === 'HEAD') return new Response(null, { status: 200, headers });
+  return new Response(response.body, { status: response.status, headers });
 }
 
 export default {
