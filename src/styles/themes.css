@@ -461,7 +461,7 @@
 /* The Light | Dark switch stays in view while the mock-ups scroll by. */
 .showcase__switch {
   position: sticky;
-  inset-block-start: var(--mq-space-3);
+  inset-block-start: calc(var(--mq-header-height) + var(--mq-space-3));
   z-index: 5;
   align-self: flex-start;
   display: inline-flex;
@@ -1527,4 +1527,167 @@
   font-family: var(--mq-font-mono);
   color: var(--mq-text-muted);
   overflow-wrap: anywhere;
+}
+
+/* Keep the gallery controls and reading rhythm consistent across screen sizes. */
+.themes-search {
+  min-block-size: 44px;
+  min-inline-size: 0;
+  border-radius: 14px;
+}
+
+.themes-card {
+  transition: border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.themes-card__body {
+  flex: 1;
+  padding: clamp(18px, 2.5vw, 28px);
+}
+
+.themes-card__name,
+.themes-detail__name {
+  overflow-wrap: anywhere;
+  text-wrap: pretty;
+}
+
+.themes-card__actions {
+  margin-block-start: auto;
+  padding-block-start: var(--mq-space-5);
+}
+
+.themes-button,
+.themes-link {
+  min-block-size: 44px;
+}
+
+.themes-link {
+  display: inline-flex;
+  align-items: center;
+}
+
+.themes-button {
+  padding-block: 10px;
+  text-align: center;
+  transition: background-color 180ms ease, border-color 180ms ease, transform 180ms ease;
+}
+
+.themes-button:active {
+  transform: scale(0.98);
+}
+
+.themes-button:focus-visible,
+.themes-link:focus-visible,
+.themes-card__name a:focus-visible,
+.showcase__mode:focus-visible,
+.themes-local__zone:focus-within {
+  outline: 2px solid var(--mq-text-accent);
+  outline-offset: 4px;
+}
+
+.themes-detail {
+  padding: clamp(18px, 3vw, 40px);
+  scroll-margin-block-start: 24px;
+}
+
+.themes-detail__head > * {
+  min-inline-size: 0;
+}
+
+.themes-facts {
+  gap: 8px 20px;
+  padding: 18px;
+  border-radius: 14px;
+  background: var(--mq-recessed);
+}
+
+.showcase__tab {
+  align-items: center;
+  min-block-size: 44px;
+}
+
+.previewer__facts {
+  padding: clamp(18px, 3vw, 28px);
+  background: var(--mq-card);
+  border: 1px solid var(--mq-hairline);
+  border-radius: var(--mq-radius-lg);
+  gap: 12px 24px;
+}
+
+.previewer__refresh {
+  min-block-size: 44px;
+}
+
+@media (min-width: 900px) {
+  .themes-detail__head {
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .themes-card:hover {
+    border-color: var(--mq-rule);
+    box-shadow: 0 12px 32px color-mix(in srgb, var(--mq-text) 7%, transparent);
+  }
+}
+
+@media (max-width: 600px) {
+  .themes-toolbar {
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .themes-search {
+    flex-basis: 100%;
+    inline-size: 100%;
+    font-size: 16px;
+  }
+
+  .themes-detail__name {
+    font-size: clamp(26px, 7vw, 36px);
+  }
+
+  .themes-detail__actions {
+    gap: 10px;
+  }
+
+  .themes-detail__actions .themes-button {
+    flex: 1 1 9rem;
+  }
+
+  .themes-facts,
+  .previewer__facts {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 4px;
+  }
+
+  .themes-facts dd + dt,
+  .previewer__facts dd + dt {
+    margin-block-start: 10px;
+  }
+
+  .themes-facts__row + .themes-facts__row dt,
+  .previewer__row + .previewer__row dt {
+    margin-block-start: 10px;
+  }
+
+  .themes-local__zone {
+    padding: 20px;
+    gap: 12px;
+  }
+
+  .themes-local__file {
+    overflow-wrap: anywhere;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .themes-card,
+  .themes-button {
+    transition: none;
+  }
+
+  .themes-button:active {
+    transform: none;
+  }
 }

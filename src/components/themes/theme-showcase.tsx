@@ -6,7 +6,7 @@
  * is in. The detail view and the standalone preview route both render exactly
  * this, so a theme looks the same wherever it is opened.
  */
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 
 import type { ThemesCopy } from '@/i18n/themes';
 import { useReveal } from '@/lib/theme-motion';
@@ -42,6 +42,7 @@ function siteMode(): ThemeMode {
 }
 
 export default function ThemeShowcase({ pack, copy, tokens = true }: Props) {
+  const id = useId();
   const [mode, setMode] = useState<ThemeMode>('light');
   useEffect(() => setMode(siteMode()), []);
 
@@ -57,7 +58,17 @@ export default function ThemeShowcase({ pack, copy, tokens = true }: Props) {
             key={candidate}
             type="button"
             role="tab"
+            id={`${id}-${candidate}`}
+            aria-controls={`${id}-panel`}
+            tabIndex={mode === candidate ? 0 : -1}
             aria-selected={mode === candidate}
+            onKeyDown={(event) => {
+              if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+              event.preventDefault();
+              const next = event.key === 'Home' ? 'light' : event.key === 'End' ? 'dark' : candidate === 'light' ? 'dark' : 'light';
+              setMode(next);
+              document.getElementById(`${id}-${next}`)?.focus();
+            }}
             className={`showcase__tab${mode === candidate ? ' showcase__tab--active' : ''}`}
             onClick={() => setMode(candidate)}
           >
@@ -66,7 +77,7 @@ export default function ThemeShowcase({ pack, copy, tokens = true }: Props) {
         ))}
       </div>
 
-      <section key={mode} className={`showcase__mode showcase__mode--${mode}`} role="tabpanel" aria-label={modeName(copy, mode)}>
+      <section key={mode} className={`showcase__mode showcase__mode--${mode}`} role="tabpanel" id={`${id}-panel`} aria-labelledby={`${id}-${mode}`} tabIndex={0}>
         <h5 className="showcase__section">{copy.screens.devices}</h5>
         <div className="showcase__phones">
           {PHONE_SCREENS.map((screen) => (

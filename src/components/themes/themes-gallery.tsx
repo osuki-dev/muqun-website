@@ -126,13 +126,11 @@ function useRoute(): [string, (next: string) => void, string] {
       const leaving = route.id;
       history.pushState(null, '', id ? `${route.base}/${id}/` : `${route.base}/`);
       flushSync(() => setRoute((current) => ({ ...current, id })));
-      if (id) {
-        window.scrollTo({ top: 0, behavior: reducedMotion() ? 'auto' : 'smooth' });
-      } else if (leaving) {
+      if (!id && leaving) {
         // Back lands on the card that was open, not on the top of the list.
-        document
-          .querySelector(`.themes-card[data-theme-id="${leaving}"]`)
-          ?.scrollIntoView({ block: 'center', behavior: reducedMotion() ? 'auto' : 'smooth' });
+        const card = document.querySelector(`.themes-card[data-theme-id="${leaving}"]`);
+        card?.scrollIntoView({ block: 'center', behavior: reducedMotion() ? 'auto' : 'smooth' });
+        card?.querySelector<HTMLAnchorElement>('.themes-card__name a')?.focus({ preventScroll: true });
       }
     },
     [route.base, route.id],
@@ -291,7 +289,7 @@ export default function ThemesGallery({ locale, copy, repoUrl }: Props) {
   return (
     <div className="themes">
       <div className="themes-toolbar">
-        <p className="themes-count mq-mono-label">{copy.count.replace('{count}', String(visible.length))}</p>
+        <p className="themes-count mq-mono-label" role="status" aria-live="polite">{copy.count.replace('{count}', String(visible.length))}</p>
         <input
           type="search"
           className="themes-search"
@@ -377,7 +375,11 @@ function ThemeCard({
       </div>
       <div className="themes-card__body">
         <h3 className="themes-card__name">
-          <a href={href} onClick={(event) => (event.preventDefault(), onOpen())}>
+          <a href={href} onClick={(event) => {
+            if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+            event.preventDefault();
+            onOpen();
+          }}>
             {entry.name}
           </a>
         </h3>
@@ -445,7 +447,7 @@ function ThemeDetail({
   const labels = copy.detail;
 
   useEffect(() => {
-    region.current?.scrollIntoView({ block: 'start' });
+    region.current?.scrollIntoView({ block: 'start', behavior: reducedMotion() ? 'auto' : 'smooth' });
     region.current?.focus({ preventScroll: true });
   }, [entry.id]);
 
