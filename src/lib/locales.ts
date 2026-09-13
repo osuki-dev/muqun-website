@@ -1,23 +1,8 @@
-/**
- * The eight languages this site speaks, and the two things every page needs to
- * do with them: normalise one, and build a path in one.
- *
- * The list is the app's list. Muqun ships eight locales, so the site ships
- * eight; the old company site carried ten because it also carried a blog and a
- * template catalogue that had picked up `ar` and `it` along the way. Dropping
- * `ar` also drops the only right-to-left language, which is why nothing here or
- * anywhere else on this site carries direction-switching machinery: there is
- * one direction, and adding the machinery back is cheaper than maintaining it
- * unused. If a ninth language arrives, it is added here **and** in
- * `astro.config.mjs`, which is the other half of the same fact.
- *
- * `en` is the unprefixed locale (`prefixDefaultLocale: false`), so an English
- * URL has no language segment at all. Everything else carries its tag.
- */
-
+/** Site languages; keep astro.config.mjs in sync. English uses unprefixed URLs. */
 export const siteLanguages = [
   { code: 'zh-CN', label: '简体中文' },
   { code: 'ru', label: 'Русский' },
+  { code: 'th', label: 'ไทย' },
   { code: 'vi', label: 'Tiếng Việt' },
   { code: 'en', label: 'English' },
   { code: 'zh-TW', label: '繁體中文' },
@@ -35,7 +20,7 @@ export const defaultLocale: SiteLocale = 'en';
 
 export const siteLocaleCodes: readonly SiteLocale[] = siteLanguages.map((language) => language.code);
 
-/** The seven that carry a prefix. What every `[...lang]` route enumerates. */
+/** The locales that carry a prefix. What every `[...lang]` route enumerates. */
 export const prefixedLocaleCodes: readonly SiteLocale[] = siteLocaleCodes.filter(
   (code) => code !== defaultLocale,
 );

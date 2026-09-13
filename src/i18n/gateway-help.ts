@@ -9,6 +9,30 @@ interface GatewayHelp {
   keys: string;
 }
 export const gatewayHelp: Record<SiteLocale, GatewayHelp> = {
+  th: {
+  "steps": [
+    "เปิดตัวจัดการการจับคู่บนคอมพิวเตอร์",
+    "สแกนรหัส QR ใน Muqun",
+    "กรอกรหัสสั้นที่แสดงบนคอมพิวเตอร์ในแอป"
+  ],
+  "manual": "สแกนไม่ได้? กรอกที่อยู่ Gateway ในแอปด้วยตนเอง แล้วกรอกรหัสสั้นเดียวกัน",
+  "heading": "คำสั่ง Gateway",
+  "labels": [
+    "เริ่มทำงานเบื้องหลัง",
+    "ดูสถานะโปรเซสและที่อยู่",
+    "หยุดโปรเซส",
+    "เปิดการเริ่มอัตโนมัติเมื่อเข้าสู่ระบบ",
+    "ดูสถานะบริการเบื้องหลัง",
+    "ยกเลิกการเริ่มอัตโนมัติ",
+    "ดูคำสั่งและตัวเลือกทั้งหมด"
+  ],
+  "modes": [
+    "เริ่มโดยตรง",
+    "โหมดบริการ"
+  ],
+  "serviceNote": "เลือกใช้เพียงโหมดเดียว การเริ่มโดยตรงใช้ start/stop ส่วนโหมดบริการใช้ได้เมื่อคุณเลือกติดตั้งบริการแล้วเท่านั้น และระบบจะเริ่มให้อัตโนมัติ อย่ารัน start ขณะบริการทำงาน หากต้องการกลับไปเริ่มโดยตรง ให้รัน service uninstall ก่อน อุปกรณ์ที่จับคู่ไว้จะยังอยู่",
+  "keys": "ในตัวจัดการ: p แสดง QR อีกครั้ง · x เพิกถอนอุปกรณ์ · u เปลี่ยนที่อยู่เชื่อมต่อ"
+},
   en: {
     steps: ['Open the pairing manager on your computer', 'Scan its QR code in Muqun', 'Enter the short code shown on your computer in the app'],
     manual: 'Cannot scan? Enter the Gateway address in the app, then enter the same short code.',
