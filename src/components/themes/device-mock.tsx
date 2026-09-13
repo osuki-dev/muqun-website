@@ -25,9 +25,9 @@
  * coloured planes and never text and is first raised to the pack's own
  * readability floor, that artwork is bounded by the contrast of the labels
  * over it (`theme-render.ts`), that `glass` blurs and `solid` does not, that
- * a `template` icon takes the theme's colour, and that the only two glyphs a
- * pack may replace are `chrome.back` and `chrome.send` -- every other icon is
- * the app's own (lucide, at the app's sizes). Words on the screens are
+ * a `template` icon takes the theme's colour, and that the only glyphs a pack
+ * may replace are `chrome.back`, `chrome.send` and `chrome.attach` -- every
+ * other icon is the app's own (lucide, at the app's sizes). Words on the screens are
  * fictional session content in the machine register, or the theme's own
  * name; none of it is translated, exactly as the aperture's stream is not.
  */
@@ -218,11 +218,11 @@ function Surface({
 }
 
 /**
- * `ThemeIcon`: a chrome glyph the pack may have replaced -- only `chrome.back`
- * and `chrome.send` exist -- else the app's own lucide drawing, same size,
- * same colour, same place.
+ * `ThemeIcon`: a chrome glyph the pack may have replaced -- `chrome.back`,
+ * `chrome.send` and `chrome.attach` are the three that exist -- else the app's
+ * own lucide drawing, same size, same colour, same place.
  */
-function Glyph({ paint, name, size, color, fallback }: { paint: Paint; name: 'chrome.back' | 'chrome.send'; size: number; color: string; fallback: string[] }) {
+function Glyph({ paint, name, size, color, fallback }: { paint: Paint; name: 'chrome.back' | 'chrome.send' | 'chrome.attach'; size: number; color: string; fallback: string[] }) {
   const icon = paint.manifest.icons?.[name];
   const url = icon ? paint.pack.assets[icon.asset] : undefined;
   if (!icon || !url) return <Lucide icon={fallback} size={size} color={color} />;
@@ -522,7 +522,7 @@ function Composer({ paint, placeholder, armed }: { paint: Paint; placeholder: st
   return (
     <div className="dm-composer" style={{ background: paint.fill(quiet) }}>
       <span className="dm-composer__control" style={{ background: paint.fill(control) }}>
-        <Lucide icon={ICON.paperclip} size={17} color={colors.primary} />
+        <Glyph paint={paint} name="chrome.attach" size={17} color={colors.primary} fallback={ICON.paperclip} />
       </span>
       <span className="dm-composer__input" style={{ color: armed ? colors.text : colors.textDisabled }}>{placeholder}</span>
       <span className="dm-composer__control" style={{ background: paint.fill(armed ? colors.primary : control) }}>
