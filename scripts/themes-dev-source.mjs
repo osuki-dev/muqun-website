@@ -41,6 +41,11 @@ const DEV_BASE = '/__muqun-themes/';
 const TYPES = {
   '.json': 'application/json; charset=utf-8',
   '.muqun-theme': 'application/zip',
+  // `dist/previews/<id>.<ext>`, the preview images the index names.
+  '.webp': 'image/webp',
+  '.png': 'image/png',
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
 };
 
 function contentType(path) {
