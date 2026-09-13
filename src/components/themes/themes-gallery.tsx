@@ -140,6 +140,33 @@ function useRoute(): [string, (next: string) => void, string] {
   return [route.id, navigate, route.base];
 }
 
+/**
+ * The package's address, onto the clipboard. Absolute, whatever the page's
+ * own base is, because it is meant to be pasted somewhere else -- a chat, a
+ * terminal, the app's import field once that exists.
+ */
+function CopyLinkButton({ url, label, done }: { url: string; label: string; done: string }) {
+  const [copied, setCopied] = useState(false);
+  useEffect(() => {
+    if (!copied) return;
+    const timer = window.setTimeout(() => setCopied(false), 1800);
+    return () => window.clearTimeout(timer);
+  }, [copied]);
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(new URL(url, window.location.href).href);
+      setCopied(true);
+    } catch {
+      // Clipboard access refused: the download link beside it still carries the address.
+    }
+  };
+  return (
+    <button type="button" className="themes-button" onClick={() => void copy()} aria-live="polite">
+      {copied ? done : label}
+    </button>
+  );
+}
+
 function useInView<T extends Element>(): [React.RefObject<T | null>, boolean] {
   const ref = useRef<T>(null);
   const [inView, setInView] = useState(false);
@@ -454,6 +481,7 @@ function ThemeDetail({
         <a className="themes-button themes-button--primary" href={themePackageUrl(entry)} download={`${entry.id}.muqun-theme`}>
           {labels.download}
         </a>
+        <CopyLinkButton url={themePackageUrl(entry)} label={labels.copyLink} done={labels.copied} />
         <a className="themes-link" href={entry.source ?? manifest?.source ?? themeSourceUrl(entry)}>
           {labels.source} ↗
         </a>
