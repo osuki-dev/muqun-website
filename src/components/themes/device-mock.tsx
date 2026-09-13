@@ -278,14 +278,16 @@ function ServerCard({ paint, server, radius, padding }: { paint: Paint; server: 
   );
 }
 
-function HomeContent({ paint, pad }: { paint: Paint; pad: boolean }) {
+function HomeContent({ paint, pad, top }: { paint: Paint; pad: boolean; top: number }) {
   const { colors } = paint;
   const identity = resolveHomeIdentity(paint.pack.manifest);
   const scene = paint.art('home.background', null, 'shell.background');
   const banner = paint.art('home.decoration', null);
   const showBrand = identity.name !== null || identity.showLogo;
+  // The status-bar inset is padding on this box, not on its parent, so the
+  // wallpaper behind it reaches the top edge the way it does in the app.
   return (
-    <div className={`dm-home ${pad ? 'dm-home--pad' : ''}`}>
+    <div className={`dm-home ${pad ? 'dm-home--pad' : ''}`} style={pad ? undefined : { paddingTop: top }}>
       {/* The wallpaper: `home.background`, or `shell.background` when the
           theme paints the whole shell and Home along with it, as the app's
           Home screen does. */}
@@ -590,7 +592,7 @@ export default function DeviceMock({ pack, mode, device, screen, label }: Props)
 
   const content =
     screen === 'home' ? (
-      <HomeContent paint={paint} pad={pad} />
+      <HomeContent paint={paint} pad={pad} top={spec.top} />
     ) : screen === 'conversation' ? (
       <ConversationContent paint={paint} pad={pad} top={pad ? spec.top : spec.top} bottom={spec.bottom} />
     ) : (
@@ -635,9 +637,7 @@ export default function DeviceMock({ pack, mode, device, screen, label }: Props)
               <div className="dm-split__detail">{content}</div>
             </div>
           ) : (
-            <div className="dm-compact" style={{ paddingTop: screen === 'home' ? spec.top : 0 }}>
-              {content}
-            </div>
+            <div className="dm-compact">{content}</div>
           )}
           {device === 'phone' && <span className="dm-island" />}
           <span className="dm-home-indicator" style={{ background: cssColor(colors.text, 0.5) }} />

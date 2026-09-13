@@ -24,6 +24,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { flushSync } from 'react-dom';
 
 import type { ThemesCopy } from '@/i18n/themes';
+import { leave, reducedMotion, useReveal } from '@/lib/theme-motion';
 import { unpackTheme, type ThemePackage } from '@/lib/theme-package';
 import {
   loadThemeIndex,
@@ -122,22 +123,19 @@ function useRoute(): [string, (next: string) => void, string] {
   }, []);
   const navigate = useCallback(
     (id: string) => {
-      const go = () => {
-        history.pushState(null, '', id ? `${route.base}/${id}/` : `${route.base}/`);
-        flushSync(() => setRoute((current) => ({ ...current, id })));
-        if (id) window.scrollTo({ top: 0 });
-      };
-      // A cross-fade between list and detail where the browser offers one,
-      // and none for anyone who asked for less motion.
-      const transition = (document as Document & { startViewTransition?: (update: () => void) => unknown })
-        .startViewTransition;
-      if (transition && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        transition.call(document, go);
-      } else {
-        go();
+      const leaving = route.id;
+      history.pushState(null, '', id ? `${route.base}/${id}/` : `${route.base}/`);
+      flushSync(() => setRoute((current) => ({ ...current, id })));
+      if (id) {
+        window.scrollTo({ top: 0, behavior: reducedMotion() ? 'auto' : 'smooth' });
+      } else if (leaving) {
+        // Back lands on the card that was open, not on the top of the list.
+        document
+          .querySelector(`.themes-card[data-theme-id="${leaving}"]`)
+          ?.scrollIntoView({ block: 'center', behavior: reducedMotion() ? 'auto' : 'smooth' });
       }
     },
-    [route.base],
+    [route.base, route.id],
   );
   return [route.id, navigate, route.base];
 }
@@ -253,11 +251,18 @@ export default function ThemesGallery({ locale, copy, repoUrl }: Props) {
     );
   }
 
+  // One theme open is its own page: the list waits behind "All themes" and
+  // comes back scrolled to the card that was opened.
+  if (selected) {
+    return (
+      <div className="themes">
+        <ThemeDetail key={selected.id} entry={selected} locale={locale} copy={copy} onBack={() => navigate('')} />
+      </div>
+    );
+  }
+
   return (
     <div className="themes">
-      {selected && (
-        <ThemeDetail key={selected.id} entry={selected} locale={locale} copy={copy} onBack={() => navigate('')} />
-      )}
       <div className="themes-toolbar">
         <p className="themes-count mq-mono-label">{copy.count.replace('{count}', String(visible.length))}</p>
         <input
@@ -314,7 +319,7 @@ function ThemeCard({
   const pack = usePackage(entry, wanted);
 
   return (
-    <li ref={ref} className="themes-card" aria-current={current ? 'true' : undefined}>
+    <li ref={ref} className="themes-card" data-theme-id={entry.id} aria-current={current ? 'true' : undefined}>
       <div className="themes-card__previews">
         {pack.status === 'ready' ? (
           (['light', 'dark'] as const).map((mode) => (
@@ -385,6 +390,10 @@ function ThemeDetail({
 }) {
   const pack = usePackage(entry, true);
   const region = useRef<HTMLElement>(null);
+  // In: the header's parts and the variant switch rise in. Out: the whole
+  // view fades before the list takes its place.
+  useReveal(region, '.themes-detail__back, .themes-detail__head > *, .themes-detail__actions, .showcase__switch', [entry.id]);
+  const back = () => void leave(region.current).then(onBack);
   const labels = copy.detail;
 
   useEffect(() => {
@@ -406,7 +415,7 @@ function ThemeDetail({
   return (
     <section ref={region} className="themes-detail" tabIndex={-1} aria-labelledby="themes-detail-title">
       <p className="themes-detail__back">
-        <button type="button" className="themes-link themes-link--button" onClick={onBack}>
+        <button type="button" className="themes-link themes-link--button" onClick={back}>
           ← {labels.back}
         </button>
       </p>
