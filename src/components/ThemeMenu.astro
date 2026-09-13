@@ -1,0 +1,43 @@
+---
+const labels: Record<string, string[]> = {
+ en: ['Theme', 'System', 'Light', 'Dark'], 'zh-CN': ['主题', '跟随系统', '浅色', '深色'], 'zh-TW': ['外觀', '跟隨系統', '淺色', '深色'],
+ ja: ['テーマ', 'システム', 'ライト', 'ダーク'], ko: ['테마', '시스템', '라이트', '다크'], de: ['Design', 'System', 'Hell', 'Dunkel'],
+ fr: ['Thème', 'Système', 'Clair', 'Sombre'], es: ['Tema', 'Sistema', 'Claro', 'Oscuro'], pt: ['Tema', 'Sistema', 'Claro', 'Escuro'],
+ ru: ['Тема', 'Системная', 'Светлая', 'Тёмная'], vi: ['Giao diện', 'Hệ thống', 'Sáng', 'Tối'],
+};
+const copy = labels[Astro.props.locale] || labels.en;
+---
+<details class="theme-menu">
+  <summary aria-label={copy[0]} title={copy[0]}>
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor" stroke="none"/></svg>
+  </summary>
+  <div class="theme-options" role="group" aria-label={copy[0]}>
+    {['system','light','dark'].map((mode,i) => <button type="button" data-theme-choice={mode} aria-pressed="false"><span>{copy[i+1]}</span><span class="theme-check" aria-hidden="true">✓</span></button>)}
+  </div>
+</details>
+<script>
+  document.querySelectorAll<HTMLDetailsElement>('.theme-menu').forEach(menu => {
+    const sync = () => menu.querySelectorAll<HTMLButtonElement>('button').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.themeChoice === document.documentElement.dataset.themeMode)));
+    sync();
+    menu.addEventListener('click', event => {
+      const button = (event.target as Element).closest<HTMLButtonElement>('button[data-theme-choice]');
+      if (!button) return;
+      window.dispatchEvent(new CustomEvent('muqun-theme-change', {detail: button.dataset.themeChoice}));
+      sync(); menu.open = false; menu.querySelector('summary')?.focus();
+    });
+    menu.addEventListener('toggle', () => { if(menu.open) document.querySelectorAll<HTMLDetailsElement>('.header-language[open]').forEach(other => other.open = false); });
+    document.addEventListener('click', event => { if(!menu.contains(event.target as Node)) menu.open = false; });
+    menu.addEventListener('keydown', event => { if(event.key === 'Escape') {menu.open = false; menu.querySelector('summary')?.focus();} });
+  });
+</script>
+<style>
+.theme-menu { position: relative; flex-shrink: 0; }
+summary { list-style: none; width: 40px; height: 40px; display: grid; place-items: center; cursor: pointer; border: 1px solid var(--mq-hairline); border-radius: 12px; color: var(--mq-text-muted); transition: background .18s, color .18s; }
+summary::-webkit-details-marker { display: none; }
+summary:hover, details[open] summary { color: var(--mq-text); background: color-mix(in srgb,var(--mq-text) 5%, transparent); }
+.theme-options { position: absolute; top: calc(100% + 10px); left: 0; min-width: 156px; padding: 6px; border: 1px solid var(--mq-hairline); border-radius: 14px; background: var(--mq-card); box-shadow: 0 10px 30px color-mix(in srgb,var(--mq-text) 12%,transparent); }
+button { display: flex; justify-content: space-between; align-items: center; gap: 18px; width: 100%; min-height: 42px; padding: 8px 12px; border: 0; border-radius: 9px; background: transparent; color: var(--mq-text-muted); cursor: pointer; white-space: nowrap; font-size: 14px; }
+button:hover, button[aria-pressed=true] { background: color-mix(in srgb,var(--mq-text) 6%,transparent); color: var(--mq-text-accent); }
+.theme-check { visibility: hidden; } button[aria-pressed=true] .theme-check { visibility: visible; }
+summary:focus-visible, button:focus-visible { outline: 2px solid var(--mq-text-accent); outline-offset: 2px; }
+</style>

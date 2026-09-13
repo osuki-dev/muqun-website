@@ -64,3 +64,9 @@ body {
     text-align: center;
   }
 }
+
+/* Keep navigation controls on one quiet, shared baseline. */
+.mq-page-header__controls { gap: 10px; }
+.mq-page-header__controls > a { display: inline-flex; align-items: center; min-height: 40px; font-size: 14px; padding: 0 10px; border-radius: 10px; }
+.mq-page-header__controls > a:hover { background: color-mix(in srgb, var(--mq-text) 5%, transparent); text-decoration: none; }
+@media(max-width:699px) { .mq-page-header__controls { gap: 6px; } }

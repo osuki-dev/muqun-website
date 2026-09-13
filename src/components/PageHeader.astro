@@ -23,6 +23,7 @@
  */
 import Container from './Container.astro';
 import Wordmark from './Wordmark.astro';
+import ThemeMenu from './ThemeMenu.astro';
 
 interface Props {
   homeHref?: string;
@@ -38,6 +39,7 @@ const { homeHref = '/', homeLabel, class: className } = Astro.props;
   <Container class="mq-page-header__inner">
     <Wordmark href={homeHref} label={homeLabel} />
     <div class="mq-page-header__controls">
+      <ThemeMenu locale={homeHref.split("/")[1] || "en"} />
       <slot />
     </div>
   </Container>

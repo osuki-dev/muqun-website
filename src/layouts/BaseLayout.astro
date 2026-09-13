@@ -68,9 +68,12 @@ const {
     {description && <meta name="description" content={description} />}
     {canonical && <link rel="canonical" href={String(canonical)} />}
 
-    <link rel="icon" href="/pocket-icon-transparent-32.png" sizes="32x32" type="image/png" />
-    <link rel="icon" href="/pocket-icon-transparent-16.png" sizes="16x16" type="image/png" />
-    <link rel="icon" href="/pocket-icon-transparent-48.png" sizes="48x48" type="image/png" />
+    {[16, 32, 48].map((size) => (
+      <link rel="icon" type="image/png" sizes={`${size}x${size}`}
+        href={`/pocket-icon-light-${size}.png`}
+        data-light-icon={`/pocket-icon-light-${size}.png`}
+        data-dark-icon={`/pocket-icon-transparent-${size}.png`} />
+    ))}
     <link rel="apple-touch-icon" href="/pocket-icon-180.png" sizes="180x180" />
 
     <meta name="color-scheme" content="light dark" />
@@ -78,13 +81,25 @@ const {
     <script is:inline>
       (() => {
         const media = window.matchMedia('(prefers-color-scheme: dark)');
+        let mode = 'system';
+        try { const saved = localStorage.getItem('muqun-theme'); if (['system', 'light', 'dark'].includes(saved)) mode = saved; } catch {}
         const apply = () => {
-          const theme = media.matches ? 'dark' : 'light';
+          const theme = mode === 'system' ? (media.matches ? 'dark' : 'light') : mode;
+          document.documentElement.dataset.themeMode = mode;
           document.documentElement.dataset.theme = theme;
+          document.querySelectorAll('link[data-light-icon]').forEach((icon) => {
+            icon.href = theme === 'dark' ? icon.dataset.darkIcon : icon.dataset.lightIcon;
+          });
           document.querySelector('meta[name="theme-color"]').content = theme === 'dark' ? '#090b14' : '#f6f3ee';
         };
         apply();
         media.addEventListener('change', apply);
+        window.addEventListener('muqun-theme-change', (event) => {
+          if (!['system', 'light', 'dark'].includes(event.detail)) return;
+          mode = event.detail;
+          try { localStorage.setItem('muqun-theme', mode); } catch {}
+          apply();
+        });
       })();
     </script>
 

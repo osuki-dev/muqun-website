@@ -9,7 +9,7 @@ for (const locale of locales) {
     assert.match(html, new RegExp(`<html[^>]*lang="${locale}"`));
     assert.match(html, /data-theme-mode="system"/);
     assert.ok(html.includes("prefers-color-scheme: dark"));
-    assert.doesNotMatch(html, /class="[^"]*mq-theme-toggle/);
+    assert.match(html, /class="[^"]*theme-menu/);
     assert.equal((html.match(/<h1\b/g)||[]).length, 1);
     for (const target of locales) {
       const href = `/${target === 'en' ? '' : `${target}/`}${page}`;

@@ -59,17 +59,17 @@ const selected = locales.find((locale) => locale.code === current);
   .header-language {
     position: relative;
     font-size: 12px;
-    color: #d5cbdf;
+    color: var(--mq-text-muted);
   }
   .header-language summary {
     cursor: pointer;
     display: flex;
     align-items: center;
     gap: 8px;
-    min-height: 44px;
+    min-height: 40px;
     padding: 0 13px;
     border: 1px solid var(--mq-hairline);
-    border-radius: 30px;
+    border-radius: 12px;
     list-style: none;
   }
   .header-language summary::-webkit-details-marker {
