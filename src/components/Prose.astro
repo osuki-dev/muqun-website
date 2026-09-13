@@ -80,9 +80,21 @@ const {
     margin-block: var(--mq-space-10) var(--mq-space-4);
   }
 
-  .mq-prose :global(h2:first-child) {
+  .mq-prose > :global(h2:first-child) {
     margin-block-start: 0;
   }
+
+  /* Translated policies group paragraphs in sections; keep the same
+     chapter rhythm as the flat English document. */
+  .mq-prose > :global(section) {
+    margin-block-start: clamp(32px, 4vw, 48px);
+  }
+  .mq-prose > :global(section > h2:first-child) {
+    margin-block-start: 0;
+    margin-block-end: 16px;
+  }
+  .mq-prose { overflow-wrap: anywhere; }
+  .mq-prose :global(h2) { line-height: 1.4; text-wrap: pretty; }
 
   .mq-prose :global(ul) {
     display: grid;

@@ -55,6 +55,7 @@ export default function WorldScene({
     mood: "success",
     start: 0,
   });
+  const pendingMood = useRef<{ mood: Mood; since: number }>({ mood: "success", since: 0 });
   const model = useRef<T.Group | null>(null);
   const petReaction = useRef<{ mood: Mood; until: number; index: number }>({ mood: "happy", until: 0, index: -1 });
   const state = useRef({
@@ -383,11 +384,11 @@ export default function WorldScene({
     if (!reduced) s.time += dt;
     s.pointerX = T.MathUtils.damp(s.pointerX, reduced ? 0 : s.aimX, 7, dt);
     s.pointerY = T.MathUtils.damp(s.pointerY, reduced ? 0 : s.aimY, 7, dt);
-    const chapterPhase = s.exact * 1.6;
+    // Ambient play has its own clock: scroll jumps must not scrub facial motion.
     interactionTimeline.current?.time(
       reduced || jump.current.reveal < 1 || !Number.isFinite(s.interactionStart)
         ? 0
-        : Math.max(0, s.time - s.interactionStart + chapterPhase) % 12,
+        : Math.max(0, s.time - s.interactionStart) % 12,
     );
     const play = interaction.current;
     const mood = [...expressionBeats]
@@ -408,18 +409,23 @@ export default function WorldScene({
         walking: false,
       });
     }
-    if (moodClock.current.mood !== mood)
-      moodClock.current = { mood, start: s.time };
+    const clicked = performance.now() < petReaction.current.until;
+    const desiredMood: Mood = clicked ? petReaction.current.mood
+      : jump.current.walking ? "walk"
+      : play.energy > 0.1 ? "happy"
+      : play.look < -0.1 ? "idle" : mood;
+    const now = performance.now() / 1000;
+    if (pendingMood.current.mood !== desiredMood)
+      pendingMood.current = { mood: desiredMood, since: now };
+    // Keep only the latest stable expression while crossing several sections.
+    // Direct taps and walking remain immediate; automatic faces have a short dwell.
+    if (moodClock.current.mood !== desiredMood &&
+      (clicked || reduced || jump.current.walking ||
+       (now - pendingMood.current.since >= 0.18 && s.time - moodClock.current.start >= 0.55))) {
+      moodClock.current = { mood: desiredMood, start: s.time };
+    }
     animate.current?.(
-      performance.now() < petReaction.current.until
-        ? petReaction.current.mood
-        : jump.current.walking
-        ? "walk"
-        : play.energy > 0.1
-          ? "happy"
-          : play.look < -0.1
-            ? "idle"
-            : mood,
+      moodClock.current.mood,
       s.time - moodClock.current.start,
       dt,
       reduced,

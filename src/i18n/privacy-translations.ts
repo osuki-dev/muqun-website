@@ -47,7 +47,7 @@ export const privacyTranslations: Partial<Record<SiteLocale, Policy>> = {
         title: "政策變更與聯絡方式",
         paragraphs: [
           "牧群的功能或服務供應商變更時，我們可能更新本政策。最新版本與修訂日期會持續在此頁面提供。",
-          "如對本政策有疑問，請來信 muqun@osuki.dev。",
+          "如對本政策有疑問，請來信 hello@muqun.dev。",
         ],
       },
     ],
@@ -95,7 +95,7 @@ export const privacyTranslations: Partial<Record<SiteLocale, Policy>> = {
         title: "变更与联系",
         paragraphs: [
           "当牧群的功能或服务提供商变化时，我们可能更新本政策。当前版本和修订日期将一直在此页面提供。",
-          "如对本政策有疑问，请联系 muqun@osuki.dev。",
+          "如对本政策有疑问，请联系 hello@muqun.dev。",
         ],
       },
     ],
@@ -143,7 +143,7 @@ export const privacyTranslations: Partial<Record<SiteLocale, Policy>> = {
         title: "Изменения и связь",
         paragraphs: [
           "Мы можем обновлять политику при изменении функций Muqun или поставщиков услуг. Актуальная версия и дата изменения будут доступны по этому адресу.",
-          "Вопросы о политике можно направить на muqun@osuki.dev.",
+          "Вопросы о политике можно направить на hello@muqun.dev.",
         ],
       },
     ],
@@ -191,7 +191,7 @@ export const privacyTranslations: Partial<Record<SiteLocale, Policy>> = {
         title: "Thay đổi và liên hệ",
         paragraphs: [
           "Chính sách có thể được cập nhật khi tính năng Muqun hoặc nhà cung cấp dịch vụ thay đổi. Phiên bản hiện tại và ngày sửa đổi luôn có tại địa chỉ này.",
-          "Vui lòng gửi câu hỏi về chính sách đến muqun@osuki.dev.",
+          "Vui lòng gửi câu hỏi về chính sách đến hello@muqun.dev.",
         ],
       },
     ],

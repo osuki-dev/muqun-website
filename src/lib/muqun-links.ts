@@ -136,4 +136,4 @@ export const appStoreUrl = 'https://apps.apple.com/app/muqun/id6793419283';
 
 export const playStoreUrl = 'https://play.google.com/store/apps/details?id=dev.osuki.muqun';
 
-export const supportEmail = 'muqun@osuki.dev';
+export const supportEmail = 'hello@muqun.dev';
