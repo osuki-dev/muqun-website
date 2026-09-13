@@ -55,10 +55,11 @@ const copy = themesCopy[locale];
     <div class="mq-themes-actions">
       <Button href={themesRepoUrl} variant="secondary" arrow>{copy.repoCta}</Button>
     </div>
-  </Band>
 
-  <Band tone="cream" tight>
-    <ThemesGallery client:load locale={locale} copy={copy} repoUrl={themesRepoUrl} />
+    {/* Same band as the heading: the list is the page, not a section after it. */}
+    <div class="mq-themes-gallery">
+      <ThemesGallery client:load locale={locale} copy={copy} repoUrl={themesRepoUrl} />
+    </div>
   </Band>
 
   <Band tone="recessed" tight>
@@ -76,6 +77,10 @@ const copy = themesCopy[locale];
      `styles/themes.css`. */
   .mq-themes-eyebrow {
     margin-block-end: var(--mq-space-4);
+  }
+
+  .mq-themes-gallery {
+    margin-block-start: var(--mq-space-12);
   }
 
   .mq-themes-lead {

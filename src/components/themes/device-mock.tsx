@@ -286,6 +286,10 @@ function HomeContent({ paint, pad }: { paint: Paint; pad: boolean }) {
   const showBrand = identity.name !== null || identity.showLogo;
   return (
     <div className={`dm-home ${pad ? 'dm-home--pad' : ''}`}>
+      {/* The wallpaper: `home.background`, or `shell.background` when the
+          theme paints the whole shell and Home along with it, as the app's
+          Home screen does. */}
+      <Art art={scene} />
       {!pad && (
         <div className="dm-home__bar">
           {(['terminal', 'scan', 'gear'] as const).map((icon) => (
