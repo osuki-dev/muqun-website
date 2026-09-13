@@ -87,11 +87,25 @@ export interface ThemesCopy {
     refresh: string;
     updated: string;
   };
+  /** Previewing a `.muqun-theme` file from the reader's own disk. */
+  local: {
+    heading: string;
+    lead: string;
+    pick: string;
+    drop: string;
+    reading: string;
+    failed: string;
+    clear: string;
+    url: string;
+    urlCta: string;
+  };
   making: {
     heading: string;
     body: string;
     repo: string;
     cli: string;
+    /** Three steps: scaffold, check, send. Commands are not translated. */
+    steps: readonly { title: string; body: string }[];
   };
 }
 
@@ -161,11 +175,27 @@ const en: ThemesCopy = {
     refresh: 'Reload when the source changes',
     updated: 'Updated',
   },
+  local: {
+    heading: 'Preview your own',
+    lead: 'Drop a .muqun-theme file here to see it exactly as the gallery would draw it. Nothing leaves your browser.',
+    pick: 'Choose a file',
+    drop: 'or drop it here',
+    reading: 'Reading the file…',
+    failed: 'That file is not a theme this site can read.',
+    clear: 'Clear',
+    url: 'Editing a theme right now, or hosting one somewhere? The preview page draws it from a URL and reloads as it changes.',
+    urlCta: 'Preview from a URL',
+  },
   making: {
     heading: 'Make your own',
     body: 'A theme is a small ZIP: one JSON file of colours and an assets folder of images. The toolchain scaffolds one, checks its contrast, and packs it; the repository takes them as pull requests.',
     repo: 'Contribute a theme',
     cli: 'The theme toolchain',
+    steps: [
+      { title: 'Scaffold it', body: 'One command writes a complete, installable theme with placeholder art. Or install the skill and describe the look you want to your agent.' },
+      { title: 'Check it', body: 'validate runs the app’s own checks; contrast shows what the palette costs in translucency. Both work on the folder, no packing needed.' },
+      { title: 'Send it', body: 'Open a pull request with the src/<id> folder only. CI packs it, and it appears here within minutes of the merge.' },
+    ],
   },
 };
 
@@ -234,11 +264,27 @@ const zhCN: ThemesCopy = {
     refresh: '来源变化时自动重新加载',
     updated: '已更新',
   },
+  local: {
+    heading: '预览你自己的主题',
+    lead: '把 .muqun-theme 文件拖到这里，就能看到画廊会怎样呈现它。文件不会离开你的浏览器。',
+    pick: '选择文件',
+    drop: '或拖到这里',
+    reading: '正在读取文件…',
+    failed: '这个文件不是本站能读取的主题。',
+    clear: '清除',
+    url: '正在编辑主题，或者把主题放在了某个地址？预览页可以从 URL 加载，并随改动自动刷新。',
+    urlCta: '从 URL 预览',
+  },
   making: {
     heading: '制作你自己的主题',
     body: '主题是一个小小的 ZIP：一个描述颜色的 JSON 文件，加一个存放图片的 assets 文件夹。工具链可以生成模板、检查对比度并打包；仓库通过 Pull Request 接收主题。',
     repo: '贡献主题',
     cli: '主题工具链',
+    steps: [
+      { title: '搭好骨架', body: '一条命令生成一套完整、可安装的主题，配好占位图。也可以安装 skill，直接向你的 agent 描述想要的样子。' },
+      { title: '检查', body: 'validate 跑的是 app 自己的检查；contrast 告诉你配色在半透明上要付出的代价。两者都直接对目录操作，不用打包。' },
+      { title: '提交', body: '只带 src/<id> 目录开一个 pull request。CI 负责打包，合并后几分钟内就会出现在这里。' },
+    ],
   },
 };
 
@@ -307,11 +353,27 @@ const zhTW: ThemesCopy = {
     refresh: '來源變更時自動重新載入',
     updated: '已更新',
   },
+  local: {
+    heading: '預覽你自己的主題',
+    lead: '把 .muqun-theme 檔案拖到這裡，就能看到畫廊會怎樣呈現它。檔案不會離開你的瀏覽器。',
+    pick: '選擇檔案',
+    drop: '或拖到這裡',
+    reading: '正在讀取檔案…',
+    failed: '這個檔案不是本站能讀取的主題。',
+    clear: '清除',
+    url: '正在編輯主題，或者把主題放在了某個網址？預覽頁可以從 URL 載入，並隨改動自動重新整理。',
+    urlCta: '從 URL 預覽',
+  },
   making: {
     heading: '製作你自己的主題',
     body: '主題是一個小小的 ZIP：一個描述顏色的 JSON 檔案，加上一個存放圖片的 assets 資料夾。工具鏈可以產生範本、檢查對比度並打包；儲存庫透過 Pull Request 接收主題。',
     repo: '貢獻主題',
     cli: '主題工具鏈',
+    steps: [
+      { title: '建立骨架', body: '一條命令產生一套完整、可安裝的主題，配好佔位圖。也可以安裝 skill，直接向你的 agent 描述想要的樣子。' },
+      { title: '檢查', body: 'validate 跑的是 app 自己的檢查；contrast 告訴你配色在半透明上要付出的代價。兩者都直接對目錄操作，不用打包。' },
+      { title: '送出', body: '只帶 src/<id> 目錄開一個 pull request。CI 負責打包，合併後幾分鐘內就會出現在這裡。' },
+    ],
   },
 };
 
@@ -380,11 +442,27 @@ const ja: ThemesCopy = {
     refresh: 'ソースが変わったら再読み込み',
     updated: '更新',
   },
+  local: {
+    heading: '自作テーマをプレビュー',
+    lead: '.muqun-theme ファイルをここにドロップすると、ギャラリーと同じ描画で確認できます。ファイルはブラウザの外に出ません。',
+    pick: 'ファイルを選ぶ',
+    drop: 'またはここにドロップ',
+    reading: 'ファイルを読み込み中…',
+    failed: 'このサイトで読めるテーマファイルではありません。',
+    clear: 'クリア',
+    url: '編集中のテーマや、どこかに置いてあるテーマは、プレビューページが URL から読み込み、変更のたびに更新します。',
+    urlCta: 'URL からプレビュー',
+  },
   making: {
     heading: '自分のテーマを作る',
     body: 'テーマは小さな ZIP です。色を記した JSON ファイルが一つと、画像を入れる assets フォルダ。ツールチェーンが雛形を作り、コントラストを検査し、パッケージ化します。リポジトリはプルリクエストで受け付けています。',
     repo: 'テーマを投稿する',
     cli: 'テーマのツールチェーン',
+    steps: [
+      { title: '土台を作る', body: 'コマンド一つで、プレースホルダー画像付きの完全なインストール可能テーマが生成されます。skill を入れてエージェントに望む見た目を伝えても構いません。' },
+      { title: '確認する', body: 'validate はアプリ自身の検査を実行し、contrast はパレットが半透明で失うものを示します。どちらもフォルダーに対して動き、パックは不要です。' },
+      { title: '送る', body: 'src/<id> フォルダーだけで pull request を開いてください。CI がパックし、マージから数分でここに並びます。' },
+    ],
   },
 };
 
@@ -453,11 +531,27 @@ const ko: ThemesCopy = {
     refresh: '소스가 바뀌면 다시 불러오기',
     updated: '업데이트됨',
   },
+  local: {
+    heading: '내 테마 미리 보기',
+    lead: '.muqun-theme 파일을 여기에 놓으면 갤러리가 그리는 그대로 볼 수 있습니다. 파일은 브라우저 밖으로 나가지 않습니다.',
+    pick: '파일 선택',
+    drop: '또는 여기에 놓기',
+    reading: '파일을 읽는 중…',
+    failed: '이 사이트가 읽을 수 있는 테마 파일이 아닙니다.',
+    clear: '지우기',
+    url: '지금 편집 중인 테마나 어딘가에 올려 둔 테마는 미리 보기 페이지가 URL에서 불러와 바뀔 때마다 새로 그립니다.',
+    urlCta: 'URL로 미리 보기',
+  },
   making: {
     heading: '직접 만들기',
     body: '테마는 작은 ZIP 파일입니다. 색상을 담은 JSON 파일 하나와 이미지를 담은 assets 폴더. 도구 모음이 뼈대를 만들고 대비를 검사하고 패키징합니다. 저장소는 풀 리퀘스트로 테마를 받습니다.',
     repo: '테마 기여하기',
     cli: '테마 도구 모음',
+    steps: [
+      { title: '뼈대 만들기', body: '명령 하나로 자리 표시 이미지가 채워진 완전한 설치 가능 테마가 만들어집니다. skill을 설치하고 에이전트에게 원하는 모습을 설명해도 됩니다.' },
+      { title: '확인하기', body: 'validate는 앱 자체의 검사를 실행하고, contrast는 팔레트가 반투명에서 치르는 비용을 보여 줍니다. 둘 다 폴더에서 바로 동작하며 패킹이 필요 없습니다.' },
+      { title: '보내기', body: 'src/<id> 폴더만 담아 pull request를 여세요. CI가 패킹하고, 병합 후 몇 분 안에 여기에 나타납니다.' },
+    ],
   },
 };
 
@@ -526,11 +620,27 @@ const de: ThemesCopy = {
     refresh: 'Neu laden, wenn sich die Quelle ändert',
     updated: 'Aktualisiert',
   },
+  local: {
+    heading: 'Eigenes Theme ansehen',
+    lead: 'Eine .muqun-theme-Datei hier ablegen, und sie erscheint genau so, wie die Galerie sie zeichnen würde. Nichts verlässt den Browser.',
+    pick: 'Datei wählen',
+    drop: 'oder hier ablegen',
+    reading: 'Datei wird gelesen…',
+    failed: 'Diese Datei ist kein Theme, das diese Seite lesen kann.',
+    clear: 'Leeren',
+    url: 'Ein Theme in Arbeit oder irgendwo gehostet? Die Vorschauseite zeichnet es von einer URL und lädt bei Änderungen neu.',
+    urlCta: 'Von einer URL ansehen',
+  },
   making: {
     heading: 'Eigenes Theme bauen',
     body: 'Ein Theme ist ein kleines ZIP: eine JSON-Datei mit Farben und ein assets-Ordner mit Bildern. Die Werkzeuge legen eines an, prüfen den Kontrast und packen es; das Repository nimmt Themes als Pull Requests an.',
     repo: 'Theme beisteuern',
     cli: 'Die Theme-Werkzeuge',
+    steps: [
+      { title: 'Gerüst anlegen', body: 'Ein Befehl schreibt ein vollständiges, installierbares Theme mit Platzhaltergrafik. Oder den Skill installieren und dem Agenten beschreiben, wie es aussehen soll.' },
+      { title: 'Prüfen', body: 'validate führt die Prüfungen der App selbst aus; contrast zeigt, was die Palette an Transluzenz kostet. Beides arbeitet auf dem Ordner, ohne zu packen.' },
+      { title: 'Einreichen', body: 'Einen Pull Request nur mit dem Ordner src/<id> öffnen. CI packt ihn, und wenige Minuten nach dem Merge ist er hier.' },
+    ],
   },
 };
 
@@ -599,11 +709,27 @@ const fr: ThemesCopy = {
     refresh: 'Recharger quand la source change',
     updated: 'Mis à jour',
   },
+  local: {
+    heading: 'Voir son propre thème',
+    lead: 'Déposez un fichier .muqun-theme ici pour le voir exactement comme la galerie le dessinerait. Rien ne quitte votre navigateur.',
+    pick: 'Choisir un fichier',
+    drop: 'ou le déposer ici',
+    reading: 'Lecture du fichier…',
+    failed: 'Ce fichier n’est pas un thème que ce site sait lire.',
+    clear: 'Effacer',
+    url: 'Un thème en cours d’édition, ou hébergé quelque part ? La page d’aperçu le dessine depuis une URL et se recharge à chaque changement.',
+    urlCta: 'Aperçu depuis une URL',
+  },
   making: {
     heading: 'Créez le vôtre',
     body: 'Un thème est un petit ZIP : un fichier JSON de couleurs et un dossier assets d’images. L’outillage en génère un, vérifie son contraste et l’empaquette ; le dépôt les accepte par pull request.',
     repo: 'Proposer un thème',
     cli: 'L’outillage des thèmes',
+    steps: [
+      { title: 'Créer la base', body: 'Une commande écrit un thème complet et installable, avec des images de remplacement. Ou installez le skill et décrivez à votre agent le rendu voulu.' },
+      { title: 'Vérifier', body: 'validate exécute les contrôles de l’app elle-même ; contrast montre ce que la palette coûte en translucidité. Les deux travaillent sur le dossier, sans empaqueter.' },
+      { title: 'Envoyer', body: 'Ouvrez une pull request avec le seul dossier src/<id>. La CI l’empaquette, et il apparaît ici quelques minutes après la fusion.' },
+    ],
   },
 };
 
@@ -672,11 +798,27 @@ const es: ThemesCopy = {
     refresh: 'Recargar cuando la fuente cambie',
     updated: 'Actualizado',
   },
+  local: {
+    heading: 'Previsualiza el tuyo',
+    lead: 'Suelta aquí un archivo .muqun-theme para verlo exactamente como lo dibujaría la galería. Nada sale de tu navegador.',
+    pick: 'Elegir archivo',
+    drop: 'o suéltalo aquí',
+    reading: 'Leyendo el archivo…',
+    failed: 'Ese archivo no es un tema que este sitio pueda leer.',
+    clear: 'Limpiar',
+    url: '¿Un tema en edición, o alojado en algún sitio? La página de vista previa lo dibuja desde una URL y se recarga con cada cambio.',
+    urlCta: 'Vista previa desde una URL',
+  },
   making: {
     heading: 'Crea el tuyo',
     body: 'Un tema es un ZIP pequeño: un archivo JSON con los colores y una carpeta assets con imágenes. Las herramientas generan uno, comprueban su contraste y lo empaquetan; el repositorio los acepta como pull requests.',
     repo: 'Contribuir un tema',
     cli: 'Las herramientas de temas',
+    steps: [
+      { title: 'Crear la base', body: 'Un comando escribe un tema completo e instalable, con imágenes de relleno. O instala el skill y describe a tu agente el aspecto que quieres.' },
+      { title: 'Comprobar', body: 'validate ejecuta las comprobaciones de la propia app; contrast muestra lo que la paleta cuesta en translucidez. Ambos trabajan sobre la carpeta, sin empaquetar.' },
+      { title: 'Enviar', body: 'Abre un pull request solo con la carpeta src/<id>. La CI lo empaqueta y aparece aquí a los pocos minutos de fusionarse.' },
+    ],
   },
 };
 
@@ -745,11 +887,27 @@ const pt: ThemesCopy = {
     refresh: 'Recarregar quando a fonte mudar',
     updated: 'Atualizado',
   },
+  local: {
+    heading: 'Pré-visualize o seu',
+    lead: 'Solte aqui um arquivo .muqun-theme para vê-lo exatamente como a galeria o desenharia. Nada sai do seu navegador.',
+    pick: 'Escolher arquivo',
+    drop: 'ou solte aqui',
+    reading: 'Lendo o arquivo…',
+    failed: 'Esse arquivo não é um tema que este site consiga ler.',
+    clear: 'Limpar',
+    url: 'Um tema em edição, ou hospedado em algum lugar? A página de pré-visualização o desenha a partir de uma URL e recarrega a cada mudança.',
+    urlCta: 'Pré-visualizar de uma URL',
+  },
   making: {
     heading: 'Crie o seu',
     body: 'Um tema é um ZIP pequeno: um arquivo JSON com as cores e uma pasta assets com imagens. As ferramentas geram um, verificam o contraste e empacotam; o repositório os recebe como pull requests.',
     repo: 'Contribuir com um tema',
     cli: 'As ferramentas de tema',
+    steps: [
+      { title: 'Criar a base', body: 'Um comando escreve um tema completo e instalável, com imagens provisórias. Ou instale a skill e descreva ao seu agente o visual que quer.' },
+      { title: 'Conferir', body: 'validate executa as verificações do próprio app; contrast mostra o que a paleta custa em translucidez. Os dois trabalham na pasta, sem empacotar.' },
+      { title: 'Enviar', body: 'Abra um pull request só com a pasta src/<id>. A CI empacota, e ele aparece aqui poucos minutos após o merge.' },
+    ],
   },
 };
 
@@ -818,11 +976,27 @@ const ru: ThemesCopy = {
     refresh: 'Перезагружать при изменении источника',
     updated: 'Обновлено',
   },
+  local: {
+    heading: 'Посмотреть свою тему',
+    lead: 'Перетащите сюда файл .muqun-theme, и он отобразится ровно так, как его нарисовала бы галерея. Файл не покидает браузер.',
+    pick: 'Выбрать файл',
+    drop: 'или перетащите сюда',
+    reading: 'Читаем файл…',
+    failed: 'Этот файл не тема, которую сайт может прочитать.',
+    clear: 'Очистить',
+    url: 'Тема в работе или размещена где-то? Страница предпросмотра рисует её по URL и обновляется при изменениях.',
+    urlCta: 'Предпросмотр по URL',
+  },
   making: {
     heading: 'Сделайте свою',
     body: 'Тема — это небольшой ZIP: один JSON-файл с цветами и папка assets с изображениями. Инструменты создают заготовку, проверяют контраст и упаковывают её; репозиторий принимает темы через pull request.',
     repo: 'Предложить тему',
     cli: 'Инструменты для тем',
+    steps: [
+      { title: 'Создать основу', body: 'Одна команда пишет полную, готовую к установке тему с изображениями-заглушками. Или установите skill и опишите агенту нужный вид.' },
+      { title: 'Проверить', body: 'validate выполняет проверки самого приложения; contrast показывает, чего палитра стоит в полупрозрачности. Оба работают с папкой, без упаковки.' },
+      { title: 'Отправить', body: 'Откройте pull request только с папкой src/<id>. CI упакует её, и через несколько минут после слияния тема появится здесь.' },
+    ],
   },
 };
 
@@ -891,11 +1065,27 @@ const vi: ThemesCopy = {
     refresh: 'Tải lại khi nguồn thay đổi',
     updated: 'Đã cập nhật',
   },
+  local: {
+    heading: 'Xem trước chủ đề của bạn',
+    lead: 'Thả tệp .muqun-theme vào đây để xem đúng như cách thư viện sẽ vẽ nó. Không có gì rời khỏi trình duyệt của bạn.',
+    pick: 'Chọn tệp',
+    drop: 'hoặc thả vào đây',
+    reading: 'Đang đọc tệp…',
+    failed: 'Tệp này không phải chủ đề mà trang này đọc được.',
+    clear: 'Xoá',
+    url: 'Đang chỉnh một chủ đề, hay đã đặt nó ở đâu đó? Trang xem trước vẽ nó từ một URL và tải lại mỗi khi thay đổi.',
+    urlCta: 'Xem trước từ URL',
+  },
   making: {
     heading: 'Tự tạo chủ đề',
     body: 'Một chủ đề là một tệp ZIP nhỏ: một tệp JSON chứa màu sắc và một thư mục assets chứa hình ảnh. Bộ công cụ tạo khung, kiểm tra độ tương phản và đóng gói; kho lưu trữ nhận chủ đề qua pull request.',
     repo: 'Đóng góp chủ đề',
     cli: 'Bộ công cụ chủ đề',
+    steps: [
+      { title: 'Dựng khung', body: 'Một lệnh tạo ra chủ đề hoàn chỉnh, cài được ngay, kèm ảnh tạm. Hoặc cài skill và mô tả cho agent của bạn diện mạo bạn muốn.' },
+      { title: 'Kiểm tra', body: 'validate chạy đúng các kiểm tra của app; contrast cho biết bảng màu phải đánh đổi gì ở độ trong suốt. Cả hai làm việc trên thư mục, không cần đóng gói.' },
+      { title: 'Gửi đi', body: 'Mở pull request chỉ với thư mục src/<id>. CI sẽ đóng gói, và vài phút sau khi hợp nhất nó xuất hiện ở đây.' },
+    ],
   },
 };
 

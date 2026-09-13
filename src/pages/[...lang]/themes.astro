@@ -20,10 +20,12 @@ import Button from '@/components/Button.astro';
 import Display from '@/components/Display.astro';
 import Prose from '@/components/Prose.astro';
 import SectionHeading from '@/components/SectionHeading.astro';
+import CodeBlock from '@/components/CodeBlock.astro';
+import ThemeDropzone from '@/components/themes/theme-dropzone';
 import ThemesGallery from '@/components/themes/themes-gallery';
 import { themesCopy } from '@/i18n/themes';
 import { themeCliRepoUrl, themesRepoUrl } from '@/lib/muqun-links';
-import { siteLocaleCodes, defaultLocale } from '@/lib/locales';
+import { siteLocaleCodes, defaultLocale, localizedPath } from '@/lib/locales';
 import '@/styles/themes.css';
 
 export function getStaticPaths() {
@@ -40,6 +42,7 @@ export function getStaticPaths() {
  */
 const { locale } = Astro.props;
 const copy = themesCopy[locale];
+const previewPath = localizedPath('/themes/preview', locale);
 ---
 
 <Layout lang={locale} title={copy.metaTitle} description={copy.metaDescription}>
@@ -52,23 +55,50 @@ const copy = themesCopy[locale];
 
     <div class="mq-themes-lead"><Prose size="lead">{copy.lead}</Prose></div>
 
-    <div class="mq-themes-actions">
-      <Button href={themesRepoUrl} variant="secondary" arrow>{copy.repoCta}</Button>
-    </div>
-
     {/* Same band as the heading: the list is the page, not a section after it. */}
     <div class="mq-themes-gallery">
       <ThemesGallery client:load locale={locale} copy={copy} repoUrl={themesRepoUrl} />
     </div>
   </Band>
 
+  {/* Three things a reader came for, in the order they want them: find one
+      (above), see one of their own, make one. */}
   <Band tone="recessed" tight>
+    <SectionHeading title={copy.local.heading} level={2} eyebrow="preview" />
+    <Prose>{copy.local.lead}</Prose>
+    <div class="mq-themes-module">
+      <ThemeDropzone client:visible copy={copy} />
+    </div>
+    <div class="mq-themes-aside">
+      <Prose size="small">{copy.local.url}</Prose>
+      <Button href={previewPath} variant="quiet" arrow>{copy.local.urlCta}</Button>
+    </div>
+  </Band>
+
+  <Band tone="cream" tight>
     <SectionHeading title={copy.making.heading} level={2} eyebrow="muqun-theme init" />
     <Prose>{copy.making.body}</Prose>
-    <div class="mq-themes-actions">
-      <Button href={themesRepoUrl} variant="primary" arrow>{copy.making.repo}</Button>
-      <Button href={themeCliRepoUrl} variant="quiet" arrow>{copy.making.cli}</Button>
-    </div>
+    <ol class="mq-steps">
+      {copy.making.steps.map((step, index) => (
+        <li class="mq-step">
+          <span class="mq-step__index mq-mono-label">{String(index + 1).padStart(2, '0')}</span>
+          <h3 class="mq-step__title">{step.title}</h3>
+          <p class="mq-step__body">{step.body}</p>
+          {index === 0 && (
+            <CodeBlock code={`bunx @osuki-dev/muqun-theme init my-theme\nbunx skills add osuki-dev/muqun-theme-cli`} label="sh" />
+          )}
+          {index === 1 && (
+            <CodeBlock code={`bunx @osuki-dev/muqun-theme validate my-theme\nbunx @osuki-dev/muqun-theme contrast my-theme`} label="sh" />
+          )}
+          {index === 2 && (
+            <div class="mq-themes-actions mq-themes-actions--step">
+              <Button href={themesRepoUrl} variant="primary" arrow>{copy.making.repo}</Button>
+              <Button href={themeCliRepoUrl} variant="quiet" arrow>{copy.making.cli}</Button>
+            </div>
+          )}
+        </li>
+      ))}
+    </ol>
   </Band>
 </Layout>
 
@@ -92,5 +122,53 @@ const copy = themesCopy[locale];
     flex-wrap: wrap;
     gap: var(--mq-space-3);
     margin-block: var(--mq-space-8) 0;
+  }
+
+  .mq-themes-actions--step {
+    margin-block-start: var(--mq-space-4);
+  }
+
+  .mq-themes-module {
+    margin-block-start: var(--mq-space-6);
+  }
+
+  .mq-themes-aside {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--mq-space-3) var(--mq-space-6);
+    margin-block-start: var(--mq-space-6);
+  }
+
+  .mq-steps {
+    list-style: none;
+    margin: var(--mq-space-8) 0 0;
+    padding: 0;
+    display: grid;
+    gap: var(--mq-space-6);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  }
+
+  .mq-step {
+    display: flex;
+    flex-direction: column;
+    gap: var(--mq-space-3);
+    min-inline-size: 0;
+  }
+
+  .mq-step__index {
+    color: var(--mq-text-muted);
+  }
+
+  .mq-step__title {
+    margin: 0;
+    font-size: var(--mq-size-subheading);
+    font-weight: var(--mq-weight-strong);
+  }
+
+  .mq-step__body {
+    margin: 0;
+    color: var(--mq-text-muted);
   }
 </style>

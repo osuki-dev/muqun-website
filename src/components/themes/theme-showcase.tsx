@@ -6,9 +6,10 @@
  * is in. The detail view and the standalone preview route both render exactly
  * this, so a theme looks the same wherever it is opened.
  */
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import type { ThemesCopy } from '@/i18n/themes';
+import { useReveal } from '@/lib/theme-motion';
 import type { ThemeMode, ThemePackage } from '@/lib/theme-package';
 
 import DeviceMock, { type DeviceKind, type ScreenKind } from './device-mock';
@@ -44,8 +45,12 @@ export default function ThemeShowcase({ pack, copy, tokens = true }: Props) {
   const [mode, setMode] = useState<ThemeMode>('light');
   useEffect(() => setMode(siteMode()), []);
 
+  // A switched variant arrives figure by figure rather than all at once.
+  const root = useRef<HTMLDivElement>(null);
+  useReveal(root, '.showcase__figure, .showcase__section, .tokens', [mode, pack]);
+
   return (
-    <div className="showcase">
+    <div className="showcase" ref={root}>
       <div className="showcase__switch" role="tablist" aria-label={copy.screens.devices}>
         {MODES.map((candidate) => (
           <button
