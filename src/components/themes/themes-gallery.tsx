@@ -25,11 +25,12 @@ import { flushSync } from 'react-dom';
 
 import type { ThemesCopy } from '@/i18n/themes';
 import { leave, reducedMotion, useReveal } from '@/lib/theme-motion';
-import { themePreviewUrl, unpackTheme, type ThemePackage } from '@/lib/theme-package';
+import { themePreviewUrl as packagePreviewUrl, unpackTheme, type ThemePackage } from '@/lib/theme-package';
 import {
   loadThemeIndex,
   loadThemePackageBytes,
   themePackageUrl,
+  themePreviewUrl,
   themeSourceUrl,
   type ThemeIndexEntry,
 } from '@/lib/themes-source';
@@ -58,10 +59,61 @@ type PackState =
 
 const packages = new Map<string, Promise<ThemePackage>>();
 
-function loadPackage(entry: ThemeIndexEntry): Promise<ThemePackage> {
+/**
+ * ── Two downloads at a time ─────────────────────────────────────────────────
+ * Seven cards in view, each fetching a 1.5-4 MB package at once, share the
+ * link seven ways and all sit on "Reading the package…" for as long as the
+ * slowest one; measured on a slow connection that was 10-25 s per card. Two
+ * at a time, first come first served, and the first cards are drawn while
+ * the rest are still queued. The map above stays the dedupe layer: a card
+ * never asks twice, and the detail view of a card that already loaded costs
+ * nothing. Cards whose preview the index names never come here at all.
+ *
+ * Only the fetch holds a slot; unpacking is CPU work and does not queue.
+ * `urgent` puts a request at the front: the detail view asks for one package
+ * the reader has just chosen, and it should not wait behind cards that have
+ * scrolled away.
+ * ────────────────────────────────────────────────────────────────────────────
+ */
+const PACKAGE_DOWNLOADS = 2;
+let downloading = 0;
+const queue: (() => void)[] = [];
+
+function acquireDownload(urgent: boolean): Promise<void> {
+  if (downloading < PACKAGE_DOWNLOADS) {
+    downloading++;
+    return Promise.resolve();
+  }
+  return new Promise((resolve) => {
+    const start = () => {
+      downloading++;
+      resolve();
+    };
+    if (urgent) queue.unshift(start);
+    else queue.push(start);
+  });
+}
+
+function releaseDownload(): void {
+  downloading--;
+  queue.shift()?.();
+}
+
+async function fetchPackage(entry: ThemeIndexEntry, urgent: boolean): Promise<ThemePackage> {
+  await acquireDownload(urgent);
+  let bytes: Uint8Array;
+  try {
+    bytes = await loadThemePackageBytes(entry);
+  } finally {
+    releaseDownload();
+  }
+  return unpackTheme(bytes);
+}
+
+function loadPackage(entry: ThemeIndexEntry, urgent = false): Promise<ThemePackage> {
   let pending = packages.get(entry.id);
   if (!pending) {
-    pending = loadThemePackageBytes(entry).then(unpackTheme);
+    pending = fetchPackage(entry, urgent);
     // A failed fetch is not cached: the next attempt should be a real one.
     pending.catch(() => packages.delete(entry.id));
     packages.set(entry.id, pending);
@@ -69,13 +121,13 @@ function loadPackage(entry: ThemeIndexEntry): Promise<ThemePackage> {
   return pending;
 }
 
-function usePackage(entry: ThemeIndexEntry | null, wanted: boolean): PackState {
+function usePackage(entry: ThemeIndexEntry | null, wanted: boolean, urgent = false): PackState {
   const [state, setState] = useState<PackState>({ status: 'idle' });
   useEffect(() => {
     if (!entry || !wanted) return;
     let cancelled = false;
     setState({ status: 'loading' });
-    loadPackage(entry).then(
+    loadPackage(entry, urgent).then(
       (pack) => !cancelled && setState({ status: 'ready', pack }),
       (error: unknown) =>
         !cancelled && setState({ status: 'failed', message: error instanceof Error ? error.message : String(error) }),
@@ -83,7 +135,7 @@ function usePackage(entry: ThemeIndexEntry | null, wanted: boolean): PackState {
     return () => {
       cancelled = true;
     };
-  }, [entry, wanted]);
+  }, [entry, wanted, urgent]);
   return state;
 }
 
@@ -340,16 +392,30 @@ function ThemeCard({
 }) {
   const [ref, inView] = useInView<HTMLLIElement>();
   const [asked, setAsked] = useState(false);
-  const wanted = inView && (asked || entry.bytes <= AUTO_LOAD_BYTES);
+  // The index names the author's preview when the theme ships one, and then
+  // the card needs no package at all: the image is one small request, and
+  // the package waits until the theme is opened. A preview the index named
+  // but the API could not serve falls back to the package, as for a theme
+  // with none.
+  const [imageFailed, setImageFailed] = useState(false);
+  const indexPreview = imageFailed ? undefined : themePreviewUrl(entry);
+  const wanted = !indexPreview && inView && (asked || entry.bytes <= AUTO_LOAD_BYTES);
   const pack = usePackage(entry, wanted);
   // An author's own picture stands in for the two phones when the pack ships one.
-  const preview = pack.status === 'ready' ? themePreviewUrl(pack.pack) : undefined;
+  const preview = indexPreview ?? (pack.status === 'ready' ? packagePreviewUrl(pack.pack) : undefined);
 
   return (
     <li ref={ref} className="themes-card" data-theme-id={entry.id} aria-current={current ? 'true' : undefined}>
       <div className={`themes-card__previews${preview ? ' themes-card__previews--image' : ''}`}>
         {preview ? (
-          <img className="themes-card__preview" src={preview} alt={entry.name} loading="lazy" decoding="async" />
+          <img
+            className="themes-card__preview"
+            src={preview}
+            alt={entry.name}
+            loading="lazy"
+            decoding="async"
+            onError={indexPreview ? () => setImageFailed(true) : undefined}
+          />
         ) : pack.status === 'ready' ? (
           (['light', 'dark'] as const).map((mode) => (
             <DeviceMock
@@ -363,7 +429,12 @@ function ThemeCard({
           ))
         ) : (
           <div className="themes-card__placeholder">
-            {pack.status === 'loading' && <span>{copy.card.loadingPreview}</span>}
+            {pack.status === 'loading' && (
+              // With the size: a wait that says "4 MB" reads as expected, not stuck.
+              <span>
+                {copy.card.loadingPreview} · {formatBytes(entry.bytes, locale)}
+              </span>
+            )}
             {pack.status === 'failed' && <span>{copy.card.previewFailed}</span>}
             {pack.status === 'idle' && !wanted && inView && (
               <button type="button" className="themes-button" onClick={() => setAsked(true)}>
@@ -415,7 +486,7 @@ function ThemeCard({
  * mock-ups the site draws itself. Renders nothing for a pack without one.
  */
 function AuthorPreview({ pack, name, caption }: { pack: ThemePackage; name: string; caption: string }) {
-  const src = themePreviewUrl(pack);
+  const src = packagePreviewUrl(pack);
   const figure = useRef<HTMLElement>(null);
   useReveal(figure, ':scope > *', [src]);
   if (!src) return null;
@@ -438,7 +509,8 @@ function ThemeDetail({
   copy: ThemesCopy;
   onBack: () => void;
 }) {
-  const pack = usePackage(entry, true);
+  // Urgent: the reader chose this one, so it goes ahead of queued card loads.
+  const pack = usePackage(entry, true, true);
   const region = useRef<HTMLElement>(null);
   // In: the header's parts and the variant switch rise in. Out: the whole
   // view fades before the list takes its place.
