@@ -25,38 +25,13 @@ Connect the repository and set **one** build variable, under
 Settings → Build → Build Variables and Secrets:
 
 ```
-BUN_VERSION = 1.3.14
+BUN_VERSION = 1.4.2
 ```
 
-Build command `bun run build`, output directory `dist`.
-
-### Why 1.3.14, when the maintainers run 1.4
-
-This is the part that looks wrong and is not.
-
-`bun --version` on a maintainer's machine says `1.4.0-canary.1`. That build
-comes from Bun's own rolling canary channel; **there is no 1.4 release on npm
-at all** — the latest published version is 1.3.14, and the `canary` dist-tag
-stops at a 1.3.13 build. Cloudflare resolves `BUN_VERSION` against published
-versions, so `1.4.0` is not a value it can install.
-
-That would be a footnote except for the lockfile. Bun 1.4 writes
-`"lockfileVersion": 2`, and 1.3.14 cannot read it:
-
-```
-error: Unknown lockfile version
-error: lockfile had changes, but lockfile is frozen
-```
-
-So `bun.lock` here is deliberately written by **1.3.14**, at
-`lockfileVersion: 1`, which both versions read. A maintainer on canary can run
-`bun install` normally; what they must not do is let a newer Bun rewrite the
-lockfile and commit it, because the next deploy then fails at dependency
-install with the error above. `packageManager` in `package.json` records the
-version this file belongs to.
-
-The build image's default is Bun 1.2.15, which is older still and fails the
-same way, so leaving `BUN_VERSION` unset is not an option either.
+Build command `bun run build`, output directory `dist`. Cloudflare resolves
+`BUN_VERSION` against the versions published on npm, so it must be a released
+Bun; `packageManager` in `package.json` records the same version, and
+`bun.lock` is written by it. Keep the three in step when upgrading Bun.
 
 ## Domain
 
