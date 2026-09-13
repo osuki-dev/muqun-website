@@ -15,6 +15,21 @@ export interface WorldCopy {
   simulated: string;
 }
 export const worldCopy: Record<SiteLocale, WorldCopy> = {
+  th: {
+  "copyLabel": "คัดลอก",
+  "eyebrow": "ใกล้ชิดผู้ช่วย AI ของคุณยิ่งขึ้น",
+  "title": "ผู้ช่วย AI ของคุณ",
+  "accent": "อยู่ใกล้แค่เอื้อม",
+  "intro": "เทอร์มินัล การอนุมัติ และไฟล์ จากคอมพิวเตอร์ตรงสู่มือถือ",
+  "explore": "รู้จัก Muqun",
+  "features": "พกงานไปได้ทุกที่",
+  "featureIntro": "SSH เครื่องจำลอง ธีม และเครื่องมือที่ใช้ทุกวัน",
+  "source": "ซอร์สโค้ดล่าสุด",
+  "development": "ตัวอย่างรุ่นพัฒนา",
+  "privacy": "คอมพิวเตอร์ของคุณ เชื่อมต่อโดยตรง",
+  "end": "พา Muqun ไปด้วยกัน",
+  "simulated": "ตัวอย่างเซสชัน"
+},
   "zh-CN": {
     copyLabel: "复制",
     eyebrow: "让你的AI 助手，离你近一点",

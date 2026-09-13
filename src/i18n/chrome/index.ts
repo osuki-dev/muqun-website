@@ -1,3 +1,4 @@
+import { chrome as th } from "./th";
 import { chrome as zhCN } from "./zh-CN";
 import { chrome as ru } from "./ru";
 import { chrome as vi } from "./vi";
@@ -15,7 +16,7 @@ import { chrome as pt } from './pt';
 import { chrome as zhTW } from './zh-TW';
 
 const catalogues: Record<SiteLocale, ChromeCopy> = {
-  "zh-CN": zhCN, ru, vi,
+  "zh-CN": zhCN, ru, vi, th,
   en,
   'zh-TW': zhTW,
   ja,

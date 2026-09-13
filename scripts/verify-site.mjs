@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { readFileSync, existsSync } from 'node:fs';
-const locales = ['en','zh-TW','ja','ko','de','fr','es','pt','zh-CN','ru','vi'];
+const locales = ['en','zh-TW','ja','ko','de','fr','es','pt','zh-CN','ru','vi','th'];
 let routes = 0;
 for (const locale of locales) {
   const prefix = locale === 'en' ? '' : `${locale}/`;
@@ -29,4 +29,4 @@ for (const locale of locales) {
 }
 assert.ok(existsSync('dist/models/pocket-muqun.glb'));
 assert.equal(readFileSync('dist/models/pocket-muqun.glb').subarray(0,4).toString(),'glTF');
-console.log(`Verified ${routes} localized routes, 11 feature registries, download links, copy control, system theme and GLB.`);
+console.log(`Verified ${routes} localized routes, ${locales.length} feature registries, download links, copy control, system theme and GLB.`);

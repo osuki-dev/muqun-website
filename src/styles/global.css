@@ -56,3 +56,18 @@
  * the same attribute so the two never disagree.
  */
 @custom-variant dark ([data-theme='dark'] &);
+
+/* Thai combining vowels and tone marks need natural spacing and taller lines. */
+html:lang(th) {
+  --mq-font-body: 'Noto Sans Thai', 'Leelawadee UI', Thonburi, 'IBM Plex Sans', sans-serif;
+  --mq-font-display: var(--mq-font-body);
+  --mq-leading-heading: 1.45;
+}
+html:lang(th) :is(h1, h2, h3, h4, .mq-display, .world-eyebrow, .mq-mono-label) {
+  letter-spacing: normal;
+  line-height: 1.45;
+  word-break: normal;
+}
+html:lang(th) :is(button, summary, .mq-button, .themes-button) {
+  line-height: 1.5;
+}
