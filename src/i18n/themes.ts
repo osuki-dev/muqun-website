@@ -44,6 +44,9 @@ export interface ThemesCopy {
   detail: {
     back: string;
     download: string;
+    /** Copies the package's address to the clipboard. */
+    copyLink: string;
+    copied: string;
     source: string;
     install: string;
     version: string;
@@ -134,6 +137,8 @@ const en: ThemesCopy = {
   detail: {
     back: 'All themes',
     download: 'Download .muqun-theme',
+    copyLink: 'Copy link',
+    copied: 'Copied',
     source: 'Source',
     install: 'Download the file, then open it with Muqun or import it under Settings → Themes.',
     version: 'Version',
@@ -223,6 +228,8 @@ const zhCN: ThemesCopy = {
   detail: {
     back: '全部主题',
     download: '下载 .muqun-theme',
+    copyLink: '复制链接',
+    copied: '已复制',
     source: '源码',
     install: '下载文件后，用牧群打开它，或在「设置 → 主题」中导入。',
     version: '版本',
@@ -312,6 +319,8 @@ const zhTW: ThemesCopy = {
   detail: {
     back: '全部主題',
     download: '下載 .muqun-theme',
+    copyLink: '複製連結',
+    copied: '已複製',
     source: '原始碼',
     install: '下載檔案後，用牧群開啟它，或在「設定 → 主題」中匯入。',
     version: '版本',
@@ -401,6 +410,8 @@ const ja: ThemesCopy = {
   detail: {
     back: 'すべてのテーマ',
     download: '.muqun-theme をダウンロード',
+    copyLink: 'リンクをコピー',
+    copied: 'コピーしました',
     source: 'ソース',
     install: 'ファイルをダウンロードし、牧群で開くか、「設定 → テーマ」から読み込んでください。',
     version: 'バージョン',
@@ -490,6 +501,8 @@ const ko: ThemesCopy = {
   detail: {
     back: '모든 테마',
     download: '.muqun-theme 다운로드',
+    copyLink: '링크 복사',
+    copied: '복사됨',
     source: '소스',
     install: '파일을 내려받은 뒤 Muqun으로 열거나, 설정 → 테마에서 가져오세요.',
     version: '버전',
@@ -579,6 +592,8 @@ const de: ThemesCopy = {
   detail: {
     back: 'Alle Themes',
     download: '.muqun-theme herunterladen',
+    copyLink: 'Link kopieren',
+    copied: 'Kopiert',
     source: 'Quelle',
     install: 'Datei herunterladen, dann mit Muqun öffnen oder unter Einstellungen → Themes importieren.',
     version: 'Version',
@@ -668,6 +683,8 @@ const fr: ThemesCopy = {
   detail: {
     back: 'Tous les thèmes',
     download: 'Télécharger le .muqun-theme',
+    copyLink: 'Copier le lien',
+    copied: 'Copié',
     source: 'Source',
     install: 'Téléchargez le fichier, puis ouvrez-le avec Muqun ou importez-le dans Réglages → Thèmes.',
     version: 'Version',
@@ -757,6 +774,8 @@ const es: ThemesCopy = {
   detail: {
     back: 'Todos los temas',
     download: 'Descargar el .muqun-theme',
+    copyLink: 'Copiar enlace',
+    copied: 'Copiado',
     source: 'Fuente',
     install: 'Descarga el archivo y ábrelo con Muqun, o impórtalo en Ajustes → Temas.',
     version: 'Versión',
@@ -846,6 +865,8 @@ const pt: ThemesCopy = {
   detail: {
     back: 'Todos os temas',
     download: 'Baixar o .muqun-theme',
+    copyLink: 'Copiar link',
+    copied: 'Copiado',
     source: 'Fonte',
     install: 'Baixe o arquivo e abra com o Muqun, ou importe em Ajustes → Temas.',
     version: 'Versão',
@@ -935,6 +956,8 @@ const ru: ThemesCopy = {
   detail: {
     back: 'Все темы',
     download: 'Скачать .muqun-theme',
+    copyLink: 'Скопировать ссылку',
+    copied: 'Скопировано',
     source: 'Исходник',
     install: 'Скачайте файл и откройте его в Muqun или импортируйте в разделе Настройки → Темы.',
     version: 'Версия',
@@ -1024,6 +1047,8 @@ const vi: ThemesCopy = {
   detail: {
     back: 'Tất cả chủ đề',
     download: 'Tải .muqun-theme',
+    copyLink: 'Sao chép liên kết',
+    copied: 'Đã sao chép',
     source: 'Mã nguồn',
     install: 'Tải tệp về, rồi mở bằng Muqun hoặc nhập trong Cài đặt → Chủ đề.',
     version: 'Phiên bản',
