@@ -148,6 +148,9 @@
     },
     "logo": {
       "path": "assets/logo.png"
+    },
+    "preview": {
+      "path": "assets/preview.png"
     }
   },
   "decoration": {
@@ -229,5 +232,6 @@
     "sample",
     "placeholder"
   ],
+  "preview": "preview",
   "minAppVersion": "1.2.0"
 }

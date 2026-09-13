@@ -391,6 +391,7 @@ export function parseThemeManifest(text: string): ThemeManifest {
     minAppVersion: optionalText('minAppVersion'),
     description: optionalText('description'),
     tags,
+    preview: optionalText('preview'),
     variants: {
       light: readVariant(input.variants.light, 'variants.light'),
       dark: readVariant(input.variants.dark, 'variants.dark'),
@@ -430,6 +431,16 @@ export async function unpackTheme(bytes: Uint8Array): Promise<ThemePackage> {
   }
   if ([...files.keys()].some((name) => !declared.has(name))) invalid('undeclared files');
   return { manifest, assets };
+}
+
+/**
+ * The image a theme's author chose to stand for it: `preview` names an entry
+ * in `assets`. A `preview` that names nothing is an authoring slip the format
+ * tolerates and the gallery reads as "no preview", not as an error.
+ */
+export function themePreviewUrl(pack: ThemePackage): string | undefined {
+  const id = pack.manifest.preview;
+  return id && Object.hasOwn(pack.assets, id) ? pack.assets[id] : undefined;
 }
 
 /* --------------------------------------------------------------------------
