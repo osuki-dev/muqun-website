@@ -65,8 +65,23 @@ async function digest(parts: (Uint8Array | string)[]): Promise<string> {
   return `${joined.length}:${sum.toString(16)}`;
 }
 
+/**
+ * A public page reaching a loopback or LAN server -- which is exactly what
+ * `muqun-theme preview` is -- is a local-network request in Chrome. The
+ * request has to name the address space it expects, or the browser refuses
+ * it before any CORS header is consulted; naming it turns the refusal into a
+ * one-time permission prompt. Not in TypeScript's `RequestInit` yet.
+ */
+function addressSpace(url: URL): RequestInit {
+  const host = url.hostname.replace(/^\[|\]$/g, '');
+  const loopback = host === 'localhost' || host.endsWith('.localhost') || host === '127.0.0.1' || host === '::1';
+  const local = /^(10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.|169\.254\.)/.test(host);
+  if (!loopback && !local) return {};
+  return { targetAddressSpace: loopback ? 'loopback' : 'local' } as RequestInit;
+}
+
 async function fetchBytes(url: URL, signal?: AbortSignal): Promise<Uint8Array> {
-  const response = await fetch(url, { signal, cache: 'no-cache', mode: 'cors' });
+  const response = await fetch(url, { signal, cache: 'no-cache', mode: 'cors', ...addressSpace(url) });
   if (!response.ok) throw new ThemeSourceUrlError(`${url.pathname.split('/').pop()}: HTTP ${response.status}`);
   return new Uint8Array(await response.arrayBuffer());
 }
@@ -90,7 +105,12 @@ export async function loadThemeFromUrl(
   }
 
   const base = new URL(source.href.endsWith('/') ? source.href : `${source.href}/`);
-  const manifestResponse = await fetch(new URL('theme.json', base), { signal, cache: 'no-cache', mode: 'cors' });
+  const manifestResponse = await fetch(new URL('theme.json', base), {
+    signal,
+    cache: 'no-cache',
+    mode: 'cors',
+    ...addressSpace(base),
+  });
   if (!manifestResponse.ok) throw new ThemeSourceUrlError(`theme.json: HTTP ${manifestResponse.status}`);
   const text = await manifestResponse.text();
   const manifest = parseThemeManifest(text);
