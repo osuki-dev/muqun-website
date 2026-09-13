@@ -133,10 +133,16 @@ const help = gatewayHelp[locale];
             <summary>{help.heading}<span aria-hidden="true">+</span></summary>
             <div class="gateway-help-content">
               <p>{help.keys}</p>
-              {gatewayCommands.map((command, index) => (
-                <CodeBlock copy wrap code={`muqun-gateway ${command}`} label={help.labels[index]} copyLabel={world.copyLabel} copiedLabel={copy.hero.copiedLabel} />
-              ))}
               <p>{help.serviceNote}</p>
+              {help.modes.map((mode, modeIndex) => (
+                <section class="gateway-mode">
+                  <h3>{mode}</h3>
+                  {gatewayCommands.slice(modeIndex * 3, modeIndex * 3 + 3).map((command, index) => (
+                    <CodeBlock copy wrap code={`muqun-gateway ${command}`} label={help.labels[modeIndex * 3 + index]} copyLabel={world.copyLabel} copiedLabel={copy.hero.copiedLabel} />
+                  ))}
+                </section>
+              ))}
+              <CodeBlock copy wrap code="muqun-gateway --help" label={help.labels[6]} copyLabel={world.copyLabel} copiedLabel={copy.hero.copiedLabel} />
             </div>
           </details>
           <ul class="world-requirements">

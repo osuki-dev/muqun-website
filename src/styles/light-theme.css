@@ -1,0 +1,112 @@
+:root[data-theme="light"] {
+  --mq-canvas: #f6f3ee;
+  --mq-recessed: #eceae4;
+  --mq-card: #fffdf9;
+  --mq-text: #292e35;
+  --mq-text-muted: #626772;
+  --mq-text-accent: #ac4030;
+  --mq-accent: #f1846c;
+  --mq-hairline: #28394220;
+  --mq-rule: #727d82;
+  --mq-radius-sm: 10px;
+  --mq-radius-md: 20px;
+  --mq-radius-lg: 24px;
+  color-scheme: light;
+}
+html[data-theme="light"] body { background: var(--mq-canvas); color: var(--mq-text); }
+html[data-theme="light"] .mq-page-header { background: #f6f3eeee; border-bottom-color: transparent; }
+html[data-theme="light"] .mq-page-header[data-docked="true"] { border-bottom-color: var(--mq-hairline); }
+html[data-theme="light"] body:has(.world-story) .mq-page-header { --brand-muted: #39445435; }
+html[data-theme="light"] .header-language summary { color: #535c68; border-color: #34465430; }
+html[data-theme="light"] .header-language nav { background: #fffdf9; border-color: #34465425; box-shadow: 0 12px 36px #34362c14; }
+html[data-theme="light"] .header-language nav a { color: #515966; }
+html[data-theme="light"] .header-language nav a:hover,
+html[data-theme="light"] .header-language nav a[aria-current] { background: #edebe5; color: #a23e2e; }
+html[data-theme="light"] .world-eyebrow { color: #636674 !important; }
+html[data-theme="light"] .signal-dot { background: #39856f; box-shadow: 0 0 12px #39856f25; }
+html[data-theme="light"] .world-hero h1 .hero-title-lead { color: #292e35; }
+html[data-theme="light"] .world-hero h1 .hero-title-accent { color: #b64834; }
+html[data-theme="light"] .world-intro,
+html[data-theme="light"] .chapter-copy > p:not(.world-eyebrow),
+html[data-theme="light"] .feature-card p,
+html[data-theme="light"] .privacy-strip li,
+html[data-theme="light"] .world-requirements,
+html[data-theme="light"] .gateway-help-content > p { color: #626772; }
+html[data-theme="light"] .world-button.primary { background: #f1846c; color: #30251f; box-shadow: 0 5px 20px #a94e2312; }
+html[data-theme="light"] .world-button.primary:hover { background: #ed947f; }
+html[data-theme="light"] .world-button.secondary { color: #39424a; border-color: #87908f; background: #fffdf955; }
+html[data-theme="light"] .hero-scroll,
+html[data-theme="light"] .hero-coordinate { color: #606b70; }
+html[data-theme="light"] .chapter-copy h2,
+html[data-theme="light"] .privacy-strip h2 {
+  --heading-accent: #b64834;
+  background-image: linear-gradient(to bottom, #292e35 0 1lh, var(--heading-accent) 1lh 100%);
+}
+html[data-theme="light"] .connect-chapter h2 { --heading-accent: #276b79; }
+html[data-theme="light"] .privacy-strip h2 { --heading-accent: #626b96; }
+html[data-theme="light"] .download-chapter h2 { --heading-accent: #3b7462; }
+html[data-theme="light"] .features-section { background: linear-gradient(#f6f3eecc, #efeee8f5 15%, #efeee8f5 85%, #f6f3eecc); border-color: #34465415; }
+html[data-theme="light"] .feature-card { background: linear-gradient(135deg, #fffefbd9, #f2f2eccf); border-color: #34465425; box-shadow: 0 8px 32px #34465406; }
+html[data-theme="light"] .feature-card:hover { border-color: #7caaa1; }
+html[data-theme="light"] .feature-card h3 { color: #303642; }
+html[data-theme="light"] .feature-number { color: #757182; }
+html[data-theme="light"] .feature-badge { color: #686082; background: #7561890b; border-color: #75618930; }
+html[data-theme="light"] .feature-badge { color: #934c33; background: #dcaa720c; border-color: #ab704631; }
+html[data-theme="light"] .feature-card a,
+html[data-theme="light"] .text-link { color: #655080; }
+html[data-theme="light"] .text-link:hover { color: #a44430; }
+html[data-theme="light"] .privacy-strip { background: #eeeee7; border-color: #34465420; }
+html[data-theme="light"] .privacy-strip li span { color: #3b7462; }
+html[data-theme="light"] .world-steps li { border-color: #34465424; }
+html[data-theme="light"] .world-steps li > span { color: #7e7488; }
+html[data-theme="light"] .gateway-help { background: #fffdf9e8; border-color: #34465428; }
+html[data-theme="light"] .gateway-help summary > span { color: #276b79; }
+html[data-theme="light"] .gateway-help summary:hover { background: #34465408; }
+html[data-theme="light"] .mq-footer { background: var(--mq-canvas); border-color: #34465420; }
+html[data-theme="light"] .mq-code { --mq-code-bg: #fffdf9; --mq-code-fg: #354049; background: #fffdf9; color: #354049; border-color: #34465430; }
+html[data-theme="light"] .mq-code__bar { border-color: #34465428; }
+html[data-theme="light"] .mq-code__copy { border-color: #34465465; }
+html[data-theme="light"] .session-preview { background: #fffdf9e8; border-color: #3446542b; box-shadow: 0 18px 45px #3942380b; }
+html[data-theme="light"] .session-top,
+html[data-theme="light"] .session-lines { color: #354049; border-color: #34465420; }
+html[data-theme="light"] .session-top > span:last-child,
+html[data-theme="light"] .code-muted,
+html[data-theme="light"] .session-caption { color: #71747c; border-color: #34465420; }
+html[data-theme="light"] .code-mint { color: #39856f; }
+html[data-theme="light"] .code-coral { color: #b64834; }
+html[data-theme="light"] a:focus-visible,
+html[data-theme="light"] button:focus-visible { outline-color: #286c78; }
+@media(max-width:699px) {
+  html[data-theme="light"] .chapter-copy { background: #f6f3eeeb; border-color: #34465418; }
+  html[data-theme="light"] .hero-copy { background: transparent; }
+  html[data-theme="light"] .features-section { background: #efeee8f7; }
+}
+
+html[data-theme="light"] .feature-symbol { color: #71638e; background: #71638e0b; border-color: #71638e25; }
+html[data-theme="light"] .feature-card:nth-child(3n + 1) .feature-symbol { color: #b95a40; background: #b95a4009; border-color: #b95a4025; }
+
+/* Daylight product illustrations share the same baseline and quiet depth. */
+html[data-theme="light"] .feature-demo { background: radial-gradient(ellipse at 50% 65%, #b5c9c62b, transparent 72%); }
+html[data-theme="light"] .ssh-window { background: #fffefa; border-color: #b9c9c8; transform: rotate(-2deg); box-shadow: 0 14px 24px #334a4a18; }
+html[data-theme="light"] .mini-window-bar { color: #68787d; background: #eef2ee; border-color: #ced9d6; border-radius: 12px 12px 0 0; }
+html[data-theme="light"] .ssh-window code { color: #304c54; }
+html[data-theme="light"] .ssh-connection { color: #386e72; }
+html[data-theme="light"] .ssh-connection > span { background: #f9fcf8; border-color: #adc6c2; box-shadow: 0 4px 8px #334a4a0c; }
+html[data-theme="light"] .ssh-connection b { color: #397f6a; }
+html[data-theme="light"] .terminal-cursor { color: #bb553c; }
+html[data-theme="light"] .theme-orb { background: linear-gradient(140deg,#e6d7ec,#d5e9e4); opacity: 1; box-shadow: none; }
+html[data-theme="light"] .theme-mini-phone { background: linear-gradient(150deg,#fffefa,#f1e5ea 65%,#dae9e4); color: #48515d; border-color: #c5d2ce; transform: rotate(5deg); box-shadow: 8px 12px 20px #334a4a20; }
+html[data-theme="light"] .theme-mini-line { background: #87999755; }
+html[data-theme="light"] .theme-mini-bottom { background: #ffffffaa; }
+html[data-theme="light"] .theme-mini-bottom span { color: #b34e37; }
+html[data-theme="light"] .theme-swatches { background: #fffefa; border-color: #c2cfca; box-shadow: 0 8px 16px #334a4a1a; transform: rotate(-5deg); }
+html[data-theme="light"] .simfarm-laptop { background: #f2f7f4; border-color: #b4c7c5; transform: rotate(-2deg); box-shadow: 0 12px 20px #334a4a18; }
+html[data-theme="light"] .simfarm-laptop:after { background: #bacac7; }
+html[data-theme="light"] .simfarm-device,
+html[data-theme="light"] .simfarm-phone { background: linear-gradient(145deg,#fffefa,#e4efeb); border-color: #a8bdb8; color: #3f6966; }
+html[data-theme="light"] .simfarm-phone { transform: rotate(5deg); box-shadow: 6px 10px 18px #334a4a20; }
+html[data-theme="light"] .simfarm-signal { color: #43816c; }
+html[data-theme="light"] .simfarm-device > div:not(.phone-camera),
+html[data-theme="light"] .simfarm-phone i { background: #779e9566; }
+.gateway-mode { margin: 24px 0; padding-top: 20px; border-top: 1px solid var(--mq-hairline); }
+.gateway-mode h3 { font-size: 17px; margin-bottom: 16px; color: var(--mq-text); }

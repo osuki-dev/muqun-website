@@ -60,7 +60,7 @@ const {
 ---
 
 <!doctype html>
-<html lang={lang} data-theme="dark">
+<html lang={lang} data-theme="light" data-theme-mode="system">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -73,20 +73,20 @@ const {
     <link rel="icon" href="/pocket-icon-transparent-48.png" sizes="48x48" type="image/png" />
     <link rel="apple-touch-icon" href="/pocket-icon-180.png" sizes="180x180" />
 
-    {/*
-      The theme guard. Runs before the first pixel, which is the only place
-      it can run: applying the class after paint is exactly the flash it
-      exists to prevent. Inline and synchronous on purpose -- it is 300
-      bytes, and a deferred script would be too late by definition.
-
-      Precedence: a stored manual choice wins; with nothing stored we honour
-      `prefers-color-scheme`. `data-theme-mode` records which of the two it
-      was, so the toggle can show "System" rather than guessing.
-
-      This is the PAGE's mode only. The terminal's theme is a separate
-      control and is not read or written here.
-    */}
-
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#f6f3ee" />
+    <script is:inline>
+      (() => {
+        const media = window.matchMedia('(prefers-color-scheme: dark)');
+        const apply = () => {
+          const theme = media.matches ? 'dark' : 'light';
+          document.documentElement.dataset.theme = theme;
+          document.querySelector('meta[name="theme-color"]').content = theme === 'dark' ? '#090b14' : '#f6f3ee';
+        };
+        apply();
+        media.addEventListener('change', apply);
+      })();
+    </script>
 
     {/*
       Two preloads, not nine. Body 400 and the condensed display weight are

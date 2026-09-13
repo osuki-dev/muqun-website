@@ -49,7 +49,7 @@ export const copy: MuqunCopy = {
   footer: {
     ...en.footer,
     ...{
-      heading: "代理随身同行。",
+      heading: "AI 助手随身同行。",
       appStore: "App Store",
       googlePlay: "Google Play",
       installLabel: "安装 Gateway",

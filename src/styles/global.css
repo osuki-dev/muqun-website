@@ -14,6 +14,7 @@
 @import './base.css';
 @import './layout.css';
 @import './site-theme.css';
+@import './light-theme.css';
 
 /*
  * Hand Tailwind the tokens it needs so a utility like `text-muted` or

@@ -4,7 +4,8 @@ import { createRemoteEarth } from "./remote-earth";
 export function createEnvironment() {
   const root = new T.Group();
   RectAreaLightUniformsLib.init();
-  root.add(new T.HemisphereLight("#e7edff", "#958078", 1.35));
+  const ambient = new T.HemisphereLight("#e7edff", "#958078", 1.35);
+  root.add(ambient);
   const key = new T.RectAreaLight("#ffe6d2", 5, 4, 5);
   key.position.set(-3.5, 5, 5);
   key.lookAt(0, 1.3, 0);
@@ -148,6 +149,35 @@ export function createEnvironment() {
     orbit,
     panels,
     update: remote.update,
+    dispose: remote.dispose,
+    setTheme(light: boolean) {
+      stone.color.set(light ? "#d6dfe0" : "#273342");
+      stone.metalness = light ? 0.12 : 0.35;
+      stone.roughness = light ? 0.5 : 0.38;
+      lip.material.color.set(light ? "#4097a4" : "#91e6ee");
+      inset.material.color.set(light ? "#8fa5a5" : "#647e8f");
+      // Broad neutral daylight, with a soft floor bounce instead of blue night fill.
+      ambient.color.set(light ? "#fff7eb" : "#e7edff");
+      ambient.groundColor.set(light ? "#d9c7ac" : "#958078");
+      ambient.intensity = light ? 1.8 : 1.35;
+      key.color.set(light ? "#fff2de" : "#ffe6d2");
+      key.intensity = light ? 5.5 : 5;
+      key.width = light ? 5 : 4;
+      fill.color.set(light ? "#fff8ef" : "#e5eeff");
+      fill.intensity = light ? 0.9 : 1.65;
+      rim.color.set(light ? "#fff1d9" : "#a8dfff");
+      rim.intensity = light ? 1.1 : 2.4;
+      terrain.material.vertexColors = !light;
+      terrain.material.color.set(light ? "#e5e6e0" : "#ffffff");
+      terrain.material.needsUpdate = true;
+      root.traverse((object) => {
+        if (object instanceof T.Points && object.material instanceof T.PointsMaterial) {
+          object.material.color.set(light ? "#899e9a" : "#c2b6ea");
+          object.material.opacity = light ? 0.28 : 0.6;
+        }
+      });
+      remote.setTheme(light);
+    },
     revealPlatform(progress: number, contact: number) {
       platform.visible = progress > 0.001;
       platform.position.y = -0.45 * (1 - progress);

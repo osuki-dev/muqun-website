@@ -69,7 +69,7 @@ export default function PocketWorld() {
       gsap.to(".mq-page-header", {
         "--brand-scale": 1,
         "--brand-offset": "0px",
-        "--brand-color": "#f2f0f6",
+        "--brand-progress": 1,
         ease: "none",
         onUpdate() { setBrandLink(this.progress() > 0.995); },
         scrollTrigger: {

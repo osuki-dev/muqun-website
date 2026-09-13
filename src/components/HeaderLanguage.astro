@@ -68,7 +68,7 @@ const selected = locales.find((locale) => locale.code === current);
     gap: 8px;
     min-height: 44px;
     padding: 0 13px;
-    border: 1px solid #ffffff20;
+    border: 1px solid var(--mq-hairline);
     border-radius: 30px;
     list-style: none;
   }
@@ -80,10 +80,10 @@ const selected = locales.find((locale) => locale.code === current);
     right: 0;
     top: calc(100% + 10px);
     width: 185px;
-    border: 1px solid #ffffff20;
+    border: 1px solid var(--mq-hairline);
     border-radius: 16px;
-    background: #181725;
-    box-shadow: 0 15px 50px #0009;
+    background: var(--mq-card);
+    box-shadow: 0 12px 30px color-mix(in srgb, var(--mq-text) 16%, transparent);
     padding: 8px;
   }
   .header-language nav a {
@@ -92,16 +92,16 @@ const selected = locales.find((locale) => locale.code === current);
     padding: 12px 14px;
     min-height: 44px;
     border-radius: 8px;
-    color: #ccc5d8;
+    color: var(--mq-text-muted);
     text-decoration: none;
   }
   .header-language nav a:hover,
   .header-language nav a[aria-current] {
-    background: #ffffff0c;
-    color: #ffb19e;
+    background: color-mix(in srgb, var(--mq-text) 6%, transparent);
+    color: var(--mq-text-accent);
   }
   .header-language summary:focus-visible {
-    outline: 2px solid #eac5ff;
+    outline: 2px solid var(--mq-text-accent);
     outline-offset: 3px;
   }
   @media (max-width: 450px) {

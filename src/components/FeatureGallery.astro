@@ -110,12 +110,14 @@ const { features, sourceLabel, developmentLabel } = Astro.props;
           )}
         </div>
       )}
+      <div class="feature-status">
       {feature.status === "source" && !feature.link && (
         <span class="feature-badge">{sourceLabel}</span>
       )}
       {feature.status === "development" && !feature.link && (
         <span class="feature-badge">{developmentLabel}</span>
       )}
+      </div>
       <h3>{feature.title}</h3>
       <p>{feature.description}</p>
       {feature.media && (

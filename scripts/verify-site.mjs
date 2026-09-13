@@ -7,7 +7,8 @@ for (const locale of locales) {
   for (const page of ['','support/','privacy/']) {
     const html = readFileSync(`dist/${prefix}${page}index.html`,'utf8');
     assert.match(html, new RegExp(`<html[^>]*lang="${locale}"`));
-    assert.match(html, /data-theme="dark"/);
+    assert.match(html, /data-theme-mode="system"/);
+    assert.ok(html.includes("prefers-color-scheme: dark"));
     assert.doesNotMatch(html, /class="[^"]*mq-theme-toggle/);
     assert.equal((html.match(/<h1\b/g)||[]).length, 1);
     for (const target of locales) {
@@ -28,4 +29,4 @@ for (const locale of locales) {
 }
 assert.ok(existsSync('dist/models/pocket-muqun.glb'));
 assert.equal(readFileSync('dist/models/pocket-muqun.glb').subarray(0,4).toString(),'glTF');
-console.log(`Verified ${routes} localized routes, 11 feature registries, download links, copy control, dark theme and GLB.`);
+console.log(`Verified ${routes} localized routes, 11 feature registries, download links, copy control, system theme and GLB.`);

@@ -67,7 +67,7 @@ export const privacyTranslations: Partial<Record<SiteLocale, Policy>> = {
         title: "Gateway 连接",
         paragraphs: [
           "终端会话在牧群和你配对的 Gateway 地址之间直接传输。Osuki 不中继、接收或存储终端输出、命令、源代码、对话、Gateway 地址或访问令牌。",
-          "发往 Gateway 的请求可能包含所用功能必需的访问令牌、工作区与窗格标识、终端输入、命令和代理输出。开启通知后，牧群还会向 Gateway 发送设备通知令牌、设备名称和平台。",
+          "发往 Gateway 的请求可能包含所用功能必需的访问令牌、工作区与窗格标识、终端输入、命令和 AI 助手输出。开启通知后，牧群还会向 Gateway 发送设备通知令牌、设备名称和平台。",
           "你负责管理 Gateway 及其网络。请使用安全连接。HTTP 本身不加密流量，只应在可信的加密私有网络内使用。",
         ],
       },

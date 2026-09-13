@@ -116,13 +116,30 @@ export function createRemoteEarth() {
   const geo = new T.BufferGeometry();
   geo.setAttribute("position", new T.Float32BufferAttribute(land, 3));
   const landMaterial = new T.ShaderMaterial({
-    uniforms: { brightness: { value: 1 }, reveal: { value: 1 } },
+    uniforms: { tint: { value: new T.Color("#57d9ff") }, brightness: { value: 1 }, reveal: { value: 1 } },
     transparent: true,
     depthWrite: false,
     vertexShader: `void main(){vec4 p=modelViewMatrix*vec4(position,1.);gl_Position=projectionMatrix*p;gl_PointSize=clamp(20./-p.z,1.5,4.);}`,
-    fragmentShader: `uniform float brightness;uniform float reveal;void main(){float a=1.-smoothstep(.25,.5,length(gl_PointCoord-.5));if(a<.01)discard;gl_FragColor=vec4(vec3(.34,.85,1.)*brightness,a*reveal);}`,
+    fragmentShader: `uniform vec3 tint;uniform float brightness;uniform float reveal;void main(){float a=1.-smoothstep(.25,.5,length(gl_PointCoord-.5));if(a<.01)discard;gl_FragColor=vec4(tint*brightness,a*reveal);}`,
   });
-  earth.add(new T.Points(geo, landMaterial));
+  const landDots = new T.Points(geo, landMaterial);
+  earth.add(landDots);
+  // Filled geographic patches give the daylight globe a readable silhouette.
+  const tiles: number[] = [];
+  for (let lat = -56; lat < 84; lat += 2)
+    for (let lon = -180; lon < 180; lon += 2)
+      if (continents.some((poly) => inside(lon + 1, lat + 1, poly))) {
+        const a = point(lon, lat, radius + 0.012), b = point(lon + 2, lat, radius + 0.012);
+        const c = point(lon + 2, lat + 2, radius + 0.012), d = point(lon, lat + 2, radius + 0.012);
+        tiles.push(...a.toArray(), ...b.toArray(), ...c.toArray(), ...a.toArray(), ...c.toArray(), ...d.toArray());
+      }
+  const patchGeometry = new T.BufferGeometry();
+  patchGeometry.setAttribute("position", new T.Float32BufferAttribute(tiles, 3));
+  patchGeometry.setAttribute("normal", new T.Float32BufferAttribute(tiles.map((v, i) => v / Math.hypot(...tiles.slice(i - i % 3, i - i % 3 + 3))), 3));
+  const patches = new T.Mesh(patchGeometry, new T.MeshStandardMaterial({color: "#548f89", roughness: 0.8, side: T.DoubleSide}));
+  const daylightOcean = new T.Mesh(new T.SphereGeometry(radius, 64, 40), new T.MeshStandardMaterial({color: "#edf2e8", roughness: 0.65, metalness: 0.04}));
+  daylightOcean.renderOrder = -1;
+  earth.add(daylightOcean, patches);
   const grid = new T.LineBasicMaterial({
     color: "#38afd3",
     transparent: true,
@@ -220,6 +237,9 @@ export function createRemoteEarth() {
   );
   screenTexture.colorSpace = T.SRGBColorSpace;
   screenTexture.anisotropy = 2;
+  const lightScreenTexture = new T.TextureLoader().load("/images/terminal-screen-light.png");
+  lightScreenTexture.colorSpace = T.SRGBColorSpace;
+  lightScreenTexture.anisotropy = 2;
   const screenGeometry = new T.ShapeGeometry(rounded(0.52, 1.055, 0.06));
   const positions = screenGeometry.attributes.position;
   const uv = screenGeometry.attributes.uv as T.BufferAttribute;
@@ -309,6 +329,7 @@ export function createRemoteEarth() {
       }
   });
   let rotation = -0.45;
+  let lightTheme = false;
   const scratch = new T.Vector3();
   const sample = (
     start: T.Vector3,
@@ -324,6 +345,35 @@ export function createRemoteEarth() {
       .addScaledVector(end, t * t);
   return {
     group,
+    dispose() {
+      screenTexture.dispose();
+      lightScreenTexture.dispose();
+    },
+    setTheme(light: boolean) {
+      screen.material.map = light ? lightScreenTexture : screenTexture;
+      screen.material.needsUpdate = true;
+      const shell = phone.children[0] as T.Mesh<T.ExtrudeGeometry, T.MeshStandardMaterial>;
+      shell.material.color.set(light ? "#d7dedb" : "#183747");
+      shell.material.metalness = light ? 0.45 : 0.8;
+      (earth.children[0] as T.Mesh<T.SphereGeometry, T.MeshBasicMaterial>).material.color.set(light ? "#d8e7e8" : "#061825");
+      lightTheme = light;
+      earth.children[0].visible = !light;
+      daylightOcean.visible = patches.visible = light;
+      landDots.visible = !light;
+
+      if (light) landMaterial.uniforms.tint.value.set("#287789");
+      else landMaterial.uniforms.tint.value.setRGB(0.34, 0.85, 1);
+      orbit.children.forEach((ring, index) => { ring.visible = !light || index === 0; });
+      grid.opacity = light ? 0.06 : 0.13;
+      orbitMaterial.color.set(light ? "#367b8a" : "#5fdcff");
+      routeMaterial.color.set(light ? "#367b8a" : "#4fc5e8");
+      markerMaterial.color.set(light ? "#bc563a" : "#ffad86");
+      pedestal.children.forEach((object) => {
+        (object as T.Mesh<T.TorusGeometry, T.MeshBasicMaterial>).material.color.set(light ? "#367b8a" : "#43cce9");
+      });
+      fades.set(grid, light ? 0.06 : 0.13);
+      grid.color.set(light ? "#1c6979" : "#38afd3");
+    },
     update(time: number, delta = 0, energy = 0, reduced = false, reveal = 1) {
       for (const [material, opacity] of fades)
         material.opacity = opacity * reveal;
@@ -336,9 +386,9 @@ export function createRemoteEarth() {
       globe.rotation.z = reduced ? 0 : Math.sin(time) * 0.018 - energy * 0.1;
       orbit.rotation.y = reduced ? 0 : time * 0.09;
       orbitMaterial.opacity = (0.42 + energy * 0.4) * reveal;
-      glow.uniforms.strength.value = (0.6 + energy * 0.6) * reveal;
+      glow.uniforms.strength.value = (lightTheme ? 0.09 + energy * 0.12 : 0.6 + energy * 0.6) * reveal;
       landMaterial.uniforms.brightness.value = 1 + energy * 0.6;
-      screenGlow.color.set(energy > 0.15 ? "#ffad86" : "#67e2e0");
+      screenGlow.color.set(energy > 0.15 ? (lightTheme ? "#c06b4d" : "#ffad86") : (lightTheme ? "#6a8c8e" : "#67e2e0"));
       phone.position.y =
         3.15 + (reduced ? 0 : Math.sin(time * 0.8 - 0.4) * 0.04);
       earth.updateMatrix();

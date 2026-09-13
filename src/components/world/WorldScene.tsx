@@ -35,8 +35,20 @@ export default function WorldScene({
   host: HTMLElement;
   reduced: boolean;
 }) {
-  const { camera, gl, size, invalidate, setDpr } = useThree();
+  const { camera, gl, size, invalidate, setDpr, scene } = useThree();
   const world = useMemo(createEnvironment, []);
+  useEffect(() => {
+    const apply = () => {
+      const light = document.documentElement.dataset.theme === "light";
+      world.setTheme(light);
+      scene.fog?.color.set(light ? "#f6f3ee" : "#090b14");
+      invalidate();
+    };
+    apply();
+    const observer = new MutationObserver(apply);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+    return () => observer.disconnect();
+  }, [world, scene, invalidate]);
   const companion = useRef<T.Group>(null);
   const animate = useRef<ReturnType<typeof createMascotMotion> | null>(null);
   const moodClock = useRef<{ mood: Mood; start: number }>({
@@ -44,11 +56,14 @@ export default function WorldScene({
     start: 0,
   });
   const model = useRef<T.Group | null>(null);
+  const petReaction = useRef<{ mood: Mood; until: number; index: number }>({ mood: "happy", until: 0, index: -1 });
   const state = useRef({
     exact: 0,
     smooth: 0,
     time: 0,
     slow: 0,
+    aimX: 0,
+    aimY: 0,
     pointerX: 0,
     pointerY: 0,
     last: 0,
@@ -272,9 +287,45 @@ export default function WorldScene({
     };
     const move = (event: PointerEvent) => {
       if (event.pointerType !== "mouse" || reduced) return;
-      state.current.pointerX = (event.clientX / innerWidth - 0.5) * 0.2;
-      state.current.pointerY = (event.clientY / innerHeight - 0.5) * 0.08;
+      state.current.aimX = (event.clientX / innerWidth - 0.5) * 0.2;
+      state.current.aimY = (event.clientY / innerHeight - 0.5) * 0.08;
     };
+    const raycaster = new T.Raycaster();
+    const mouse = new T.Vector2();
+    const hitPet = (event: PointerEvent) => {
+      if (!model.current || jump.current.walking || jump.current.reveal < 1) return false;
+      if ((event.target as Element)?.closest("a,button,summary,nav,.features-section,.mq-footer,.gateway-help,.privacy-strip,pre")) return false;
+      const rect = gl.domElement.getBoundingClientRect();
+      mouse.set((event.clientX - rect.left) / rect.width * 2 - 1, -(event.clientY - rect.top) / rect.height * 2 + 1);
+      raycaster.setFromCamera(mouse, camera);
+      return raycaster.intersectObject(model.current, true).some(({ object }) => {
+        for (let node: T.Object3D | null = object; node; node = node.parent) if (!node.visible) return false;
+        return true;
+      });
+    };
+    const hover = (event: PointerEvent) => document.body.classList.toggle("pet-hovered", event.pointerType === "mouse" && hitPet(event));
+    const leave = () => {
+      state.current.aimX = state.current.aimY = 0;
+      document.body.classList.remove("pet-hovered");
+    };
+    let reactionTimer: ReturnType<typeof setTimeout>;
+    let down = { x: 0, y: 0 };
+    const press = (event: PointerEvent) => { down = { x: event.clientX, y: event.clientY }; };
+    const release = (event: PointerEvent) => {
+      if (event.button !== 0 || Math.hypot(event.clientX - down.x, event.clientY - down.y) > 8 || !hitPet(event)) return;
+      const expressions: Mood[] = ["happy", "thinking", "success", "waiting"];
+      const index = (petReaction.current.index + 1) % expressions.length;
+      petReaction.current = { mood: expressions[index], until: performance.now() + 2600, index };
+      moodClock.current.start = state.current.time;
+      clearTimeout(reactionTimer);
+      reactionTimer = setTimeout(invalidate, 2650);
+      invalidate();
+    };
+    window.addEventListener("pointermove", hover, { passive: true });
+    window.addEventListener("pointerdown", press, { passive: true });
+    window.addEventListener("pointerup", release, { passive: true });
+    window.addEventListener("blur", leave);
+    document.documentElement.addEventListener("pointerleave", leave);
     const observer = new ResizeObserver(measure);
     const story = document.getElementById("world-story");
     if (story) observer.observe(story);
@@ -289,12 +340,19 @@ export default function WorldScene({
     window.addEventListener("pointermove", move, { passive: true });
     return () => {
       cancelled = true;
+      clearTimeout(reactionTimer);
+      window.removeEventListener("pointermove", hover);
+      window.removeEventListener("pointerdown", press);
+      window.removeEventListener("pointerup", release);
+      window.removeEventListener("blur", leave);
+      document.documentElement.removeEventListener("pointerleave", leave);
+      leave();
       observer.disconnect();
       window.removeEventListener("scroll", scroll);
       window.removeEventListener("resize", measure);
       window.removeEventListener("pointermove", move);
     };
-  }, [invalidate, reduced]);
+  }, [invalidate, reduced, camera, gl]);
 
   useEffect(() => {
     greeting.current?.kill();
@@ -316,13 +374,15 @@ export default function WorldScene({
     }
     invalidate();
   }, [reduced, camera, size, invalidate]);
-  useEffect(() => () => disposeTree(world.root), [world]);
+  useEffect(() => () => { world.dispose(); disposeTree(world.root); }, [world]);
 
   useFrame((_frame, delta) => {
     const s = state.current,
       dt = Math.min(delta, 1 / 30),
       mobile = size.width < 700;
     if (!reduced) s.time += dt;
+    s.pointerX = T.MathUtils.damp(s.pointerX, reduced ? 0 : s.aimX, 7, dt);
+    s.pointerY = T.MathUtils.damp(s.pointerY, reduced ? 0 : s.aimY, 7, dt);
     const chapterPhase = s.exact * 1.6;
     interactionTimeline.current?.time(
       reduced || jump.current.reveal < 1 || !Number.isFinite(s.interactionStart)
@@ -351,7 +411,9 @@ export default function WorldScene({
     if (moodClock.current.mood !== mood)
       moodClock.current = { mood, start: s.time };
     animate.current?.(
-      jump.current.walking
+      performance.now() < petReaction.current.until
+        ? petReaction.current.mood
+        : jump.current.walking
         ? "walk"
         : play.energy > 0.1
           ? "happy"

@@ -17,8 +17,8 @@ export interface WorldCopy {
 export const worldCopy: Record<SiteLocale, WorldCopy> = {
   "zh-CN": {
     copyLabel: "复制",
-    eyebrow: "让你的代理，离你近一点",
-    title: "你的代理，",
+    eyebrow: "让你的AI 助手，离你近一点",
+    title: "你的AI 助手，",
     accent: "随身同行。",
     intro: "终端、审批、文件。从你的电脑，直达手机。",
     explore: "认识牧群",

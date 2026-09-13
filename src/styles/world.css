@@ -1142,7 +1142,8 @@ button:focus-visible {
 body:has(.world-story) .mq-page-header {
   --brand-scale: 4.1;
   --brand-offset: 0px;
-  --brand-color: #e4cce230;
+  --brand-muted: #e4cce230;
+  --brand-progress: 0;
 }
 body:has(.world-story) .mq-page-header .mq-wordmark {
   transform: translateY(var(--brand-offset, 0px)) scale(var(--brand-scale));
@@ -1157,7 +1158,7 @@ body:has(.world-story) .mq-page-header .mq-wordmark {
   body:has(.world-story) .mq-page-header { --brand-scale: 2.5; --brand-offset: 54px; }
 }
 body:has(.world-story) .mq-page-header .mq-wordmark {
-  color: var(--brand-color);
+  color: color-mix(in srgb, var(--brand-muted) calc(100% - var(--brand-progress) * 100%), var(--mq-text));
 }
 body:has(.world-story) .mq-page-header .mq-wordmark__mark {
   display: inline-block;
@@ -1217,4 +1218,25 @@ body:has(.world-story) .mq-wordmark:not([data-link-active="true"]) .mq-wordmark_
   .gateway-help-content > p { padding-inline: 4px; }
   .gateway-help .mq-code__bar { padding: 12px; }
   .gateway-help .mq-code pre { padding: 14px 12px; }
+}
+
+/* Shared baselines and small, interruptible pointer feedback. */
+.feature-status { min-height: 0; }
+.feature-card--spotlight .feature-status { min-height: 32px; display: flex; align-items: flex-start; }
+.feature-status .feature-badge { display: inline-block; }
+body.pet-hovered { cursor: pointer; }
+.world-button, .header-language summary, .mq-code__copy {
+  transition: translate 180ms ease-out, scale 140ms ease-out, background-color 180ms ease-out, border-color 180ms ease-out;
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .world-button:hover { translate: 0 -2px; }
+  .feature-card:hover .feature-symbol { rotate: -5deg; scale: 1.06; }
+  .feature-symbol { transition: rotate 220ms ease-out, scale 220ms ease-out; }
+  .header-language summary:hover { background-color: color-mix(in srgb, var(--mq-text) 6%, transparent); }
+}
+.world-button:active, .mq-code__copy:active { scale: .97; translate: 0 0; }
+@media (prefers-reduced-motion: reduce) {
+  .world-button, .header-language summary, .mq-code__copy, .feature-card { transition: none; }
+  .feature-card:hover { transform: none; }
+  .world-button:active, .mq-code__copy:active { scale: 1; }
 }
