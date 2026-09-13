@@ -631,8 +631,6 @@
 
 .dm-icon {
   display: inline-block;
-  inline-size: 20px;
-  block-size: 20px;
   object-fit: contain;
 }
 
@@ -645,13 +643,11 @@
   -webkit-mask-position: center;
 }
 
-.dm-mark,
+/* `contentFit="contain"`, as the app draws every mark. */
 .dm-logo {
-  display: inline-grid;
-  place-items: center;
+  display: block;
   flex: 0 0 auto;
-  object-fit: cover;
-  border-radius: 28%;
+  object-fit: contain;
 }
 
 .dm-dot {
@@ -680,67 +676,61 @@
   overflow: hidden;
 }
 
+/* `styles.topBar`: the gutter is the cards' own, 10 above the controls, 8 below. */
 .dm-home__bar {
   display: flex;
+  align-items: center;
   justify-content: flex-end;
   gap: 8px;
   min-block-size: 54px;
-  padding: 8px 18px;
+  padding: 0 18px 8px;
+  box-sizing: content-box;
 }
 
+/* `HeaderButton`: a 40pt circle. */
 .dm-home__control {
   position: relative;
   isolation: isolate;
   display: inline-grid;
   place-items: center;
-  inline-size: 38px;
-  block-size: 38px;
-  border-radius: 19px;
+  inline-size: 40px;
+  block-size: 40px;
+  border-radius: 20px;
   overflow: hidden;
+  flex: 0 0 auto;
 }
 
 .dm-home__control > svg {
   position: relative;
 }
 
+/* `styles.content`: gutter, gap and measure arrive inline from `homeServerListLayout`. */
 .dm-home__list {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  padding: 4px 18px 24px;
+  padding-block-end: 40px;
   inline-size: 100%;
   margin-inline: auto;
   box-sizing: border-box;
 }
 
-.dm-home--pad .dm-home__list {
-  padding-block-start: 32px;
-}
-
+/* `styles.brandBlock` at the `mark` weight: the mark alone on the page, the name beside it. */
 .dm-brand {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 2px 2px 6px;
+  padding: 0 2px 4px;
   min-block-size: 56px;
+  box-sizing: border-box;
 }
 
-.dm-brand__tile {
-  display: inline-grid;
-  place-items: center;
-  inline-size: 46px;
-  block-size: 46px;
-  border-radius: 14px;
-  overflow: hidden;
-  flex: 0 0 auto;
-}
-
+/* `styles.titleCopy` with a scene behind it: a plate on `background`. */
 .dm-brand__copy {
   position: relative;
   isolation: isolate;
   display: inline-flex;
   min-inline-size: 0;
-  padding: 6px 10px;
+  padding: 10px;
   border-radius: 14px;
   overflow: hidden;
 }
@@ -750,7 +740,7 @@
   font-size: 26px;
   line-height: 31px;
   letter-spacing: -0.8px;
-  font-weight: 600;
+  font-weight: 700;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -769,21 +759,23 @@
 .dm-card {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  box-sizing: border-box;
 }
 
+/* `styles.identityRow` / `identityMain`: the avatar, then the name over its status. */
 .dm-card__identity {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
 
+/* `styles.serverAvatar`: `AVATAR_SIZE` 44, radius 14. */
 .dm-card__avatar {
   display: inline-grid;
   place-items: center;
-  inline-size: 40px;
-  block-size: 40px;
-  border-radius: 12px;
+  inline-size: 44px;
+  block-size: 44px;
+  border-radius: 14px;
   flex: 0 0 auto;
 }
 
@@ -800,19 +792,20 @@
   font-weight: 600;
 }
 
+/* `styles.statusLine`: room for the live dot's ring; the label tracked 0.9. */
 .dm-card__status {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 12px;
   font-size: 12px;
   font-weight: 600;
-  letter-spacing: 0.6px;
+  letter-spacing: 0.9px;
 }
 
+/* `ServerAgentRows`: a name column and a chevron per row, 5pt of vertical padding. */
 .dm-panes {
   display: flex;
   flex-direction: column;
-  gap: 2px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -822,47 +815,64 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  min-block-size: 30px;
-  font-size: 14px;
+  padding-block: 5px;
+  box-sizing: border-box;
 }
 
-.dm-pane__name {
+.dm-panes--compact .dm-pane {
+  padding-block: 3px;
+}
+
+.dm-pane__copy {
   flex: 1 1 auto;
   min-inline-size: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dm-pane__name,
+.dm-pane__caption {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-family: var(--mq-font-mono);
-  font-size: 13px;
 }
 
-.dm-pane__age {
+.dm-pane__name {
+  font-size: 14px;
+  line-height: 19px;
+}
+
+.dm-pane__caption {
   font-size: 12px;
+  line-height: 16px;
 }
 
 /* --- the tablet rail ---------------------------------------------------- */
 
+/* `PadServerRail`: `styles.shell`, radius 28, on `surface`; only the bottom inset is its own. */
 .dm-rail {
   position: relative;
   isolation: isolate;
   flex: 0 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 4px;
   border-radius: 28px;
   overflow: hidden;
   padding-block-end: 12px;
+  box-sizing: border-box;
 }
 
 .dm-rail > :not(.dm-art) {
   position: relative;
 }
 
+/* `styles.brand`: the mark in a 48pt raised frame, the name and tagline beside it. */
 .dm-rail__brand {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 14px 16px 6px;
+  padding: 14px 16px 10px;
 }
 
 .dm-rail__tile {
@@ -895,6 +905,7 @@
   font-size: 12px;
 }
 
+/* `styles.heading`: the `Servers` eyebrow. */
 .dm-rail__label {
   padding: 16px 16px 8px;
   font-size: 11px;
@@ -903,42 +914,84 @@
   text-transform: uppercase;
 }
 
+/* `styles.content`: one group per server, 20 apart, inset 10. */
+.dm-rail__groups {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 0 10px;
+}
+
+.dm-rail__group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* `styles.serverPill`: the machine, and `primarySubtle` behind the selected one. */
+.dm-rail__pill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-block-size: 58px;
+  padding: 8px 10px;
+  border-radius: 18px;
+  box-sizing: border-box;
+}
+
+.dm-rail__icon {
+  display: inline-grid;
+  place-items: center;
+  inline-size: 34px;
+  block-size: 34px;
+  border-radius: 17px;
+  flex: 0 0 auto;
+}
+
 .dm-rail__server {
+  flex: 1 1 auto;
+  min-inline-size: 0;
   display: flex;
   flex-direction: column;
   gap: 2px;
-  padding: 4px 10px;
 }
 
-.dm-rail__row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 6px;
+.dm-rail__server-name {
   font-size: 14px;
+  line-height: 19px;
   font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.dm-rail__agent {
-  padding: 6px 6px 6px 21px;
-  border-radius: 10px;
-  font-family: var(--mq-font-mono);
-  font-size: 13px;
-}
-
-.dm-rail__foot {
-  margin-block-start: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 12px 16px 0;
-  font-size: 13px;
-}
-
-.dm-rail__foot span {
+.dm-rail__reach {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
+  font-size: 12px;
+  line-height: 16px;
+}
+
+/* `styles.railPanes`: the panes, inset to the pill's own text edge. */
+.dm-rail__group .dm-panes {
+  padding-inline-start: 10px;
+}
+
+/* `styles.actionBar` / `glyphAction`: three doors in one row, on `background`. */
+.dm-rail__actions {
+  margin-block-start: auto;
+  display: flex;
+  gap: 7px;
+  padding: 10px 10px 4px;
+}
+
+.dm-rail__action {
+  flex: 1 1 0;
+  display: inline-grid;
+  place-items: center;
+  block-size: 44px;
+  border-radius: 12px;
 }
 
 /* --- workspace chrome shared by conversation and terminal --------------- */
@@ -1050,12 +1103,19 @@
 }
 
 .dm-composer__control {
+  position: relative;
+  isolation: isolate;
   display: inline-grid;
   place-items: center;
   inline-size: 40px;
   block-size: 40px;
   border-radius: 20px;
+  overflow: hidden;
   flex: 0 0 auto;
+}
+
+.dm-composer__control > :not(.dm-art) {
+  position: relative;
 }
 
 .dm-composer__input {
@@ -1076,42 +1136,76 @@
   overflow: hidden;
 }
 
+/* `styles.keyRowToggle`: 40 wide, radius 12; the quick-actions entry leads the row. */
 .dm-key {
   display: inline-grid;
   place-items: center;
   min-inline-size: 44px;
-  block-size: 34px;
+  block-size: 36px;
   padding-inline: 10px;
   border-radius: 12px;
   font-family: var(--mq-font-mono);
   font-size: 13px;
+  box-sizing: border-box;
 }
 
-.dm-button {
-  position: relative;
-  isolation: isolate;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-block-size: 36px;
-  padding-inline: 16px;
-  border-radius: 12px;
-  overflow: hidden;
+.dm-key--entry {
+  min-inline-size: 40px;
+  padding-inline: 0;
+}
+
+/* `ApprovalBanner`: a raised card with the question, its options as flat rows, and the hint. */
+.dm-approval {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 14px;
+}
+
+.dm-approval__head {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.dm-approval__head > svg {
+  flex: 0 0 auto;
+  margin-block-start: 1px;
+}
+
+.dm-approval__copy {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dm-approval__prompt {
   font-size: 14px;
-  font-weight: 600;
+  line-height: 19px;
+  font-weight: 700;
 }
 
-.dm-button__label {
-  position: relative;
+.dm-approval__context,
+.dm-approval__hint {
+  font-size: 12px;
+  line-height: 16px;
 }
 
-.dm-flat {
-  display: inline-flex;
+.dm-approval__option {
+  display: flex;
   align-items: center;
-  min-block-size: 36px;
-  padding-inline: 8px;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 10px;
   font-size: 14px;
-  font-weight: 600;
+  line-height: 19px;
+}
+
+.dm-approval__option > svg {
+  flex: 0 0 auto;
 }
 
 /* --- conversation ------------------------------------------------------- */
@@ -1171,24 +1265,23 @@
   border-radius: 14px;
 }
 
+/* A tool call's card (`pane-chat-blocks.tsx`): the status light, the tool, its argument. */
 .dm-chat__card-title {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .dm-chat__card-body {
+  flex: 1 1 auto;
+  min-inline-size: 0;
   font-size: 12px;
-}
-
-.dm-chat__card-actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 6px 4px;
-  margin-block-start: 4px;
+  font-weight: 400;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .dm-chat__diff {
