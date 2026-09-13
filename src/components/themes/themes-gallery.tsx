@@ -25,7 +25,7 @@ import { flushSync } from 'react-dom';
 
 import type { ThemesCopy } from '@/i18n/themes';
 import { leave, reducedMotion, useReveal } from '@/lib/theme-motion';
-import { unpackTheme, type ThemePackage } from '@/lib/theme-package';
+import { themePreviewUrl, unpackTheme, type ThemePackage } from '@/lib/theme-package';
 import {
   loadThemeIndex,
   loadThemePackageBytes,
@@ -344,11 +344,15 @@ function ThemeCard({
   const [asked, setAsked] = useState(false);
   const wanted = inView && (asked || entry.bytes <= AUTO_LOAD_BYTES);
   const pack = usePackage(entry, wanted);
+  // An author's own picture stands in for the two phones when the pack ships one.
+  const preview = pack.status === 'ready' ? themePreviewUrl(pack.pack) : undefined;
 
   return (
     <li ref={ref} className="themes-card" data-theme-id={entry.id} aria-current={current ? 'true' : undefined}>
-      <div className="themes-card__previews">
-        {pack.status === 'ready' ? (
+      <div className={`themes-card__previews${preview ? ' themes-card__previews--image' : ''}`}>
+        {preview ? (
+          <img className="themes-card__preview" src={preview} alt={entry.name} loading="lazy" decoding="async" />
+        ) : pack.status === 'ready' ? (
           (['light', 'dark'] as const).map((mode) => (
             <DeviceMock
               key={mode}
@@ -401,6 +405,23 @@ function ThemeCard({
         </p>
       </div>
     </li>
+  );
+}
+
+/**
+ * The picture a theme's author ships as its `preview`, whole, before the
+ * mock-ups the site draws itself. Renders nothing for a pack without one.
+ */
+function AuthorPreview({ pack, name, caption }: { pack: ThemePackage; name: string; caption: string }) {
+  const src = themePreviewUrl(pack);
+  const figure = useRef<HTMLElement>(null);
+  useReveal(figure, ':scope > *', [src]);
+  if (!src) return null;
+  return (
+    <figure ref={figure} className="themes-detail__preview">
+      <img src={src} alt={name} decoding="async" />
+      <figcaption className="showcase__caption">{caption}</figcaption>
+    </figure>
   );
 }
 
@@ -489,7 +510,10 @@ function ThemeDetail({
       <p className="themes-detail__install">{labels.install}</p>
 
       {pack.status === 'ready' ? (
-        <ThemeShowcase pack={pack.pack} copy={copy} />
+        <>
+          <AuthorPreview pack={pack.pack} name={entry.name} caption={labels.authorPreview} />
+          <ThemeShowcase pack={pack.pack} copy={copy} />
+        </>
       ) : (
         <p className="themes-status" role="status">
           {pack.status === 'failed' ? (

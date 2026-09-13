@@ -110,6 +110,22 @@
   -webkit-mask-image: linear-gradient(to bottom, #000 78%, transparent);
 }
 
+/* A theme that ships its own `preview` shows that instead: the same box,
+   edge to edge, no crop fade -- the author framed it already. */
+.themes-card__previews--image {
+  display: block;
+  padding: 0;
+  mask-image: none;
+  -webkit-mask-image: none;
+}
+
+.themes-card__preview {
+  display: block;
+  inline-size: 100%;
+  block-size: 18rem;
+  object-fit: cover;
+}
+
 .themes-card__placeholder {
   grid-column: 1 / -1;
   display: grid;
@@ -310,6 +326,26 @@
   color: var(--mq-text-muted);
   font-size: var(--mq-size-small);
   max-inline-size: var(--mq-measure);
+}
+
+/* The author's own `preview`, shown whole above the mock-ups the site draws. */
+.themes-detail__preview {
+  margin: var(--mq-space-8) 0 0;
+}
+
+.themes-detail__preview img {
+  display: block;
+  inline-size: auto;
+  block-size: auto;
+  max-inline-size: 100%;
+  max-block-size: 32rem;
+  background: var(--mq-recessed);
+  border: 1px solid var(--mq-hairline);
+  border-radius: var(--mq-radius-lg);
+}
+
+.themes-detail__preview .showcase__caption {
+  text-align: start;
 }
 
 /* --- the standalone preview --------------------------------------------- */

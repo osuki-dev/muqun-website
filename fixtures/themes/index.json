@@ -15,9 +15,9 @@
       ],
       "minAppVersion": "1.2.0",
       "package": "dist/sample.muqun-theme",
-      "bytes": 23803,
-      "sha256": "f842fb3bc299c3f7b6e9e655ea0215bf6f5384bc9284a4900f9862e970e0fb13",
-      "assets": 14
+      "bytes": 25404,
+      "sha256": "af40b39d205434b18946f15dc2ee91f5e101f36c881b24feeb3aa7d0e1449c17",
+      "assets": 15
     }
   ]
 }

@@ -49,6 +49,8 @@ export interface ThemesCopy {
     copied: string;
     source: string;
     install: string;
+    /** Caption under the image a theme ships as its `preview`. */
+    authorPreview: string;
     version: string;
     author: string;
     license: string;
@@ -141,6 +143,7 @@ const en: ThemesCopy = {
     copied: 'Copied',
     source: 'Source',
     install: 'Download the file, then open it with Muqun or import it under Settings → Themes.',
+    authorPreview: 'Preview by the author',
     version: 'Version',
     author: 'Author',
     license: 'License',
@@ -232,6 +235,7 @@ const zhCN: ThemesCopy = {
     copied: '已复制',
     source: '源码',
     install: '下载文件后，用牧群打开它，或在「设置 → 主题」中导入。',
+    authorPreview: '作者提供的预览',
     version: '版本',
     author: '作者',
     license: '许可证',
@@ -323,6 +327,7 @@ const zhTW: ThemesCopy = {
     copied: '已複製',
     source: '原始碼',
     install: '下載檔案後，用牧群開啟它，或在「設定 → 主題」中匯入。',
+    authorPreview: '作者提供的預覽',
     version: '版本',
     author: '作者',
     license: '授權',
@@ -414,6 +419,7 @@ const ja: ThemesCopy = {
     copied: 'コピーしました',
     source: 'ソース',
     install: 'ファイルをダウンロードし、牧群で開くか、「設定 → テーマ」から読み込んでください。',
+    authorPreview: '作者によるプレビュー',
     version: 'バージョン',
     author: '作者',
     license: 'ライセンス',
@@ -505,6 +511,7 @@ const ko: ThemesCopy = {
     copied: '복사됨',
     source: '소스',
     install: '파일을 내려받은 뒤 Muqun으로 열거나, 설정 → 테마에서 가져오세요.',
+    authorPreview: '작성자가 제공한 미리보기',
     version: '버전',
     author: '만든이',
     license: '라이선스',
@@ -596,6 +603,7 @@ const de: ThemesCopy = {
     copied: 'Kopiert',
     source: 'Quelle',
     install: 'Datei herunterladen, dann mit Muqun öffnen oder unter Einstellungen → Themes importieren.',
+    authorPreview: 'Vorschau des Autors',
     version: 'Version',
     author: 'Autor',
     license: 'Lizenz',
@@ -687,6 +695,7 @@ const fr: ThemesCopy = {
     copied: 'Copié',
     source: 'Source',
     install: 'Téléchargez le fichier, puis ouvrez-le avec Muqun ou importez-le dans Réglages → Thèmes.',
+    authorPreview: 'Aperçu fourni par l\'auteur',
     version: 'Version',
     author: 'Auteur',
     license: 'Licence',
@@ -778,6 +787,7 @@ const es: ThemesCopy = {
     copied: 'Copiado',
     source: 'Fuente',
     install: 'Descarga el archivo y ábrelo con Muqun, o impórtalo en Ajustes → Temas.',
+    authorPreview: 'Vista previa del autor',
     version: 'Versión',
     author: 'Autor',
     license: 'Licencia',
@@ -869,6 +879,7 @@ const pt: ThemesCopy = {
     copied: 'Copiado',
     source: 'Fonte',
     install: 'Baixe o arquivo e abra com o Muqun, ou importe em Ajustes → Temas.',
+    authorPreview: 'Prévia do autor',
     version: 'Versão',
     author: 'Autor',
     license: 'Licença',
@@ -960,6 +971,7 @@ const ru: ThemesCopy = {
     copied: 'Скопировано',
     source: 'Исходник',
     install: 'Скачайте файл и откройте его в Muqun или импортируйте в разделе Настройки → Темы.',
+    authorPreview: 'Превью от автора',
     version: 'Версия',
     author: 'Автор',
     license: 'Лицензия',
@@ -1051,6 +1063,7 @@ const vi: ThemesCopy = {
     copied: 'Đã sao chép',
     source: 'Mã nguồn',
     install: 'Tải tệp về, rồi mở bằng Muqun hoặc nhập trong Cài đặt → Chủ đề.',
+    authorPreview: 'Bản xem trước của tác giả',
     version: 'Phiên bản',
     author: 'Tác giả',
     license: 'Giấy phép',
