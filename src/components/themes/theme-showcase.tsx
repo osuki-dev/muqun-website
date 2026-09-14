@@ -9,7 +9,7 @@
 import { useEffect, useId, useRef, useState } from 'react';
 
 import type { ThemesCopy } from '@/i18n/themes';
-import { useReveal } from '@/lib/theme-motion';
+import { useScrollReveal } from '@/lib/theme-motion';
 import type { ThemeMode, ThemePackage } from '@/lib/theme-package';
 
 import DeviceMock, { type DeviceKind, type ScreenKind } from './device-mock';
@@ -46,13 +46,12 @@ export default function ThemeShowcase({ pack, copy, tokens = true }: Props) {
   const [mode, setMode] = useState<ThemeMode>('light');
   useEffect(() => setMode(siteMode()), []);
 
-  // A switched variant arrives figure by figure rather than all at once.
   const root = useRef<HTMLDivElement>(null);
-  useReveal(root, '.showcase__figure, .showcase__section, .tokens', [mode, pack]);
+  useScrollReveal(root, '.showcase__section, .showcase__figure, .tp-section', [mode, pack]);
 
   return (
     <div className="showcase" ref={root}>
-      <div className="showcase__switch" role="tablist" aria-label={copy.screens.devices}>
+      <div className="showcase__switch" data-mode={mode} role="tablist" aria-label={copy.screens.devices}>
         {MODES.map((candidate) => (
           <button
             key={candidate}

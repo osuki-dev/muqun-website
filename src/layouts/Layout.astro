@@ -27,6 +27,7 @@
  * pushes the aperture -- which is the page's whole argument -- off the first
  * screen on a phone.
  */
+import MiniPet from '@/components/MiniPet.astro';
 import HeaderLanguage from '@/components/HeaderLanguage.astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Button from '@/components/Button.astro';
@@ -141,6 +142,7 @@ const year = new Date().getFullYear();
   </PageHeader>
 
   <slot />
+  <MiniPet locale={locale} />
 
   <SiteFooter slot="footer">
     <LocaleMenu locales={locales} current={locale} label={chrome.header.aria.language} />

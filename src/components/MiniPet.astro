@@ -1,0 +1,73 @@
+---
+import type { SiteLocale } from '@/lib/locales';
+const labels: Record<SiteLocale, string> = {
+  en: 'Back to top', 'zh-CN': '返回顶部', 'zh-TW': '回到頂端', ja: 'トップへ戻る',
+  ko: '맨 위로', de: 'Nach oben', fr: 'Retour en haut', es: 'Volver arriba',
+  pt: 'Voltar ao topo', ru: 'Наверх', vi: 'Về đầu trang', th: 'กลับด้านบน',
+};
+const { locale } = Astro.props as { locale: SiteLocale };
+---
+<button class="mini-pet" type="button" aria-label={labels[locale]} title={labels[locale]} hidden>
+  <span class="mini-pet__scene" aria-hidden="true"><img src="/pocket-icon-transparent-48.png" alt="" /></span>
+  <span class="mini-pet__arrow" aria-hidden="true">↑</span>
+  <span class="mini-pet__hint" aria-hidden="true">{labels[locale]}</span>
+</button>
+<script>
+  const button = document.querySelector<HTMLButtonElement>('.mini-pet');
+  if (button) {
+    let started = false;
+    let disposed = false;
+    let cleanup: (() => void) | undefined;
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+    const scroll = () => {
+      const visible = scrollY > Math.min(innerHeight * 0.65, 480);
+      button.hidden = !visible;
+      if (visible && !started) {
+        started = true;
+        import('../lib/mini-pet').then(async ({ mountMiniPet }) => {
+          if (disposed) return;
+          const dispose = await mountMiniPet(button);
+          if (disposed) dispose(); else cleanup = dispose;
+        }).catch(() => { /* The illustrated button remains usable without WebGL. */ });
+      }
+    };
+    const top = () => {
+      window.scrollTo({ top: 0, behavior: reduced.matches ? 'instant' : 'smooth' });
+      const target = document.querySelector<HTMLElement>('#main') ?? document.querySelector<HTMLElement>('h1');
+      if (target) {
+        const previous = target.getAttribute('tabindex');
+        target.setAttribute('tabindex', '-1');
+        target.focus({ preventScroll: true });
+        target.addEventListener('blur', () => {
+          if (previous === null) target.removeAttribute('tabindex'); else target.setAttribute('tabindex', previous);
+        }, { once: true });
+      }
+    };
+    button.addEventListener('click', top);
+    window.addEventListener('scroll', scroll, { passive: true });
+    scroll();
+    window.addEventListener('pagehide', (event) => {
+      if (event.persisted) return;
+      disposed = true;
+      cleanup?.();
+      window.removeEventListener('scroll', scroll);
+      button.removeEventListener('click', top);
+    }, { once: true });
+  }
+</script>
+<style>
+.mini-pet { position: fixed; z-index: 40; right: max(20px, env(safe-area-inset-right)); bottom: max(20px, env(safe-area-inset-bottom)); width: 86px; height: 96px; border: 0; padding: 0; background: transparent; color: var(--mq-text); cursor: pointer; border-radius: 24px; }
+.mini-pet:not([hidden]) { animation: pet-arrive 260ms ease-out; }
+@keyframes pet-arrive { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.mini-pet[hidden] { display: none; }
+.mini-pet__scene { position: absolute; inset: 0 0 10px; pointer-events: none; }
+.mini-pet__scene img { width: 64px; height: 64px; margin: 10px auto; }
+.mini-pet__scene :global(canvas) { display: block; width: 100%; height: 100%; }
+.mini-pet__arrow { position: absolute; right: 1px; bottom: 4px; display: grid; place-items: center; width: 26px; height: 26px; border: 1px solid var(--mq-hairline); border-radius: 50%; background: var(--mq-card); color: var(--mq-text-accent); box-shadow: 0 4px 16px #0002; }
+.mini-pet__hint { position: absolute; right: 100%; top: 35%; margin-right: 8px; padding: 7px 12px; background: var(--mq-card); border: 1px solid var(--mq-hairline); border-radius: 10px; white-space: nowrap; font-size: 13px; opacity: 0; transform: translateX(4px); transition: opacity 180ms, transform 180ms; pointer-events: none; }
+.mini-pet:focus-visible { outline: 2px solid var(--mq-text-accent); outline-offset: 3px; }
+.mini-pet:focus-visible .mini-pet__hint { opacity: 1; transform: none; }
+@media (hover: hover) { .mini-pet:hover .mini-pet__hint { opacity: 1; transform: none; } }
+@media (max-width: 600px) { .mini-pet { width: 62px; height: 72px; right: max(12px, env(safe-area-inset-right)); bottom: max(12px, env(safe-area-inset-bottom)); } .mini-pet__scene img { width: 44px; height: 44px; } .mini-pet__hint { display: none; } }
+@media (prefers-reduced-motion: reduce) { .mini-pet__hint { transition: none; } .mini-pet:not([hidden]) { animation: none; } }
+</style>

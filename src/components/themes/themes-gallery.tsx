@@ -24,7 +24,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { flushSync } from 'react-dom';
 
 import type { ThemesCopy } from '@/i18n/themes';
-import { leave, reducedMotion, useReveal } from '@/lib/theme-motion';
+import { leave, reducedMotion, useReveal, useScrollReveal } from '@/lib/theme-motion';
 import { themePreviewUrl as packagePreviewUrl, unpackTheme, type ThemePackage } from '@/lib/theme-package';
 import {
   loadThemeIndex,
@@ -292,9 +292,12 @@ export default function ThemesGallery({ locale, copy, repoUrl }: Props) {
 
   if (index.status === 'loading') {
     return (
-      <p className="themes-status" role="status">
-        {copy.loading}
-      </p>
+      <div className="themes-loading" aria-busy="true">
+        <p className="themes-status" role="status">{copy.loading}</p>
+        <div className="themes-grid" aria-hidden="true">
+          {Array.from({ length: 6 }, (_, index) => <div key={index} className="themes-loading__card" />)}
+        </div>
+      </div>
     );
   }
 
@@ -391,6 +394,7 @@ function ThemeCard({
   onOpen: () => void;
 }) {
   const [ref, inView] = useInView<HTMLLIElement>();
+  useScrollReveal(ref, ':scope', [entry.id]);
   const [asked, setAsked] = useState(false);
   // The index names the author's preview when the theme ships one, and then
   // the card needs no package at all: the image is one small request, and

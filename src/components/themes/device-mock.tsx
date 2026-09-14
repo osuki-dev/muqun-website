@@ -719,7 +719,11 @@ export default function DeviceMock({ pack, mode, device, screen, label }: Props)
       className={`dm dm--${device} dm--${mode}`}
       role="img"
       aria-label={label}
-      style={{ aspectRatio: `${spec.width + spec.bezel * 2} / ${spec.height + spec.bezel * 2}` }}
+      style={{
+        aspectRatio: `${spec.width + spec.bezel * 2} / ${spec.height + spec.bezel * 2}`,
+        // Clip the wrapper to the same scaled silhouette as the device shell.
+        borderRadius: `${((spec.radius + spec.bezel) / (spec.width + spec.bezel * 2)) * 100}% / ${((spec.radius + spec.bezel) / (spec.height + spec.bezel * 2)) * 100}%`,
+      }}
     >
       <div
         className="dm-device"
