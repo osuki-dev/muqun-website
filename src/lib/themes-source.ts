@@ -5,7 +5,7 @@
  *
  *   <base>index.json                 the list, written by `muqun-theme build`
  *   <base>dist/<id>.muqun-theme      one package, read by `theme-package.ts`
- *   <base>dist/previews/<id>.<ext>   a theme's preview image, when the index names one
+ *   <base>dist/previews/<id>.<ext>   a theme's cover, when the index names one
  *
  * In production `<base>` is this site's own `/api/themes/`: the Worker in
  * `worker/index.ts` serves an R2 bucket that the themes repository's CI
@@ -44,9 +44,17 @@ export interface ThemeIndexEntry {
   /** Repository-relative, `dist/<id>.muqun-theme`. */
   package: string;
   /**
-   * Repository-relative, `dist/previews/<id>.<webp|png|jpg>`: the author's
-   * preview, copied out of the package at build time so a card can show it
-   * without downloading the package. Absent for a theme that ships none.
+   * The theme's cover: the image the manifest names as its `preview` asset,
+   * copied out of the package at build time and published beside it, so a
+   * card can show a theme before downloading it. 1024x640, 8:5, in the format
+   * the pack ships it -- the same picture, not a second one. Absent, and only
+   * absent, for a theme that ships no cover; never `null` and never empty.
+   *
+   * This is not the manifest's `preview`, which is an asset id naming a file
+   * *inside* the pack. This one is an address: either the repository-relative
+   * `dist/previews/<id>.<webp|png|jpg>` that `muqun-theme build` writes, or
+   * that same file as an absolute `https` URL on the catalogue's own base.
+   * Both are read; see `previewFile`.
    */
   preview?: string;
   bytes: number;
@@ -75,8 +83,32 @@ export class ThemeSourceError extends Error {
  * and a row that named `../something` must not become a request for it.
  */
 const PACKAGE_PATH = /^dist\/[a-z][a-z0-9-]*\.muqun-theme$/;
-/** Same rule for a preview. The capture is the file name the API serves it under. */
-const PREVIEW_PATH = /^dist\/previews\/([a-z][a-z0-9-]*\.(?:webp|png|jpe?g))$/;
+/**
+ * Same rule for a preview, in the spellings a preview is published under:
+ * the repository-relative path `muqun-theme build` writes, and the absolute
+ * URL on this API's own base that the app's contract describes. The capture
+ * is the file name the API serves it under, and it is all that is kept --
+ * every address below is rebuilt from it against `base`, so a row naming
+ * another host cannot turn into a request for that host.
+ */
+const PREVIEW_PATH = /^(?:dist\/)?previews\/([a-z][a-z0-9-]*\.(?:webp|png|jpe?g))$/;
+const PREVIEW_URL_PATH = /^\/api\/themes\/(?:dist\/)?previews\/([a-z][a-z0-9-]*\.(?:webp|png|jpe?g))$/;
+/** A bound on the field before anything parses it, the same one the app applies. */
+const MAX_PREVIEW_LENGTH = 2048;
+
+/** The public file name a row's `preview` points at, or nothing. */
+function previewFile(preview: string | undefined): string | undefined {
+  if (typeof preview !== 'string' || preview.length > MAX_PREVIEW_LENGTH) return undefined;
+  let absolute: URL | null = null;
+  try {
+    absolute = new URL(preview);
+  } catch {
+    // Parsing failed because there is no scheme, which is what a
+    // repository-relative path looks like. Read it as one.
+  }
+  if (!absolute) return PREVIEW_PATH.exec(preview)?.[1];
+  return absolute.protocol === 'https:' ? PREVIEW_URL_PATH.exec(absolute.pathname)?.[1] : undefined;
+}
 
 export function themeIndexUrl(): string {
   return `${base}index.json`;
@@ -95,9 +127,9 @@ export function themePackageUrl(entry: ThemeIndexEntry): string {
  * `dist/previews/<file>` from a dev source.
  */
 export function themePreviewUrl(entry: ThemeIndexEntry): string | undefined {
-  const file = entry.preview ? PREVIEW_PATH.exec(entry.preview)?.[1] : undefined;
+  const file = previewFile(entry.preview);
   if (!file) return undefined;
-  return __MUQUN_THEMES_DEV_BASE__ ? `${base}${entry.preview}` : `${base}previews/${file}`;
+  return __MUQUN_THEMES_DEV_BASE__ ? `${base}dist/previews/${file}` : `${base}previews/${file}`;
 }
 
 /** The theme's authored source in the repository (on `main`), for the "source" link. */
@@ -133,15 +165,14 @@ export async function loadThemeIndex(signal?: AbortSignal): Promise<ThemeIndexEn
     throw new ThemeSourceError('index.json is not a muqun-themes-index');
   }
   // Rows that fail the shape are dropped, not fatal: one bad entry should
-  // not take the gallery down with it. A `preview` that is not the one path
-  // shape a preview has is dropped from its row the same way -- the card then
+  // not take the gallery down with it. A `preview` that names no file this
+  // API would serve is dropped from its row the same way -- the card then
   // draws the theme from its package, as it would for a theme with none.
   // Sorted by id, as the CLI writes them.
   return (data as ThemeIndex).themes
     .filter(isEntry)
     .map((entry) => {
-      if (entry.preview === undefined || (typeof entry.preview === 'string' && PREVIEW_PATH.test(entry.preview)))
-        return entry;
+      if (entry.preview === undefined || previewFile(entry.preview) !== undefined) return entry;
       const { preview: _preview, ...rest } = entry;
       return rest;
     })
