@@ -17,6 +17,5 @@ export const chrome: ChromeCopy = {
   privacy: {
     title: 'Politique de confidentialité',
     lastUpdatedLabel: 'Dernière mise à jour',
-    sourceNote: 'Cette politique est publiée en anglais. Le texte anglais fait foi.',
   },
 };

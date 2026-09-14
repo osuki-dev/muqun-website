@@ -6,5 +6,5 @@ export const chrome: ChromeCopy = {
   header: { aria: { language: 'ภาษา', theme: 'ธีม', menu: 'เมนู' } },
   footer: { copyright: '© {year} muqun.dev. สงวนลิขสิทธิ์', github: 'GitHub' },
   error: { notFound: { title: 'ไม่พบหน้านี้', body: 'หน้านี้อาจถูกย้ายไปแล้ว หรือลิงก์อาจไม่ถูกต้อง' }, home: 'กลับหน้าแรก' },
-  privacy: { title: 'นโยบายความเป็นส่วนตัว', lastUpdatedLabel: 'อัปเดตล่าสุด', sourceNote: 'นโยบายฉบับภาษาอังกฤษเป็นฉบับที่ใช้อ้างอิงอย่างเป็นทางการ คำแปลนี้มีไว้เพื่อความสะดวกในการอ่าน' },
+  privacy: { title: 'นโยบายความเป็นส่วนตัว', lastUpdatedLabel: 'อัปเดตล่าสุด' },
 };

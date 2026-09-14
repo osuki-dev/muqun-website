@@ -17,6 +17,5 @@ export const chrome: ChromeCopy = {
   privacy: {
     title: 'プライバシーポリシー',
     lastUpdatedLabel: '最終更新',
-    sourceNote: '本ポリシーは英語で公開しています。解釈に相違がある場合は英語版が優先されます。',
   },
 };

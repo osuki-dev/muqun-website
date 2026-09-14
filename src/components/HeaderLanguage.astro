@@ -79,7 +79,10 @@ const selected = locales.find((locale) => locale.code === current);
     position: absolute;
     right: 0;
     top: calc(100% + 10px);
-    width: 185px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4px;
+    width: min(320px, calc(100vw - 32px));
     border: 1px solid var(--mq-hairline);
     border-radius: 16px;
     background: var(--mq-card);
@@ -88,7 +91,9 @@ const selected = locales.find((locale) => locale.code === current);
   }
   .header-language nav a {
     display: flex;
+    align-items: center;
     justify-content: space-between;
+    gap: 8px;
     padding: 12px 14px;
     min-height: 44px;
     border-radius: 8px;
@@ -105,6 +110,13 @@ const selected = locales.find((locale) => locale.code === current);
     outline-offset: 3px;
   }
   @media (max-width: 450px) {
+    .header-language nav {
+      position: fixed;
+      right: 16px;
+      top: calc(var(--mq-sticky-header-height, var(--mq-header-height)) + 8px);
+      width: calc(100vw - 32px);
+    }
+
     .header-language summary {
       gap: 5px;
       padding-inline: 10px;

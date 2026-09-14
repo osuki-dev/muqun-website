@@ -17,6 +17,5 @@ export const chrome: ChromeCopy = {
   privacy: {
     title: '개인정보 처리방침',
     lastUpdatedLabel: '최종 업데이트',
-    sourceNote: '본 방침은 영어로 게시되며, 해석에 차이가 있을 경우 영어본이 우선합니다.',
   },
 };
