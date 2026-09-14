@@ -79,6 +79,13 @@
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 21rem), 1fr));
 }
 
+.themes-loading__card {
+  min-block-size: 32rem;
+  border: 1px solid var(--mq-hairline);
+  border-radius: var(--mq-radius-lg);
+  background: linear-gradient(var(--mq-recessed) 18rem, var(--mq-card) 18rem);
+}
+
 .themes-card {
   display: flex;
   flex-direction: column;
@@ -461,7 +468,7 @@
 /* The Light | Dark switch stays in view while the mock-ups scroll by. */
 .showcase__switch {
   position: sticky;
-  inset-block-start: calc(var(--mq-header-height) + var(--mq-space-3));
+  inset-block-start: calc(var(--mq-sticky-header-height, var(--mq-header-height)) + var(--mq-space-3));
   z-index: 5;
   align-self: flex-start;
   display: inline-flex;
@@ -570,9 +577,7 @@
   transform-origin: 0 0;
   box-sizing: border-box;
   background: #0d0f14;
-  box-shadow:
-    inset 0 0 0 1.5px #2a2e38,
-    0 24px 60px rgb(0 0 0 / 0.28);
+  box-shadow: inset 0 0 0 1.5px #2a2e38;
   font-family: var(--mq-font-body);
   font-size: 15px;
   line-height: 1.35;
@@ -1625,10 +1630,23 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
+  .themes-card__preview {
+    transition: transform 420ms cubic-bezier(.22, 1, .36, 1);
+  }
+
+  .themes-card:hover .themes-card__preview,
+  .themes-card:focus-within .themes-card__preview {
+    transform: scale(1.025);
+  }
+
   .themes-card:hover {
     border-color: var(--mq-rule);
     box-shadow: 0 12px 32px color-mix(in srgb, var(--mq-text) 7%, transparent);
   }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .themes-card__preview { transition: none; transform: none !important; }
 }
 
 @media (max-width: 600px) {
@@ -1690,4 +1708,66 @@
   .themes-button:active {
     transform: none;
   }
+}
+
+/* Only controls that remain useful while reading are pinned. */
+.themes-toolbar {
+  position: sticky;
+  top: var(--mq-sticky-header-height, var(--mq-header-height));
+  z-index: 8;
+  padding-block: 12px;
+  background: color-mix(in srgb, var(--mq-canvas) 94%, transparent);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--mq-hairline);
+}
+
+.showcase__switch {
+  isolation: isolate;
+  display: inline-grid;
+  grid-template-columns: 1fr 1fr;
+  box-shadow: 0 6px 20px color-mix(in srgb, var(--mq-text) 8%, transparent);
+}
+
+.showcase__switch::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  top: 3px;
+  bottom: 3px;
+  left: 3px;
+  width: calc((100% - 8px) / 2);
+  border-radius: 999px;
+  background: var(--mq-accent);
+  transition: transform 220ms cubic-bezier(.22, 1, .36, 1);
+}
+
+.showcase__switch[data-mode='dark']::before {
+  transform: translateX(calc(100% + 2px));
+}
+
+.showcase__tab {
+  justify-content: center;
+}
+
+.showcase__tab--active,
+.showcase__tab--active:hover {
+  background: transparent;
+}
+
+.showcase__mode {
+  min-inline-size: 0;
+}
+
+.themes-card__previews {
+  /* Stable space before the package arrives keeps neighbouring cards still. */
+  block-size: 18rem;
+}
+
+@media (max-width: 600px) {
+  .themes-toolbar { gap: 6px; padding-block: 8px; }
+  .showcase__switch { max-inline-size: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .showcase__switch::before { transition: none; }
 }

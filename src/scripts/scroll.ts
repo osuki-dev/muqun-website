@@ -155,6 +155,9 @@ function dockHeader() {
  * whatever the scroll already costs.
  */
 function revealBands() {
+  // The asynchronous catalogue owns its reveals. Band-level transforms and
+  // stale trigger positions otherwise flash content when the list expands.
+  if (document.querySelector('.mq-themes-gallery')) return;
   for (const el of bands) {
     // The container, not the band: a band that bleeds to the viewport edge
     // (the aperture, the theme rail) has no container and runs an opening
