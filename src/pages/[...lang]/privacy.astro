@@ -14,12 +14,7 @@
  * two pages that link to it, so a locale cannot have one without the other.
  * ────────────────────────────────────────────────────────────────────────────
  *
- * The body stays in English in every locale. It is the document Apple and
- * Google review and the one a reader would take a dispute to, so it has one
- * authoritative text rather than eight that can drift apart at a clause. The
- * frame around it — title, revision date, and the sentence saying which text
- * governs — is translated, because that sentence is the one that has to be
- * understood by someone who cannot read the rest.
+ * Localized policy content with English as the fallback for missing translations.
  */
 import Layout from '@/layouts/Layout.astro';
 import { privacyTranslations } from '@/i18n/privacy-translations';
@@ -71,15 +66,7 @@ const description = getMuqunCopy(locale).meta.description;
       <p class="mq-mono-label">{chrome.site.name}</p>
       <Display level={1} size="display-sm" lines={1}>{chrome.privacy.title}</Display>
       <Prose size="small">{chrome.privacy.lastUpdatedLabel}: {lastUpdated}</Prose>
-      {
-        /* Only rendered where it is true. On the English page it would be a
-           sentence explaining that English is in English. */
-        locale === defaultLocale ? null : (
-          <Prose size="small" lang={locale}>
-            {chrome.privacy.sourceNote}
-          </Prose>
-        )
-      }
+
     </header>
 
     <!-- `lang="en"` on the body, because it is English inside a page whose

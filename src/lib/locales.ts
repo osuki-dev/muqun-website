@@ -1,17 +1,17 @@
 /** Site languages; keep astro.config.mjs in sync. English uses unprefixed URLs. */
 export const siteLanguages = [
-  { code: 'zh-CN', label: '简体中文' },
-  { code: 'ru', label: 'Русский' },
-  { code: 'th', label: 'ไทย' },
-  { code: 'vi', label: 'Tiếng Việt' },
   { code: 'en', label: 'English' },
+  { code: 'zh-CN', label: '简体中文' },
   { code: 'zh-TW', label: '繁體中文' },
   { code: 'ja', label: '日本語' },
   { code: 'ko', label: '한국어' },
+  { code: 'th', label: 'ไทย' },
+  { code: 'vi', label: 'Tiếng Việt' },
   { code: 'de', label: 'Deutsch' },
   { code: 'fr', label: 'Français' },
   { code: 'es', label: 'Español' },
   { code: 'pt', label: 'Português' },
+  { code: 'ru', label: 'Русский' },
 ] as const;
 
 export type SiteLocale = (typeof siteLanguages)[number]['code'];

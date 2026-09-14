@@ -73,18 +73,9 @@ export interface ChromeCopy {
     /** The one way out of the 404. */
     home: string;
   };
-  /**
-   * The frame around the privacy policy, whose body stays in English.
-   *
-   * The policy is the document Apple and Google review and the one a reader
-   * takes a dispute to, so it has one authoritative text rather than eight that
-   * can drift apart at a clause. `sourceNote` says so, in the reader's own
-   * language, at the top of the page — which is the part that must not be in
-   * English, because it is the part explaining why the rest is.
-   */
+  /** Localized privacy policy headings. */
   privacy: {
     title: string;
     lastUpdatedLabel: string;
-    sourceNote: string;
   };
 }
