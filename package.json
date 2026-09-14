@@ -11,6 +11,7 @@
     "preview": "wrangler dev",
     "deploy": "astro build && wrangler deploy",
     "check": "astro check",
+    "check:catalogue": "bun scripts/check-catalogue.mjs",
     "shots:generate": "bun scripts/shots.ts"
   },
   "dependencies": {

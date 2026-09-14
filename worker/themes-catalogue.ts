@@ -14,12 +14,28 @@
 export const THEME_ID = /^[a-z][a-z0-9-]*$/;
 
 /**
- * What `preview` in an index row may name: the file the themes repository's
- * CI writes beside the packages. Anything else is read as "no preview", never
- * as a path, because the index is data from a repository anyone can send a
- * pull request to. The capture is the public file name.
+ * What `preview` in an index row may name: the cover the themes repository's
+ * CI publishes beside the package, in any of the spellings that name it.
+ *
+ * `muqun-theme build` writes the repository-relative `dist/previews/<id>.<ext>`.
+ * The contract the app reads describes the same file as an absolute `https`
+ * URL on the catalogue's own base, and resolves a relative
+ * `previews/<id>.<ext>` against that base to the same address. One file, three
+ * spellings, so all three are read here; anything else is read as "no
+ * preview", never as a path, because the index is data from a repository
+ * anyone can send a pull request to.
+ *
+ * The capture is the public file name, and it is the only part that survives:
+ * the address a client is handed is rebuilt from it under this request's own
+ * origin (`describeEntry`), so an absolute value naming some other host cannot
+ * become a request for that host. It is a name in our own bucket, or it is
+ * nothing.
  */
-export const PREVIEW_PATH = /^dist\/previews\/([a-z][a-z0-9-]*\.(?:webp|png|jpe?g))$/;
+export const PREVIEW_PATH = /^(?:dist\/)?previews\/([a-z][a-z0-9-]*\.(?:webp|png|jpe?g))$/;
+/** The same file spelled as an absolute URL: the path it must have under this API. */
+export const PREVIEW_URL_PATH = /^\/api\/themes\/(?:dist\/)?previews\/([a-z][a-z0-9-]*\.(?:webp|png|jpe?g))$/;
+/** A bound on the field before anything parses it, the same one the app applies. */
+export const MAX_PREVIEW_LENGTH = 2048;
 
 export const DEFAULT_PER_PAGE = 20;
 export const MAX_PER_PAGE = 100;
@@ -101,7 +117,17 @@ const haystack = (entry: IndexEntry): string =>
 
 /** The public file name a row's `preview` points at, or nothing. */
 export function previewFile(entry: IndexEntry): string | undefined {
-  return typeof entry.preview === 'string' ? PREVIEW_PATH.exec(entry.preview)?.[1] : undefined;
+  const value = entry.preview;
+  if (typeof value !== 'string' || value.length > MAX_PREVIEW_LENGTH) return undefined;
+  let absolute: URL | null = null;
+  try {
+    absolute = new URL(value);
+  } catch {
+    // Parsing failed because there is no scheme, which is what a
+    // repository-relative path looks like. Read it as one.
+  }
+  if (!absolute) return PREVIEW_PATH.exec(value)?.[1];
+  return absolute.protocol === 'https:' ? PREVIEW_URL_PATH.exec(absolute.pathname)?.[1] : undefined;
 }
 
 /**

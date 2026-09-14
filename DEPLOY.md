@@ -85,6 +85,62 @@ preview:
 
 `GET /api/themes/<id>` returns that same row object on its own.
 
+### `preview` in an index row
+
+An index entry **may** carry `preview`, and an entry with one looks like this:
+
+```json
+{
+  "id": "grand-voyage",
+  "name": "Grand Voyage",
+  "version": "1.0.0",
+  "package": "dist/grand-voyage.muqun-theme",
+  "preview": "dist/previews/grand-voyage.webp",
+  "bytes": 1048576,
+  "sha256": "…",
+  "assets": 15
+}
+```
+
+It is the theme's cover: the image the pack's manifest names as its `preview`
+asset, copied out of the package by `muqun-theme build` and published beside
+it under `dist/previews/`, so a list can show a theme before downloading it.
+Same picture, same pixels, 1024×640 (8:5), in whatever format the pack ships
+it — WebP or PNG; nothing re-encodes it on the way out. Around 100 KB is the
+publishing guideline, not a limit anything here enforces. A pack without a
+cover simply has no `preview` key — never `null`, never `""`.
+
+One field is worth writing down because it looks like a pack field and is not.
+**`preview` in an index entry is an address; `preview` in a manifest is an
+asset id.** The manifest's names an image inside the pack, which is where the
+cover belongs: it travels with the theme, it is covered by the package's own
+limits and hashes, and it is what an offline install has. The index's
+addresses a copy of that same image, published beside the package, so a list
+can show a theme before downloading 25 MiB of it.
+
+The address must resolve, against the catalogue's own base, to a URL on that
+base — the rule `package` already follows, and for the same reason: an entry
+naming another host would be the catalogue asking a reader to fetch from a
+place they never chose. Three spellings do that and are all accepted, because
+the CLI writes the first and the app's contract describes the second:
+
+- `dist/previews/<id>.<ext>` — the repository-relative path `muqun-theme build`
+  writes, and the bucket key the file is mirrored to;
+- `https://muqun.dev/api/themes/previews/<id>.<ext>` — the same file, absolute;
+- `previews/<id>.<ext>` — the same file, relative to `/api/themes/`.
+
+Anything else is read as "no preview" rather than as a path. Only the file
+name survives parsing: `previewUrl`, and the `<img>` the gallery draws, are
+rebuilt from it against the request's own origin, so a row naming another host
+cannot become a request for that host. A row whose `preview` is refused still
+lists — the card falls back to unpacking the package for its cover, exactly as
+it does for a theme that ships none.
+
+`bun run check:catalogue` runs those rules with no Worker around them
+(`worker/themes-catalogue.ts` is pure functions for that reason) and checks
+that every cover `fixtures/themes/index.json` names is a file the fixture
+ships.
+
 The bucket needs no public URL and no custom domain. The Worker is the only
 reader, adds the CORS and cache headers, and puts answers in the edge cache
 (the index for a minute, packages and previews for an hour). A page or a
