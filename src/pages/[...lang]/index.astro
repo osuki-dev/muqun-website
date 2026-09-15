@@ -15,6 +15,7 @@ import {
   gatewayRepoUrl,
 } from "@/lib/muqun-links";
 import { appStoreAvailable } from "@/lib/muqun-release";
+import { storePromoActive } from "@/lib/muqun-promo";
 import "@/styles/world.css";
 export function getStaticPaths() {
   return siteLocaleCodes.map((locale) => ({
@@ -47,13 +48,13 @@ const help = gatewayHelp[locale];
           <p class="world-intro">{world.intro}</p>
           <div class="world-actions">
             {appStoreAvailable ? (
-              <a class="world-button primary" href={appStoreUrl}>
+              <a class="world-button primary" href={appStoreUrl} data-tip={storePromoActive ? world.appStoreTip : undefined}>
                 <span aria-hidden="true">↗</span> App Store
               </a>
             ) : (
               <p>{copy.review.status}</p>
             )}
-            <a class="world-button secondary" href={playStoreUrl}>
+            <a class="world-button secondary" href={playStoreUrl} data-tip={storePromoActive ? world.playStoreTip : undefined}>
               Google Play <span aria-hidden="true">↗</span>
             </a>
           </div>
@@ -99,8 +100,6 @@ const help = gatewayHelp[locale];
             ...features.filter((f) => f.spotlight),
             ...features.filter((f) => !f.spotlight),
           ]}
-          sourceLabel={world.source}
-          developmentLabel={world.development}
         />
       </section>
       <section class="story-chapter connect-chapter" id="connect">
@@ -180,11 +179,11 @@ const help = gatewayHelp[locale];
           <h2>{world.end}</h2>
           <div class="world-actions">
             {appStoreAvailable && (
-              <a class="world-button primary" href={appStoreUrl}>
+              <a class="world-button primary" href={appStoreUrl} data-tip={storePromoActive ? world.appStoreTip : undefined}>
                 {copy.footer.appStore} ↗
               </a>
             )}
-            <a class="world-button secondary" href={playStoreUrl}>
+            <a class="world-button secondary" href={playStoreUrl} data-tip={storePromoActive ? world.playStoreTip : undefined}>
               {copy.footer.googlePlay} ↗
             </a>
           </div>

@@ -85,10 +85,16 @@ const previewPath = localizedPath('/themes/preview', locale);
           <h3 class="mq-step__title">{step.title}</h3>
           <p class="mq-step__body">{step.body}</p>
           {index === 0 && (
-            <CodeBlock code={`bunx @osuki-dev/muqun-theme init my-theme\nbunx skills add osuki-dev/muqun-theme-cli`} label="sh" />
+            <>
+              <CodeBlock copy wrap code={`bunx @osuki-dev/muqun-theme init my-theme`} label="sh" />
+              <CodeBlock copy wrap code={`bunx skills add osuki-dev/muqun-theme-cli`} label="sh" />
+            </>
           )}
           {index === 1 && (
-            <CodeBlock code={`bunx @osuki-dev/muqun-theme validate my-theme\nbunx @osuki-dev/muqun-theme contrast my-theme`} label="sh" />
+            <>
+              <CodeBlock copy wrap code={`bunx @osuki-dev/muqun-theme validate my-theme`} label="sh" />
+              <CodeBlock copy wrap code={`bunx @osuki-dev/muqun-theme contrast my-theme`} label="sh" />
+            </>
           )}
           {index === 2 && (
             <div class="mq-themes-actions mq-themes-actions--step">
@@ -145,16 +151,45 @@ const previewPath = localizedPath('/themes/preview', locale);
     list-style: none;
     margin: var(--mq-space-8) 0 0;
     padding: 0;
-    display: grid;
-    gap: var(--mq-space-6);
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+    display: flex;
+    flex-direction: column;
+    max-inline-size: 48rem;
   }
 
   .mq-step {
+    position: relative;
     display: flex;
     flex-direction: column;
     gap: var(--mq-space-3);
     min-inline-size: 0;
+    padding-block: var(--mq-space-6);
+    padding-inline-start: var(--mq-space-6);
+    border-inline-start: 1px solid var(--mq-hairline);
+    margin-inline-start: 6px;
+  }
+
+  .mq-step:first-child {
+    padding-block-start: 0;
+  }
+
+  .mq-step:last-child {
+    padding-block-end: 0;
+  }
+
+  .mq-step::before {
+    content: "";
+    position: absolute;
+    inset-inline-start: -4.5px;
+    inset-block-start: var(--mq-space-6);
+    inline-size: 8px;
+    block-size: 8px;
+    border-radius: 50%;
+    background: var(--mq-card);
+    border: 1px solid var(--mq-text-muted);
+  }
+
+  .mq-step:first-child::before {
+    inset-block-start: 2px;
   }
 
   .mq-step__index {

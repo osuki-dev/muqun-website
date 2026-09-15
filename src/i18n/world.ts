@@ -6,6 +6,8 @@ export interface WorldCopy {
   accent: string;
   intro: string;
   explore: string;
+  appStoreTip: string;
+  playStoreTip: string;
   features: string;
   featureIntro: string;
   source: string;
@@ -22,6 +24,8 @@ export const worldCopy: Record<SiteLocale, WorldCopy> = {
   "accent": "อยู่ใกล้แค่เอื้อม",
   "intro": "เทอร์มินัล การอนุมัติ และไฟล์ จากคอมพิวเตอร์ตรงสู่มือถือ",
   "explore": "รู้จัก Muqun",
+  "appStoreTip": "iOS ฟรีช่วงเวลาจำกัด",
+  "playStoreTip": "ส่วนลดเปิดตัวบน Android",
   "features": "พกงานไปได้ทุกที่",
   "featureIntro": "SSH เครื่องจำลอง ธีม และเครื่องมือที่ใช้ทุกวัน",
   "source": "ซอร์สโค้ดล่าสุด",
@@ -37,6 +41,8 @@ export const worldCopy: Record<SiteLocale, WorldCopy> = {
     accent: "随身同行。",
     intro: "终端、审批、文件。从你的电脑，直达手机。",
     explore: "认识牧群",
+    appStoreTip: "iOS 限时免费",
+    playStoreTip: "Android 限时优惠",
     features: "把工作，放进口袋。",
     featureIntro: "SSH、模拟器、主题，一手掌握。",
     source: "最新源码",
@@ -53,6 +59,8 @@ export const worldCopy: Record<SiteLocale, WorldCopy> = {
     intro:
       "Терминал, разрешения и файлы. С вашего компьютера прямо на телефон.",
     explore: "Знакомьтесь: Muqun",
+    appStoreTip: "Бесплатно на iOS — ограниченное время",
+    playStoreTip: "Скидка на Android к запуску",
     features: "Работа в кармане.",
     featureIntro: "SSH, симуляторы, темы и привычные инструменты.",
     source: "В исходном коде",
@@ -68,6 +76,8 @@ export const worldCopy: Record<SiteLocale, WorldCopy> = {
     accent: "luôn trong tầm tay.",
     intro: "Terminal, phê duyệt và tệp. Từ máy tính của bạn đến điện thoại.",
     explore: "Khám phá Muqun",
+    appStoreTip: "Miễn phí trên iOS trong thời gian giới hạn",
+    playStoreTip: "Ưu đãi ra mắt trên Android",
     features: "Công việc trong túi bạn.",
     featureIntro: "SSH, trình mô phỏng, giao diện và công cụ quen thuộc.",
     source: "Mã nguồn mới nhất",
@@ -84,6 +94,8 @@ export const worldCopy: Record<SiteLocale, WorldCopy> = {
     intro:
       "Your terminal, approvals and files. Direct from your computer to your phone.",
     explore: "Meet Muqun",
+    appStoreTip: "Free on iOS for a limited time",
+    playStoreTip: "Launch discount on Android",
     features: "Your work. In your pocket.",
     featureIntro: "SSH, simulators, themes — and the tools you use every day.",
     source: "Latest source",
@@ -99,6 +111,8 @@ export const worldCopy: Record<SiteLocale, WorldCopy> = {
     accent: "隨身同行。",
     intro: "終端機、授權、檔案。從你的電腦，直接連到手機。",
     explore: "認識牧群",
+    appStoreTip: "iOS 限時免費",
+    playStoreTip: "Android 限時優惠",
     features: "把工作，放進口袋。",
     featureIntro: "SSH、模擬器、主題，一手掌握。",
     source: "最新原始碼",
@@ -114,6 +128,8 @@ export const worldCopy: Record<SiteLocale, WorldCopy> = {
     accent: "すぐそばに。",
     intro: "ターミナル、承認、ファイル。自分のパソコンからスマホへ。",
     explore: "Muqunに会う",
+    appStoreTip: "iOSは期間限定で無料",
+    playStoreTip: "Androidは期間限定割引",
     features: "仕事を、ポケットに。",
     featureIntro: "SSH、シミュレーター、テーマ。いつものツールを手元に。",
     source: "最新ソース",
@@ -129,6 +145,8 @@ export const worldCopy: Record<SiteLocale, WorldCopy> = {
     accent: "내 손안에.",
     intro: "터미널, 승인, 파일. 내 컴퓨터에서 휴대폰으로 바로.",
     explore: "Muqun 만나기",
+    appStoreTip: "iOS 한시적 무료",
+    playStoreTip: "Android 출시 기념 할인",
     features: "일을 주머니에.",
     featureIntro: "SSH, 시뮬레이터, 테마. 매일 쓰는 도구를 손안에.",
     source: "최신 소스",
@@ -144,6 +162,8 @@ export const worldCopy: Record<SiteLocale, WorldCopy> = {
     accent: "Immer dabei.",
     intro: "Terminal, Freigaben und Dateien. Direkt vom Rechner aufs Handy.",
     explore: "Muqun kennenlernen",
+    appStoreTip: "iOS kurzzeitig gratis",
+    playStoreTip: "Android-Einführungsrabatt",
     features: "Deine Arbeit. In deiner Tasche.",
     featureIntro: "SSH, Simulatoren, Themes — und deine täglichen Werkzeuge.",
     source: "Aktueller Quellcode",
@@ -160,6 +180,8 @@ export const worldCopy: Record<SiteLocale, WorldCopy> = {
     intro:
       "Terminal, autorisations et fichiers. Directement de votre ordinateur à votre téléphone.",
     explore: "Rencontrer Muqun",
+    appStoreTip: "Gratuit sur iOS pour une durée limitée",
+    playStoreTip: "Remise de lancement sur Android",
     features: "Votre travail, dans votre poche.",
     featureIntro: "SSH, simulateurs, thèmes : vos outils du quotidien.",
     source: "Code source actuel",
@@ -176,6 +198,8 @@ export const worldCopy: Record<SiteLocale, WorldCopy> = {
     intro:
       "Terminal, permisos y archivos. De tu ordenador a tu teléfono, directamente.",
     explore: "Conoce a Muqun",
+    appStoreTip: "Gratis en iOS por tiempo limitado",
+    playStoreTip: "Descuento de lanzamiento en Android",
     features: "Tu trabajo, en el bolsillo.",
     featureIntro: "SSH, simuladores, temas y tus herramientas de cada día.",
     source: "Código fuente actual",
@@ -191,6 +215,8 @@ export const worldCopy: Record<SiteLocale, WorldCopy> = {
     accent: "sempre por perto.",
     intro: "Terminal, aprovações e arquivos. Do computador ao celular, direto.",
     explore: "Conheça o Muqun",
+    appStoreTip: "Grátis no iOS por tempo limitado",
+    playStoreTip: "Desconto de lançamento no Android",
     features: "Seu trabalho, no bolso.",
     featureIntro: "SSH, simuladores, temas e suas ferramentas do dia a dia.",
     source: "Código-fonte atual",
