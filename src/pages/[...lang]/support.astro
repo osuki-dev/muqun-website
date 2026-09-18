@@ -64,46 +64,6 @@ const sections: StatusLineItem[] = [
   { key: '6', id: 'contact', label: 'contact', srLabel: guide.contact.heading },
 ];
 
-/** Subtitles and meta tags for the 7 deep-linkable chapters */
-const chapterMeta: Record<string, { key: string; meta: string; desc: string }> = {
-  'get-started': {
-    key: '01',
-    meta: 'procedure · ~5 min',
-    desc: isZhCN
-      ? 'Install the Gateway, choose start mode, QR pairing, and local network setup.'
-      : 'Install the Gateway, choose start mode, QR pairing, and tailnet setup.',
-  },
-  'terminal': {
-    key: '02',
-    meta: 'tmux · herdr',
-    desc: 'Workspaces, groups, panels, custom key row, and mobile developer tools.',
-  },
-  'opencode': {
-    key: '03',
-    meta: 'autonomous agent',
-    desc: 'Local agent service, models, tool calls with diffs, and permission forms.',
-  },
-  'gateway': {
-    key: '04',
-    meta: 'config.json reference',
-    desc: 'Configuration keys, ports, service modes, autostart, and manager shortcuts.',
-  },
-  'themes': {
-    key: '05',
-    meta: '24 bundled packs',
-    desc: 'Visual themes, .muqun-theme package format, opacity sliders, and authoring.',
-  },
-  'troubleshooting': {
-    key: '06',
-    meta: 'diagnostics & checks',
-    desc: 'Quick connection checks, pairing errors, expired codes, and common remedies.',
-  },
-  'contact': {
-    key: '07',
-    meta: 'github · issues',
-    desc: 'Bug reporting checklist, safe reporting guidelines, and privacy policy.',
-  },
-};
 ---
 
 <Layout
@@ -146,20 +106,16 @@ const chapterMeta: Record<string, { key: string; meta: string; desc: string }> =
         <div class="mq-guide-deck__grid">
           {
             guide.contents.map((item, index) => {
-              const info = chapterMeta[item.id] ?? {
-                key: String(index + 1).padStart(2, '0'),
-                meta: 'section',
-                desc: item.label,
-              };
+              const key = String(index + 1).padStart(2, '0');
               return (
                 <a class="mq-deck-card" href={`#${item.id}`}>
                   <div class="mq-deck-card__top">
-                    <span class="mq-deck-card__index">{info.key}</span>
+                    <span class="mq-deck-card__index">{key}</span>
                     <span class="mq-deck-card__slug">#{item.id}</span>
                     <span class="mq-deck-card__arrow" aria-hidden="true">↓</span>
                   </div>
                   <h2 class="mq-deck-card__title">{item.label}</h2>
-                  <p class="mq-deck-card__desc">{info.desc}</p>
+                  <p class="mq-deck-card__desc">{item.desc}</p>
                 </a>
               );
             })
