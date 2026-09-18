@@ -5,6 +5,7 @@ import FeatureGallery from "@/components/FeatureGallery.astro";
 import CodeBlock from "@/components/CodeBlock.astro";
 import { getMuqunCopy } from "@/i18n/muqun";
 import { gatewayHelp, gatewayCommands } from "@/i18n/gateway-help";
+import { opencodeHome } from "@/i18n/opencode-home";
 import { worldCopy } from "@/i18n/world";
 import { getFeatures } from "@/lib/features";
 import { localizedPath, siteLocaleCodes, defaultLocale } from "@/lib/locales";
@@ -28,6 +29,16 @@ const copy = getMuqunCopy(locale),
   world = worldCopy[locale];
 const features = getFeatures(locale);
 const help = gatewayHelp[locale];
+const opencode = opencodeHome[locale];
+
+/**
+ * The agent chapter's link, which is an anchor on another page.
+ *
+ * Built from `localizedPath` rather than written out, so it carries the
+ * reader's language and the trailing slash the rest of the site links with --
+ * `/ja/support/#opencode`, not `/support#opencode`.
+ */
+const opencodeGuideHref = `${localizedPath("/support", locale)}#opencode`;
 ---
 
 <Layout lang={locale} title={copy.meta.title} description={world.intro}>
@@ -102,9 +113,27 @@ const help = gatewayHelp[locale];
           ]}
         />
       </section>
+      {/* The agent chapter. After the gallery because it is the one feature
+          with a screen of its own rather than a line in a grid, and before
+          setup because setup is what you do once you want it. */}
+      <section class="story-chapter" id="opencode">
+        <div class="chapter-copy" data-world-reveal>
+          <p class="world-eyebrow">02 / {opencode.eyebrow}</p>
+          <h2>{opencode.heading}</h2>
+          <p>{opencode.body}</p>
+          <ul class="world-requirements">
+            {opencode.facts.map((fact) => (
+              <li>{fact}</li>
+            ))}
+          </ul>
+          <a class="text-link" href={opencodeGuideHref}>
+            {opencode.link} ↗
+          </a>
+        </div>
+      </section>
       <section class="story-chapter connect-chapter" id="connect">
         <div class="chapter-copy" data-world-reveal>
-          <p class="world-eyebrow">02 / {copy.setup.paneLabel}</p>
+          <p class="world-eyebrow">03 / {copy.setup.paneLabel}</p>
           <h2>{copy.setup.heading}</h2>
           <div class="world-command">
             <CodeBlock
@@ -156,7 +185,7 @@ const help = gatewayHelp[locale];
       </section>
       <section class="privacy-strip" data-world-reveal>
         <div>
-          <p class="world-eyebrow">03 / {copy.promise.paneLabel}</p>
+          <p class="world-eyebrow">04 / {copy.promise.paneLabel}</p>
           <h2>{world.privacy}</h2>
         </div>
         <div>
@@ -175,7 +204,7 @@ const help = gatewayHelp[locale];
       </section>
       <section class="story-chapter download-chapter" id="anywhere">
         <div class="chapter-copy" data-world-reveal>
-          <p class="world-eyebrow">04 / MUQUN</p>
+          <p class="world-eyebrow">05 / MUQUN</p>
           <h2>{world.end}</h2>
           <div class="world-actions">
             {appStoreAvailable && (
