@@ -1,27 +1,46 @@
 ---
 /**
- * The support page — every locale, one file, same arrangement as the product
+ * The user guide — every locale, one file, same arrangement as the themes
  * page beside it.
  *
- * This is reference material and not part of the pitch: someone arrives here
- * because something did not connect, so the network recommendation comes
- * before the checks — it is the answer to most of them — the checks come
- * before the apology, and the way to reach a person is at the top, where
- * someone who has already tried everything will look for it. Nothing on this
- * page asks for a token, a log or a pairing QR, and the last block says so.
+ * ── What this page is now ───────────────────────────────────────────────────
+ * It used to be four quick checks and a way to reach a person. It still is,
+ * at the bottom: nothing that was here has been dropped. What is new is
+ * everything above it — install, terminal, OpenCode, Gateway configuration,
+ * themes — because the app deep-links into this page. `#get-started`,
+ * `#terminal`, `#opencode`, `#gateway`, `#themes`, `#troubleshooting` and
+ * `#contact` are addresses a shipped binary holds. They are not free to
+ * rename, and a section that loses its id strands a link inside an app
+ * somebody already installed.
+ *
+ * ── Two copy sources, on purpose ────────────────────────────────────────────
+ * The guide's own copy is `i18n/user-guide.ts` and is English in every
+ * locale — it has not been translated yet, and says so there. The parts that
+ * were already translated keep coming from `i18n/muqun/*.ts` and stay
+ * translated: the heading, the lead, the quick checks, the network
+ * recommendation, the contact block and the safe-reporting notice. So a
+ * Japanese reader gets a Japanese page frame with an English manual inside
+ * it, rather than an English page.
  *
  * Bands, as on the product page: cream where Muqun speaks, recessed for the
- * parts that are procedure.
+ * parts that are procedure — the install, the configuration, the fixes.
  */
 import Layout from '@/layouts/Layout.astro';
 import Band from '@/components/Band.astro';
 import Button from '@/components/Button.astro';
+import CodeBlock from '@/components/CodeBlock.astro';
+import DeviceShot from '@/components/DeviceShot.astro';
 import Display from '@/components/Display.astro';
+import FactList from '@/components/FactList.astro';
 import Grid from '@/components/Grid.astro';
 import Prose from '@/components/Prose.astro';
 import SectionHeading from '@/components/SectionHeading.astro';
+import Step from '@/components/Step.astro';
+import Steps from '@/components/Steps.astro';
 import { getMuqunCopy } from '@/i18n/muqun';
-import { feedbackIssueUrl } from '@/lib/muqun-links';
+import { userGuide } from '@/i18n/user-guide';
+import { worldCopy } from '@/i18n/world';
+import { feedbackIssueUrl, supportEmail } from '@/lib/muqun-links';
 import { localizedPath, siteLocaleCodes, defaultLocale } from '@/lib/locales';
 
 export function getStaticPaths() {
@@ -38,9 +57,14 @@ export function getStaticPaths() {
  */
 const { locale } = Astro.props;
 const copy = getMuqunCopy(locale).support;
+const guide = userGuide[locale];
+
+/** The copy button's two words, translated, as the product page passes them. */
+const copyLabel = worldCopy[locale].copyLabel;
+const copiedLabel = getMuqunCopy(locale).hero.copiedLabel;
 
 const privacyPath = localizedPath('/privacy', locale);
-
+const themesPath = localizedPath('/themes', locale);
 ---
 
 <Layout lang={locale} title={copy.metaTitle} description={copy.metaDescription}>
@@ -56,28 +80,294 @@ const privacyPath = localizedPath('/privacy', locale);
     <div class="mq-support-actions">
       <Button href={feedbackIssueUrl} variant="primary" size="lg">{copy.issueCta}</Button>
     </div>
+
+    {/* The contents. Seven links, in the order the sections appear, and the
+        same seven ids the app deep-links to. */}
+    <nav class="mq-guide-toc" aria-label={guide.contentsLabel}>
+      <p class="mq-mono-label">{guide.contentsLabel}</p>
+      <ol>
+        {
+          guide.contents.map((item, index) => (
+            <li>
+              <a href={`#${item.id}`}>
+                <span class="mq-guide-toc__n" aria-hidden="true">
+                  {String(index + 1).padStart(2, '0')}
+                </span>
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ol>
+    </nav>
   </Band>
 
-  <Band tone="cream">
-    <SectionHeading title={copy.checksHeading} level={2} />
+  <Band tone="recessed" id="get-started">
+    <SectionHeading eyebrow={guide.getStarted.eyebrow} title={guide.getStarted.heading} level={2}>
+      {guide.getStarted.lead}
+    </SectionHeading>
 
-    <Grid min="24rem">
+    <Steps>
       {
-        copy.topics.map((topic) => (
+        guide.getStarted.steps.map((step) => (
+          <Step title={step.title}>
+            <Prose>{step.body}</Prose>
+            {step.code && (
+              <div class="mq-guide-step-code">
+                <CodeBlock
+                  copy
+                  wrap
+                  code={step.code}
+                  label={step.codeLabel}
+                  copyLabel={copyLabel}
+                  copiedLabel={copiedLabel}
+                />
+              </div>
+            )}
+          </Step>
+        ))
+      }
+    </Steps>
+
+    <div class="mq-guide-notes">
+      <Prose>{guide.getStarted.pairingNote}</Prose>
+      <Prose>{guide.getStarted.codeNote}</Prose>
+    </div>
+
+    <div class="mq-guide-facts">
+      <FactList items={guide.getStarted.requirements} caption="before you start" />
+    </div>
+
+    {/* Already translated, and the answer to most of what follows, so it
+        stays where a reader meets it early. */}
+    <div class="mq-guide-network">
+      <h3 class="mq-subheading">{copy.networkHeading}</h3>
+      <Prose>{copy.networkBody}</Prose>
+    </div>
+  </Band>
+
+  <Band tone="cream" id="terminal">
+    <SectionHeading eyebrow={guide.terminal.eyebrow} title={guide.terminal.heading} level={2}>
+      {guide.terminal.lead}
+    </SectionHeading>
+
+    <div class="mq-guide-split">
+      <div>
+        <Grid min="20rem">
+          {
+            guide.terminal.entries.map((entry) => (
+              <article class="mq-stack">
+                <h3 class="mq-subheading">{entry.term}</h3>
+                <Prose>{entry.detail}</Prose>
+              </article>
+            ))
+          }
+        </Grid>
+        <div class="mq-guide-notes">
+          <Prose>{guide.terminal.note}</Prose>
+        </div>
+      </div>
+      <DeviceShot name="screen-terminal" alt={guide.terminal.shotAlt} width="14rem" raised />
+    </div>
+  </Band>
+
+  <Band tone="cream" tight id="opencode">
+    <SectionHeading eyebrow={guide.opencode.eyebrow} title={guide.opencode.heading} level={2}>
+      {guide.opencode.lead}
+    </SectionHeading>
+
+    <div class="mq-guide-claim">
+      <Prose>{guide.opencode.noSignIn}</Prose>
+    </div>
+
+    <div class="mq-guide-facts">
+      <h3 class="mq-subheading">{guide.opencode.prerequisitesHeading}</h3>
+      <FactList items={guide.opencode.prerequisites} />
+    </div>
+
+    <Grid min="20rem">
+      {
+        guide.opencode.entries.map((entry) => (
           <article class="mq-stack">
-            <h3 class="mq-subheading">{topic.title}</h3>
-            <Prose>{topic.body}</Prose>
+            <h3 class="mq-subheading">{entry.term}</h3>
+            <Prose>{entry.detail}</Prose>
           </article>
         ))
       }
     </Grid>
+
+    <div class="mq-guide-notes">
+      <Prose>{guide.opencode.note}</Prose>
+    </div>
   </Band>
 
-  <Band tone="recessed" tight>
-    <SectionHeading title={copy.safetyHeading} level={2} />
-    <Prose>{copy.safetyBody}</Prose>
-    <div class="mq-support-link">
-      <Button href={privacyPath} variant="quiet" arrow>{copy.safetyLink}</Button>
+  <Band tone="recessed" id="gateway">
+    <SectionHeading eyebrow={guide.gateway.eyebrow} title={guide.gateway.heading} level={2}>
+      {guide.gateway.lead}
+    </SectionHeading>
+
+    <div class="mq-stack">
+      <h3 class="mq-subheading">{guide.gateway.configHeading}</h3>
+      <Prose>{guide.gateway.configBody}</Prose>
+      <CodeBlock
+        copy
+        wrap
+        code={guide.gateway.configPath}
+        label={guide.gateway.configPathLabel}
+        copyLabel={copyLabel}
+        copiedLabel={copiedLabel}
+      />
+    </div>
+
+    {/* The key names are facts and case-sensitive, so they are `mq-mono` and
+        never `mq-mono-label`: that class uppercases, and an uppercased
+        `opencode.autostart` is a key that does not exist. */}
+    <div class="mq-guide-keys">
+      {
+        guide.gateway.configKeys.map((entry) => (
+          <article class="mq-guide-key">
+            <h4 class="mq-mono">{entry.term}</h4>
+            <Prose size="small">{entry.detail}</Prose>
+          </article>
+        ))
+      }
+    </div>
+
+    <Grid min="22rem">
+      <article class="mq-stack">
+        <h3 class="mq-subheading">{guide.gateway.portsHeading}</h3>
+        <Prose>{guide.gateway.portsBody}</Prose>
+      </article>
+      <article class="mq-stack">
+        <h3 class="mq-subheading">{guide.gateway.modesHeading}</h3>
+        <Prose>{guide.gateway.modesBody}</Prose>
+      </article>
+      <article class="mq-stack">
+        <h3 class="mq-subheading">{guide.gateway.autostartHeading}</h3>
+        <Prose>{guide.gateway.autostartBody}</Prose>
+      </article>
+      <article class="mq-stack">
+        <h3 class="mq-subheading">{guide.gateway.capabilitiesHeading}</h3>
+        <Prose>{guide.gateway.capabilitiesBody}</Prose>
+      </article>
+      <article class="mq-stack">
+        <h3 class="mq-subheading">{guide.gateway.upgradeHeading}</h3>
+        <Prose>{guide.gateway.upgradeBody}</Prose>
+      </article>
+    </Grid>
+
+    <div class="mq-stack mq-guide-manager">
+      <h3 class="mq-subheading">{guide.gateway.managerHeading}</h3>
+      <Prose>{guide.gateway.managerBody}</Prose>
+      <div class="mq-guide-keys">
+        {
+          guide.gateway.managerKeys.map((entry) => (
+            <article class="mq-guide-key">
+              <h4 class="mq-mono">{entry.term}</h4>
+              <Prose size="small">{entry.detail}</Prose>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="mq-stack mq-guide-manager">
+      <h3 class="mq-subheading">{guide.gateway.logsHeading}</h3>
+      <Prose>{guide.gateway.logsBody}</Prose>
+      <CodeBlock
+        copy
+        wrap
+        code={guide.gateway.logsCommand}
+        label={guide.gateway.logsCommandLabel}
+        copyLabel={copyLabel}
+        copiedLabel={copiedLabel}
+      />
+    </div>
+  </Band>
+
+  <Band tone="cream" id="themes">
+    <SectionHeading eyebrow={guide.themes.eyebrow} title={guide.themes.heading} level={2}>
+      {guide.themes.lead}
+    </SectionHeading>
+
+    <div class="mq-guide-split">
+      <div>
+        <Grid min="20rem">
+          {
+            guide.themes.entries.map((entry) => (
+              <article class="mq-stack">
+                <h3 class="mq-subheading">{entry.term}</h3>
+                <Prose>{entry.detail}</Prose>
+              </article>
+            ))
+          }
+        </Grid>
+        <div class="mq-support-link">
+          <Button href={themesPath} variant="quiet" arrow>{guide.themes.galleryLink}</Button>
+        </div>
+      </div>
+      <DeviceShot name="theme-tokyo-night" alt={guide.themes.shotAlt} width="14rem" raised />
+    </div>
+  </Band>
+
+  <Band tone="recessed" id="troubleshooting">
+    <SectionHeading
+      eyebrow={guide.troubleshooting.eyebrow}
+      title={guide.troubleshooting.heading}
+      level={2}
+    >
+      {guide.troubleshooting.lead}
+    </SectionHeading>
+
+    <Grid min="20rem">
+      {
+        guide.troubleshooting.entries.map((entry) => (
+          <article class="mq-stack">
+            <h3 class="mq-subheading">{entry.term}</h3>
+            <Prose>{entry.detail}</Prose>
+          </article>
+        ))
+      }
+    </Grid>
+
+    {/* The four checks this page opened with before it was a guide. Already
+        translated, still the shortest answer to the four commonest
+        questions, so they are kept as they were. */}
+    <div class="mq-guide-checks">
+      <h3 class="mq-subheading">{copy.checksHeading}</h3>
+      <Grid min="24rem">
+        {
+          copy.topics.map((topic) => (
+            <article class="mq-stack">
+              <h4 class="mq-subheading">{topic.title}</h4>
+              <Prose>{topic.body}</Prose>
+            </article>
+          ))
+        }
+      </Grid>
+    </div>
+  </Band>
+
+  <Band tone="cream" tight id="contact">
+    <SectionHeading eyebrow={guide.contact.eyebrow} title={guide.contact.heading} level={2}>
+      {guide.contact.lead}
+    </SectionHeading>
+
+    <Prose>
+      {copy.contactBefore} <a href={`mailto:${supportEmail}`}>{supportEmail}</a>. {copy.contactAfter}
+    </Prose>
+
+    <div class="mq-support-actions">
+      <Button href={feedbackIssueUrl} variant="primary">{copy.issueCta}</Button>
+      <Button href={`mailto:${supportEmail}`} variant="secondary">{copy.emailCta}</Button>
+    </div>
+
+    <div class="mq-guide-safety">
+      <h3 class="mq-subheading">{copy.safetyHeading}</h3>
+      <Prose>{copy.safetyBody}</Prose>
+      <div class="mq-support-link">
+        <Button href={privacyPath} variant="quiet" arrow>{copy.safetyLink}</Button>
+      </div>
     </div>
   </Band>
 </Layout>
@@ -99,19 +389,131 @@ const privacyPath = localizedPath('/privacy', locale);
     margin-block: var(--mq-space-8) var(--mq-space-6);
   }
 
-  .mq-support-badge {
-    display: inline-flex;
-    margin-block-start: var(--mq-space-2);
-    align-items: center;
-    min-block-size: var(--mq-control-height-sm);
-    padding-inline: var(--mq-space-4);
-    border: 1px solid var(--mq-rule);
-    border-radius: var(--mq-radius-full);
-    font-size: var(--mq-size-small);
-    font-weight: var(--mq-weight-medium);
-  }
-
   .mq-support-link {
     margin-block-start: var(--mq-space-5);
+  }
+
+  /*
+   * The contents.
+   *
+   * Two columns from 640px so seven entries are one glance rather than one
+   * scroll, and the number is mono while the label is proportional — the
+   * same split the install steps on the product page use.
+   */
+  .mq-guide-toc {
+    margin-block-start: var(--mq-space-6);
+    padding-block-start: var(--mq-space-5);
+    border-block-start: 1px solid var(--mq-hairline);
+    max-inline-size: var(--mq-measure);
+  }
+
+  .mq-guide-toc ol {
+    display: grid;
+    gap: var(--mq-space-2);
+    margin-block-start: var(--mq-space-4);
+  }
+
+  @media (min-width: 640px) {
+    .mq-guide-toc ol {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--mq-space-2) var(--mq-space-6);
+    }
+  }
+
+  .mq-guide-toc a {
+    display: grid;
+    grid-template-columns: 2.25em minmax(0, 1fr);
+    align-items: baseline;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .mq-guide-toc a:hover,
+  .mq-guide-toc a:focus-visible {
+    color: var(--mq-text-accent);
+    text-decoration: underline;
+  }
+
+  .mq-guide-toc__n {
+    font-family: var(--mq-font-mono);
+    font-size: var(--mq-size-mono-sm);
+    color: var(--mq-text-muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .mq-guide-step-code {
+    margin-block-start: var(--mq-space-4);
+  }
+
+  .mq-guide-notes,
+  .mq-guide-facts,
+  .mq-guide-network,
+  .mq-guide-checks,
+  .mq-guide-safety,
+  .mq-guide-manager {
+    margin-block-start: var(--mq-space-10);
+  }
+
+  .mq-guide-notes > * + * {
+    margin-block-start: var(--mq-space-3);
+  }
+
+  .mq-guide-checks > *:first-child,
+  .mq-guide-safety > *:first-child,
+  .mq-guide-network > *:first-child,
+  .mq-guide-facts > *:first-child {
+    margin-block-end: var(--mq-space-4);
+  }
+
+  /*
+   * The one claim on this page that a reader might not believe, so it is the
+   * one block with an edge around it.
+   */
+  .mq-guide-claim {
+    padding: var(--mq-space-5);
+    border: 1px solid var(--mq-rule);
+    border-radius: var(--mq-radius-md);
+    margin-block-end: var(--mq-space-10);
+  }
+
+  /* A key and its sentence. Denser than a `Grid` of articles because the
+     term is three words of mono, not a heading. */
+  .mq-guide-keys {
+    display: grid;
+    gap: 0;
+    margin-block-start: var(--mq-space-6);
+  }
+
+  .mq-guide-key {
+    display: grid;
+    gap: var(--mq-space-1) var(--mq-space-5);
+    padding-block: var(--mq-space-4);
+    border-block-end: 1px solid var(--mq-hairline);
+  }
+
+  @media (min-width: 640px) {
+    .mq-guide-key {
+      grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+      align-items: baseline;
+    }
+  }
+
+  .mq-guide-key h4 {
+    color: var(--mq-text);
+    overflow-wrap: anywhere;
+  }
+
+  /* The capture sits beside the words from 900px and under them below it.
+     `start` so a 1435px-tall phone does not stretch the text column. */
+  .mq-guide-split {
+    display: grid;
+    gap: var(--mq-space-10);
+    align-items: start;
+  }
+
+  @media (min-width: 900px) {
+    .mq-guide-split {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
   }
 </style>
