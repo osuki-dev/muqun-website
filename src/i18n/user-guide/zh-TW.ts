@@ -3,11 +3,11 @@ import type { UserGuide } from './types';
 export const zhTW: UserGuide = {
   metaTitle: '牧群 使用者指南與參考手冊',
   metaDescription:
-    '安裝 Gateway、手機配對、工作區管理、終端機按鍵列、OpenCode 自主代理、主題客製化及連線疑難排解的完整手冊。',
+    '安裝 Gateway、手機配對、工作区管理、終端機按鍵列、OpenCode 自主 AI 助手、主題客製化及連線疑難排解的完整手冊。',
   hero: {
     badge: '使用者指南 · 參考手冊',
     heading: '觸手可及，掌控你的每一台電腦。',
-    lead: '牧群將手機與你自己的電腦或伺服器直接相連。了解如何安裝與設定 Gateway、切換終端機工作區、操控 OpenCode 自主代理、安裝主題並排解連線問題。',
+    lead: '牧群將手機與你自己的電腦或伺服器直接相連。了解如何安裝與設定 Gateway、切換終端機工作區、操控 OpenCode 自主 AI 助手、安裝主題並排解連線問題。',
     startCta: '開始使用 ↓',
     diagnosticsCta: '問題排解 ↓',
     issueCta: '回報問題',
@@ -28,9 +28,9 @@ export const zhTW: UserGuide = {
     },
     {
       id: 'opencode',
-      label: 'OpenCode 代理',
-      meta: '自主代理',
-      desc: '本機 Agent 服務、模型切換、內嵌 Diff 工具呼叫與授權審批。',
+      label: 'OpenCode AI 助手',
+      meta: '自主 AI 助手',
+      desc: '本機服務、模型切換、內嵌 Diff 工具呼叫與授權審批。',
     },
     {
       id: 'gateway',
@@ -152,7 +152,7 @@ export const zhTW: UserGuide = {
       {
         term: 'rich_agent_pushes',
         detail:
-          '預設關閉。開啟後，代理的問題與選項會直接內嵌在推播通知內文中——這會讓終端機文字顯示在鎖定螢幕上並經過系統推播伺服器，因此預設關閉。',
+          '預設關閉。開啟後，AI 助手的問題與選項會直接內嵌在推播通知內文中——這會讓終端機文字顯示在鎖定螢幕上並經過系統推播伺服器，因此預設關閉。',
       },
       {
         term: 'opencode.autostart',
@@ -206,14 +206,14 @@ export const zhTW: UserGuide = {
     ],
     modesNote:
       'Linux 下為 systemd 使用者單元，macOS 下為 LaunchAgent。絕不使用 root 權限，絕不超出使用者家目錄。',
-    autostartHeading: 'OpenCode 啟動機制',
+    autostartHeading: 'OpenCode AI 助手啟動機制',
     autostartSteps: [
       'Gateway 首先檢查是否存在已正常運作的 OpenCode 服務，讀取其發布在 ~/.local/state/opencode/service.json 中的位址。',
       '若已存在，則直接連結掛載，你原本執行的 opencode serve 工作階段得以完整保留。',
       '若未發現，Gateway 會自動執行 opencode serve --service 並進行監控。在執行過程中會持續監測狀態檔案，當 OpenCode 在新通訊埠重啟時能自動重新識別。',
     ],
     autostartNote:
-      '電腦上未安裝 OpenCode？Gateway 不會附加任何內容，僅手機端的 Agent 面板會顯示離線，終端機功能完全不受影響。',
+      '電腦上未安裝 OpenCode？Gateway 不會附加任何內容，僅手機端的 AI 助手 面板會顯示離線，終端機功能完全不受影響。',
     autostartOffLabel: 'config.json',
     autostartOff: '"opencode": { "autostart": false }',
     managerHeading: '配對管理員面板',
@@ -230,7 +230,7 @@ export const zhTW: UserGuide = {
     ],
     capabilitiesHeading: '舊版 Gateway 向後相容',
     capabilitiesBody:
-      '牧群 App 會主動向 Gateway 詢問其支援的功能特性，而非僅憑版本號猜測；缺少的功能會自動隱藏而非拋出錯誤。因此舊版 Gateway 依然可以作為出色的終端機使用：你只是暫時無法使用較新的功能面板，但連線絕不會中斷。代理協同工作（Agent collaboration）是唯一有額外後端要求的功能——該工作階段需要連線至 Herdr 0.9.0 或更新版本，tmux 工作階段暫不支援。缺少對應功能時，App 會明確指出需要升級哪個元件。',
+      '牧群 App 會主動向 Gateway 詢問其支援的功能特性，而非僅憑版本號猜測；缺少的功能會自動隱藏而非拋出錯誤。因此舊版 Gateway 依然可以作為出色的終端機使用：你只是暫時無法使用較新的功能面板，但連線絕不會中斷。AI 助手協同工作（Agent collaboration）是唯一有額外後端要求的功能——該工作階段需要連線至 Herdr 0.9.0 或更新版本，tmux 工作階段暫不支援。缺少對應功能時，App 會明確指出需要升級哪個元件。',
     upgradeHeading: '版本升級',
     upgradeBody:
       '再次執行相同的安裝指令即可完成升級。它會直接在原地替換執行檔，並完整保留你的伺服器身分金鑰、連線位址、設定檔以及手機配對關係。若先前安裝了系統服務，升級後請再執行一次 service install：服務單元包含子行程生命週期規則，重新整理才能避免 Gateway 重啟時意外連帶終止終端機工作階段。',
@@ -304,34 +304,34 @@ export const zhTW: UserGuide = {
 
   opencode: {
     eyebrow: 'opencode serve --service',
-    heading: 'OpenCode 自主代理。',
-    lead: '專為 OpenCode 打造的專屬畫面，而非侷促在終端機裡的簡單文字互動：自由切換工作階段、以視覺化卡片展示內嵌 Diff 的工具呼叫，代理提出的問題以互動表單呈現，輕點即可確認。',
+    heading: 'OpenCode 自主 AI 助手。',
+    lead: '專為 OpenCode 打造的專屬畫面，而非侷促在終端機裡的簡單文字互動：自由切換工作階段、以視覺化卡片展示內嵌 Diff 的工具呼叫，AI 助手提出的問題以互動表單呈現，輕點即可確認。',
     noSignInBadge: '本機執行階段 · 零帳號依賴',
     noSignInHeading: '你的電腦直接與模型服務商通訊。',
     noSignIn:
-      '全程無需登入。牧群不提供帳號體系，也不會向你索取 API 金鑰，因為與大模型通訊的不是手機 App，而是你自己電腦上的 OpenCode。你在電腦上設定好 Provider、模型、代理與技能，Gateway 絕不會轉傳任何憑證資料。',
+      '全程無需登入。牧群不提供帳號體系，也不會向你索取 API 金鑰，因為與大模型通訊的不是手機 App，而是你自己電腦上的 OpenCode。你在電腦上設定好 Provider、模型、AI 助手與技能，Gateway 絕不會轉傳任何憑證資料。',
     prerequisitesHeading: '使用先決條件',
     prerequisites: [
       '在執行 Gateway 的電腦上安裝 OpenCode 2.0.1 或更新版本。',
       '在 OpenCode 中至少設定好一個模型提供商。支援設定各類免費模型，模型選擇器內建「僅免費」過濾條件。',
       'OpenCode 服務正常運作。Gateway 預設會自動為你啟動該服務，也會自動連線你手動啟動的既有服務。',
-      'Gateway 版本足夠新並支援 Agent 介面。若版本過舊，OpenCode 按鈕會自動隱藏，終端機功能完全不受影響。',
+      'Gateway 版本足夠新並支援 AI 助手 介面。若版本過舊，OpenCode 按鈕會自動隱藏，終端機功能完全不受影響。',
     ],
     entries: [
       {
-        term: '工作階段與子代理',
+        term: '工作階段與子 AI 助手',
         detail:
-          '每個工作階段都是擁有獨立脈絡的對話，支援按工作區或全域匯總檢視。當任務產生子代理（Subagent）時，會以縮排卡片形式掛載在父對話下，複雜分工依然一清二楚。',
+          '每個工作階段都是擁有獨立脈絡的對話，支援按工作區或全域匯總檢視。當任務產生子 AI 助手（Subagent）時，會以縮排卡片形式掛載在父對話下，複雜分工依然一清二楚。',
       },
       {
         term: '工作區切換',
         detail:
-          '隨時切換代理的工作目錄，或手動輸入路徑開啟新工作區。選定工作區會直接還原其最近一次的對話，無需每次從頭開啟新對話。',
+          '隨時切換 AI 助手的工作目錄，或手動輸入路徑開啟新工作區。選定工作區會直接還原其最近一次的對話，無需每次從頭開啟新對話。',
       },
       {
-        term: '模型與代理角色',
+        term: '模型與 AI 助手角色',
         detail:
-          '「選擇模型」面板列出已設定服務商實際提供的可用模型清單，標示各模型脈絡視窗大小，並在免費模型上標註 Free 標記。「選擇代理」可在 Build、Plan、Explore 及電腦上自訂的 Agent 間快速切換。',
+          '「選擇模型」面板列出已設定服務商實際提供的可用模型清單，標示各模型脈絡視窗大小，並在免費模型上標註 Free 標記。「選擇 AI 助手」可在 Build、Plan、Explore 及電腦上自訂的 Agent 間快速切換。',
       },
       {
         term: '斜線指令與技能（Skills）',
@@ -346,7 +346,7 @@ export const zhTW: UserGuide = {
       {
         term: '權限確認與問題回覆',
         detail:
-          '當代理需要執行指令、修改檔案或讀取工作區外的檔案時，會彈出確認卡片展示路徑與細節，提供「允許」、「一律允許」與「拒絕」三個選項——與系統通知按鈕文字完全一致，在鎖定螢幕上即可直接審批。代理提問時會呈現為小表單供你填寫。亦可開啟「自動核准所有動作」以供觀察，但具破壞性的危險指令即便在此模式下依然會被強行攔截。',
+          '當 AI 助手需要執行指令、修改檔案或讀取工作區外的檔案時，會彈出確認卡片展示路徑與細節，提供「允許」、「一律允許」與「拒絕」三個選項——與系統通知按鈕文字完全一致，在鎖定螢幕上即可直接審批。AI 助手提問時會呈現為小表單供你填寫。亦可開啟「自動核准所有動作」以供觀察，但具破壞性的危險指令即便在此模式下依然會被強行攔截。',
       },
       {
         term: '背景工作與排隊執行',
@@ -425,7 +425,7 @@ export const zhTW: UserGuide = {
       {
         term: '親手製作一款主題',
         detail:
-          'App 內不設複雜的調色工具：主題是以工程化檔案形式編寫的。牧群提供專門的主題製作 Agent 技能，你只需向代理描述你想要的視覺風格（點選「建立牧群主題」快速動作即可啟動），代理便會自動產生設定檔、繪製素材並打包成可匯入的主題。',
+          'App 內不設複雜的調色工具：主題是以工程化檔案形式編寫的。牧群提供專門的主題製作 Agent 技能，你只需向 AI 助手描述你想要的視覺風格（點選「建立牧群主題」快速動作即可啟動），AI 助手便會自動產生設定檔、繪製素材並打包成可匯入的主題。',
       },
       {
         term: '發布至社群目錄',
@@ -472,7 +472,7 @@ export const zhTW: UserGuide = {
       {
         term: '無法完成配對',
         detail:
-          '提示「無法連線至閘道（Could not reach the gateway）」代表 QR 碼中編碼的位址在當前手機網路環境下無法連通。在電腦上執行 muqun-gateway status 查看狀態，確認手機足以連線到該位址——例如處於同一個 Wi-Fi，或更好的是同一個 tailnet。若 Gateway 僅繫結在本機回環位址（127.0.0.1），除本機外任何外部裝置均無法存取；可在管理員中按 u 發布真實區域網路 IP，或透過儲存的 SSH 主機進行通道配對。',
+          '提示「無法連線至閘道（Could not reach the gateway）」代表 QR 碼中編碼的位址在當前手機網路環境下無法連通。在電腦上執行 muqun-gateway status 查看狀態，確認手機足以連線到該位址——例如處於同一個 Wi-Fi，或更好的是同一個 tailnet。若 Gateway 僅繫結在本機回環位址（127.0.0.1），除本機外任何外部裝置均無法存取；可在管理員中按 u 發布真實區域網路 IP，或透過儲存的 SSH 主机進行通道配對。',
       },
       {
         term: '確認碼被拒絕或已過期',
@@ -492,7 +492,7 @@ export const zhTW: UserGuide = {
       {
         term: '找不到 OpenCode 服務',
         detail:
-          'Agent 畫面提示 OpenCode service offline，並提示你在電腦上執行 opencode serve --service。在電腦上執行該指令，然後點選手機上的「重新檢查」。若電腦上已經在執行但依然提示找不到，通常是因為 Gateway 偵測到的執行檔路徑與你手動執行的不同：在 config.json 中明確指定 opencode.binary 為完整絕對路徑後重新啟動 Gateway。',
+          'AI 助手畫面提示 OpenCode service offline，並提示你在電腦上執行 opencode serve --service。在電腦上執行該指令，然後點選手機上的「重新檢查」。若電腦上已經在執行但依然提示找不到，通常是因為 Gateway 偵測到的執行檔路徑與你手動執行的不同：在 config.json 中明確指定 opencode.binary 為完整絕對路徑後重新啟動 Gateway。',
       },
       {
         term: '模型顯示為灰色，或沒有免費模型',
@@ -500,7 +500,7 @@ export const zhTW: UserGuide = {
           '提示「需要在電腦端設定」代表該提供商尚未在 OpenCode 中完成設定——在電腦端完成設定後重新開啟選擇器即可。「此主機無可用免費模型」代表「僅免費」過濾條件篩除掉了所有模型，並非系統錯誤；關閉該篩選條件即可檢視服務商提供的全部模型。牧群會在畫面上顯示每次對話的預估費用，但自身絕不收取任何模型費用，也不干預你與服務商之間的通訊。',
       },
       {
-        term: '代理請求存取工作區以外的路徑',
+        term: 'AI 助手請求存取工作區以外的路徑',
         detail:
           '提示「讀取工作區外內容」或「寫入工作區外內容」正如其字面意義，彈出的卡片上會清晰標示涉及的具體絕對路徑。點選「允許」授權本次，「一律允許」記住該路徑，「拒絕」則攔截本次動作。安全機制正在發揮防護作用——審批前請務必仔細核對目標路徑。',
       },
@@ -512,7 +512,7 @@ export const zhTW: UserGuide = {
       {
         term: '部分功能提示需要更新 Gateway',
         detail:
-          '牧群會主動探測 Gateway 的功能支援集，舊版 Gateway 只是無法使用新功能，終端機核心連線完全不受影響。將工作指派給子代理這一功能額外需要工作階段後端為 Herdr 0.9.0 或更新版本（tmux 工作階段暫不支援），缺少時 App 會明確指出需要升級哪個元件。',
+          '牧群會主動探測 Gateway 的功能支援集，舊版 Gateway 只是無法使用新功能，終端機核心連線完全不受影響。將工作指派給子 AI 助手這一功能額外需要工作階段後端為 Herdr 0.9.0 或更新版本（tmux 工作階段暫不支援），缺少時 App 會明確指出需要升級哪個元件。',
       },
       {
         term: '電腦處於 Proxy 代理伺服器之後',

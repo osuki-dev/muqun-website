@@ -3,11 +3,11 @@ import type { UserGuide } from './types';
 export const zhCN: UserGuide = {
   metaTitle: '牧群 用户指南与参考手册',
   metaDescription:
-    '安装 Gateway、手机配对、工作区管理、终端按键行、OpenCode 自主智能体、主题定制及连接排错的完整指南。',
+    '安装 Gateway、手机配对、工作区管理、终端按键行、OpenCode 自主AI助手、主题定制及连接排错的完整指南。',
   hero: {
     badge: '用户指南 · 参考手册',
     heading: '触手可及，掌控你的每一台机器。',
-    lead: '牧群将手机与你自己的电脑或服务器直接相连。了解如何安装与配置 Gateway、管理终端工作区、驱动 OpenCode 自主智能体、安装主题并排查连接故障。',
+    lead: '牧群将手机与你自己的电脑或服务器直接相连。了解如何安装与配置 Gateway、管理终端工作区、驱动 OpenCode 自主AI助手、安装主题并排查连接故障。',
     startCta: '开始使用 ↓',
     diagnosticsCta: '故障排查 ↓',
     issueCta: '反馈问题',
@@ -28,9 +28,9 @@ export const zhCN: UserGuide = {
     },
     {
       id: 'opencode',
-      label: 'OpenCode 智能体',
-      meta: '自主智能体',
-      desc: '本地 Agent 服务、模型切换、内联 Diff 工具调用与授权审批。',
+      label: 'OpenCode AI助手',
+      meta: '自主AI助手',
+      desc: '本地服务、模型选择、带内联 Diff 的工具调用与权限确认表单。',
     },
     {
       id: 'gateway',
@@ -151,7 +151,7 @@ export const zhCN: UserGuide = {
       {
         term: 'rich_agent_pushes',
         detail:
-          '默认关闭。开启后，智能体的问题及选项会直接嵌入到通知消息体中——这意味着终端文本会显示在锁屏并经过系统推送服务器，因此默认关闭。',
+          '默认关闭。开启后，AI助手的问题及选项会直接嵌入到通知消息体中——这意味着终端文本会显示在锁屏并经过系统推送服务器，因此默认关闭。',
       },
       {
         term: 'opencode.autostart',
@@ -205,14 +205,14 @@ export const zhCN: UserGuide = {
     ],
     modesNote:
       'Linux 下为 systemd 用户单元，macOS 下为 LaunchAgent。绝不使用 root 权限，绝不超出用户主目录。',
-    autostartHeading: 'OpenCode 智能体拉起机制',
+    autostartHeading: 'OpenCode AI助手拉起机制',
     autostartSteps: [
       'Gateway 首先检查是否存在已健康运行的 OpenCode 服务，读取其发布在 ~/.local/state/opencode/service.json 中的地址。',
       '若已存在，则直接挂载附加，你原本运行的 opencode serve 会话得以完整保留。',
       '若未发现，Gateway 会自动执行 opencode serve --service 并加以监控。在运行过程中会持续监测状态文件，当 OpenCode 在新端口重启时能自动重新识别。',
     ],
     autostartNote:
-      '电脑上未安装 OpenCode？Gateway 不会附加任何内容，仅手机端的 Agent 面板会提示离线，终端功能完全不受任何影响。',
+      '电脑上未安装 OpenCode？Gateway 不会附加任何内容，仅手机端的 AI助手 面板会提示离线，终端功能完全不受任何影响。',
     autostartOffLabel: 'config.json',
     autostartOff: '"opencode": { "autostart": false }',
     managerHeading: '配对管理面板',
@@ -229,7 +229,7 @@ export const zhCN: UserGuide = {
     ],
     capabilitiesHeading: '旧版 Gateway 向上兼容',
     capabilitiesBody:
-      '牧群 App 会主动向 Gateway 询问其支持的能力特性，而非仅凭版本号猜测；缺少的能力会自动隐去而非抛出异常。因此旧版 Gateway 依然可以作为完美的终端使用：你只是暂时无法使用较新的特性面板，但连接绝不会中断。智能体协作（Agent collaboration）是唯一有额外后端要求的特性——该会话需要连接 Herdr 0.9.0 或更新版本，tmux 会话暂不支持。缺少对应能力时，App 会明确提示需要升级哪个组件。',
+      '牧群 App 会主动向 Gateway 询问其支持的能力特性，而非仅凭版本号猜测；缺少的能力会自动隐去而非抛出异常。因此旧版 Gateway 依然可以作为完美的终端使用：你只是暂时无法使用较新的特性面板，但连接绝不会中断。AI助手协作（Agent collaboration）是唯一有额外后端要求的特性——该会话需要连接 Herdr 0.9.0 或更新版本，tmux 会话暂不支持。缺少对应能力时，App 会明确提示需要升级哪个组件。',
     upgradeHeading: '版本升级',
     upgradeBody:
       '再次运行安装命令即可完成更新。它会直接原地替换二进制文件，并完整保留你的服务器身份密钥、连接地址、配置文件以及手机配对关系。若之前安装了系统服务，升级后请再执行一次 service install：服务单元包含子进程生命周期规则，重新刷新才能避免 Gateway 重启时意外连带终止终端会话。',
@@ -303,34 +303,34 @@ export const zhCN: UserGuide = {
 
   opencode: {
     eyebrow: 'opencode serve --service',
-    heading: 'OpenCode 自主智能体。',
-    lead: '专为 OpenCode 打造的专属界面，而非局促在终端里的简单字符交互：自由切换会话、以可视化卡片展示内联 Diff 的工具调用，智能体的问题以交互式表单呈现，轻轻一点即可确认。',
+    heading: 'OpenCode 自主AI助手。',
+    lead: '专为 OpenCode 打造的专属界面，而非局促在终端里的简单字符交互：自由切换会话、以可视化卡片展示内联 Diff 的工具调用，AI助手的问题以交互式表单呈现，轻轻一点即可确认。',
     noSignInBadge: '本地运行时 · 零账号依赖',
     noSignInHeading: '你的电脑直连模型服务商。',
     noSignIn:
-      '全程无需注册登录。牧群不提供账号体系，也不要求你填写 API 密钥，因为与大模型通信的不是手机 App，而是你自己电脑上的 OpenCode。你在电脑上配置好 Provider、模型、智能体与技能，Gateway 绝不会中转传递任何凭据数据。',
+      '全程无需注册登录。牧群不提供账号体系，也不要求你填写 API 密钥，因为与大模型通信的不是手机 App，而是你自己电脑上的 OpenCode。你在电脑上配置好 Provider、模型、AI助手与技能，Gateway 绝不会中转传递任何凭据数据。',
     prerequisitesHeading: '使用前提',
     prerequisites: [
       '在运行 Gateway 的电脑上安装 OpenCode 2.0.1 或更高版本。',
       '在 OpenCode 中至少配置好一个模型服务商。支持配置各类免费模型，模型选择器内置“仅免费”过滤筛选项。',
       'OpenCode 服务正常运行。Gateway 默认会自动为你拉起该服务，也会自动挂载你手动启动的现有服务。',
-      'Gateway 版本足够新并支持 Agent 界面。如果版本过旧，OpenCode 按钮会自动隐藏，终端功能完全不受影响。',
+      'Gateway 版本足够新并支持 AI助手 界面。如果版本过旧，OpenCode 按钮会自动隐藏，终端功能完全不受影响。',
     ],
     entries: [
       {
-        term: '会话与子智能体',
+        term: '会话与子AI助手',
         detail:
-          '每个会话都是拥有独立上下文的对话，支持按工作区或全局汇总展示。当一个任务衍生出子智能体（Subagent）时，会以缩进卡片形式挂载在父会话下，复杂分工脉络依然一目了然。',
+          '每个会话都是拥有独立上下文的对话，支持按工作区或全局汇总展示。当一个任务衍生出子AI助手（Subagent）时，会以缩进卡片形式挂载在父会话下，复杂分工脉络依然一目了然。',
       },
       {
         term: '工作区切换',
         detail:
-          '随时切换智能体的工作目录，或手动输入路径开辟新工作区。选定工作区会直接恢复其最近一次的会话，无需每次从头开新对话。',
+          '随时切换AI助手的工作目录，或手动输入路径开辟新工作区。选定工作区会直接恢复其最近一次的会话，无需每次从头开新对话。',
       },
       {
-        term: '模型与智能体身份',
+        term: '模型与AI助手身份',
         detail:
-          '“选择模型”面板列出已配置服务商实际提供的可用模型列表，标明各模型上下文窗口大小，并在免费模型上标注 Free 角标。“选择智能体”可在 Build、Plan、Explore 及电脑上配置的自定义 Agent 间快速切换。',
+          '“选择模型”面板列出已配置服务商实际提供的可用模型列表，标明各模型上下文窗口大小，并在免费模型上标注 Free 角标。“选择AI助手”可在 Build、Plan、Explore 及电脑上配置的自定义 Agent 间快速切换。',
       },
       {
         term: '斜杠命令与技能（Skills）',
@@ -345,7 +345,7 @@ export const zhCN: UserGuide = {
       {
         term: '权限确认与问题回答',
         detail:
-          '当智能体需要执行命令、修改文件或读取工作区外的文件时，会弹出确认卡片展示路径与细节，提供“允许”、“始终允许”与“拒绝”三个选项——与系统通知按钮文字完全一致，在锁屏界面即可直接审批。智能体提问时会呈现为小表单供你填写。也支持开启“自动批准所有操作”以供近距观察，但极具破坏性的危险命令即便在此模式下依然会被强行拦截。',
+          '当AI助手需要执行命令、修改文件或读取工作区外的文件时，会弹出确认卡片展示路径与细节，提供“允许”、“始终允许”与“拒绝”三个选项——与系统通知按钮文字完全一致，在锁屏界面即可直接审批。AI助手提问时会呈现为小表单供你填写。也支持开启“自动批准所有操作”以供近距观察，但极具破坏性的危险命令即便在此模式下依然会被强行拦截。',
       },
       {
         term: '后台任务与排队执行',
@@ -424,7 +424,7 @@ export const zhCN: UserGuide = {
       {
         term: '亲手制作一款主题',
         detail:
-          'App 内不设繁杂的调色器：主题是以工程化文件形式编写的。牧群提供专门的主题制作 Agent 技能，你只需向智能体描述你想要的视觉风格（点击“创建牧群主题”快捷指令即可唤起），智能体便会自动产出配置文件、绘制素材并打包成可导入的主题。',
+          'App 内不设繁杂的调色器：主题是以工程化文件形式编写的。牧群提供专门的主题制作 Agent 技能，你只需向AI助手描述你想要的视觉风格（点击“创建牧群主题”快捷指令即可唤起），AI助手便会自动产出配置文件、绘制素材并打包成可导入的主题。',
       },
       {
         term: '发布到社区目录',
@@ -491,7 +491,7 @@ export const zhCN: UserGuide = {
       {
         term: '未能找到 OpenCode 服务',
         detail:
-          'Agent 屏幕提示 OpenCode service offline，并提示你在电脑上运行 opencode serve --service。在电脑上执行该命令，然后点击手机上的“重新检查”。如果电脑上已经在运行但依然提示找不到，通常是因为 Gateway 探测到的二进制路径与你手动运行的不同：在 config.json 中显式指定 opencode.binary 为完整绝对路径后重启 Gateway。',
+          'AI助手界面提示 OpenCode service offline，并提示你在电脑上运行 opencode serve --service。在电脑上执行该命令，然后点击手机上的“重新检查”。如果电脑上已经在运行但依然提示找不到，通常是因为 Gateway 探测到的二进制路径与你手动运行的不同：在 config.json 中显式指定 opencode.binary 为完整绝对路径后重启 Gateway。',
       },
       {
         term: '模型显示为灰色，或没有免费模型',
@@ -499,7 +499,7 @@ export const zhCN: UserGuide = {
           '提示“需要在电脑端配置”意味着该服务商尚未在 OpenCode 中完成配置——在电脑端完成配置后重新打开选择器即可。“此主机无可用免费模型”说明“仅免费”过滤筛选项过滤掉了所有模型，并非系统故障；关闭该筛选项即可查看服务商提供的全部模型。牧群会在界面上展示每次会话的预估花销，但自身绝不收取任何模型费用，也不插手你与服务商之间的通信。',
       },
       {
-        term: '智能体请求访问工作区之外的路径',
+        term: 'AI助手请求访问工作区之外的路径',
         detail:
           '提示“读取工作区外内容”或“写入工作区外内容”正如其字面意思，弹出的卡片上会清晰标出涉及的具体绝对路径。点击“允许”授权本次，“始终允许”记住该路径，“拒绝”则拦截本次操作。安全防护机制正在尽职尽责——审批前请务必仔细核对目标路径。',
       },
@@ -511,7 +511,7 @@ export const zhCN: UserGuide = {
       {
         term: '部分特性提示需要更新 Gateway',
         detail:
-          '牧群会主动探测 Gateway 的功能支持集，旧版 Gateway 只是无法使用新特性，终端核心连接完全不受影响。将任务指派给子智能体这一特性额外需要会话后端为 Herdr 0.9.0 或更高版本（tmux 会话暂不支持），当缺少时 App 会明确指出需要升级哪个组件。',
+          '牧群会主动探测 Gateway 的功能支持集，旧版 Gateway 只是无法使用新特性，终端核心连接完全不受影响。将任务指派给子AI助手这一特性额外需要会话后端为 Herdr 0.9.0 或更高版本（tmux 会话暂不支持），当缺少时 App 会明确指出需要升级哪个组件。',
       },
       {
         term: '电脑处于代理服务器（Proxy）之后',

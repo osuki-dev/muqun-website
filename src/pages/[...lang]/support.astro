@@ -982,9 +982,10 @@ const sections: StatusLineItem[] = [
 
   .mq-guide-preflight__header {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     align-items: baseline;
-    gap: var(--mq-space-3);
+    gap: var(--mq-space-2);
     margin-block-end: var(--mq-space-4);
     padding-block-end: var(--mq-space-2);
     border-block-end: 1px solid var(--mq-hairline);
@@ -1165,8 +1166,10 @@ const sections: StatusLineItem[] = [
 
   .mq-guide-config-panel__header {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     align-items: baseline;
+    gap: var(--mq-space-2);
     margin-block-end: var(--mq-space-3);
   }
 
@@ -1417,4 +1420,119 @@ const sections: StatusLineItem[] = [
   .mq-guide-step-code {
     margin-block-start: var(--mq-space-3);
   }
+
+  /* =========================================================================
+     MOBILE RESPONSIVE ENHANCEMENTS
+     ========================================================================= */
+  @media (max-width: 899px) {
+    .mq-guide-split :global(.mq-shot-frame) {
+      margin-inline: auto;
+      max-inline-size: 100%;
+    }
+  }
+
+  @media (max-width: 540px) {
+    .mq-guide-hero__actions {
+      flex-direction: column;
+      align-items: stretch;
+      gap: var(--mq-space-2);
+    }
+
+    .mq-guide-hero__actions :global(.mq-button) {
+      inline-size: 100%;
+      justify-content: center;
+      min-block-size: 48px;
+    }
+
+    .mq-guide-pane-bar {
+      flex-wrap: wrap;
+      gap: var(--mq-space-2);
+      padding-block-end: var(--mq-space-2);
+    }
+
+    .mq-guide-pane-bar__tag {
+      font-size: var(--mq-size-mono-sm);
+    }
+
+    .mq-guide-pane-bar__rule {
+      min-inline-size: 8px;
+    }
+
+    .mq-guide-pane-bar__meta {
+      inline-size: 100%;
+      white-space: normal;
+      word-break: break-word;
+      font-size: var(--mq-size-mono-sm);
+      color: var(--mq-text-muted);
+      margin-block-start: 2px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .mq-mode-card__row {
+      grid-template-columns: 1fr;
+      gap: var(--mq-space-1);
+      padding-block: var(--mq-space-2);
+    }
+
+    .mq-manager-keymap__item {
+      grid-template-columns: 3.5em minmax(0, 1fr);
+      gap: var(--mq-space-2);
+      padding: var(--mq-space-3);
+    }
+
+    .mq-autostart-sequence__item {
+      grid-template-columns: 2em minmax(0, 1fr);
+      padding: var(--mq-space-3);
+    }
+
+    .mq-deck-card {
+      padding: var(--mq-space-4);
+      border-radius: var(--mq-radius-md);
+    }
+
+    .mq-guide-card {
+      padding: var(--mq-space-4);
+      border-radius: var(--mq-radius-md);
+    }
+
+    .mq-guide-preflight {
+      padding: var(--mq-space-4);
+      border-radius: var(--mq-radius-md);
+    }
+
+    .mq-guide-config-panel {
+      padding: var(--mq-space-4);
+      border-radius: var(--mq-radius-md);
+    }
+
+    .mq-mode-card {
+      padding: var(--mq-space-4);
+      border-radius: var(--mq-radius-md);
+    }
+
+    .mq-guide-contact-card {
+      padding: var(--mq-space-4);
+      border-radius: var(--mq-radius-md);
+    }
+
+    .mq-guide-safety-panel {
+      padding: var(--mq-space-4);
+      border-radius: var(--mq-radius-md);
+    }
+
+    .mq-guide-security-claim {
+      padding: var(--mq-space-4);
+      border-radius: var(--mq-radius-md);
+    }
+
+    .mq-guide-network-card {
+      padding: var(--mq-space-4);
+      border-radius: var(--mq-radius-md);
+    }
+  }
 </style>
+
+<script>
+  import '@/scripts/guide-motion';
+</script>
