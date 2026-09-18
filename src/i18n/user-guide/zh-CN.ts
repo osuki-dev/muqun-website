@@ -17,42 +17,49 @@ export const zhCN: UserGuide = {
     {
       id: 'get-started',
       label: '开始使用',
+      nav: '开始',
       meta: '操作步骤 · 约 5 分钟',
       desc: '安装 Gateway、选择启动模式、二维码配对及本地局域网连接。',
     },
     {
       id: 'terminal',
       label: '终端使用',
+      nav: '终端',
       meta: 'tmux · herdr',
       desc: '工作区、分组、面板、专为移动端设计的按键行与开发工具。',
     },
     {
       id: 'opencode',
       label: 'OpenCode AI助手',
+      nav: 'AI助手',
       meta: '自主AI助手',
       desc: '本地服务、模型选择、带内联 Diff 的工具调用与权限确认表单。',
     },
     {
       id: 'gateway',
       label: '配置 Gateway',
+      nav: '网关',
       meta: 'config.json 参考',
       desc: '配置参数字典、端口绑定、守护进程服务模式与管理器快捷键。',
     },
     {
       id: 'themes',
       label: '主题系统',
+      nav: '主题',
       meta: '内置 24 款主题包',
       desc: '视觉主题、.muqun-theme 包格式、背景透明度调节与主题制作。',
     },
     {
       id: 'troubleshooting',
       label: '故障排查',
+      nav: '排查',
       meta: '连接诊断与速查',
       desc: '快速检查清单、配对失败排查、验证码过期及常见故障解决方法。',
     },
     {
       id: 'contact',
       label: '联系与支持',
+      nav: '反馈',
       meta: 'github · issues',
       desc: 'Issue 提交清单、脱敏安全规范与隐私保障承诺。',
     },
@@ -512,11 +519,6 @@ export const zhCN: UserGuide = {
         term: '部分特性提示需要更新 Gateway',
         detail:
           '牧群会主动探测 Gateway 的功能支持集，旧版 Gateway 只是无法使用新特性，终端核心连接完全不受影响。将任务指派给子AI助手这一特性额外需要会话后端为 Herdr 0.9.0 或更高版本（tmux 会话暂不支持），当缺少时 App 会明确指出需要升级哪个组件。',
-      },
-      {
-        term: '电脑处于代理服务器（Proxy）之后',
-        detail:
-          '与大模型提供商通信的是你的电脑，因此如果电脑需要通过代理才能访问公网，必须在电脑端的 OpenCode 中妥善配置网络代理环境变量。牧群不会转发也不接触此类流量。',
       },
     ],
   },

@@ -10,6 +10,8 @@ export interface GuideAnchor {
   meta: string;
   /** Brief summary for chapter deck cards. */
   desc: string;
+  /** Short localized label for bottom statusline navigation. */
+  nav?: string;
 }
 
 /** One command, with the sentence that says when you would run it. */

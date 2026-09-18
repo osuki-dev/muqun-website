@@ -51,18 +51,15 @@ const privacyPath = localizedPath('/privacy', locale);
 const themesPath = localizedPath('/themes', locale);
 
 /**
- * Status line entries. Addressing the guide as a tmux session:
- * muqun  0:start  1:terminal  2:opencode  3:gateway  4:themes  5:debug  6:contact
+ * Localized status line entries mapped directly from the guide's chapter anchors:
+ * e.g., 0:开始  1:终端  2:AI助手  3:网关  4:主题  5:排查  6:反馈
  */
-const sections: StatusLineItem[] = [
-  { key: '0', id: 'get-started', label: 'start', srLabel: guide.getStarted.heading },
-  { key: '1', id: 'terminal', label: 'terminal', srLabel: guide.terminal.heading },
-  { key: '2', id: 'opencode', label: 'opencode', srLabel: guide.opencode.heading },
-  { key: '3', id: 'gateway', label: 'gateway', srLabel: guide.gateway.heading },
-  { key: '4', id: 'themes', label: 'themes', srLabel: guide.themes.heading },
-  { key: '5', id: 'troubleshooting', label: 'debug', srLabel: guide.troubleshooting.heading },
-  { key: '6', id: 'contact', label: 'contact', srLabel: guide.contact.heading },
-];
+const sections: StatusLineItem[] = guide.contents.map((item, index) => ({
+  key: String(index),
+  id: item.id,
+  label: item.nav ?? item.label,
+  srLabel: item.label,
+}));
 
 ---
 
