@@ -42,6 +42,7 @@ export function getStaticPaths() {
 
 const { locale } = Astro.props;
 const guide = userGuide[locale];
+const isZhCN = locale === 'zh-CN';
 
 const copyLabel = 'Copy';
 const copiedLabel = 'Copied';
@@ -68,7 +69,9 @@ const chapterMeta: Record<string, { key: string; meta: string; desc: string }> =
   'get-started': {
     key: '01',
     meta: 'procedure · ~5 min',
-    desc: 'Install the Gateway, choose start mode, QR pairing, and tailnet setup.',
+    desc: isZhCN
+      ? 'Install the Gateway, choose start mode, QR pairing, and local network setup.'
+      : 'Install the Gateway, choose start mode, QR pairing, and tailnet setup.',
   },
   'terminal': {
     key: '02',
@@ -278,13 +281,15 @@ const chapterMeta: Record<string, { key: string; meta: string; desc: string }> =
     </div>
 
     {/* Tailscale Private Network recommendation */}
-    <div class="mq-guide-network-card">
-      <div class="mq-guide-network-card__header">
-        <span class="mq-mono-label">{guide.getStarted.networkBadge}</span>
-        <h3 class="mq-subheading">{guide.getStarted.networkHeading}</h3>
+    {!isZhCN && guide.getStarted.networkHeading && (
+      <div class="mq-guide-network-card">
+        <div class="mq-guide-network-card__header">
+          <span class="mq-mono-label">{guide.getStarted.networkBadge}</span>
+          <h3 class="mq-subheading">{guide.getStarted.networkHeading}</h3>
+        </div>
+        <Prose>{guide.getStarted.networkBody}</Prose>
       </div>
-      <Prose>{guide.getStarted.networkBody}</Prose>
-    </div>
+    )}
   </Band>
 
   {/* =========================================================================

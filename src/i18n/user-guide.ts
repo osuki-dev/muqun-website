@@ -695,10 +695,54 @@ const en: UserGuide = {
   },
 };
 
+const zhCN: UserGuide = {
+  ...en,
+  getStarted: {
+    ...en.getStarted,
+    requirements: [
+      'macOS or Linux, on a computer you own. Windows is not supported yet.',
+      'tmux, or Herdr 0.7.5 or newer, already installed — the Gateway drives one of them rather than replacing it.',
+      'Both devices on the same private network (such as the same Wi-Fi or local network).',
+      'No account, no subscription, and no relay of ours in between.',
+    ],
+    networkBadge: '',
+    networkHeading: '',
+    networkBody: '',
+  },
+  gateway: {
+    ...en.gateway,
+    portsRows: [
+      { term: 'Default', detail: 'One TCP port, 23847.' },
+      { term: 'Change it', detail: 'muqun-gateway setup --port N, then restart it.' },
+      {
+        term: 'What it binds',
+        detail:
+          '127.0.0.1 when the address it publishes is a loopback one, 0.0.0.0 otherwise.',
+      },
+      {
+        term: 'Private network',
+        detail: 'On the same local network or private VPN, no router port forwarding is needed.',
+      },
+    ],
+  },
+  troubleshooting: {
+    ...en.troubleshooting,
+    entries: en.troubleshooting.entries.map((entry) =>
+      entry.term === 'It cannot pair'
+        ? {
+            ...entry,
+            detail:
+              'Could not reach the gateway means the address in the QR is not answering from where the phone is standing. Check muqun-gateway status on the computer, then check that the phone can reach that address at all — the same Wi-Fi or private network. A Gateway bound to loopback is not reachable from anything but its own machine; either publish a real address with u in the manager, or pair through a saved SSH host, which is exactly what that option is for.',
+          }
+        : entry,
+    ),
+  },
+};
+
 // TODO(i18n): English until translated
 export const userGuide: Record<SiteLocale, UserGuide> = {
   en,
-  'zh-CN': en,
+  'zh-CN': zhCN,
   'zh-TW': en,
   ja: en,
   ko: en,
