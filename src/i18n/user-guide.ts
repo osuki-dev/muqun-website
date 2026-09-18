@@ -36,14 +36,31 @@ export interface GuideAnchor {
   label: string;
 }
 
-/** A numbered thing to do, optionally with one command under it. */
+/** One command, with the sentence that says when you would run it. */
+export interface GuideCommand {
+  /** Literal, ASCII. Rendered verbatim in a `CodeBlock`. */
+  code: string;
+  /** Mono, ASCII. The caption above the command. */
+  label?: string;
+  /** Translated. What this one does, above the block. */
+  detail?: string;
+}
+
+/**
+ * A numbered thing to do.
+ *
+ * `commands` is a list rather than one command because step two is a choice
+ * between two ways of starting the Gateway, and a step that offers a choice
+ * has to show both of them at the same size -- one command block and a
+ * sentence pointing elsewhere is not a choice, it is a default with a
+ * footnote.
+ */
 export interface GuideStep {
   title: string;
   body: string;
-  /** Literal, ASCII. Rendered verbatim in a `CodeBlock`. */
-  code?: string;
-  /** Mono, ASCII. The caption above the command. */
-  codeLabel?: string;
+  commands?: readonly GuideCommand[];
+  /** One line under the commands. The "pick one" rule. */
+  note?: string;
 }
 
 /** A term and what it means. The config table and the troubleshooting list. */
@@ -102,11 +119,23 @@ export interface UserGuide {
     configPath: string;
     configKeys: readonly GuideEntry[];
     portsHeading: string;
-    portsBody: string;
+    /** A definition list, not a paragraph. One fact per row. */
+    portsRows: readonly GuideEntry[];
     modesHeading: string;
-    modesBody: string;
+    /** Two columns, compared row for row. `rows` are the same questions. */
+    modes: readonly {
+      title: string;
+      /** Mono, ASCII. */
+      label: string;
+      code: string;
+      rows: readonly GuideEntry[];
+    }[];
+    modesNote: string;
     autostartHeading: string;
-    autostartBody: string;
+    autostartSteps: readonly string[];
+    autostartNote: string;
+    autostartOffLabel: string;
+    autostartOff: string;
     managerHeading: string;
     managerBody: string;
     managerKeys: readonly GuideEntry[];
@@ -124,8 +153,6 @@ export interface UserGuide {
     eyebrow: string;
     heading: string;
     lead: string;
-    /** Translated. What is happening on the screen, not "a screenshot". */
-    shotAlt: string;
     entries: readonly GuideEntry[];
     galleryLink: string;
   };
@@ -141,6 +168,8 @@ export interface UserGuide {
     eyebrow: string;
     heading: string;
     lead: string;
+    /** What a useful report carries. One sentence. */
+    reportHint: string;
   };
 }
 
@@ -164,20 +193,31 @@ const en: UserGuide = {
       {
         title: 'Run the installer on your computer',
         body: 'It puts a single binary at ~/.local/bin/muqun-gateway, configures it, and opens the pairing screen on a first run. macOS and Linux; Windows is not supported yet.',
-        code: 'curl -fsSL https://muqun.dev/gateway.sh | sh',
-        codeLabel: 'install',
+        commands: [{ code: 'curl -fsSL https://muqun.dev/gateway.sh | sh', label: 'install' }],
       },
       {
-        title: 'Start it',
-        body: 'start runs the Gateway in the background and it keeps running after you close the terminal. status prints the address the app needs and whether the process is up. If you would rather have it come back after a reboot, install it as a service instead — see Configuring the Gateway below.',
-        code: 'muqun-gateway start',
-        codeLabel: 'start',
+        title: 'Start it, one of two ways',
+        body: 'Either you start it yourself, or you hand it to the machine to keep alive. Both leave you with a running Gateway; they differ in what happens when you reboot.',
+        commands: [
+          {
+            code: 'muqun-gateway start',
+            label: 'direct',
+            detail:
+              'Runs in the background, and keeps running after you close the terminal — until the machine restarts. muqun-gateway stop ends it.',
+          },
+          {
+            code: 'muqun-gateway service install',
+            label: 'service',
+            detail:
+              'Registers it with your own user’s init system — a systemd user unit on Linux, a LaunchAgent on macOS. It starts at login and comes back after a crash or a reboot. muqun-gateway service uninstall removes the registration and keeps your pairings.',
+          },
+        ],
+        note: 'Pick one, never both: with the service installed, stop is undone by the supervisor.',
       },
       {
         title: 'Open the pairing manager',
-        body: 'The manager is a full-screen panel in your terminal. It shows the QR code, what is running, and every device that currently holds a token. The installer opens it for you the first time; this is how you get back to it.',
-        code: 'muqun-gateway manage',
-        codeLabel: 'pair',
+        body: 'Either way of starting it, this is the next step. The manager is a full-screen panel in your terminal showing the QR code, what is running, and every device that currently holds a token. The installer opens it for you the first time; this is how you get back to it.',
+        commands: [{ code: 'muqun-gateway manage', label: 'pair' }],
       },
       {
         title: 'Scan, then type the code',
@@ -240,23 +280,65 @@ const en: UserGuide = {
       {
         term: 'opencode.autostart',
         detail:
-          'On by default. The Gateway starts OpenCode itself when it cannot find one already running.',
+          'On by default: the Gateway starts OpenCode itself when it cannot find one already running. Set "opencode": { "autostart": false } to leave that to you.',
       },
       {
         term: 'opencode.binary',
         detail:
-          'Which OpenCode to start. Absent means the one on your PATH. Set it when opencode is installed somewhere your login shell finds and a service does not.',
+          'Which OpenCode to start. Left out, the Gateway uses the OpenCode in ~/.opencode/bin, or the one on your PATH. Set it to pin a particular binary — the usual reason being a service that cannot see the PATH your login shell has.',
       },
     ],
     portsHeading: 'Ports',
-    portsBody:
-      'One TCP port, 23847 by default. Change it with setup --port and restart; the Gateway binds 127.0.0.1 when the address it publishes is a loopback address, and 0.0.0.0 otherwise. Nothing needs forwarding on your router if both devices are on a tailnet, which is the arrangement we recommend.',
-    modesHeading: 'Service mode, or start it yourself',
-    modesBody:
-      'Pick one. muqun-gateway start runs it in the background until the machine restarts, and stop ends it. service install registers it with your own user’s init system instead — a systemd user unit on Linux, a LaunchAgent on macOS — so it starts at login and comes back after a crash or a reboot. Nothing is installed as root and nothing lands outside your home directory. With the service installed, stop is undone immediately by the supervisor; service uninstall is how you stop it for good, and it leaves your pairings, devices and configuration untouched.',
+    portsRows: [
+      { term: 'Default', detail: 'One TCP port, 23847.' },
+      { term: 'Change it', detail: 'muqun-gateway setup --port N, then restart it.' },
+      {
+        term: 'What it binds',
+        detail:
+          '127.0.0.1 when the address it publishes is a loopback one, 0.0.0.0 otherwise.',
+      },
+      {
+        term: 'On a tailnet',
+        detail: 'Nothing to forward on your router, which is why we recommend one.',
+      },
+    ],
+    modesHeading: 'Two ways to keep it running',
+    modes: [
+      {
+        title: 'Start it yourself',
+        label: 'direct',
+        code: 'muqun-gateway start',
+        rows: [
+          { term: 'Starts', detail: 'When you run it.' },
+          { term: 'Stops', detail: 'muqun-gateway stop, or a reboot.' },
+          { term: 'Survives a reboot', detail: 'No.' },
+          { term: 'Undo', detail: 'Nothing to undo.' },
+        ],
+      },
+      {
+        title: 'As a service',
+        label: 'service',
+        code: 'muqun-gateway service install',
+        rows: [
+          { term: 'Starts', detail: 'At login, and again after a crash.' },
+          { term: 'Stops', detail: 'Only when you uninstall it.' },
+          { term: 'Survives a reboot', detail: 'Yes.' },
+          { term: 'Undo', detail: 'service uninstall. Pairings are kept.' },
+        ],
+      },
+    ],
+    modesNote:
+      'A systemd user unit on Linux, a LaunchAgent on macOS. Never root, never outside your home directory.',
     autostartHeading: 'How OpenCode gets started',
-    autostartBody:
-      'The Gateway looks for an OpenCode service already running and healthy, and if it finds one it simply attaches to it — your own opencode serve keeps its sessions. Otherwise it starts one itself, as opencode serve --service, and watches it. OpenCode publishes its address in ~/.local/state/opencode/service.json, which the Gateway re-reads as it goes, so an OpenCode that restarts on a new port is picked up again on its own. If OpenCode is not installed at all, nothing attaches and only the agent screen is affected: the terminal keeps working exactly as before.',
+    autostartSteps: [
+      'It looks for an OpenCode service already running and healthy, reading the address OpenCode publishes in ~/.local/state/opencode/service.json.',
+      'Found one? It attaches to that, and your own opencode serve keeps its sessions.',
+      'Otherwise it starts opencode serve --service itself and watches it. It re-reads that file as it goes, so an OpenCode that comes back on a new port is picked up again on its own.',
+    ],
+    autostartNote:
+      'No OpenCode on the machine? Nothing attaches, and only the agent screen notices — the terminal is unaffected.',
+    autostartOffLabel: 'config.json',
+    autostartOff: '"opencode": { "autostart": false }',
     managerHeading: 'The pairing manager',
     managerBody:
       'muqun-gateway manage opens it. It lists what is running and every device that holds a token, and these are its keys:',
@@ -297,7 +379,7 @@ const en: UserGuide = {
       {
         term: 'Moving between them',
         detail:
-          'Swipe the title pill at the top sideways to change workspace. Swipe across the terminal with two fingers to move between groups. The chips above the composer move between the terminals of the group you are in.',
+          'Swipe the title pill at the top sideways to change workspace. The chips above the composer move between the terminals of the group you are in. For anything further — another group, another workspace — open the panels sheet and pick the terminal you want.',
       },
       {
         term: 'What is running',
@@ -410,33 +492,71 @@ const en: UserGuide = {
     eyebrow: 'muqun.dev/themes',
     heading: 'Themes.',
     lead: 'A theme repaints the app and the terminal together, and every pack has a light half and a dark one. Twenty-four ship with the app; more live in the community catalogue.',
-    shotAlt:
-      'A session in the Tokyo Night pack: the app chrome and the terminal — a diff, a table and a pass mark — all carrying the same palette.',
     entries: [
       {
         term: 'The packs that ship',
         detail:
-          'Twenty-four, under Settings → Appearance → Theme, including Catppuccin, Gruvbox, Kanagawa, Rosé Pine, Tokyo Night and Everforest. Colour mode — System, Light or Dark — picks which half of the pack you see, not which pack it is.',
+          'Twenty-four, under Settings \u2192 Appearance \u2192 Theme, including Catppuccin, Gruvbox, Kanagawa, Ros\u00e9 Pine, Tokyo Night and Everforest. Colour mode \u2014 System, Light or Dark \u2014 picks which half of the pack you see, not which pack it is.',
       },
       {
         term: 'Browsing the catalogue',
         detail:
-          'Browse themes reads the catalogue published here on muqun.dev. Nothing downloads until you open a row, and opening one shows the whole app wearing it before you decide — the theme you are using does not change until you tap Apply theme.',
+          'Browse themes reads the catalogue published here on muqun.dev. Nothing downloads until you open a row, and the package size is on the row before you do.',
       },
       {
-        term: 'Installing one from elsewhere',
+        term: 'What a theme is, as a file',
         detail:
-          'Import a .muqun-theme file from Files, AirDrop or a share sheet, or import a link — a public theme URL, or a GitHub repository, optionally pinned to a branch or commit. Tapping a .muqun-theme path inside a terminal offers to preview it too. Everything is previewed before it is applied.',
+          'A .muqun-theme is a zip holding one theme.json and an assets folder of PNG, JPEG or WebP images \u2014 nothing else is allowed inside. A .muqun-theme.json is the same manifest without the images, for a theme that is only colours.',
       },
       {
-        term: 'Making your own',
+        term: 'What the manifest covers',
         detail:
-          'A theme is a file, not a form: a manifest naming the interface colours, all sixteen ANSI terminal colours, artwork for the app’s surfaces and up to three custom icons, packaged with its images. There is no colour editor inside the app. The app ships a skill for writing one, so you can describe the look you want to your agent and have it build the package.',
+          'Seventeen interface colours per mode; the terminal\u2019s background, foreground, cursor, link and selection plus all sixteen ANSI slots; artwork for eleven surfaces, from the shell background to the Home hero; up to three custom icons \u2014 back, send and attach; and a starting opacity for the interface and the terminal. A light half and a dark half are both required. No fonts, no SVG and no animation.',
+      },
+      {
+        term: 'Its limits',
+        detail:
+          'A manifest up to 256 KiB, up to 32 images at 8 MiB each, and 25 MiB for the packed theme.',
+      },
+      {
+        term: 'Installing one from a file',
+        detail:
+          'Open a .muqun-theme from Files, AirDrop or a share sheet and Muqun offers it, or use Import file in the theme sheet. A file that is not a theme is refused rather than half-applied.',
+      },
+      {
+        term: 'Installing one from a link',
+        detail:
+          'Import link takes a public theme URL, or a GitHub repository \u2014 the only repository host supported \u2014 where you can pin a branch or commit and name the theme file if it is not theme.json at the root. The review card names the host the images come from before anything downloads.',
+      },
+      {
+        term: 'Installing one from a terminal',
+        detail:
+          'Tap a .muqun-theme path in terminal output and a card offers to preview it: nothing is applied until you say so.',
+      },
+      {
+        term: 'Preview before apply',
+        detail:
+          'Every route ends the same way. The theme downloads, unpacks and prepares its images, then the whole app puts it on so you can look around. Your current theme is untouched until you tap Apply theme.',
       },
       {
         term: 'Background opacity',
         detail:
-          'A theme of your own can also set how much of the app background shows through the interface and behind terminal text, with a separate slider for each. Below the recommended floor the app warns you that text is no longer guaranteed to stay readable.',
+          'A theme of your own carries two sliders: Interface background opacity, which changes coloured backgrounds but not text, icons or artwork, and Terminal background opacity, which shows the app background behind terminal text. Both run the full range, and below the recommended floor the app warns that text is no longer guaranteed to stay readable rather than stopping you. Built-in packs do not have them.',
+      },
+      {
+        term: 'Making one',
+        detail:
+          'There is no colour editor in the app: a theme is authored as a file. Muqun ships a skill for writing one, so you can describe the look you want to your agent \u2014 the Create a Muqun theme quick action starts it \u2014 and get back a manifest, the artwork and a packed theme you can import.',
+      },
+      {
+        term: 'Publishing one',
+        detail:
+          'The catalogue is a repository that takes pull requests: open one with your src/<id> folder, and once it is merged CI packs it and it appears on muqun.dev within minutes. The toolchain scaffolds a theme and checks its contrast before you send it.',
+      },
+      {
+        term: 'Removing one',
+        detail:
+          'Remove it from its row in the theme list and confirm; it goes from this device. Settings \u2192 Storage has Remove unused themes for clearing out everything you are no longer wearing.',
       },
     ],
     galleryLink: 'Browse the theme catalogue',
@@ -470,7 +590,7 @@ const en: UserGuide = {
       {
         term: 'OpenCode is not found',
         detail:
-          'The agent screen says OpenCode service offline and tells you to run opencode serve --service on the host. Run it, then tap Check again. If it is already running and still not found, it is usually a service that cannot see your PATH: set opencode.binary in the Gateway configuration to the full path of the binary and restart the Gateway.',
+          'The agent screen says OpenCode service offline and tells you to run opencode serve --service on the host. Run it, then tap Check again. If it is already running and still not found, the Gateway is usually looking at a different binary from the one you started: set opencode.binary in config.json to the full path and restart the Gateway.',
       },
       {
         term: 'A model is greyed out, or there are no free ones',
@@ -501,9 +621,11 @@ const en: UserGuide = {
   },
 
   contact: {
-    eyebrow: 'hello@muqun.dev',
+    eyebrow: 'github · issues',
     heading: 'Still stuck?',
-    lead: 'Tell us what happened and we will work it out with you.',
+    lead: 'Open an issue. It is where the next version comes from, and it is read.',
+    reportHint:
+      'Include the app version, the Gateway version, and what you did just before it went wrong.',
   },
 };
 

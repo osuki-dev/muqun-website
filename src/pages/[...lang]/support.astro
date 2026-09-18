@@ -18,8 +18,8 @@
  * locale — it has not been translated yet, and says so there. The parts that
  * were already translated keep coming from `i18n/muqun/*.ts` and stay
  * translated: the heading, the lead, the quick checks, the network
- * recommendation, the contact block and the safe-reporting notice. So a
- * Japanese reader gets a Japanese page frame with an English manual inside
+ * recommendation, the issue-tracker button and the safe-reporting notice. So
+ * a Japanese reader gets a Japanese page frame with an English manual inside
  * it, rather than an English page.
  *
  * Bands, as on the product page: cream where Muqun speaks, recessed for the
@@ -40,7 +40,7 @@ import Steps from '@/components/Steps.astro';
 import { getMuqunCopy } from '@/i18n/muqun';
 import { userGuide } from '@/i18n/user-guide';
 import { worldCopy } from '@/i18n/world';
-import { feedbackIssueUrl, supportEmail } from '@/lib/muqun-links';
+import { feedbackIssueUrl } from '@/lib/muqun-links';
 import { localizedPath, siteLocaleCodes, defaultLocale } from '@/lib/locales';
 
 export function getStaticPaths() {
@@ -112,16 +112,22 @@ const themesPath = localizedPath('/themes', locale);
         guide.getStarted.steps.map((step) => (
           <Step title={step.title}>
             <Prose>{step.body}</Prose>
-            {step.code && (
+            {step.commands?.map((command) => (
               <div class="mq-guide-step-code">
+                {command.detail && <Prose size="small">{command.detail}</Prose>}
                 <CodeBlock
                   copy
                   wrap
-                  code={step.code}
-                  label={step.codeLabel}
+                  code={command.code}
+                  label={command.label}
                   copyLabel={copyLabel}
                   copiedLabel={copiedLabel}
                 />
+              </div>
+            ))}
+            {step.note && (
+              <div class="mq-guide-step-note">
+                <Prose size="small">{step.note}</Prose>
               </div>
             )}
           </Step>
@@ -233,19 +239,83 @@ const themesPath = localizedPath('/themes', locale);
       }
     </div>
 
+    {/* Ports: four facts, so four rows. As a paragraph this was five lines
+        of prose to answer "which port?". */}
+    <div class="mq-stack mq-guide-manager">
+      <h3 class="mq-subheading">{guide.gateway.portsHeading}</h3>
+      <div class="mq-guide-keys">
+        {
+          guide.gateway.portsRows.map((row) => (
+            <article class="mq-guide-key">
+              <h4>{row.term}</h4>
+              <Prose size="small">{row.detail}</Prose>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+
+    {/* The two ways to keep it running, side by side and answering the same
+        four questions. The choice is the information, so the layout is the
+        comparison rather than two paragraphs that have to be held in the
+        head at once. */}
+    <div class="mq-stack mq-guide-manager">
+      <h3 class="mq-subheading">{guide.gateway.modesHeading}</h3>
+      <Grid min="20rem">
+        {
+          guide.gateway.modes.map((mode) => (
+            <article class="mq-guide-mode">
+              <h4 class="mq-subheading">{mode.title}</h4>
+              <div class="mq-guide-keys">
+                {mode.rows.map((row) => (
+                  <article class="mq-guide-key mq-guide-key--tight">
+                    <h5>{row.term}</h5>
+                    <Prose size="small">{row.detail}</Prose>
+                  </article>
+                ))}
+              </div>
+              <CodeBlock
+                copy
+                wrap
+                code={mode.code}
+                label={mode.label}
+                copyLabel={copyLabel}
+                copiedLabel={copiedLabel}
+              />
+            </article>
+          ))
+        }
+      </Grid>
+      <Prose size="small">{guide.gateway.modesNote}</Prose>
+    </div>
+
+    {/* Three steps, because it is a sequence: look, attach, or start one. */}
+    <div class="mq-stack mq-guide-manager">
+      <h3 class="mq-subheading">{guide.gateway.autostartHeading}</h3>
+      <ol class="mq-guide-sequence">
+        {
+          guide.gateway.autostartSteps.map((step, index) => (
+            <li>
+              <span class="mq-guide-sequence__n" aria-hidden="true">
+                {String(index + 1).padStart(2, '0')}
+              </span>
+              <Prose size="small">{step}</Prose>
+            </li>
+          ))
+        }
+      </ol>
+      <Prose size="small">{guide.gateway.autostartNote}</Prose>
+      <CodeBlock
+        copy
+        wrap
+        code={guide.gateway.autostartOff}
+        label={guide.gateway.autostartOffLabel}
+        copyLabel={copyLabel}
+        copiedLabel={copiedLabel}
+      />
+    </div>
+
     <Grid min="22rem">
-      <article class="mq-stack">
-        <h3 class="mq-subheading">{guide.gateway.portsHeading}</h3>
-        <Prose>{guide.gateway.portsBody}</Prose>
-      </article>
-      <article class="mq-stack">
-        <h3 class="mq-subheading">{guide.gateway.modesHeading}</h3>
-        <Prose>{guide.gateway.modesBody}</Prose>
-      </article>
-      <article class="mq-stack">
-        <h3 class="mq-subheading">{guide.gateway.autostartHeading}</h3>
-        <Prose>{guide.gateway.autostartBody}</Prose>
-      </article>
       <article class="mq-stack">
         <h3 class="mq-subheading">{guide.gateway.capabilitiesHeading}</h3>
         <Prose>{guide.gateway.capabilitiesBody}</Prose>
@@ -290,23 +360,21 @@ const themesPath = localizedPath('/themes', locale);
       {guide.themes.lead}
     </SectionHeading>
 
-    <div class="mq-guide-split">
-      <div>
-        <Grid min="20rem">
-          {
-            guide.themes.entries.map((entry) => (
-              <article class="mq-stack">
-                <h3 class="mq-subheading">{entry.term}</h3>
-                <Prose>{entry.detail}</Prose>
-              </article>
-            ))
-          }
-        </Grid>
-        <div class="mq-support-link">
-          <Button href={themesPath} variant="quiet" arrow>{guide.themes.galleryLink}</Button>
-        </div>
-      </div>
-      <DeviceShot name="theme-tokyo-night" alt={guide.themes.shotAlt} width="14rem" raised />
+    {/* No capture here. The one that was is a Claude Code transcript that
+        happens to be wearing a theme pack, which illustrates the terminal
+        rather than themes; the entries take the full width instead. */}
+    <Grid min="20rem">
+      {
+        guide.themes.entries.map((entry) => (
+          <article class="mq-stack">
+            <h3 class="mq-subheading">{entry.term}</h3>
+            <Prose>{entry.detail}</Prose>
+          </article>
+        ))
+      }
+    </Grid>
+    <div class="mq-support-link">
+      <Button href={themesPath} variant="quiet" arrow>{guide.themes.galleryLink}</Button>
     </div>
   </Band>
 
@@ -353,13 +421,10 @@ const themesPath = localizedPath('/themes', locale);
       {guide.contact.lead}
     </SectionHeading>
 
-    <Prose>
-      {copy.contactBefore} <a href={`mailto:${supportEmail}`}>{supportEmail}</a>. {copy.contactAfter}
-    </Prose>
+    <Prose>{guide.contact.reportHint}</Prose>
 
     <div class="mq-support-actions">
       <Button href={feedbackIssueUrl} variant="primary">{copy.issueCta}</Button>
-      <Button href={`mailto:${supportEmail}`} variant="secondary">{copy.emailCta}</Button>
     </div>
 
     <div class="mq-guide-safety">
@@ -445,6 +510,60 @@ const themesPath = localizedPath('/themes', locale);
     margin-block-start: var(--mq-space-4);
   }
 
+  .mq-guide-step-code > :global(.mq-prose) {
+    margin-block-end: var(--mq-space-2);
+  }
+
+  .mq-guide-step-note {
+    margin-block-start: var(--mq-space-4);
+    padding-block-start: var(--mq-space-3);
+    border-block-start: 1px solid var(--mq-hairline);
+  }
+
+  /* One mode of the comparison: its four answers, then its command. */
+  .mq-guide-mode > * + * {
+    margin-block-start: var(--mq-space-4);
+  }
+
+  .mq-guide-key--tight {
+    padding-block: var(--mq-space-2);
+  }
+
+  @media (min-width: 640px) {
+    .mq-guide-key--tight {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    }
+  }
+
+  .mq-guide-key h5 {
+    font-weight: var(--mq-weight-medium);
+    color: var(--mq-text-muted);
+  }
+
+  /* A sequence, numbered, where the numbers carry the order and nothing
+     else needs to. */
+  .mq-guide-sequence {
+    display: grid;
+    gap: var(--mq-space-4);
+    /* Matches the definition lists either side of it, which set their own
+       top margin rather than relying on the stack gap. */
+    margin: var(--mq-space-6) 0 0;
+    max-inline-size: var(--mq-measure);
+  }
+
+  .mq-guide-sequence li {
+    display: grid;
+    grid-template-columns: 2.25em minmax(0, 1fr);
+    align-items: baseline;
+  }
+
+  .mq-guide-sequence__n {
+    font-family: var(--mq-font-mono);
+    font-size: var(--mq-size-mono-sm);
+    color: var(--mq-text-accent);
+    font-variant-numeric: tabular-nums;
+  }
+
   .mq-guide-notes,
   .mq-guide-facts,
   .mq-guide-network,
@@ -501,6 +620,18 @@ const themesPath = localizedPath('/themes', locale);
   .mq-guide-key h4 {
     color: var(--mq-text);
     overflow-wrap: anywhere;
+  }
+
+  /*
+   * `.mq-small` carries no measure of its own -- only `.mq-body` does -- so a
+   * definition list in a wide container was setting its answers at the full
+   * column width, which is well over 100 characters a line. The measure is
+   * the same one every other block of reading on this site obeys.
+   */
+  .mq-guide-key :global(.mq-prose),
+  .mq-guide-sequence :global(.mq-prose),
+  .mq-guide-step-code :global(.mq-prose) {
+    max-inline-size: var(--mq-measure);
   }
 
   /* The capture sits beside the words from 900px and under them below it.
