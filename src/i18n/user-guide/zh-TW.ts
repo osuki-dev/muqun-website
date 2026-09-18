@@ -449,7 +449,7 @@ export const zhTW: UserGuide = {
   },
 
   troubleshooting: {
-    eyebrow: 'when it does not connect',
+    eyebrow: '連線異常排解',
     heading: '疑難排解與速查。',
     lead: '絕大多數連線問題都可以歸納為四種原因之一：Gateway 未啟動、手機無法連線到位址、裝置配對權杖遺失，或電腦端的 OpenCode 服務未正常運作。',
     checksHeading: '快速檢查清單',

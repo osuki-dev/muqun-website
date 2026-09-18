@@ -30,6 +30,8 @@ import Step from '@/components/Step.astro';
 import Steps from '@/components/Steps.astro';
 import type { StatusLineItem } from '@/components/types';
 import { userGuide } from '@/i18n/user-guide';
+import { worldCopy } from '@/i18n/world';
+import { getMuqunCopy } from '@/i18n/muqun';
 import { feedbackIssueUrl } from '@/lib/muqun-links';
 import { localizedPath, siteLocaleCodes, defaultLocale } from '@/lib/locales';
 
@@ -44,15 +46,17 @@ const { locale } = Astro.props;
 const guide = userGuide[locale];
 const isZhCN = locale === 'zh-CN';
 
-const copyLabel = 'Copy';
-const copiedLabel = 'Copied';
+const muqun = getMuqunCopy(locale);
+const world = worldCopy[locale];
+const copyLabel = world?.copyLabel ?? 'Copy';
+const copiedLabel = muqun?.hero?.copiedLabel ?? 'Copied';
 
 const privacyPath = localizedPath('/privacy', locale);
 const themesPath = localizedPath('/themes', locale);
 
 /**
  * Localized status line entries mapped directly from the guide's chapter anchors:
- * e.g., 0:开始  1:终端  2:AI助手  3:网关  4:主题  5:排查  6:反馈
+ * e.g., 0:start  1:terminal  2:opencode  3:gateway  4:themes  5:debug  6:contact
  */
 const sections: StatusLineItem[] = guide.contents.map((item, index) => ({
   key: String(index),
@@ -130,7 +134,7 @@ const sections: StatusLineItem[] = guide.contents.map((item, index) => ({
       <span class="mq-guide-pane-bar__dot"></span>
       <span class="mq-guide-pane-bar__tag"><span class="mq-guide-pane-bar__num">01</span>:get-started</span>
       <span class="mq-guide-pane-bar__rule"></span>
-      <span class="mq-guide-pane-bar__meta">procedure · ~5 min</span>
+      <span class="mq-guide-pane-bar__meta">{guide.contents[0]?.meta}</span>
     </div>
 
     <SectionHeading eyebrow={guide.getStarted.eyebrow} title={guide.getStarted.heading} level={2}>
@@ -160,7 +164,7 @@ const sections: StatusLineItem[] = guide.contents.map((item, index) => ({
                   <div class="mq-start-option">
                     <div class="mq-start-option__header">
                       <span class="mq-mono-label mq-start-option__tag">OPTION A · DIRECT</span>
-                      <h4 class="mq-start-option__title">Background Process</h4>
+                      <h4 class="mq-start-option__title">{guide.gateway.modes[0]?.title ?? 'Background Process'}</h4>
                     </div>
                     <Prose size="small">{step.commands[0].detail}</Prose>
                     <CodeBlock
@@ -176,7 +180,7 @@ const sections: StatusLineItem[] = guide.contents.map((item, index) => ({
                   <div class="mq-start-option">
                     <div class="mq-start-option__header">
                       <span class="mq-mono-label mq-start-option__tag">OPTION B · SERVICE</span>
-                      <h4 class="mq-start-option__title">Supervisor / Login Daemon</h4>
+                      <h4 class="mq-start-option__title">{guide.gateway.modes[1]?.title ?? 'Supervisor / Login Daemon'}</h4>
                     </div>
                     <Prose size="small">{step.commands[1].detail}</Prose>
                     <CodeBlock
@@ -253,7 +257,7 @@ const sections: StatusLineItem[] = guide.contents.map((item, index) => ({
       <span class="mq-guide-pane-bar__dot"></span>
       <span class="mq-guide-pane-bar__tag"><span class="mq-guide-pane-bar__num">02</span>:terminal</span>
       <span class="mq-guide-pane-bar__rule"></span>
-      <span class="mq-guide-pane-bar__meta">workspace · group.panel</span>
+      <span class="mq-guide-pane-bar__meta">{guide.contents[1]?.meta}</span>
     </div>
 
     <SectionHeading eyebrow={guide.terminal.eyebrow} title={guide.terminal.heading} level={2}>
@@ -314,7 +318,7 @@ const sections: StatusLineItem[] = guide.contents.map((item, index) => ({
       <span class="mq-guide-pane-bar__dot"></span>
       <span class="mq-guide-pane-bar__tag"><span class="mq-guide-pane-bar__num">03</span>:opencode</span>
       <span class="mq-guide-pane-bar__rule"></span>
-      <span class="mq-guide-pane-bar__meta">autonomous agent</span>
+      <span class="mq-guide-pane-bar__meta">{guide.contents[2]?.meta}</span>
     </div>
 
     <SectionHeading eyebrow={guide.opencode.eyebrow} title={guide.opencode.heading} level={2}>
@@ -324,9 +328,9 @@ const sections: StatusLineItem[] = guide.contents.map((item, index) => ({
     {/* Zero-Account / Local Credential Security Guarantee */}
     <div class="mq-guide-security-claim">
       <div class="mq-guide-security-claim__badge">
-        <span class="mq-mono-label">LOCAL RUNTIME · ZERO ACCOUNT</span>
+        <span class="mq-mono-label">{guide.opencode.noSignInBadge}</span>
       </div>
-      <h3 class="mq-guide-security-claim__title">Your computer talks directly to your model provider.</h3>
+      <h3 class="mq-guide-security-claim__title">{guide.opencode.noSignInHeading}</h3>
       <Prose>{guide.opencode.noSignIn}</Prose>
     </div>
 
@@ -370,7 +374,7 @@ const sections: StatusLineItem[] = guide.contents.map((item, index) => ({
       <span class="mq-guide-pane-bar__dot"></span>
       <span class="mq-guide-pane-bar__tag"><span class="mq-guide-pane-bar__num">04</span>:gateway</span>
       <span class="mq-guide-pane-bar__rule"></span>
-      <span class="mq-guide-pane-bar__meta">config.json reference</span>
+      <span class="mq-guide-pane-bar__meta">{guide.contents[3]?.meta}</span>
     </div>
 
     <SectionHeading eyebrow={guide.gateway.eyebrow} title={guide.gateway.heading} level={2}>
@@ -573,7 +577,7 @@ const sections: StatusLineItem[] = guide.contents.map((item, index) => ({
       <span class="mq-guide-pane-bar__dot"></span>
       <span class="mq-guide-pane-bar__tag"><span class="mq-guide-pane-bar__num">05</span>:themes</span>
       <span class="mq-guide-pane-bar__rule"></span>
-      <span class="mq-guide-pane-bar__meta">24 bundled packs</span>
+      <span class="mq-guide-pane-bar__meta">{guide.contents[4]?.meta}</span>
     </div>
 
     <SectionHeading eyebrow={guide.themes.eyebrow} title={guide.themes.heading} level={2}>
@@ -604,7 +608,7 @@ const sections: StatusLineItem[] = guide.contents.map((item, index) => ({
       <span class="mq-guide-pane-bar__dot"></span>
       <span class="mq-guide-pane-bar__tag"><span class="mq-guide-pane-bar__num">06</span>:troubleshooting</span>
       <span class="mq-guide-pane-bar__rule"></span>
-      <span class="mq-guide-pane-bar__meta">diagnostics & checks</span>
+      <span class="mq-guide-pane-bar__meta">{guide.contents[5]?.meta}</span>
     </div>
 
     <SectionHeading
@@ -658,7 +662,7 @@ const sections: StatusLineItem[] = guide.contents.map((item, index) => ({
       <span class="mq-guide-pane-bar__dot"></span>
       <span class="mq-guide-pane-bar__tag"><span class="mq-guide-pane-bar__num">07</span>:contact</span>
       <span class="mq-guide-pane-bar__rule"></span>
-      <span class="mq-guide-pane-bar__meta">github · issues</span>
+      <span class="mq-guide-pane-bar__meta">{guide.contents[6]?.meta}</span>
     </div>
 
     <SectionHeading eyebrow={guide.contact.eyebrow} title={guide.contact.heading} level={2}>
