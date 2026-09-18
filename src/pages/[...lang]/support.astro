@@ -29,9 +29,7 @@ import SectionHeading from '@/components/SectionHeading.astro';
 import Step from '@/components/Step.astro';
 import Steps from '@/components/Steps.astro';
 import type { StatusLineItem } from '@/components/types';
-import { getMuqunCopy } from '@/i18n/muqun';
 import { userGuide } from '@/i18n/user-guide';
-import { worldCopy } from '@/i18n/world';
 import { feedbackIssueUrl } from '@/lib/muqun-links';
 import { localizedPath, siteLocaleCodes, defaultLocale } from '@/lib/locales';
 
@@ -43,11 +41,10 @@ export function getStaticPaths() {
 }
 
 const { locale } = Astro.props;
-const copy = getMuqunCopy(locale).support;
 const guide = userGuide[locale];
 
-const copyLabel = worldCopy[locale].copyLabel;
-const copiedLabel = getMuqunCopy(locale).hero.copiedLabel;
+const copyLabel = 'Copy';
+const copiedLabel = 'Copied';
 
 const privacyPath = localizedPath('/privacy', locale);
 const themesPath = localizedPath('/themes', locale);
@@ -108,8 +105,8 @@ const chapterMeta: Record<string, { key: string; meta: string; desc: string }> =
 
 <Layout
   lang={locale}
-  title={copy.metaTitle}
-  description={copy.metaDescription}
+  title={guide.metaTitle}
+  description={guide.metaDescription}
   sections={sections}
   version="1.3.0"
 >
@@ -120,21 +117,21 @@ const chapterMeta: Record<string, { key: string; meta: string; desc: string }> =
     <div class="mq-guide-hero">
       <div class="mq-guide-badge">
         <span class="mq-guide-badge__pulse" aria-hidden="true"></span>
-        <span class="mq-mono-label">{copy.eyebrow} · MANUAL</span>
+        <span class="mq-mono-label">{guide.hero.badge}</span>
       </div>
 
       <Display level={1} size="display-sm" class="mq-guide-hero__title">
-        {copy.heading}
+        {guide.hero.heading}
       </Display>
 
       <div class="mq-guide-hero__lead">
-        <Prose size="lead">{copy.lead}</Prose>
+        <Prose size="lead">{guide.hero.lead}</Prose>
       </div>
 
       <div class="mq-guide-hero__actions">
-        <Button href="#get-started" variant="primary" size="lg">Get started ↓</Button>
-        <Button href="#troubleshooting" variant="secondary" size="lg">Diagnostics ↓</Button>
-        <Button href={feedbackIssueUrl} variant="quiet" size="lg">{copy.issueCta} ↗</Button>
+        <Button href="#get-started" variant="primary" size="lg">{guide.hero.startCta}</Button>
+        <Button href="#troubleshooting" variant="secondary" size="lg">{guide.hero.diagnosticsCta}</Button>
+        <Button href={feedbackIssueUrl} variant="quiet" size="lg">{guide.hero.issueCta} ↗</Button>
       </div>
 
       {/* The Chapter Deck: fast tactile wayfinding into all 7 deep-linked sections */}
@@ -283,10 +280,10 @@ const chapterMeta: Record<string, { key: string; meta: string; desc: string }> =
     {/* Tailscale Private Network recommendation */}
     <div class="mq-guide-network-card">
       <div class="mq-guide-network-card__header">
-        <span class="mq-mono-label">{copy.networkBadge ?? 'RECOMMENDED NETWORK'}</span>
-        <h3 class="mq-subheading">{copy.networkHeading}</h3>
+        <span class="mq-mono-label">{guide.getStarted.networkBadge}</span>
+        <h3 class="mq-subheading">{guide.getStarted.networkHeading}</h3>
       </div>
-      <Prose>{copy.networkBody}</Prose>
+      <Prose>{guide.getStarted.networkBody}</Prose>
     </div>
   </Band>
 
@@ -663,14 +660,14 @@ const chapterMeta: Record<string, { key: string; meta: string; desc: string }> =
     {/* Part 1: Quick Checks (Commonest issues) */}
     <div class="mq-guide-section-block">
       <div class="mq-guide-group-title">
-        <span class="mq-mono-label">{copy.checksHeading.toUpperCase()}</span>
+        <span class="mq-mono-label">{guide.troubleshooting.checksHeading.toUpperCase()}</span>
       </div>
       <Grid min="20rem">
         {
-          copy.topics.map((topic) => (
+          guide.troubleshooting.checks.map((check) => (
             <article class="mq-guide-card mq-guide-card--highlight">
-              <h4 class="mq-guide-card__title">{topic.title}</h4>
-              <Prose size="small">{topic.body}</Prose>
+              <h4 class="mq-guide-card__title">{check.term}</h4>
+              <Prose size="small">{check.detail}</Prose>
             </article>
           ))
         }
@@ -718,7 +715,7 @@ const chapterMeta: Record<string, { key: string; meta: string; desc: string }> =
 
       <div class="mq-guide-contact-card__cta">
         <Button href={feedbackIssueUrl} variant="primary" size="lg">
-          {copy.issueCta} ↗
+          {guide.contact.issueCta} ↗
         </Button>
       </div>
     </div>
@@ -727,11 +724,11 @@ const chapterMeta: Record<string, { key: string; meta: string; desc: string }> =
     <div class="mq-guide-safety-panel">
       <div class="mq-guide-safety-panel__header">
         <span class="mq-mono-label">PRIVACY GUARANTEE</span>
-        <h3 class="mq-subheading">{copy.safetyHeading}</h3>
+        <h3 class="mq-subheading">{guide.contact.safetyHeading}</h3>
       </div>
-      <Prose>{copy.safetyBody}</Prose>
+      <Prose>{guide.contact.safetyBody}</Prose>
       <div class="mq-support-link">
-        <Button href={privacyPath} variant="quiet" arrow>{copy.safetyLink}</Button>
+        <Button href={privacyPath} variant="quiet" arrow>{guide.contact.safetyLink}</Button>
       </div>
     </div>
   </Band>

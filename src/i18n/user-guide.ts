@@ -71,6 +71,16 @@ export interface GuideEntry {
 }
 
 export interface UserGuide {
+  metaTitle: string;
+  metaDescription: string;
+  hero: {
+    badge: string;
+    heading: string;
+    lead: string;
+    startCta: string;
+    diagnosticsCta: string;
+    issueCta: string;
+  };
   /** Translated. The accessible name of the contents nav. */
   contentsLabel: string;
   /** The order the sections appear in, and the contents list. */
@@ -85,6 +95,9 @@ export interface UserGuide {
     requirements: readonly string[];
     pairingNote: string;
     codeNote: string;
+    networkBadge: string;
+    networkHeading: string;
+    networkBody: string;
   };
 
   terminal: {
@@ -101,6 +114,8 @@ export interface UserGuide {
     eyebrow: string;
     heading: string;
     lead: string;
+    noSignInBadge: string;
+    noSignInHeading: string;
     /** The one sentence this section exists to say. */
     noSignIn: string;
     prerequisitesHeading: string;
@@ -161,6 +176,8 @@ export interface UserGuide {
     eyebrow: string;
     heading: string;
     lead: string;
+    checksHeading: string;
+    checks: readonly GuideEntry[];
     entries: readonly GuideEntry[];
   };
 
@@ -170,10 +187,25 @@ export interface UserGuide {
     lead: string;
     /** What a useful report carries. One sentence. */
     reportHint: string;
+    issueCta: string;
+    safetyHeading: string;
+    safetyBody: string;
+    safetyLink: string;
   };
 }
 
 const en: UserGuide = {
+  metaTitle: 'Muqun User Guide & Reference',
+  metaDescription:
+    'Complete guide to installing the Gateway, pairing your phone, workspaces, terminal controls, OpenCode autonomous agent, themes, and troubleshooting.',
+  hero: {
+    badge: 'USER GUIDE · REFERENCE MANUAL',
+    heading: 'Everything you need to keep your machine in reach.',
+    lead: 'Muqun connects your phone directly to your own computer or server. Learn how to install and configure the Gateway, navigate terminal workspaces, drive the OpenCode autonomous agent, install themes, and troubleshoot connections.',
+    startCta: 'Get started ↓',
+    diagnosticsCta: 'Diagnostics ↓',
+    issueCta: 'Open an issue',
+  },
   contentsLabel: 'On this page',
   contents: [
     { id: 'get-started', label: 'Get started' },
@@ -234,6 +266,10 @@ const en: UserGuide = {
       'Cannot scan? Enter the Gateway address in the app by hand — the manager prints the address it is publishing — and then type the same short code.',
     codeNote:
       'The code is valid for five minutes and dies after eight wrong attempts. Press p in the manager to show a fresh QR code and a fresh code.',
+    networkBadge: 'RECOMMENDED PRIVATE NETWORK',
+    networkHeading: 'Use Tailscale on both devices.',
+    networkBody:
+      'We strongly recommend putting your phone and the Gateway computer on the same Tailscale tailnet. It avoids router port forwarding and keeps the Gateway off the public internet. Tailscale Serve can add a private HTTPS address; do not use Tailscale Funnel for Muqun.',
   },
 
   gateway: {
@@ -429,6 +465,8 @@ const en: UserGuide = {
     eyebrow: 'opencode serve --service',
     heading: 'The OpenCode agent.',
     lead: 'A screen built for OpenCode rather than a terminal with an agent in it: sessions you can switch between, tool calls as cards with the real diff inside them, and the agent’s questions arriving as something you answer with a tap.',
+    noSignInBadge: 'LOCAL RUNTIME · ZERO ACCOUNT',
+    noSignInHeading: 'Your computer talks directly to your model provider.',
     noSignIn:
       'There is no sign-in. Muqun has no account and asks for no API key, because it is not the thing talking to your model provider — OpenCode on your own computer is. You configure providers, models, agents and skills there, the way you already do, and the Gateway passes no credential route through at all.',
     prerequisitesHeading: 'What it needs',
@@ -566,6 +604,29 @@ const en: UserGuide = {
     eyebrow: 'when it does not connect',
     heading: 'When something does not work.',
     lead: 'Almost everything here is one of four things: the Gateway is not running, the phone cannot reach its address, the pairing is gone, or OpenCode is not up on the host.',
+    checksHeading: 'Quick checks',
+    checks: [
+      {
+        term: 'Pair a computer',
+        detail:
+          'Install the Gateway on a computer you own — it works with tmux or Herdr — open its manager panel, then scan the pairing QR in Muqun. The confirmation code shown on the computer finishes pairing.',
+      },
+      {
+        term: 'Fix a connection',
+        detail:
+          'Check that tmux, or Herdr 0.7.5 or later, and the latest Gateway are running. Confirm the phone and computer can reach the same private address, then reopen the server in Muqun.',
+      },
+      {
+        term: 'Remove a device',
+        detail:
+          'Delete a server from the Muqun home screen to revoke this phone from that Gateway. You can also revoke any paired device from the Gateway manager panel.',
+      },
+      {
+        term: 'Restore notifications',
+        detail:
+          'Enable notifications for Muqun in your phone’s system settings and in Muqun Settings. Reopen the paired server so Muqun can register the current device token with your Gateway.',
+      },
+    ],
     entries: [
       {
         term: 'It cannot pair',
@@ -626,6 +687,11 @@ const en: UserGuide = {
     lead: 'Open an issue. It is where the next version comes from, and it is read.',
     reportHint:
       'Include the app version, the Gateway version, and what you did just before it went wrong.',
+    issueCta: 'Open an issue on GitHub',
+    safetyHeading: 'Privacy and safe reporting',
+    safetyBody:
+      'Support never needs your access token, full terminal output, source code, or pairing QR. Remove secrets before attaching screenshots or logs.',
+    safetyLink: 'Read the privacy policy',
   },
 };
 
