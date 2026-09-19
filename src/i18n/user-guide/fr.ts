@@ -331,9 +331,9 @@ export const fr: UserGuide = {
           'Chaque session possède son propre contexte. Si une tâche délègue à des sous-agents, ils apparaissent en retrait sous la session principale pour une lecture claire.',
       },
       {
-        term: 'Espaces de travail',
+        term: 'Projets',
         detail:
-          'Changez le répertoire de travail de l’agent en un clin d’œil. Choisir un espace rouvre directement sa dernière session active.',
+          'Changez le répertoire de travail de l’agent en un clin d’œil. Choisir un projet rouvre directement sa dernière session active.',
       },
       {
         term: 'Modèles et profils d’agents',
@@ -368,7 +368,7 @@ export const fr: UserGuide = {
       {
         term: 'Annulation (Undo)',
         detail:
-          '/undo rétablit l’espace de travail à l’état précédant votre dernier message ; /redo annule l’opération. Conçu volontairement sous forme de commande pour éviter les fausses manipulations.',
+          '/undo rétablit le projet à l’état précédant votre dernier message ; /redo annule l’opération. Conçu volontairement sous forme de commande pour éviter les fausses manipulations.',
       },
     ],
     note: 'Les appels d’outils s’affichent sous forme de cartes avec diffs unifiés, exactement comme dans la vue Modifications.',
@@ -507,9 +507,9 @@ export const fr: UserGuide = {
           '« À configurer sur l’hôte » signifie que le fournisseur n’est pas paramétré dans OpenCode. Désactivez le filtre « Gratuit uniquement » si vous souhaitez afficher l’ensemble des modèles disponibles.',
       },
       {
-        term: 'L’agent veut sortir du workspace',
+        term: 'L’agent veut sortir du projet',
         detail:
-          'Les demandes de lecture ou d’écriture hors de l’espace de travail affichent le chemin cible exact. Vérifiez attentivement le chemin avant d’accorder l’autorisation.',
+          'Les demandes de lecture ou d’écriture hors du projet affichent le chemin cible exact. Vérifiez attentivement le chemin avant d’accorder l’autorisation.',
       },
       {
         term: 'Bouton Modifications absent',

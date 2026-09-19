@@ -328,12 +328,12 @@ export const vi: UserGuide = {
       {
         term: 'Phiên làm việc và subagent',
         detail:
-          'Mỗi phiên làm việc là một cuộc trò chuyện với ngữ cảnh riêng biệt, được liệt kê theo từng không gian làm việc hoặc trên toàn bộ hệ thống. Phiên làm việc khởi chạy subagent sẽ hiển thị thụt lề ngay bên dưới, giúp tác vụ phân nhánh vẫn dễ dàng theo dõi liền mạch.',
+          'Mỗi phiên làm việc là một cuộc trò chuyện với ngữ cảnh riêng biệt, được liệt kê theo từng dự án hoặc trên toàn bộ hệ thống. Phiên làm việc khởi chạy subagent sẽ hiển thị thụt lề ngay bên dưới, giúp tác vụ phân nhánh vẫn dễ dàng theo dõi liền mạch.',
       },
       {
-        term: 'Không gian làm việc (Workspaces)',
+        term: 'Dự án (Projects)',
         detail:
-          'Chuyển đổi thư mục làm việc của agent hoặc nhập đường dẫn để mở thư mục mới. Chọn một không gian làm việc sẽ mở lại phiên làm việc gần nhất của nó thay vì tạo mới từ đầu.',
+          'Chuyển đổi thư mục làm việc của agent hoặc nhập đường dẫn để mở thư mục mới. Chọn một dự án sẽ mở lại phiên làm việc gần nhất của nó thay vì tạo mới từ đầu.',
       },
       {
         term: 'Mô hình và agent',
@@ -348,12 +348,12 @@ export const vi: UserGuide = {
       {
         term: 'Tệp đính kèm và nhắc tệp (@mention)',
         detail:
-          'Gửi ảnh chụp, ảnh từ thư viện hoặc bất kỳ tệp tin nào. Hình ảnh được mã hóa lại trước khi gửi để loại bỏ dữ liệu EXIF riêng tư. Nhập @ để chỉ định agent xem tệp trong không gian làm việc thay vì phải mô tả dài dòng.',
+          'Gửi ảnh chụp, ảnh từ thư viện hoặc bất kỳ tệp tin nào. Hình ảnh được mã hóa lại trước khi gửi để loại bỏ dữ liệu EXIF riêng tư. Nhập @ để chỉ định agent xem tệp trong dự án thay vì phải mô tả dài dòng.',
       },
       {
         term: 'Cấp quyền và trả lời câu hỏi',
         detail:
-          'Khi agent muốn chạy lệnh, ghi tệp hoặc đọc ngoài không gian làm việc, thẻ thông báo sẽ nêu rõ chi tiết và bạn có thể chọn Cho phép (Allow), Luôn cho phép (Always allow) hoặc Từ chối (Deny) — ba lựa chọn tương tự xuất hiện trên thông báo đẩy để xử lý ngay từ màn hình khóa. Các câu hỏi agent đặt ra xuất hiện dưới dạng biểu mẫu nhỏ gọn để bạn điền câu trả lời. Có tùy chọn tự động duyệt mọi hành động khi bạn đang theo dõi trực tiếp; các lệnh mang tính phá hủy không thể hoàn tác vẫn luôn bị chặn để hỏi lại.',
+          'Khi agent muốn chạy lệnh, ghi tệp hoặc đọc ngoài dự án, thẻ thông báo sẽ nêu rõ chi tiết và bạn có thể chọn Cho phép (Allow), Luôn cho phép (Always allow) hoặc Từ chối (Deny) — ba lựa chọn tương tự xuất hiện trên thông báo đẩy để xử lý ngay từ màn hình khóa. Các câu hỏi agent đặt ra xuất hiện dưới dạng biểu mẫu nhỏ gọn để bạn điền câu trả lời. Có tùy chọn tự động duyệt mọi hành động khi bạn đang theo dõi trực tiếp; các lệnh mang tính phá hủy không thể hoàn tác vẫn luôn bị chặn để hỏi lại.',
       },
       {
         term: 'Tác vụ chạy nền và hàng đợi tin nhắn',
@@ -368,7 +368,7 @@ export const vi: UserGuide = {
       {
         term: 'Hoàn tác (Undo)',
         detail:
-          'Lệnh /undo hoàn tác không gian làm việc về trạng thái trước tin nhắn cuối cùng của bạn; /redo hủy bỏ thao tác hoàn tác nếu chưa có thay đổi mới. Đây là một lệnh gõ thay vì nút bấm, nhằm tránh thao tác ngoài ý muốn.',
+          'Lệnh /undo hoàn tác dự án về trạng thái trước tin nhắn cuối cùng của bạn; /redo hủy bỏ thao tác hoàn tác nếu chưa có thay đổi mới. Đây là một lệnh gõ thay vì nút bấm, nhằm tránh thao tác ngoài ý muốn.',
       },
     ],
     note: 'Các lệnh gọi công cụ hiển thị dưới dạng thẻ: thao tác chỉnh sửa hiển thị diff hợp nhất trực tiếp, tương tự như cách trình xem Thay đổi (Changes) hiển thị.',
@@ -507,9 +507,9 @@ export const vi: UserGuide = {
           'Trạng thái "Set up on the host" nghĩa là nhà cung cấp đó chưa được cấu hình trong OpenCode — hãy cấu hình trên máy tính và mở lại bộ chọn. Thông báo "No free models on this host" chỉ ra rằng bộ lọc Chỉ miễn phí không tìm thấy kết quả phù hợp chứ không phải lỗi; hãy tắt bộ lọc để xem toàn bộ mô hình được hỗ trợ. Muqun hiển thị chi phí ước tính theo phiên nhưng không thu bất kỳ khoản phí nào và không can thiệp giữa bạn và nhà cung cấp.',
       },
       {
-        term: 'Agent yêu cầu thao tác ngoài workspace',
+        term: 'Agent yêu cầu thao tác ngoài dự án',
         detail:
-          'Yêu cầu Đọc ngoài workspace và Ghi ngoài workspace đúng như tên gọi của chúng và đường dẫn tệp được hiển thị rõ trên thẻ. Cho phép (Allow) áp dụng một lần, Luôn cho phép (Always allow) ghi nhớ lựa chọn, Từ chối (Deny) sẽ ngăn chặn thao tác. Hộp thoại này thực hiện đúng vai trò bảo vệ — hãy đọc kỹ đường dẫn trước khi đưa ra quyết định.',
+          'Yêu cầu Đọc ngoài dự án và Ghi ngoài dự án đúng như tên gọi của chúng và đường dẫn tệp được hiển thị rõ trên thẻ. Cho phép (Allow) áp dụng một lần, Luôn cho phép (Always allow) ghi nhớ lựa chọn, Từ chối (Deny) sẽ ngăn chặn thao tác. Hộp thoại này thực hiện đúng vai trò bảo vệ — hãy đọc kỹ đường dẫn trước khi đưa ra quyết định.',
       },
       {
         term: 'Nút Thay đổi (Changes) không xuất hiện',

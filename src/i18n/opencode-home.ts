@@ -36,7 +36,7 @@ const en: OpencodeHome = {
   heading: 'Your OpenCode agent, on the phone.',
   body: 'Muqun has a screen built for OpenCode rather than a terminal with an agent in it. Sessions you can switch between, tool calls you can actually read, and the moment it stops to ask you something arriving as a tap rather than a cursor blinking on a machine you are not sitting at.',
   facts: [
-    'Sessions per workspace, with the subagents a task spawned indented underneath it.',
+    'Sessions per project, with the subagents a task spawned indented underneath it.',
     'Tool cards carrying the real diff, the same way the Changes viewer draws it.',
     'Permission prompts and questions answered from the phone — Allow, Always allow, Deny.',
     'Long tool calls detach to the background; compaction keeps a long session going.',

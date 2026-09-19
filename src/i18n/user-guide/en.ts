@@ -328,12 +328,12 @@ export const en: UserGuide = {
       {
         term: 'Sessions and subagents',
         detail:
-          'Each session is a conversation with its own context, and they are listed per workspace or across all of them. A session that starts a subagent shows it indented underneath, so a task that fanned out is still one thing you can read.',
+          'Each session is a conversation with its own context, and they are listed per project or across all of them. A session that starts a subagent shows it indented underneath, so a task that fanned out is still one thing you can read.',
       },
       {
-        term: 'Workspaces',
+        term: 'Projects',
         detail:
-          'Switch the directory the agent works in, or type a path to open a new one. Picking a workspace reopens its most recent session rather than starting a fresh one.',
+          'Switch the directory the agent works in, or type a path to open a new one. Picking a project reopens its most recent session rather than starting a fresh one.',
       },
       {
         term: 'Models and agents',
@@ -348,12 +348,12 @@ export const en: UserGuide = {
       {
         term: 'Attachments and file mentions',
         detail:
-          'Send a photo, something from the library, or any file. Images are re-encoded on the way out, which drops their EXIF. Type @ to point the agent at a file in the workspace instead of describing it.',
+          'Send a photo, something from the library, or any file. Images are re-encoded on the way out, which drops their EXIF. Type @ to point the agent at a file in the project instead of describing it.',
       },
       {
         term: 'Permissions and questions',
         detail:
-          'When the agent wants to run a command, write a file or read outside the workspace, the card says which and you answer Allow, Always allow or Deny — the same three words on the notification, so it can be answered from the lock screen. Questions the agent asks come through as a small form to fill in. Auto-approve every action exists for when you are watching; irreversibly destructive commands stay blocked even then.',
+          'When the agent wants to run a command, write a file or read outside the project, the card says which and you answer Allow, Always allow or Deny — the same three words on the notification, so it can be answered from the lock screen. Questions the agent asks come through as a small form to fill in. Auto-approve every action exists for when you are watching; irreversibly destructive commands stay blocked even then.',
       },
       {
         term: 'Background tasks and queueing',
@@ -368,7 +368,7 @@ export const en: UserGuide = {
       {
         term: 'Undo',
         detail:
-          '/undo rolls the workspace back to before your last message; /redo cancels a rollback you have not kept. It is a command rather than a button, on purpose.',
+          '/undo rolls the project back to before your last message; /redo cancels a rollback you have not kept. It is a command rather than a button, on purpose.',
       },
     ],
     note: 'Tool calls arrive as cards: an edit shows its unified diff inline, the same way the Changes viewer draws it.',
@@ -507,9 +507,9 @@ export const en: UserGuide = {
           'Set up on the host means that provider is not configured in OpenCode — configure it there and reopen the picker. No free models on this host means the Free only filter matched nothing, not that something is wrong; turn the filter off to see everything your providers offer. Muqun shows an estimated cost per session but does not charge anything and does not stand between you and your provider.',
       },
       {
-        term: 'The agent wants to leave the workspace',
+        term: 'The agent wants to leave the project',
         detail:
-          'Read outside the workspace and Write outside the workspace are what they sound like, and the path is on the card. Allow is once, Always allow remembers it, Deny refuses. This prompt is doing its job — it is worth reading the path before answering.',
+          'Read outside the project and Write outside the project are what they sound like, and the path is on the card. Allow is once, Always allow remembers it, Deny refuses. This prompt is doing its job — it is worth reading the path before answering.',
       },
       {
         term: 'The Changes button is missing',

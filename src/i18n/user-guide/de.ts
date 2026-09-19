@@ -331,9 +331,9 @@ export const de: UserGuide = {
           'Jede Sitzung besitzt ihren eigenen Kontext. Wenn ein Task Subagents startet, werden diese eingerückt darunter dargestellt, sodass parallele Arbeitsabläufe übersichtlich bleiben.',
       },
       {
-        term: 'Workspaces wechseln',
+        term: 'Projects wechseln',
         detail:
-          'Wechsle das Arbeitsverzeichnis des Agenten oder öffne ein neues. Beim Auswählen wird die letzte Sitzung nahtlos fortgesetzt.',
+          'Wechsle das Arbeitsverzeichnis des Agenten oder öffne ein neues. Bei der Auswahl eines Projekts wird die letzte Sitzung nahtlos fortgesetzt.',
       },
       {
         term: 'Modelle und Agentenrollen',
@@ -368,7 +368,7 @@ export const de: UserGuide = {
       {
         term: 'Rückgängig machen (Undo)',
         detail:
-          '/undo setzt das Arbeitsverzeichnis auf den Zustand vor deiner letzten Nachricht zurück; /redo hebt dies wieder auf. Bewusst als Befehl statt Button umgesetzt.',
+          '/undo setzt das Projekt auf den Zustand vor deiner letzten Nachricht zurück; /redo hebt dies wieder auf. Bewusst als Befehl statt Button umgesetzt.',
       },
     ],
     note: 'Werkzeugaufrufe erscheinen als Karten: Dateiänderungen zeigen ein direktes Unified Diff, genau wie in der Changes-Ansicht.',
@@ -507,9 +507,9 @@ export const de: UserGuide = {
           '„Auf dem Host einrichten“ bedeutet, dass der Provider in OpenCode noch nicht konfiguriert ist. Wenn keine kostenlosen Modelle erscheinen, deaktiviere den „Nur kostenlos“-Filter. Muqun verlangt keine eigenen Gebühren.',
       },
       {
-        term: 'Agent möchte Workspace verlassen',
+        term: 'Agent möchte das Projekt verlassen',
         detail:
-          'Beim Lesen oder Schreiben außerhalb des Arbeitsverzeichnisses erscheint eine Sicherheitsabfrage mit Pfadangabe. Prüfe den Pfad vor dem Erlauben.',
+          'Beim Lesen oder Schreiben außerhalb des Projekts erscheint eine Sicherheitsabfrage mit Pfadangabe. Prüfe den Pfad vor dem Erlauben.',
       },
       {
         term: 'Changes-Button fehlt',

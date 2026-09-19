@@ -331,9 +331,9 @@ export const es: UserGuide = {
           'Cada sesión tiene su propio contexto. Si una tarea delega en subagentes, estos se muestran indentados debajo de la sesión principal para una lectura cómoda.',
       },
       {
-        term: 'Espacios de trabajo',
+        term: 'Proyectos',
         detail:
-          'Cambia el directorio de trabajo del agente al instante. Al elegir un espacio se reanuda automáticamente su última sesión activa.',
+          'Cambia el directorio de trabajo del agente al instante. Al elegir un proyecto se reanuda automáticamente su última sesión activa.',
       },
       {
         term: 'Modelos y agentes',
@@ -368,7 +368,7 @@ export const es: UserGuide = {
       {
         term: 'Deshacer (Undo)',
         detail:
-          '/undo revierte el espacio de trabajo al estado previo a tu último mensaje; /redo lo restaura. Diseñado como comando para prevenir pulsaciones involuntarias.',
+          '/undo revierte el proyecto al estado previo a tu último mensaje; /redo lo restaura. Diseñado como comando para prevenir pulsaciones involuntarias.',
       },
     ],
     note: 'Las llamadas a herramientas aparecen como tarjetas interactivas: las ediciones muestran su diff unificado en línea, igual que en el visor de Cambios.',
@@ -507,9 +507,9 @@ export const es: UserGuide = {
           '«Configurar en el host» indica que falta parametrizar ese proveedor en OpenCode. Si no ves modelos gratuitos, apaga el filtro de «Solo gratuitos» para ver toda la lista disponible.',
       },
       {
-        term: 'El agente solicita salir del workspace',
+        term: 'El agente solicita salir del proyecto',
         detail:
-          'Las tarjetas de solicitud muestran la ruta exacta involucrada para leer o escribir fuera del espacio de trabajo. Revisa la ruta con atención antes de conceder permiso.',
+          'Las tarjetas de solicitud muestran la ruta exacta involucrada para leer o escribir fuera del proyecto. Revisa la ruta con atención antes de conceder permiso.',
       },
       {
         term: 'Falta el botón de Cambios',

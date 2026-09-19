@@ -331,9 +331,9 @@ export const pt: UserGuide = {
           'Cada sessão tem o seu contexto independente. Quando uma tarefa cria subagentes, estes aparecem indentados sob a sessão principal para fácil leitura.',
       },
       {
-        term: 'Espaços de trabalho',
+        term: 'Projetos',
         detail:
-          'Muda a pasta de trabalho do agente com facilidade. Escolher um espaço reabre a sua última sessão ativa de imediato.',
+          'Muda a pasta de trabalho do agente com facilidade. Escolher um projeto reabre a sua última sessão ativa de imediato.',
       },
       {
         term: 'Modelos e agentes',
@@ -368,7 +368,7 @@ export const pt: UserGuide = {
       {
         term: 'Anular (Undo)',
         detail:
-          '/undo repõe o espaço de trabalho no estado anterior à tua última mensagem; /redo cancela o recuo. Pensado como comando para evitar toques acidentais.',
+          '/undo repõe o projeto no estado anterior à tua última mensagem; /redo cancela o recuo. Pensado como comando para evitar toques acidentais.',
       },
     ],
     note: 'As chamadas a ferramentas surgem como cartões: as edições mostram o seu diff unificado, exatamente como na vista Alterações.',
@@ -507,9 +507,9 @@ export const pt: UserGuide = {
           '«Configurar no anfitrião» indica que o fornecedor não está configurado no OpenCode. Se não vires modelos grátis, desliga o filtro «Apenas grátis». O Muqun não cobra nada pelo uso dos modelos.',
       },
       {
-        term: 'O agente quer sair da pasta de trabalho',
+        term: 'O agente quer sair do projeto',
         detail:
-          'Os pedidos de leitura ou escrita fora da pasta exibem o caminho exato. Avalia o caminho antes de conceder permissão.',
+          'Os pedidos de leitura ou escrita fora do projeto exibem o caminho exato. Avalia o caminho antes de conceder permissão.',
       },
       {
         term: 'Falta o botão Alterações',
