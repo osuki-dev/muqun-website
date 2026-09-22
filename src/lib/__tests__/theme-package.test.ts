@@ -113,7 +113,7 @@ describe('Home artwork resolution', () => {
   });
 
   test('does not borrow empty-state art for Home', () => {
-    const theme = manifest({ decoration: { 'emptyState.illustration': { asset: 'empty' } } });
+    const theme = manifest({ decoration: { 'empty.artwork': { asset: 'empty' } } });
 
     expect(resolveHomeArtwork({ manifest: theme, mode: 'light', width: 'compact' })).toBeNull();
     expect(resolveHomeArtwork({ manifest: theme, mode: 'light', width: 'compact', preference: 'shown' })).toBeNull();

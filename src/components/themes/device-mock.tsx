@@ -687,7 +687,7 @@ function EditorialConnections({ paint }: { paint: Paint }) {
 function HomeEditorialContent({ paint, pad, top, logicalWidth }: { paint: Paint; pad: boolean; top: number; logicalWidth: number }) {
   const { colors } = paint;
   const identity = resolveHomeIdentity(paint.manifest);
-  const scene = paint.art('home.background', null, 'shell.background');
+  const scene = paint.art('home.wallpaper', null, 'shell.wallpaper');
   const banner = paint.homeArtwork;
   const cover = paint.manifest.homePresentation?.header === 'cover' && banner !== null;
   const bareToolbar = paint.manifest.homePresentation?.toolbarBackground === false;
@@ -824,10 +824,10 @@ function HomeContent({ paint, pad, top }: { paint: Paint; pad: boolean; top: num
   const identity = resolveHomeIdentity(paint.manifest);
   const layout = HOME_LAYOUT[pad ? 'tablet' : 'phone'];
   // The page paints its own plane over the shell's, then its wallpaper:
-  // `home.background`, or `shell.background` when the theme paints the whole
+  // `home.wallpaper`, or `shell.wallpaper` when the theme paints the whole
   // shell and Home along with it.
-  const scene = paint.art('home.background', null, 'shell.background');
-  const hasScene = paint.has('home.background', 'shell.background');
+  const scene = paint.art('home.wallpaper', null, 'shell.wallpaper');
+  const hasScene = paint.has('home.wallpaper', 'shell.wallpaper');
   return (
     <div className={`dm-home ${pad ? 'dm-home--pad' : ''}`} style={{ background: paint.fill(colors.background) }}>
       <Art art={scene} />
@@ -1199,9 +1199,9 @@ export default function DeviceMock({ pack, mode, device, screen, layout = DEFAUL
             colorScheme: mode,
           }}
         >
-          {/* `AppDrawer`'s shell: the app's plane and `shell.background`, once,
+          {/* `AppDrawer`'s shell: the app's plane and `shell.wallpaper`, once,
               under Home and the workspace alike, on both form factors. */}
-          <Art art={paint.art('shell.background', null)} />
+          <Art art={paint.art('shell.wallpaper', null)} />
           {paint.effects?.ambient && paint.effects.ambient !== 'none' && (
             <AmbientEffect
               effect={paint.effects.ambient}

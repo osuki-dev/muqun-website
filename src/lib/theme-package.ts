@@ -114,8 +114,8 @@ export type HomeArtwork = {
  * those are shown in the slot list but drawn nowhere.
  */
 export const THEME_SLOTS = [
-  'shell.background',
-  'home.background',
+  'shell.wallpaper',
+  'home.wallpaper',
   'home.artwork',
   'launch.artwork',
   'navigation.background',
@@ -124,7 +124,7 @@ export const THEME_SLOTS = [
   'cards.decoration',
   'buttons.primary.background',
   'tabs.background',
-  'emptyState.illustration',
+  'empty.artwork',
 ] as const;
 export type ThemeSlot = (typeof THEME_SLOTS)[number];
 
@@ -507,10 +507,6 @@ export function resolveThemeImage(
   if (selected === undefined && fallbackSlot) {
     const fallbackVariant = manifest.variantDecorations?.[mode]?.[fallbackSlot];
     selected = fallbackVariant === undefined ? manifest.decoration?.[fallbackSlot] : fallbackVariant;
-  }
-  if (selected === undefined && (slot === 'shell.background' || slot === 'home.background')) {
-    const wallpaperVariant = manifest.variantDecorations?.[mode]?.['wallpaper'];
-    selected = wallpaperVariant === undefined ? manifest.decoration?.['wallpaper'] : wallpaperVariant;
   }
   if (!selected || !isString(selected.asset)) return null;
   const responsive = selected[width];
