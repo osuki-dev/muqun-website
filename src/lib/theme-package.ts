@@ -508,6 +508,10 @@ export function resolveThemeImage(
     const fallbackVariant = manifest.variantDecorations?.[mode]?.[fallbackSlot];
     selected = fallbackVariant === undefined ? manifest.decoration?.[fallbackSlot] : fallbackVariant;
   }
+  if (selected === undefined && (slot === 'shell.background' || slot === 'home.background')) {
+    const wallpaperVariant = manifest.variantDecorations?.[mode]?.['wallpaper'];
+    selected = wallpaperVariant === undefined ? manifest.decoration?.['wallpaper'] : wallpaperVariant;
+  }
   if (!selected || !isString(selected.asset)) return null;
   const responsive = selected[width];
   if (responsive !== undefined) return responsive && isString(responsive.asset) ? responsive : null;

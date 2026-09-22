@@ -342,10 +342,10 @@ function Surface({
 
 /**
  * `ThemeIcon`: a chrome glyph the pack may have replaced -- `chrome.back`,
- * `chrome.send` and `chrome.attach` are the three that exist -- else the app's
+ * `chrome.send`, `chrome.attach`, `home.arrow` etc. -- else the app's
  * own lucide drawing, same size, same colour, same place.
  */
-function Glyph({ paint, name, size, color, fallback }: { paint: Paint; name: 'chrome.back' | 'chrome.send' | 'chrome.attach'; size: number; color: string; fallback: string[] }) {
+function Glyph({ paint, name, size, color, fallback }: { paint: Paint; name: string; size: number; color: string; fallback: string[] }) {
   const icon = paint.manifest.icons?.[name];
   const url = icon ? paint.pack.assets[icon.asset] : undefined;
   if (!icon || !url) return <Lucide icon={fallback} size={size} color={color} />;
@@ -453,7 +453,7 @@ function PaneRows({ paint, server, selected, compact, minHeight, style }: { pain
               <span className="dm-pane__name" style={{ color: active ? colors.primary : colors.text, fontWeight: active ? 600 : undefined }}>{pane.name}</span>
               {caption && <span className="dm-pane__caption" style={{ color: blocked ? colors.warning : colors.textSubtle }}>{caption}</span>}
             </span>
-            <Lucide icon={ICON.chevronRight} size={15} color={active ? colors.primary : colors.textMuted} />
+            <Glyph paint={paint} name="home.arrow" size={15} color={active ? colors.primary : colors.textMuted} fallback={ICON.chevronRight} />
           </li>
         );
       })}
@@ -658,7 +658,7 @@ function EditorialConnections({ paint }: { paint: Paint }) {
           <strong style={{ color: colors.text }}>studio</strong>
           <span style={{ color: colors.textMuted }}>Online</span>
         </span>
-        <Lucide icon={ICON.chevronRight} size={16} color={colors.textMuted} />
+        <Glyph paint={paint} name="home.arrow" size={16} color={colors.textMuted} fallback={ICON.chevronRight} />
       </div>
       <div className="dm-editorial__row" style={{ background: paint.fill(colors.surface), borderColor: colors.border }}>
         <Lucide icon={ICON.server} size={20} color={colors.primary} />
@@ -666,7 +666,7 @@ function EditorialConnections({ paint }: { paint: Paint }) {
           <strong style={{ color: colors.text }}>build-box</strong>
           <span style={{ color: colors.textMuted }}>Offline, not answering</span>
         </span>
-        <Lucide icon={ICON.chevronRight} size={16} color={colors.textMuted} />
+        <Glyph paint={paint} name="home.arrow" size={16} color={colors.textMuted} fallback={ICON.chevronRight} />
       </div>
       <div className="dm-editorial__row" style={{ background: paint.fill(colors.surface), borderColor: colors.border }}>
         <Lucide icon={ICON.link} size={20} color={colors.primary} />
@@ -674,11 +674,11 @@ function EditorialConnections({ paint }: { paint: Paint }) {
           <strong style={{ color: colors.text }}>ops@build-box</strong>
           <span style={{ color: colors.textMuted }}>Saved SSH host</span>
         </span>
-        <Lucide icon={ICON.chevronRight} size={16} color={colors.textMuted} />
+        <Glyph paint={paint} name="home.arrow" size={16} color={colors.textMuted} fallback={ICON.chevronRight} />
       </div>
       <div className="dm-editorial__manage">
         <span style={{ color: colors.primary }}>Manage connections</span>
-        <Lucide icon={ICON.chevronRight} size={16} color={colors.primary} />
+        <Glyph paint={paint} name="home.arrow" size={16} color={colors.primary} fallback={ICON.chevronRight} />
       </div>
     </div>
   );

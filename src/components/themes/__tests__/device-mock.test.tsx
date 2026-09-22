@@ -216,5 +216,17 @@ describe('ambient effect preview contract', () => {
 
     expect(markup).not.toContain('dm-ambient');
   });
+
+  test('renders custom home.arrow glyph when declared in pack', () => {
+    const pack = previewPackage();
+    pack.manifest.icons = {
+      'home.arrow': { asset: 'custom-arrow', render: 'template' },
+    };
+    pack.assets['custom-arrow'] = 'https://example.com/custom-arrow.png';
+
+    const markup = renderEditorial(pack);
+    expect(markup).toContain('custom-arrow.png');
+    expect(markup).toContain('dm-icon--template');
+  });
 });
 
