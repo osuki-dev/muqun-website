@@ -2,7 +2,9 @@ import { describe, expect, test } from 'bun:test';
 
 import {
   declaredSlots,
+  parseThemeManifest,
   resolveHomeArtwork,
+  resolveThemeEffects,
   type ThemeManifest,
 } from '../theme-package';
 import { resolveArtwork, themeArtwork } from '../theme-render';
@@ -111,7 +113,7 @@ describe('Home artwork resolution', () => {
   });
 
   test('does not borrow empty-state art for Home', () => {
-    const theme = manifest({ decoration: { 'emptyState.illustration': { asset: 'empty' } } });
+    const theme = manifest({ decoration: { 'empty.artwork': { asset: 'empty' } } });
 
     expect(resolveHomeArtwork({ manifest: theme, mode: 'light', width: 'compact' })).toBeNull();
     expect(resolveHomeArtwork({ manifest: theme, mode: 'light', width: 'compact', preference: 'shown' })).toBeNull();
@@ -129,3 +131,43 @@ test('declared slots keep home.artwork in the app order', () => {
   const theme = manifest({ decoration: { 'home.artwork': { asset: 'hero' } } });
   expect(declaredSlots(theme)).toEqual(['home.artwork']);
 });
+
+describe('Theme effects resolution', () => {
+  test('parses and resolves shared and variant-level effects', () => {
+    const raw = JSON.stringify({
+      format: 'muqun-theme',
+      schemaVersion: 1,
+      id: 'neon-city',
+      name: 'Neon City',
+      version: '1.0.0',
+      effects: { ambient: 'scanlines', intensity: 0.4 },
+      variants: {
+        light: { colors, terminal },
+        dark: {
+          colors,
+          terminal,
+          effects: { ambient: 'rain', intensity: 0.8 },
+        },
+      },
+    });
+
+    const parsed = parseThemeManifest(raw);
+    expect(parsed.effects).toEqual({ ambient: 'scanlines', intensity: 0.4 });
+    expect(parsed.variants.dark.effects).toEqual({ ambient: 'rain', intensity: 0.8 });
+
+    // Light falls back to shared effects
+    expect(resolveThemeEffects(parsed, 'light')).toEqual({ ambient: 'scanlines', intensity: 0.4 });
+    // Dark uses variant override
+    expect(resolveThemeEffects(parsed, 'dark')).toEqual({ ambient: 'rain', intensity: 0.8 });
+  });
+
+  test('resolves to undefined when ambient effect is none or unspecified', () => {
+    const theme = manifest();
+    expect(resolveThemeEffects(theme, 'light')).toBeUndefined();
+    expect(resolveThemeEffects(theme, 'dark')).toBeUndefined();
+
+    const noneTheme = manifest({ effects: { ambient: 'none' } });
+    expect(resolveThemeEffects(noneTheme, 'light')).toBeUndefined();
+  });
+});
+

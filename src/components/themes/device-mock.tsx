@@ -36,6 +36,9 @@ import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 
 import {
   resolveHomeArtwork,
   resolveHomeIdentity,
+  resolveThemeEffects,
+  type ThemeAmbientEffect,
+  type ThemeEffects,
   type ThemeManifest,
   type ThemeMode,
   type ThemePackage,
@@ -104,6 +107,7 @@ interface Paint {
   colors: ThemeManifest['variants']['light']['colors'];
   terminal: ThemeManifest['variants']['light']['terminal'];
   alpha: number;
+  effects?: ThemeEffects;
   /** A coloured plane, faded by the variant's surface opacity (`useSurfaceBackground`). */
   fill: (color: string) => string;
   /** Artwork for a slot over a base colour, bounded the way the app bounds it. */
@@ -120,6 +124,7 @@ function paintFor(pack: ThemePackage, mode: ThemeMode, device: DeviceKind): Pain
   const alpha = surfaceOpacity(variant.surfaces?.backgroundOpacity);
   const width = device === 'tablet' ? 'regular' : 'compact';
   const homeArtwork = resolveHomeArtwork({ manifest, mode, width });
+  const effects = resolveThemeEffects(manifest, mode);
   return {
     pack,
     manifest,
@@ -128,6 +133,7 @@ function paintFor(pack: ThemePackage, mode: ThemeMode, device: DeviceKind): Pain
     colors: variant.colors,
     terminal: variant.terminal,
     alpha,
+    effects,
     fill: (color) => surfaceFill(color, alpha),
     art: (slot, base, fallback) => resolveArtwork(pack, manifest, slot, mode, width, base, alpha, fallback),
     has: (slot, fallback) => Boolean(themeArtwork(pack, manifest, slot, mode, width, fallback)),
@@ -158,6 +164,76 @@ function artStyle(art: ResolvedArtwork, banner = false): CSSProperties {
 /** `ThemeArtworkLayer`: absolute, non-interactive, no layout footprint. */
 function Art({ art, banner = false }: { art: ResolvedArtwork | null; banner?: boolean }) {
   return art ? <span className="dm-art" style={artStyle(art, banner)} /> : null;
+}
+
+/**
+ * Visual ambient overlay for device mockups (rain, particles, scanlines, bloom),
+ * matching the native Skia ambient shader effects in the app.
+ */
+function AmbientEffect({
+  effect,
+  intensity = 0.5,
+  accentColor,
+}: {
+  effect: ThemeAmbientEffect;
+  intensity?: number;
+  accentColor: string;
+}) {
+  if (!effect || effect === 'none') return null;
+
+  return (
+    <div
+      className={`dm-ambient dm-ambient--${effect}`}
+      style={{
+        opacity: Math.max(0.1, Math.min(1, intensity)),
+        ['--ambient-accent' as string]: accentColor,
+      }}
+      aria-hidden="true"
+    >
+      {effect === 'rain' && (
+        <div className="dm-rain">
+          {Array.from({ length: 24 }, (_, i) => (
+            <span
+              key={i}
+              className="dm-rain__streak"
+              style={{
+                left: `${(i * 17) % 100}%`,
+                animationDelay: `${((i * 0.13) % 1.6).toFixed(2)}s`,
+                animationDuration: `${(0.75 + ((i * 0.17) % 0.65)).toFixed(2)}s`,
+                opacity: 0.3 + ((i % 5) * 0.14),
+              }}
+            />
+          ))}
+        </div>
+      )}
+      {effect === 'particles' && (
+        <div className="dm-particles">
+          {Array.from({ length: 20 }, (_, i) => (
+            <span
+              key={i}
+              className="dm-particle"
+              style={{
+                left: `${(i * 19 + 7) % 96}%`,
+                bottom: `${(i * 23) % 60}%`,
+                width: `${2 + (i % 3)}px`,
+                height: `${2 + (i % 3)}px`,
+                animationDelay: `${((i * 0.31) % 3).toFixed(2)}s`,
+                animationDuration: `${(3 + ((i * 0.47) % 3)).toFixed(2)}s`,
+                opacity: 0.3 + ((i % 4) * 0.2),
+              }}
+            />
+          ))}
+        </div>
+      )}
+      {effect === 'scanlines' && (
+        <>
+          <div className="dm-scanlines" />
+          <div className="dm-scanlines__beam" />
+        </>
+      )}
+      {effect === 'bloom' && <div className="dm-bloom" />}
+    </div>
+  );
 }
 
 /**
@@ -266,10 +342,10 @@ function Surface({
 
 /**
  * `ThemeIcon`: a chrome glyph the pack may have replaced -- `chrome.back`,
- * `chrome.send` and `chrome.attach` are the three that exist -- else the app's
+ * `chrome.send`, `chrome.attach`, `home.arrow` etc. -- else the app's
  * own lucide drawing, same size, same colour, same place.
  */
-function Glyph({ paint, name, size, color, fallback }: { paint: Paint; name: 'chrome.back' | 'chrome.send' | 'chrome.attach'; size: number; color: string; fallback: string[] }) {
+function Glyph({ paint, name, size, color, fallback }: { paint: Paint; name: string; size: number; color: string; fallback: string[] }) {
   const icon = paint.manifest.icons?.[name];
   const url = icon ? paint.pack.assets[icon.asset] : undefined;
   if (!icon || !url) return <Lucide icon={fallback} size={size} color={color} />;
@@ -377,7 +453,7 @@ function PaneRows({ paint, server, selected, compact, minHeight, style }: { pain
               <span className="dm-pane__name" style={{ color: active ? colors.primary : colors.text, fontWeight: active ? 600 : undefined }}>{pane.name}</span>
               {caption && <span className="dm-pane__caption" style={{ color: blocked ? colors.warning : colors.textSubtle }}>{caption}</span>}
             </span>
-            <Lucide icon={ICON.chevronRight} size={15} color={active ? colors.primary : colors.textMuted} />
+            <Glyph paint={paint} name="home.arrow" size={15} color={active ? colors.primary : colors.textMuted} fallback={ICON.chevronRight} />
           </li>
         );
       })}
@@ -408,14 +484,30 @@ function ServerCard({ paint, server, layout }: { paint: Paint; server: Server; l
 }
 
 /** `HeaderButton`: a 40pt circle on `surface`, carrying `navigation.background`, a muted 20pt glyph. */
-function HeaderButton({ paint, icon, editorial = false, bare = false }: { paint: Paint; icon: string[]; editorial?: boolean; bare?: boolean }) {
+function HeaderButton({
+  paint,
+  icon,
+  name,
+  editorial = false,
+  bare = false,
+}: {
+  paint: Paint;
+  icon: string[];
+  name?: string;
+  editorial?: boolean;
+  bare?: boolean;
+}) {
   const { colors } = paint;
   return (
     <span
       className={`dm-home__control${editorial ? ' dm-home__control--editorial' : ''}${bare ? ' dm-home__control--bare' : ''}`}
       style={bare ? undefined : { background: paint.fill(colors.surface), borderColor: editorial ? colors.borderStrong : undefined }}>
       {!bare ? <Art art={paint.art('navigation.background', colors.surface)} /> : null}
-      <Lucide icon={icon} size={20} color={colors.textMuted} />
+      {name ? (
+        <Glyph paint={paint} name={name} size={20} color={colors.textMuted} fallback={icon} />
+      ) : (
+        <Lucide icon={icon} size={20} color={colors.textMuted} />
+      )}
     </span>
   );
 }
@@ -549,7 +641,7 @@ function EditorialRecent({ paint }: { paint: Paint }) {
             <strong style={{ color: colors.text }}>{title}</strong>
             <span style={{ color: colors.textMuted }}>{kind} · {context}</span>
           </span>
-          <Lucide icon={ICON.chevronRight} size={16} color={colors.primary} />
+          <Glyph paint={paint} name="home.arrow" size={16} color={colors.primary} fallback={ICON.chevronRight} />
         </div>
       ))}
     </div>
@@ -567,7 +659,7 @@ function EditorialAttention({ paint }: { paint: Paint }) {
         <span style={{ color: colors.textSubtle }}>Last checked recently</span>
         <span style={{ color: colors.primary }}>Open to check the current state</span>
       </span>
-      <Lucide icon={ICON.chevronRight} size={16} color={colors.primary} />
+      <Glyph paint={paint} name="home.arrow" size={16} color={colors.primary} fallback={ICON.chevronRight} />
     </div>
   );
 }
@@ -582,7 +674,7 @@ function EditorialConnections({ paint }: { paint: Paint }) {
           <strong style={{ color: colors.text }}>studio</strong>
           <span style={{ color: colors.textMuted }}>Online</span>
         </span>
-        <Lucide icon={ICON.chevronRight} size={16} color={colors.textMuted} />
+        <Glyph paint={paint} name="home.arrow" size={16} color={colors.textMuted} fallback={ICON.chevronRight} />
       </div>
       <div className="dm-editorial__row" style={{ background: paint.fill(colors.surface), borderColor: colors.border }}>
         <Lucide icon={ICON.server} size={20} color={colors.primary} />
@@ -590,7 +682,7 @@ function EditorialConnections({ paint }: { paint: Paint }) {
           <strong style={{ color: colors.text }}>build-box</strong>
           <span style={{ color: colors.textMuted }}>Offline, not answering</span>
         </span>
-        <Lucide icon={ICON.chevronRight} size={16} color={colors.textMuted} />
+        <Glyph paint={paint} name="home.arrow" size={16} color={colors.textMuted} fallback={ICON.chevronRight} />
       </div>
       <div className="dm-editorial__row" style={{ background: paint.fill(colors.surface), borderColor: colors.border }}>
         <Lucide icon={ICON.link} size={20} color={colors.primary} />
@@ -598,11 +690,11 @@ function EditorialConnections({ paint }: { paint: Paint }) {
           <strong style={{ color: colors.text }}>ops@build-box</strong>
           <span style={{ color: colors.textMuted }}>Saved SSH host</span>
         </span>
-        <Lucide icon={ICON.chevronRight} size={16} color={colors.textMuted} />
+        <Glyph paint={paint} name="home.arrow" size={16} color={colors.textMuted} fallback={ICON.chevronRight} />
       </div>
       <div className="dm-editorial__manage">
         <span style={{ color: colors.primary }}>Manage connections</span>
-        <Lucide icon={ICON.chevronRight} size={16} color={colors.primary} />
+        <Glyph paint={paint} name="home.arrow" size={16} color={colors.primary} fallback={ICON.chevronRight} />
       </div>
     </div>
   );
@@ -611,7 +703,7 @@ function EditorialConnections({ paint }: { paint: Paint }) {
 function HomeEditorialContent({ paint, pad, top, logicalWidth }: { paint: Paint; pad: boolean; top: number; logicalWidth: number }) {
   const { colors } = paint;
   const identity = resolveHomeIdentity(paint.manifest);
-  const scene = paint.art('home.background', null, 'shell.background');
+  const scene = paint.art('home.wallpaper', null, 'shell.wallpaper');
   const banner = paint.homeArtwork;
   const cover = paint.manifest.homePresentation?.header === 'cover' && banner !== null;
   const bareToolbar = paint.manifest.homePresentation?.toolbarBackground === false;
@@ -631,8 +723,8 @@ function HomeEditorialContent({ paint, pad, top, logicalWidth }: { paint: Paint;
   ].filter(Boolean).join(' ');
   const headerActions = (
     <>
-      <HeaderButton paint={paint} icon={ICON.scanLine} editorial bare={bareToolbar} />
-      <HeaderButton paint={paint} icon={ICON.settings} editorial bare={bareToolbar} />
+      <HeaderButton paint={paint} name="chrome.scan" icon={ICON.scanLine} editorial bare={bareToolbar} />
+      <HeaderButton paint={paint} name="chrome.settings" icon={ICON.settings} editorial bare={bareToolbar} />
     </>
   );
   return (
@@ -748,18 +840,18 @@ function HomeContent({ paint, pad, top }: { paint: Paint; pad: boolean; top: num
   const identity = resolveHomeIdentity(paint.manifest);
   const layout = HOME_LAYOUT[pad ? 'tablet' : 'phone'];
   // The page paints its own plane over the shell's, then its wallpaper:
-  // `home.background`, or `shell.background` when the theme paints the whole
+  // `home.wallpaper`, or `shell.wallpaper` when the theme paints the whole
   // shell and Home along with it.
-  const scene = paint.art('home.background', null, 'shell.background');
-  const hasScene = paint.has('home.background', 'shell.background');
+  const scene = paint.art('home.wallpaper', null, 'shell.wallpaper');
+  const hasScene = paint.has('home.wallpaper', 'shell.wallpaper');
   return (
     <div className={`dm-home ${pad ? 'dm-home--pad' : ''}`} style={{ background: paint.fill(colors.background) }}>
       <Art art={scene} />
       {!pad && (
         <div className="dm-home__bar" style={{ paddingTop: top + NAV_HEADER_TOP_GAP }}>
           <HeaderButton paint={paint} icon={ICON.squareTerminal} />
-          <HeaderButton paint={paint} icon={ICON.scanLine} />
-          <HeaderButton paint={paint} icon={ICON.settings} />
+          <HeaderButton paint={paint} name="chrome.scan" icon={ICON.scanLine} />
+          <HeaderButton paint={paint} name="chrome.settings" icon={ICON.settings} />
         </div>
       )}
       <div
@@ -837,9 +929,17 @@ function Rail({ paint, selected, editorial = false }: { paint: Paint; selected?:
       </div>
       {/* Three glyphs, not three explained rows: the rail has servers in it. */}
       <div className="dm-rail__actions">
-        {[ICON.scanLine, ICON.squareTerminal, ICON.settings].map((icon, index) => (
+        {[
+          { name: 'chrome.scan', icon: ICON.scanLine },
+          { name: undefined, icon: ICON.squareTerminal },
+          { name: 'chrome.settings', icon: ICON.settings },
+        ].map((item, index) => (
           <span key={index} className="dm-rail__action" style={{ background: paint.fill(colors.background) }}>
-            <Lucide icon={icon} size={18} color={colors.textMuted} />
+            {item.name ? (
+              <Glyph paint={paint} name={item.name} size={18} color={colors.textMuted} fallback={item.icon} />
+            ) : (
+              <Lucide icon={item.icon} size={18} color={colors.textMuted} />
+            )}
           </span>
         ))}
       </div>
@@ -1123,9 +1223,16 @@ export default function DeviceMock({ pack, mode, device, screen, layout = DEFAUL
             colorScheme: mode,
           }}
         >
-          {/* `AppDrawer`'s shell: the app's plane and `shell.background`, once,
+          {/* `AppDrawer`'s shell: the app's plane and `shell.wallpaper`, once,
               under Home and the workspace alike, on both form factors. */}
-          <Art art={paint.art('shell.background', null)} />
+          <Art art={paint.art('shell.wallpaper', null)} />
+          {paint.effects?.ambient && paint.effects.ambient !== 'none' && (
+            <AmbientEffect
+              effect={paint.effects.ambient}
+              intensity={paint.effects.intensity}
+              accentColor={colors.primary}
+            />
+          )}
           {pad ? (
             <div className="dm-split" style={{ paddingTop: spec.top + 12, paddingBottom: spec.bottom }}>
               <Rail paint={paint} editorial={layout === 'editorial'} selected={screen === 'home' ? undefined : { server: 'studio', pane: 'claude' }} />
