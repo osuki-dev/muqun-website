@@ -10,14 +10,15 @@
     "build": "astro build",
     "preview": "wrangler dev",
     "deploy": "astro build && wrangler deploy",
-    "check": "astro check",
+    "check": "astro check && bun run check:tests",
     "check:catalogue": "bun scripts/check-catalogue.mjs",
+    "check:tests": "tsc --noEmit --project tsconfig.tests.json",
     "shots:generate": "bun scripts/shots.ts"
   },
   "dependencies": {
-    "@astrojs/react": "6.0.5",
+    "@astrojs/react": "6.0.6",
     "@react-three/fiber": "^9.7.0",
-    "astro": "^7.3.2",
+    "astro": "^7.3.3",
     "gsap": "^3.15.0",
     "react": "19.3.0",
     "react-dom": "19.3.0",
@@ -25,17 +26,18 @@
   },
   "devDependencies": {
     "@astrojs/check": "0.9.10",
-    "@cloudflare/workers-types": "^5.20260915.1",
+    "@cloudflare/workers-types": "^5.20260920.1",
     "@tailwindcss/vite": "^4.3.0",
+    "@types/bun": "^1.2.0",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@types/three": "^0.186.0",
-    "prettier": "^3.9.6",
-    "prettier-plugin-astro": "^1.0.0",
+    "prettier": "^3.9.8",
+    "prettier-plugin-astro": "^1.0.1",
     "sharp": "^0.35.4",
     "tailwindcss": "^4.3.0",
     "typescript": "^7.0.2",
-    "vite": "^7.3.6",
-    "wrangler": "^4.131.2"
+    "vite": "^8.3.0",
+    "wrangler": "^4.135.0"
   }
 }

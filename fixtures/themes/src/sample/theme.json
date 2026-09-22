@@ -158,7 +158,7 @@
       "asset": "home-background",
       "fit": "cover"
     },
-    "home.decoration": {
+    "home.artwork": {
       "asset": "home-banner",
       "fit": "contain"
     },

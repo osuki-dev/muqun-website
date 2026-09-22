@@ -92,6 +92,13 @@ export interface ThemeIcon {
 
 export type ThemeMode = 'light' | 'dark';
 
+export type HomeArtworkPreference = 'theme' | 'shown' | 'hidden';
+
+export type HomeArtwork = {
+  slot: ThemeSlot;
+  image: ThemeImage;
+};
+
 /**
  * The slots the app draws, in the order they appear on a screen from the back
  * forward. Same list as the app's `THEME_SLOTS`; a pack may name others, and
@@ -100,7 +107,8 @@ export type ThemeMode = 'light' | 'dark';
 export const THEME_SLOTS = [
   'shell.background',
   'home.background',
-  'home.decoration',
+  'home.artwork',
+  'launch.artwork',
   'navigation.background',
   'composer.background',
   'actions.background',
@@ -124,6 +132,10 @@ export interface ThemeManifest {
   description?: string;
   tags?: string[];
   preview?: string;
+  homePresentation?: {
+    header: 'standard' | 'cover';
+    toolbarBackground?: boolean;
+  };
   variants: { light: ThemeVariant; dark: ThemeVariant };
   materials?: Record<string, string | undefined>;
   assets?: Record<string, { path?: string; url?: string; sha256?: string }>;
@@ -133,6 +145,7 @@ export interface ThemeManifest {
   homeIdentity?: {
     name?: { mode: 'default' | 'hidden' } | { mode: 'custom'; text: string };
     logo?: { mode: 'default' | 'hidden' } | { mode: 'custom'; asset: string };
+    artwork?: { mode: 'default' | 'hidden' };
   };
 }
 
@@ -475,6 +488,34 @@ export function resolveThemeImage(
   if (responsive !== undefined) return responsive && isString(responsive.asset) ? responsive : null;
   const { compact: _compact, regular: _regular, ...image } = selected;
   return image;
+}
+
+/**
+ * Resolve Home's illustration with the same author/default and reader override
+ * rules as the native app. The browser preview currently has no reader setting,
+ * so callers use the default `theme` preference; the other two values keep this
+ * pure contract ready for a future preview control without changing slot rules.
+ */
+export function resolveHomeArtwork({
+  manifest,
+  mode,
+  width,
+  preference = 'theme',
+  decorationsEnabled = true,
+}: {
+  manifest: ThemeManifest | undefined;
+  mode: ThemeMode;
+  width: 'compact' | 'regular';
+  preference?: HomeArtworkPreference;
+  decorationsEnabled?: boolean;
+}): HomeArtwork | null {
+  if (!manifest) return null;
+  const hero = resolveThemeImage(manifest, 'home.artwork', mode, width, decorationsEnabled);
+  const authored = manifest.homeIdentity?.artwork?.mode === 'hidden' ? 'hidden' : 'default';
+  const visible = preference === 'theme' ? authored === 'default' && Boolean(hero) : preference === 'shown';
+  if (!visible) return null;
+  if (hero) return { slot: 'home.artwork', image: hero };
+  return null;
 }
 
 /** Every slot name the pack mentions anywhere, known ones first and in order. */
