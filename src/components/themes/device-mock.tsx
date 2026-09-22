@@ -33,7 +33,14 @@
  */
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 
-import { resolveHomeIdentity, type ThemeManifest, type ThemeMode, type ThemePackage } from '@/lib/theme-package';
+import {
+  resolveHomeArtwork,
+  resolveHomeIdentity,
+  type ThemeManifest,
+  type ThemeMode,
+  type ThemePackage,
+} from '@/lib/theme-package';
+import { DEFAULT_THEME_PREVIEW_LAYOUT, type ThemePreviewLayout } from '@/lib/theme-preview-layout';
 import {
   effectiveThemeManifest,
   jointArtworkOpacity,
@@ -78,6 +85,8 @@ interface Props {
   mode: ThemeMode;
   device: DeviceKind;
   screen: ScreenKind;
+  /** Home composition only; Classic remains the default for all callers. */
+  layout?: ThemePreviewLayout;
   /** Accessible name of the whole picture. */
   label: string;
 }
@@ -101,6 +110,8 @@ interface Paint {
   art: (slot: string, base: string | null, fallback?: string) => ResolvedArtwork | null;
   /** Whether a slot names an image the package carries (`useHasThemeArtwork`). */
   has: (slot: string, fallback?: string) => boolean;
+  /** Home's own illustration, after author preference and asset resolution. */
+  homeArtwork: ResolvedArtwork | null;
 }
 
 function paintFor(pack: ThemePackage, mode: ThemeMode, device: DeviceKind): Paint {
@@ -108,6 +119,7 @@ function paintFor(pack: ThemePackage, mode: ThemeMode, device: DeviceKind): Pain
   const variant = manifest.variants[mode];
   const alpha = surfaceOpacity(variant.surfaces?.backgroundOpacity);
   const width = device === 'tablet' ? 'regular' : 'compact';
+  const homeArtwork = resolveHomeArtwork({ manifest, mode, width });
   return {
     pack,
     manifest,
@@ -119,6 +131,9 @@ function paintFor(pack: ThemePackage, mode: ThemeMode, device: DeviceKind): Pain
     fill: (color) => surfaceFill(color, alpha),
     art: (slot, base, fallback) => resolveArtwork(pack, manifest, slot, mode, width, base, alpha, fallback),
     has: (slot, fallback) => Boolean(themeArtwork(pack, manifest, slot, mode, width, fallback)),
+    homeArtwork: homeArtwork
+      ? resolveArtwork(pack, manifest, homeArtwork.slot, mode, width, null, alpha)
+      : null,
   };
 }
 
@@ -143,6 +158,38 @@ function artStyle(art: ResolvedArtwork, banner = false): CSSProperties {
 /** `ThemeArtworkLayer`: absolute, non-interactive, no layout footprint. */
 function Art({ art, banner = false }: { art: ResolvedArtwork | null; banner?: boolean }) {
   return art ? <span className="dm-art" style={artStyle(art, banner)} /> : null;
+}
+
+/**
+ * Home's illustration is content rather than wallpaper. Use an image element
+ * here so a decode failure removes the whole wrapper and leaves no empty band.
+ */
+function HomeArtwork({
+  paint,
+  className = 'dm-home__hero',
+  onFailure,
+}: {
+  paint: Paint;
+  className?: string;
+  onFailure?: () => void;
+}) {
+  const hero = paint.homeArtwork;
+  const [failed, setFailed] = useState<string | null>(null);
+  if (!hero || failed === hero.url) return null;
+  const objectPosition = `${Math.round((hero.image.focalPoint?.x ?? 0.5) * 100)}% ${Math.round((hero.image.focalPoint?.y ?? 0.5) * 100)}%`;
+  return (
+    <div className={className}>
+      <img
+        src={hero.url}
+        alt=""
+        style={{ opacity: hero.opacity, objectPosition }}
+        onError={() => {
+          setFailed(hero.url);
+          onFailure?.();
+        }}
+      />
+    </div>
+  );
 }
 
 /**
@@ -244,15 +291,19 @@ const Lucide = ({ icon, size, color, strokeWidth = 2 }: { icon: string[]; size: 
 const ICON = {
   chevronLeft: ['m15 18-6-6 6-6'],
   chevronRight: ['m9 18 6-6-6-6'],
+  chevronDown: ['m6 9 6 6 6-6'],
+  arrowUpRight: ['M7 17 17 7', 'M7 7h10v10'],
   send: ['M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z', 'm21.854 2.147-10.94 10.939'],
   server: ['M4 2h16a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z', 'M4 14h16a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2z', 'M6 6h.01', 'M6 18h.01'],
   squareTerminal: ['m7 11 2-2-2-2', 'M11 13h4', 'M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z'],
+  link: ['M10 13a5 5 0 0 0 7.54.54l2-2a5 5 0 0 0-7.07-7.07l-1.14 1.14', 'M14 11a5 5 0 0 0-7.54-.54l-2 2a5 5 0 0 0 7.07 7.07l1.14-1.14'],
   scanLine: ['M3 7V5a2 2 0 0 1 2-2h2', 'M17 3h2a2 2 0 0 1 2 2v2', 'M21 17v2a2 2 0 0 1-2 2h-2', 'M7 21H5a2 2 0 0 1-2-2v-2', 'M7 12h10'],
   settings: ['M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915', 'M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0z'],
   panelsTopLeft: ['M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z', 'M3 9h18', 'M9 21V9'],
   paperclip: ['m16 6-8.414 8.586a2 2 0 0 0 2.829 2.829l8.414-8.586a4 4 0 1 0-5.657-5.657l-8.379 8.551a6 6 0 1 0 8.485 8.485l8.379-8.551'],
   zap: ['M15.914 4a1.5 1.5 0 00-2.474-1.561l-9 9A1.5 1.5 0 005.5 14h4.002a.5.5 0 01.471.666L8.086 20a1.5 1.5 0 002.475 1.56l9-9A1.5 1.5 0 0018.5 10h-3.997a.5.5 0 01-.472-.667z'],
   shieldAlert: ['M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z', 'M12 8v4', 'M12 16h.01'],
+  circleAlert: ['M12 3a9 9 0 1 0 9 9A9 9 0 0 0 12 3z', 'M12 8v4', 'M12 16h.01'],
   check: ['M20 6 9 17l-5-5'],
   checkCheck: ['M18 6 7 17l-5-5', 'm22 10-7.5 7.5L13 16'],
   x: ['M18 6 6 18', 'm6 6 12 12'],
@@ -357,13 +408,334 @@ function ServerCard({ paint, server, layout }: { paint: Paint; server: Server; l
 }
 
 /** `HeaderButton`: a 40pt circle on `surface`, carrying `navigation.background`, a muted 20pt glyph. */
-function HeaderButton({ paint, icon }: { paint: Paint; icon: string[] }) {
+function HeaderButton({ paint, icon, editorial = false, bare = false }: { paint: Paint; icon: string[]; editorial?: boolean; bare?: boolean }) {
   const { colors } = paint;
   return (
-    <span className="dm-home__control" style={{ background: paint.fill(colors.surface) }}>
-      <Art art={paint.art('navigation.background', colors.surface)} />
+    <span
+      className={`dm-home__control${editorial ? ' dm-home__control--editorial' : ''}${bare ? ' dm-home__control--bare' : ''}`}
+      style={bare ? undefined : { background: paint.fill(colors.surface), borderColor: editorial ? colors.borderStrong : undefined }}>
+      {!bare ? <Art art={paint.art('navigation.background', colors.surface)} /> : null}
       <Lucide icon={icon} size={20} color={colors.textMuted} />
     </span>
+  );
+}
+
+function EditorialSection({
+  paint,
+  title,
+  children,
+}: {
+  paint: Paint;
+  title: string;
+  children: ReactNode;
+}) {
+  return (
+    <section className="dm-editorial__section" style={{ borderColor: paint.colors.border }}>
+      <div className="dm-editorial__section-head" style={{ borderColor: paint.colors.border }}>
+        <h3 style={{ color: paint.colors.text }}>{title}</h3>
+      </div>
+      <div className="dm-editorial__section-body">{children}</div>
+    </section>
+  );
+}
+
+function EditorialTarget({ paint }: { paint: Paint }) {
+  const { colors } = paint;
+  return (
+    <div className="dm-editorial__target" style={{ background: paint.fill(colors.surface), borderColor: colors.borderStrong }}>
+      <span className="dm-editorial__target-copy"><strong style={{ color: colors.text }}>studio</strong></span>
+      <Lucide icon={ICON.chevronDown} size={16} color={colors.primary} />
+    </div>
+  );
+}
+
+function EditorialLaunches({ paint, rail = false }: { paint: Paint; rail?: boolean }) {
+  const { colors } = paint;
+  const tile = ({ title, caption, icon, marker, primary = false, compact = false }: {
+    title: string;
+    caption?: string;
+    icon: string[];
+    marker: string;
+    primary?: boolean;
+    compact?: boolean;
+  }) => {
+    const ink = primary ? colors.onPrimary : colors.text;
+    return (
+      <div
+        className={`dm-editorial__launch${primary ? ' dm-editorial__launch--primary' : ''}${compact ? ' dm-editorial__launch--compact' : ''}`}
+        style={{ background: primary ? colors.primary : paint.fill(colors.surface), borderColor: primary ? colors.primary : colors.borderStrong }}>
+        <div className="dm-editorial__launch-header">
+          <Lucide icon={icon} size={compact ? 16 : 22} color={ink} />
+          <span className="dm-editorial__launch-marker" style={{ color: primary ? ink : colors.textMuted }}>{marker}</span>
+        </div>
+        <strong style={{ color: ink }}>{title}</strong>
+        {caption ? <span style={{ color: primary ? ink : colors.textMuted }}>{caption}</span> : null}
+        <Lucide icon={ICON.arrowUpRight} size={18} color={ink} />
+      </div>
+    );
+  };
+  const cards = (
+    <div className="dm-editorial__launch-grid">
+      <div className="dm-editorial__launch-primary">
+        {tile({ title: 'OpenCode', caption: 'New session', icon: ICON.panelsTopLeft, marker: '01', primary: true })}
+      </div>
+      <div className="dm-editorial__launch-stack">
+        {tile({ title: 'Sessions', icon: ICON.panelsTopLeft, marker: '02', compact: true })}
+        {tile({ title: 'Terminal', icon: ICON.squareTerminal, marker: '03', compact: true })}
+      </div>
+      <div className="dm-editorial__launch-secondary">
+        {tile({ title: 'New terminal', icon: ICON.squareTerminal, marker: '04' })}
+        {tile({ title: 'SSH', caption: 'SSH hosts', icon: ICON.link, marker: '05' })}
+      </div>
+    </div>
+  );
+  if (rail) return <CoverLaunchRail paint={paint}>{cards}</CoverLaunchRail>;
+  return (
+    <div className="dm-editorial__launches">
+      <CoverLaunchRail paint={paint}>{cards}</CoverLaunchRail>
+    </div>
+  );
+}
+
+function CoverLaunchRail({ paint, children }: { paint: Paint; children: ReactNode }) {
+  const rail = useRef<HTMLDivElement>(null);
+  const [edges, setEdges] = useState({ left: false, right: true });
+  useEffect(() => {
+    const element = rail.current;
+    if (!element) return;
+    const measure = () => setEdges({
+      left: element.scrollLeft > 1,
+      right: element.scrollLeft + element.clientWidth < element.scrollWidth - 1,
+    });
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
+  return (
+    <div className="dm-editorial-cover__rail-wrap">
+      <div ref={rail} className="dm-editorial-cover__rail" onScroll={() => {
+        const element = rail.current;
+        if (element) setEdges({
+          left: element.scrollLeft > 1,
+          right: element.scrollLeft + element.clientWidth < element.scrollWidth - 1,
+        });
+      }}>{children}</div>
+      {edges.left ? <span className="dm-editorial-cover__edge dm-editorial-cover__edge--left" style={{ backgroundColor: paint.colors.background }} /> : null}
+      {edges.right ? <span className="dm-editorial-cover__edge dm-editorial-cover__edge--right" style={{ backgroundColor: paint.colors.background }} /> : null}
+    </div>
+  );
+}
+
+function EditorialRecent({ paint }: { paint: Paint }) {
+  const { colors } = paint;
+  const rows = [
+    ['claude · ~/project', 'OpenCode session', 'studio'],
+    ['bun test --watch', 'Terminal', 'studio'],
+    ['ops@build-box', 'SSH host', 'saved host'],
+  ];
+  return (
+    <div className="dm-editorial__rows">
+      {rows.map(([title, kind, context], index) => (
+        <div
+          key={title}
+          className="dm-editorial__row"
+          style={{ background: paint.fill(colors.surface), borderColor: colors.border }}
+        >
+          <span className="dm-editorial__row-number" style={{ color: colors.primary }}>
+            {String(index + 1).padStart(2, '0')}
+          </span>
+          <span className="dm-editorial__row-copy">
+            <strong style={{ color: colors.text }}>{title}</strong>
+            <span style={{ color: colors.textMuted }}>{kind} · {context}</span>
+          </span>
+          <Lucide icon={ICON.chevronRight} size={16} color={colors.primary} />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function EditorialAttention({ paint }: { paint: Paint }) {
+  const { colors } = paint;
+  return (
+    <div className="dm-editorial__attention" style={{ borderColor: colors.warning }}>
+      <Lucide icon={ICON.circleAlert} size={20} color={colors.warning} />
+      <span className="dm-editorial__attention-copy">
+        <strong style={{ color: colors.text }}>3 requests last observed</strong>
+        <span style={{ color: colors.textMuted }}>studio · ~/project</span>
+        <span style={{ color: colors.textSubtle }}>Last checked recently</span>
+        <span style={{ color: colors.primary }}>Open to check the current state</span>
+      </span>
+      <Lucide icon={ICON.chevronRight} size={16} color={colors.primary} />
+    </div>
+  );
+}
+
+function EditorialConnections({ paint }: { paint: Paint }) {
+  const { colors } = paint;
+  return (
+    <div className="dm-editorial__rows">
+      <div className="dm-editorial__row" style={{ background: paint.fill(colors.surface), borderColor: colors.border }}>
+        <Lucide icon={ICON.server} size={20} color={colors.primary} />
+        <span className="dm-editorial__row-copy">
+          <strong style={{ color: colors.text }}>studio</strong>
+          <span style={{ color: colors.textMuted }}>Online</span>
+        </span>
+        <Lucide icon={ICON.chevronRight} size={16} color={colors.textMuted} />
+      </div>
+      <div className="dm-editorial__row" style={{ background: paint.fill(colors.surface), borderColor: colors.border }}>
+        <Lucide icon={ICON.server} size={20} color={colors.primary} />
+        <span className="dm-editorial__row-copy">
+          <strong style={{ color: colors.text }}>build-box</strong>
+          <span style={{ color: colors.textMuted }}>Offline, not answering</span>
+        </span>
+        <Lucide icon={ICON.chevronRight} size={16} color={colors.textMuted} />
+      </div>
+      <div className="dm-editorial__row" style={{ background: paint.fill(colors.surface), borderColor: colors.border }}>
+        <Lucide icon={ICON.link} size={20} color={colors.primary} />
+        <span className="dm-editorial__row-copy">
+          <strong style={{ color: colors.text }}>ops@build-box</strong>
+          <span style={{ color: colors.textMuted }}>Saved SSH host</span>
+        </span>
+        <Lucide icon={ICON.chevronRight} size={16} color={colors.textMuted} />
+      </div>
+      <div className="dm-editorial__manage">
+        <span style={{ color: colors.primary }}>Manage connections</span>
+        <Lucide icon={ICON.chevronRight} size={16} color={colors.primary} />
+      </div>
+    </div>
+  );
+}
+
+function HomeEditorialContent({ paint, pad, top, logicalWidth }: { paint: Paint; pad: boolean; top: number; logicalWidth: number }) {
+  const { colors } = paint;
+  const identity = resolveHomeIdentity(paint.manifest);
+  const scene = paint.art('home.background', null, 'shell.background');
+  const banner = paint.homeArtwork;
+  const cover = paint.manifest.homePresentation?.header === 'cover' && banner !== null;
+  const bareToolbar = paint.manifest.homePresentation?.toolbarBackground === false;
+  const [coverTitleHeight, setCoverTitleHeight] = useState(0);
+  const gutter = logicalWidth >= 752 ? 24 : 12;
+  const innerWidth = Math.max(0, logicalWidth - gutter * 2);
+  const actionsWide = innerWidth >= 560;
+  const coverSplit = cover && logicalWidth >= 752;
+  const homeClassName = [
+    'dm-home',
+    'dm-home--editorial',
+    cover ? 'dm-home--editorial-cover' : '',
+    coverSplit ? 'dm-home--editorial-cover-split' : '',
+    pad ? 'dm-home--pad' : '',
+    actionsWide ? 'dm-home--editorial-actions-wide' : '',
+  ].filter(Boolean).join(' ');
+  const headerActions = (
+    <>
+      <HeaderButton paint={paint} icon={ICON.scanLine} editorial bare={bareToolbar} />
+      <HeaderButton paint={paint} icon={ICON.settings} editorial bare={bareToolbar} />
+    </>
+  );
+  return (
+    <div className={homeClassName} style={{ background: paint.fill(colors.background) }}>
+      <Art art={scene} />
+      <div
+        className="dm-editorial__page"
+        style={{ paddingInline: pad ? 24 : 12, paddingTop: pad ? 24 : top + NAV_HEADER_TOP_GAP }}
+      >
+        {cover ? (
+          <section className="dm-editorial-cover">
+            <CoverTitle text={identity.name ?? paint.manifest.name} color={colors.text} onHeight={setCoverTitleHeight} />
+            <div className="dm-editorial-cover__art">
+              <Art art={banner} />
+            </div>
+            <div className="dm-editorial-cover__utilities" style={{ top: coverTitleHeight + 8 }}>{headerActions}</div>
+            <div className="dm-editorial-cover__launches">
+              <EditorialLaunches paint={paint} rail />
+            </div>
+          </section>
+        ) : null}
+        <header className="dm-editorial__masthead" style={{ borderColor: colors.border }}>
+          {!cover && banner ? (
+            <>
+              <div className="dm-editorial__masthead-top">
+                <EditorialTarget paint={paint} />
+                <div className="dm-editorial__masthead-actions dm-editorial__masthead-actions--inline">{headerActions}</div>
+              </div>
+              {identity.showBrand && (identity.logo || identity.name) ? (
+                <div className="dm-editorial__identity" style={{ color: colors.textMuted }}>
+                  {identity.logo ? <Logo paint={paint} size={44} className="dm-editorial__identity-logo" /> : null}
+                  {identity.name ? <span>{identity.name}</span> : null}
+                </div>
+              ) : null}
+            </>
+          ) : null}
+          {!cover && !banner ? (
+            <>
+              <div className="dm-editorial__masthead-top">
+                <EditorialTarget paint={paint} />
+                <div className="dm-editorial__masthead-actions dm-editorial__masthead-actions--inline">{headerActions}</div>
+              </div>
+              {identity.showBrand && (identity.logo || identity.name) ? (
+                <div className="dm-editorial__identity dm-editorial__identity--compact" style={{ color: colors.textMuted }}>
+                  {identity.logo ? <Logo paint={paint} size={44} className="dm-editorial__identity-logo" /> : null}
+                  {identity.name ? <span>{identity.name}</span> : null}
+                </div>
+              ) : null}
+            </>
+          ) : null}
+        </header>
+        {!cover && banner ? <div className="dm-editorial__hero"><Art art={banner} /></div> : null}
+        {!cover ? <EditorialLaunches paint={paint} /> : null}
+        <div className="dm-editorial__grid">
+          <main className="dm-editorial__main">
+            {!pad && <EditorialAttention paint={paint} />}
+            <EditorialSection paint={paint} title="Continue">
+              <EditorialRecent paint={paint} />
+            </EditorialSection>
+            {!pad && (
+              <EditorialSection paint={paint} title="Connections">
+                <EditorialConnections paint={paint} />
+              </EditorialSection>
+            )}
+          </main>
+          {pad && <aside className="dm-editorial__aside">
+            <EditorialAttention paint={paint} />
+            <EditorialSection paint={paint} title="Connections">
+              <EditorialConnections paint={paint} />
+            </EditorialSection>
+          </aside>}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** Fit the native cover title from its rendered glyph width, as RN does after measuring text. */
+function CoverTitle({ text, color, onHeight }: { text: string; color: string; onHeight: (height: number) => void }) {
+  const title = useRef<HTMLHeadingElement>(null);
+  const [fontSize, setFontSize] = useState(100);
+
+  useEffect(() => {
+    const element = title.current;
+    const container = element?.parentElement;
+    if (!element || !container) return;
+    const measure = () => {
+      const naturalWidth = element.scrollWidth * (100 / fontSize);
+      const widthFit = naturalWidth > 0 ? (container.clientWidth / naturalWidth) * 100 : 100;
+      const sizeCap = container.clientWidth * 0.48;
+      const next = Math.round(Math.max(16, Math.min(100, widthFit, sizeCap)) * 100) / 100;
+      setFontSize((current) => (current === next ? current : next));
+      onHeight(element.getBoundingClientRect().height);
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, [fontSize, onHeight, text]);
+
+  return (
+    <h2 ref={title} style={{ color, fontSize, lineHeight: 1.08 }}>
+      {text}
+    </h2>
   );
 }
 
@@ -376,7 +748,6 @@ function HomeContent({ paint, pad, top }: { paint: Paint; pad: boolean; top: num
   // shell and Home along with it.
   const scene = paint.art('home.background', null, 'shell.background');
   const hasScene = paint.has('home.background', 'shell.background');
-  const banner = paint.art('home.decoration', null);
   return (
     <div className={`dm-home ${pad ? 'dm-home--pad' : ''}`} style={{ background: paint.fill(colors.background) }}>
       <Art art={scene} />
@@ -405,11 +776,7 @@ function HomeContent({ paint, pad, top }: { paint: Paint; pad: boolean; top: num
             )}
           </div>
         )}
-        {banner && (
-          <div className="dm-banner">
-            <Art art={banner} banner />
-          </div>
-        )}
+        <HomeArtwork paint={paint} />
         {SERVERS.map((server) => (
           <ServerCard key={server.name} paint={paint} server={server} layout={layout} />
         ))}
@@ -419,11 +786,11 @@ function HomeContent({ paint, pad, top }: { paint: Paint; pad: boolean; top: num
 }
 
 /** `PadServerRail`: the persistent master column on a wide window. */
-function Rail({ paint, selected }: { paint: Paint; selected?: { server: string; pane: string } }) {
+function Rail({ paint, selected, editorial = false }: { paint: Paint; selected?: { server: string; pane: string }; editorial?: boolean }) {
   const { colors } = paint;
   const identity = resolveHomeIdentity(paint.manifest);
   return (
-    <aside className="dm-rail" style={{ width: RAIL_WIDTH, background: paint.fill(colors.surface) }}>
+    <aside className={`dm-rail${editorial ? ' dm-rail--editorial' : ''}`} style={{ width: RAIL_WIDTH, background: paint.fill(colors.surface) }}>
       <Art art={paint.art('navigation.background', colors.surface)} />
       {identity.showBrand && (
         <div className="dm-rail__brand">
@@ -435,7 +802,7 @@ function Rail({ paint, selected }: { paint: Paint; selected?: { server: string; 
           {identity.name !== null && (
             <span className="dm-rail__copy">
               <span className="dm-rail__name" style={{ color: colors.text }}>{identity.name}</span>
-              <span className="dm-rail__tagline" style={{ color: colors.textMuted }}>Your agents, anywhere.</span>
+              {!editorial ? <span className="dm-rail__tagline" style={{ color: colors.textMuted }}>Your agents, anywhere.</span> : null}
             </span>
           )}
         </div>
@@ -697,7 +1064,7 @@ function useScale(logicalWidth: number): [React.RefObject<HTMLDivElement | null>
   return [ref, scale];
 }
 
-export default function DeviceMock({ pack, mode, device, screen, label }: Props) {
+export default function DeviceMock({ pack, mode, device, screen, layout = DEFAULT_THEME_PREVIEW_LAYOUT, label }: Props) {
   const spec = DEVICES[device];
   const paint = paintFor(pack, mode, device);
   const [ref, scale] = useScale(spec.width + spec.bezel * 2);
@@ -706,7 +1073,11 @@ export default function DeviceMock({ pack, mode, device, screen, label }: Props)
 
   const content =
     screen === 'home' ? (
-      <HomeContent paint={paint} pad={pad} top={spec.top} />
+      layout === 'editorial' ? (
+        <HomeEditorialContent paint={paint} pad={pad} top={spec.top} logicalWidth={pad ? spec.width - RAIL_WIDTH - 36 : spec.width} />
+      ) : (
+        <HomeContent paint={paint} pad={pad} top={spec.top} />
+      )
     ) : screen === 'conversation' ? (
       <ConversationContent paint={paint} pad={pad} top={spec.top} bottom={spec.bottom} />
     ) : (
@@ -753,7 +1124,7 @@ export default function DeviceMock({ pack, mode, device, screen, label }: Props)
           <Art art={paint.art('shell.background', null)} />
           {pad ? (
             <div className="dm-split" style={{ paddingTop: spec.top + 12, paddingBottom: spec.bottom }}>
-              <Rail paint={paint} selected={screen === 'home' ? undefined : { server: 'studio', pane: 'claude' }} />
+              <Rail paint={paint} editorial={layout === 'editorial'} selected={screen === 'home' ? undefined : { server: 'studio', pane: 'claude' }} />
               <div className="dm-split__detail">{content}</div>
             </div>
           ) : (

@@ -73,9 +73,13 @@ export interface ThemesCopy {
   /** The device mock-ups: which device, which screen. Also their accessible names. */
   screens: {
     devices: string;
+    layout: string;
+    classic: string;
+    editorial: string;
     tokens: string;
     phone: string;
     tablet: string;
+    all: string;
     home: string;
     conversation: string;
     terminal: string;
@@ -165,9 +169,13 @@ const en: ThemesCopy = {
   },
   screens: {
     devices: 'On a device',
+    layout: 'Home layout',
+    classic: 'Classic',
+    editorial: 'Editorial',
     tokens: 'The tokens',
     phone: 'Phone',
     tablet: 'Tablet',
+    all: 'All devices',
     home: 'Home',
     conversation: 'Conversation',
     terminal: 'Terminal',
@@ -257,9 +265,13 @@ const zhCN: ThemesCopy = {
   },
   screens: {
     devices: '在设备上',
+    layout: '首页布局',
+    classic: '经典',
+    editorial: '编辑版',
     tokens: '色彩令牌',
     phone: '手机',
     tablet: '平板',
+    all: '全部设备',
     home: '首页',
     conversation: '对话',
     terminal: '终端',
@@ -349,9 +361,13 @@ const zhTW: ThemesCopy = {
   },
   screens: {
     devices: '在裝置上',
+    layout: '首頁版面',
+    classic: '經典',
+    editorial: '編輯版',
     tokens: '色彩權杖',
     phone: '手機',
     tablet: '平板',
+    all: '全部裝置',
     home: '首頁',
     conversation: '對話',
     terminal: '終端機',
@@ -441,9 +457,13 @@ const ja: ThemesCopy = {
   },
   screens: {
     devices: 'デバイスで見る',
+    layout: 'ホームレイアウト',
+    classic: 'クラシック',
+    editorial: 'エディトリアル',
     tokens: 'トークン',
     phone: 'スマートフォン',
     tablet: 'タブレット',
+    all: 'すべてのデバイス',
     home: 'ホーム',
     conversation: '会話',
     terminal: 'ターミナル',
@@ -533,9 +553,13 @@ const ko: ThemesCopy = {
   },
   screens: {
     devices: '기기에서 보기',
+    layout: '홈 레이아웃',
+    classic: '클래식',
+    editorial: '에디토리얼',
     tokens: '토큰',
     phone: '휴대폰',
     tablet: '태블릿',
+    all: '모든 기기',
     home: '홈',
     conversation: '대화',
     terminal: '터미널',
@@ -625,9 +649,13 @@ const de: ThemesCopy = {
   },
   screens: {
     devices: 'Auf dem Gerät',
+    layout: 'Home-Layout',
+    classic: 'Klassisch',
+    editorial: 'Editorial',
     tokens: 'Die Tokens',
     phone: 'Telefon',
     tablet: 'Tablet',
+    all: 'Alle Geräte',
     home: 'Start',
     conversation: 'Unterhaltung',
     terminal: 'Terminal',
@@ -717,9 +745,13 @@ const fr: ThemesCopy = {
   },
   screens: {
     devices: 'Sur un appareil',
+    layout: 'Mise en page de l’accueil',
+    classic: 'Classique',
+    editorial: 'Éditorial',
     tokens: 'Les jetons',
     phone: 'Téléphone',
     tablet: 'Tablette',
+    all: 'Tous les appareils',
     home: 'Accueil',
     conversation: 'Conversation',
     terminal: 'Terminal',
@@ -809,9 +841,13 @@ const es: ThemesCopy = {
   },
   screens: {
     devices: 'En un dispositivo',
+    layout: 'Diseño de inicio',
+    classic: 'Clásico',
+    editorial: 'Editorial',
     tokens: 'Los tokens',
     phone: 'Teléfono',
     tablet: 'Tableta',
+    all: 'Todos los dispositivos',
     home: 'Inicio',
     conversation: 'Conversación',
     terminal: 'Terminal',
@@ -901,9 +937,13 @@ const pt: ThemesCopy = {
   },
   screens: {
     devices: 'Em um aparelho',
+    layout: 'Layout inicial',
+    classic: 'Clássico',
+    editorial: 'Editorial',
     tokens: 'Os tokens',
     phone: 'Celular',
     tablet: 'Tablet',
+    all: 'Todos os dispositivos',
     home: 'Início',
     conversation: 'Conversa',
     terminal: 'Terminal',
@@ -993,9 +1033,13 @@ const ru: ThemesCopy = {
   },
   screens: {
     devices: 'На устройстве',
+    layout: 'Макет главной',
+    classic: 'Классический',
+    editorial: 'Редакционный',
     tokens: 'Токены',
     phone: 'Телефон',
     tablet: 'Планшет',
+    all: 'Все устройства',
     home: 'Главная',
     conversation: 'Диалог',
     terminal: 'Терминал',
@@ -1085,9 +1129,13 @@ const vi: ThemesCopy = {
   },
   screens: {
     devices: 'Trên thiết bị',
+    layout: 'Bố cục trang chủ',
+    classic: 'Cổ điển',
+    editorial: 'Biên tập',
     tokens: 'Các token',
     phone: 'Điện thoại',
     tablet: 'Máy tính bảng',
+    all: 'Tất cả thiết bị',
     home: 'Trang chủ',
     conversation: 'Hội thoại',
     terminal: 'Terminal',
@@ -1177,9 +1225,13 @@ const th: ThemesCopy = {
   },
   "screens": {
     "devices": "ตัวอย่างบนอุปกรณ์",
+    "layout": "เลย์เอาต์หน้าหลัก",
+    "classic": "คลาสสิก",
+    "editorial": "บทบรรณาธิการ",
     "tokens": "ค่าสีของธีม",
     "phone": "มือถือ",
     "tablet": "แท็บเล็ต",
+    "all": "อุปกรณ์ทั้งหมด",
     "home": "หน้าแรก",
     "conversation": "บทสนทนา",
     "terminal": "เทอร์มินัล"
