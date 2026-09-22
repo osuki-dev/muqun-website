@@ -686,6 +686,148 @@
   -webkit-backdrop-filter: blur(18px) saturate(1.4);
 }
 
+/* --------------------------------------------------------------------------
+   Ambient effects (rain, particles, scanlines, bloom)
+   Parity with native App Skia ambient shaders
+   -------------------------------------------------------------------------- */
+
+.dm-ambient {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  contain: strict;
+}
+
+/* Rain */
+.dm-ambient--rain {
+  background: linear-gradient(180deg, rgba(120, 160, 220, 0.06) 0%, transparent 70%);
+}
+
+.dm-rain {
+  position: absolute;
+  inset: -120px 0 0 0;
+  transform: rotate(12deg);
+}
+
+.dm-rain__streak {
+  position: absolute;
+  width: 1.5px;
+  height: 52px;
+  background: linear-gradient(to bottom, transparent, rgba(210, 230, 255, 0.75));
+  border-radius: 1px;
+  animation: dm-rain-fall linear infinite;
+}
+
+@keyframes dm-rain-fall {
+  0% {
+    transform: translateY(-80px);
+  }
+  100% {
+    transform: translateY(980px);
+  }
+}
+
+/* Particles */
+.dm-particles {
+  position: absolute;
+  inset: 0;
+}
+
+.dm-particle {
+  position: absolute;
+  border-radius: 50%;
+  background: var(--ambient-accent, #fff);
+  box-shadow: 0 0 8px var(--ambient-accent, #fff);
+  animation: dm-particle-float ease-in-out infinite alternate, dm-particle-rise linear infinite;
+}
+
+@keyframes dm-particle-rise {
+  0% {
+    transform: translateY(50px);
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateY(-160px);
+    opacity: 0.1;
+  }
+}
+
+@keyframes dm-particle-float {
+  0% {
+    margin-left: -8px;
+  }
+  100% {
+    margin-left: 8px;
+  }
+}
+
+/* Scanlines */
+.dm-scanlines {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.3) 0px,
+    rgba(0, 0, 0, 0.3) 1.5px,
+    transparent 1.5px,
+    transparent 3.5px
+  );
+}
+
+.dm-scanlines__beam {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 90px;
+  background: linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+  animation: dm-scan-beam 4s linear infinite;
+}
+
+@keyframes dm-scan-beam {
+  0% {
+    top: -90px;
+  }
+  100% {
+    top: 100%;
+  }
+}
+
+/* Bloom */
+.dm-ambient--bloom {
+  animation: dm-bloom-pulse 5.5s ease-in-out infinite alternate;
+}
+
+.dm-bloom {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 65% 45% at 50% 12%, var(--ambient-accent, rgba(255, 200, 100, 0.25)), transparent 75%),
+    radial-gradient(ellipse 55% 40% at 80% 85%, var(--ambient-accent, rgba(255, 200, 100, 0.15)), transparent 70%);
+  filter: blur(20px);
+  mix-blend-mode: screen;
+}
+
+@keyframes dm-bloom-pulse {
+  0% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dm-ambient,
+  .dm-ambient * {
+    animation: none !important;
+  }
+}
+
+
 .dm-icon {
   display: inline-block;
   object-fit: contain;

@@ -182,3 +182,39 @@ describe('shared Home artwork contract', () => {
     expect(markup).not.toContain('dm-banner');
   });
 });
+
+describe('ambient effect preview contract', () => {
+  test('renders ambient effect overlay when declared in manifest', () => {
+    const pack = previewPackage();
+    pack.manifest.effects = { ambient: 'rain', intensity: 0.7 };
+
+    const markup = renderToStaticMarkup(
+      <DeviceMock
+        pack={pack}
+        mode="light"
+        device="phone"
+        screen="home"
+        label="Rain ambient preview"
+      />,
+    );
+
+    expect(markup).toContain('dm-ambient--rain');
+    expect(markup).toContain('dm-rain__streak');
+  });
+
+  test('does not render ambient effect when none or absent', () => {
+    const pack = previewPackage();
+    const markup = renderToStaticMarkup(
+      <DeviceMock
+        pack={pack}
+        mode="light"
+        device="phone"
+        screen="home"
+        label="No ambient preview"
+      />,
+    );
+
+    expect(markup).not.toContain('dm-ambient');
+  });
+});
+

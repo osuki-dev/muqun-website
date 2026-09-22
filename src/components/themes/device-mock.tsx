@@ -36,6 +36,9 @@ import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 
 import {
   resolveHomeArtwork,
   resolveHomeIdentity,
+  resolveThemeEffects,
+  type ThemeAmbientEffect,
+  type ThemeEffects,
   type ThemeManifest,
   type ThemeMode,
   type ThemePackage,
@@ -104,6 +107,7 @@ interface Paint {
   colors: ThemeManifest['variants']['light']['colors'];
   terminal: ThemeManifest['variants']['light']['terminal'];
   alpha: number;
+  effects?: ThemeEffects;
   /** A coloured plane, faded by the variant's surface opacity (`useSurfaceBackground`). */
   fill: (color: string) => string;
   /** Artwork for a slot over a base colour, bounded the way the app bounds it. */
@@ -120,6 +124,7 @@ function paintFor(pack: ThemePackage, mode: ThemeMode, device: DeviceKind): Pain
   const alpha = surfaceOpacity(variant.surfaces?.backgroundOpacity);
   const width = device === 'tablet' ? 'regular' : 'compact';
   const homeArtwork = resolveHomeArtwork({ manifest, mode, width });
+  const effects = resolveThemeEffects(manifest, mode);
   return {
     pack,
     manifest,
@@ -128,6 +133,7 @@ function paintFor(pack: ThemePackage, mode: ThemeMode, device: DeviceKind): Pain
     colors: variant.colors,
     terminal: variant.terminal,
     alpha,
+    effects,
     fill: (color) => surfaceFill(color, alpha),
     art: (slot, base, fallback) => resolveArtwork(pack, manifest, slot, mode, width, base, alpha, fallback),
     has: (slot, fallback) => Boolean(themeArtwork(pack, manifest, slot, mode, width, fallback)),
@@ -158,6 +164,76 @@ function artStyle(art: ResolvedArtwork, banner = false): CSSProperties {
 /** `ThemeArtworkLayer`: absolute, non-interactive, no layout footprint. */
 function Art({ art, banner = false }: { art: ResolvedArtwork | null; banner?: boolean }) {
   return art ? <span className="dm-art" style={artStyle(art, banner)} /> : null;
+}
+
+/**
+ * Visual ambient overlay for device mockups (rain, particles, scanlines, bloom),
+ * matching the native Skia ambient shader effects in the app.
+ */
+function AmbientEffect({
+  effect,
+  intensity = 0.5,
+  accentColor,
+}: {
+  effect: ThemeAmbientEffect;
+  intensity?: number;
+  accentColor: string;
+}) {
+  if (!effect || effect === 'none') return null;
+
+  return (
+    <div
+      className={`dm-ambient dm-ambient--${effect}`}
+      style={{
+        opacity: Math.max(0.1, Math.min(1, intensity)),
+        ['--ambient-accent' as string]: accentColor,
+      }}
+      aria-hidden="true"
+    >
+      {effect === 'rain' && (
+        <div className="dm-rain">
+          {Array.from({ length: 24 }, (_, i) => (
+            <span
+              key={i}
+              className="dm-rain__streak"
+              style={{
+                left: `${(i * 17) % 100}%`,
+                animationDelay: `${((i * 0.13) % 1.6).toFixed(2)}s`,
+                animationDuration: `${(0.75 + ((i * 0.17) % 0.65)).toFixed(2)}s`,
+                opacity: 0.3 + ((i % 5) * 0.14),
+              }}
+            />
+          ))}
+        </div>
+      )}
+      {effect === 'particles' && (
+        <div className="dm-particles">
+          {Array.from({ length: 20 }, (_, i) => (
+            <span
+              key={i}
+              className="dm-particle"
+              style={{
+                left: `${(i * 19 + 7) % 96}%`,
+                bottom: `${(i * 23) % 60}%`,
+                width: `${2 + (i % 3)}px`,
+                height: `${2 + (i % 3)}px`,
+                animationDelay: `${((i * 0.31) % 3).toFixed(2)}s`,
+                animationDuration: `${(3 + ((i * 0.47) % 3)).toFixed(2)}s`,
+                opacity: 0.3 + ((i % 4) * 0.2),
+              }}
+            />
+          ))}
+        </div>
+      )}
+      {effect === 'scanlines' && (
+        <>
+          <div className="dm-scanlines" />
+          <div className="dm-scanlines__beam" />
+        </>
+      )}
+      {effect === 'bloom' && <div className="dm-bloom" />}
+    </div>
+  );
 }
 
 /**
@@ -1126,6 +1202,13 @@ export default function DeviceMock({ pack, mode, device, screen, layout = DEFAUL
           {/* `AppDrawer`'s shell: the app's plane and `shell.background`, once,
               under Home and the workspace alike, on both form factors. */}
           <Art art={paint.art('shell.background', null)} />
+          {paint.effects?.ambient && paint.effects.ambient !== 'none' && (
+            <AmbientEffect
+              effect={paint.effects.ambient}
+              intensity={paint.effects.intensity}
+              accentColor={colors.primary}
+            />
+          )}
           {pad ? (
             <div className="dm-split" style={{ paddingTop: spec.top + 12, paddingBottom: spec.bottom }}>
               <Rail paint={paint} editorial={layout === 'editorial'} selected={screen === 'home' ? undefined : { server: 'studio', pane: 'claude' }} />

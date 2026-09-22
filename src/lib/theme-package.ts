@@ -65,9 +65,18 @@ export interface ThemeTerminal {
   ansi: string[];
 }
 
+export const THEME_AMBIENT_EFFECTS = ['none', 'rain', 'particles', 'scanlines', 'bloom'] as const;
+export type ThemeAmbientEffect = (typeof THEME_AMBIENT_EFFECTS)[number];
+
+export interface ThemeEffects {
+  ambient?: ThemeAmbientEffect;
+  intensity?: number;
+}
+
 export interface ThemeVariant {
   colors: ThemeColors;
   surfaces?: { backgroundOpacity?: number };
+  effects?: ThemeEffects;
   terminal: ThemeTerminal;
 }
 
@@ -136,6 +145,7 @@ export interface ThemeManifest {
     header: 'standard' | 'cover';
     toolbarBackground?: boolean;
   };
+  effects?: ThemeEffects;
   variants: { light: ThemeVariant; dark: ThemeVariant };
   materials?: Record<string, string | undefined>;
   assets?: Record<string, { path?: string; url?: string; sha256?: string }>;
@@ -359,14 +369,28 @@ function readTerminal(value: unknown, path: string): ThemeTerminal {
   };
 }
 
+function readEffects(value: unknown): ThemeEffects | undefined {
+  if (!isRecord(value)) return undefined;
+  const ambient = typeof value.ambient === 'string' && (THEME_AMBIENT_EFFECTS as readonly string[]).includes(value.ambient)
+    ? (value.ambient as ThemeAmbientEffect)
+    : undefined;
+  const intensity = typeof value.intensity === 'number' && Number.isFinite(value.intensity)
+    ? Math.max(0, Math.min(1, value.intensity))
+    : undefined;
+  if (!ambient && intensity === undefined) return undefined;
+  return { ambient, intensity };
+}
+
 function readVariant(value: unknown, path: string): ThemeVariant {
   if (!isRecord(value)) invalid(`${path} is missing`);
   const surfaces = isRecord(value.surfaces)
     ? { backgroundOpacity: readOpacity(value.surfaces.backgroundOpacity) }
     : undefined;
+  const effects = readEffects(value.effects);
   return {
     colors: readColors(value.colors, `${path}.colors`),
     surfaces,
+    effects,
     terminal: readTerminal(value.terminal, `${path}.terminal`),
   };
 }
@@ -405,6 +429,7 @@ export function parseThemeManifest(text: string): ThemeManifest {
     description: optionalText('description'),
     tags,
     preview: optionalText('preview'),
+    effects: readEffects(input.effects),
     variants: {
       light: readVariant(input.variants.light, 'variants.light'),
       dark: readVariant(input.variants.dark, 'variants.dark'),
@@ -568,3 +593,17 @@ export function cssColor(hex: string, alpha = 1): string {
   const a = Math.max(0, Math.min(1, own * alpha));
   return a >= 1 ? `rgb(${r} ${g} ${b})` : `rgb(${r} ${g} ${b} / ${a.toFixed(3)})`;
 }
+
+/**
+ * The ambient visual effect (rain, particles, scanlines, bloom) resolved for
+ * a theme in one mode, prioritizing variant-specific overrides over global theme settings.
+ */
+export function resolveThemeEffects(manifest: ThemeManifest, mode: ThemeMode): ThemeEffects | undefined {
+  const variantEffects = manifest.variants[mode]?.effects;
+  const sharedEffects = manifest.effects;
+  const ambient = variantEffects?.ambient ?? sharedEffects?.ambient ?? 'none';
+  const intensity = variantEffects?.intensity ?? sharedEffects?.intensity ?? 0.5;
+  if (ambient === 'none') return undefined;
+  return { ambient, intensity };
+}
+
