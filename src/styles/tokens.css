@@ -117,9 +117,9 @@
    * rather than panes. A phone has a radius because the glass has a radius.
    * A control has one because a finger does. Nothing else may.
    */
-  --mq-radius-sm: 0;
-  --mq-radius-md: 0;
-  --mq-radius-lg: 0;
+  --mq-radius-sm: 10px;
+  --mq-radius-md: 20px;
+  --mq-radius-lg: 24px;
   --mq-radius-xl: 28px; /* the device silhouette -- real hardware, real corners */
   --mq-radius-full: 9999px; /* controls and touch targets */
 

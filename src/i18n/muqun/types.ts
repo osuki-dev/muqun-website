@@ -253,10 +253,7 @@ export interface MuqunCopy {
     eyebrow: string;
     heading: string;
     lead: string;
-    emailCta: string;
     issueCta: string;
-    contactBefore: string;
-    contactAfter: string;
     networkEyebrow: string;
     networkHeading: string;
     networkBadge: string;

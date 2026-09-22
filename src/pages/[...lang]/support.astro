@@ -1,25 +1,36 @@
 ---
 /**
- * The support page — every locale, one file, same arrangement as the product
- * page beside it.
+ * The user guide & support manual — every locale, one file.
  *
- * This is reference material and not part of the pitch: someone arrives here
- * because something did not connect, so the network recommendation comes
- * before the checks — it is the answer to most of them — the checks come
- * before the apology, and the way to reach a person is at the top, where
- * someone who has already tried everything will look for it. Nothing on this
- * page asks for a token, a log or a pairing QR, and the last block says so.
+ * ── What this page is ───────────────────────────────────────────────────────
+ * A complete developer guide and reference manual for Muqun, the Gateway,
+ * and the OpenCode agent.
  *
- * Bands, as on the product page: cream where Muqun speaks, recessed for the
- * parts that are procedure.
+ * Anchor IDs (#get-started, #terminal, #opencode, #gateway, #themes,
+ * #troubleshooting, #contact) are deep-linked from inside shipped mobile
+ * binaries and must remain immutable.
+ *
+ * ── Design Language & Register ──────────────────────────────────────────────
+ * - Tmux pane bars with indices and meta tags on every major chapter.
+ * - Docked status line navigation with real-time active section tracking.
+ * - Interactive Chapter Deck in the hero for immediate wayfinding.
+ * - High-density parameter matrices, comparison decks, and diagnostic cards.
  */
 import Layout from '@/layouts/Layout.astro';
 import Band from '@/components/Band.astro';
 import Button from '@/components/Button.astro';
+import CodeBlock from '@/components/CodeBlock.astro';
+import DeviceShot from '@/components/DeviceShot.astro';
 import Display from '@/components/Display.astro';
+import FactList from '@/components/FactList.astro';
 import Grid from '@/components/Grid.astro';
 import Prose from '@/components/Prose.astro';
 import SectionHeading from '@/components/SectionHeading.astro';
+import Step from '@/components/Step.astro';
+import Steps from '@/components/Steps.astro';
+import type { StatusLineItem } from '@/components/types';
+import { userGuide } from '@/i18n/user-guide';
+import { worldCopy } from '@/i18n/world';
 import { getMuqunCopy } from '@/i18n/muqun';
 import { feedbackIssueUrl } from '@/lib/muqun-links';
 import { localizedPath, siteLocaleCodes, defaultLocale } from '@/lib/locales';
@@ -31,87 +42,1498 @@ export function getStaticPaths() {
   }));
 }
 
-/**
- * `locale` is inferred from `getStaticPaths` above rather than declared as a
- * `Props` interface: with both, the interface is the one TypeScript ignores,
- * so it is a second declaration of the same fact that nothing checks.
- */
 const { locale } = Astro.props;
-const copy = getMuqunCopy(locale).support;
+const guide = userGuide[locale];
+const isZhCN = locale === 'zh-CN';
+
+const muqun = getMuqunCopy(locale);
+const world = worldCopy[locale];
+const copyLabel = world?.copyLabel ?? 'Copy';
+const copiedLabel = muqun?.hero?.copiedLabel ?? 'Copied';
 
 const privacyPath = localizedPath('/privacy', locale);
+const themesPath = localizedPath('/themes', locale);
+
+/**
+ * Localized status line entries mapped directly from the guide's chapter anchors:
+ * e.g., 0:start  1:terminal  2:opencode  3:gateway  4:themes  5:debug  6:contact
+ */
+const sections: StatusLineItem[] = guide.contents.map((item, index) => ({
+  key: String(index),
+  id: item.id,
+  label: item.nav ?? item.label,
+  srLabel: item.label,
+}));
 
 ---
 
-<Layout lang={locale} title={copy.metaTitle} description={copy.metaDescription}>
-  <Band tone="cream">
-    {/* `eyebrow` is translated — 「牧群 · サポート」in Japanese — so it is
-        proportional text and not a mono, letter-spaced label. */}
-    <div class="mq-support-eyebrow"><Prose size="small">{copy.eyebrow}</Prose></div>
+<Layout
+  lang={locale}
+  title={guide.metaTitle}
+  description={guide.metaDescription}
+  sections={sections}
+  version="1.3.0"
+>
+  {/* =========================================================================
+      HERO: Guide Overview & Interactive Chapter Navigator
+      ========================================================================= */}
+  <Band tone="cream" class="mq-guide-hero-band">
+    <div class="mq-guide-hero">
+      <div class="mq-guide-badge">
+        <span class="mq-guide-badge__pulse" aria-hidden="true"></span>
+        <span class="mq-mono-label">{guide.hero.badge}</span>
+      </div>
 
-    <Display level={1} size="display-sm">{copy.heading}</Display>
+      <Display level={1} size="display-sm" class="mq-guide-hero__title">
+        {guide.hero.heading}
+      </Display>
 
-    <div class="mq-support-lead"><Prose size="lead">{copy.lead}</Prose></div>
+      <div class="mq-guide-hero__lead">
+        <Prose size="lead">{guide.hero.lead}</Prose>
+      </div>
 
-    <div class="mq-support-actions">
-      <Button href={feedbackIssueUrl} variant="primary" size="lg">{copy.issueCta}</Button>
+      <div class="mq-guide-hero__actions">
+        <Button href="#get-started" variant="primary" size="lg">{guide.hero.startCta}</Button>
+        <Button href="#troubleshooting" variant="secondary" size="lg">{guide.hero.diagnosticsCta}</Button>
+        <Button href={feedbackIssueUrl} variant="quiet" size="lg">{guide.hero.issueCta} ↗</Button>
+      </div>
+
+      {/* The Chapter Deck: fast tactile wayfinding into all 7 deep-linked sections */}
+      <nav class="mq-guide-deck" aria-label={guide.contentsLabel}>
+        <div class="mq-guide-deck__bar">
+          <span class="mq-mono-label">{guide.contentsLabel}</span>
+          <span class="mq-guide-deck__counter">7 chapters · deep-linkable</span>
+        </div>
+        <div class="mq-guide-deck__grid">
+          {
+            guide.contents.map((item, index) => {
+              const key = String(index + 1).padStart(2, '0');
+              return (
+                <a class="mq-deck-card" href={`#${item.id}`}>
+                  <div class="mq-deck-card__top">
+                    <span class="mq-deck-card__index">{key}</span>
+                    <span class="mq-deck-card__slug">#{item.id}</span>
+                    <span class="mq-deck-card__arrow" aria-hidden="true">↓</span>
+                  </div>
+                  <h2 class="mq-deck-card__title">{item.label}</h2>
+                  <p class="mq-deck-card__desc">{item.desc}</p>
+                </a>
+              );
+            })
+          }
+        </div>
+      </nav>
     </div>
   </Band>
 
-  <Band tone="cream">
-    <SectionHeading title={copy.checksHeading} level={2} />
+  {/* =========================================================================
+      CHAPTER 01: GET STARTED (#get-started)
+      ========================================================================= */}
+  <Band tone="recessed" id="get-started">
+    <div class="mq-guide-pane-bar" aria-hidden="true">
+      <span class="mq-guide-pane-bar__dot"></span>
+      <span class="mq-guide-pane-bar__tag"><span class="mq-guide-pane-bar__num">01</span>:get-started</span>
+      <span class="mq-guide-pane-bar__rule"></span>
+      <span class="mq-guide-pane-bar__meta">{guide.contents[0]?.meta}</span>
+    </div>
 
-    <Grid min="24rem">
+    <SectionHeading eyebrow={guide.getStarted.eyebrow} title={guide.getStarted.heading} level={2}>
+      {guide.getStarted.lead}
+    </SectionHeading>
+
+    {/* Pre-flight checklist before running commands */}
+    <div class="mq-guide-preflight">
+      <div class="mq-guide-preflight__header">
+        <span class="mq-mono-label">PRE-FLIGHT REQUIREMENTS</span>
+        <span class="mq-guide-preflight__badge">check before installing</span>
+      </div>
+      <FactList items={guide.getStarted.requirements} />
+    </div>
+
+    {/* The 4-step installation & pairing procedure */}
+    <div class="mq-guide-steps-wrap">
+      <Steps>
+        {
+          guide.getStarted.steps.map((step, idx) => (
+            <Step title={step.title}>
+              <Prose>{step.body}</Prose>
+
+              {/* Step 2 start mode comparison deck */}
+              {idx === 1 && step.commands && step.commands.length >= 2 ? (
+                <div class="mq-guide-start-options">
+                  <div class="mq-start-option">
+                    <div class="mq-start-option__header">
+                      <span class="mq-mono-label mq-start-option__tag">OPTION A · DIRECT</span>
+                      <h4 class="mq-start-option__title">{guide.gateway.modes[0]?.title ?? 'Background Process'}</h4>
+                    </div>
+                    <Prose size="small">{step.commands[0].detail}</Prose>
+                    <CodeBlock
+                      copy
+                      wrap
+                      code={step.commands[0].code}
+                      label={step.commands[0].label}
+                      copyLabel={copyLabel}
+                      copiedLabel={copiedLabel}
+                    />
+                  </div>
+
+                  <div class="mq-start-option">
+                    <div class="mq-start-option__header">
+                      <span class="mq-mono-label mq-start-option__tag">OPTION B · SERVICE</span>
+                      <h4 class="mq-start-option__title">{guide.gateway.modes[1]?.title ?? 'Supervisor / Login Daemon'}</h4>
+                    </div>
+                    <Prose size="small">{step.commands[1].detail}</Prose>
+                    <CodeBlock
+                      copy
+                      wrap
+                      code={step.commands[1].code}
+                      label={step.commands[1].label}
+                      copyLabel={copyLabel}
+                      copiedLabel={copiedLabel}
+                    />
+                  </div>
+                </div>
+              ) : (
+                step.commands?.map((command) => (
+                  <div class="mq-guide-step-code">
+                    {command.detail && <Prose size="small">{command.detail}</Prose>}
+                    <CodeBlock
+                      copy
+                      wrap
+                      code={command.code}
+                      label={command.label}
+                      copyLabel={copyLabel}
+                      copiedLabel={copiedLabel}
+                    />
+                  </div>
+                ))
+              )}
+
+              {step.note && (
+                <div class="mq-guide-callout mq-guide-callout--rule">
+                  <span class="mq-guide-callout__marker" aria-hidden="true">!</span>
+                  <Prose size="small">{step.note}</Prose>
+                </div>
+              )}
+            </Step>
+          ))
+        }
+      </Steps>
+    </div>
+
+    {/* Pairing Tips */}
+    <div class="mq-guide-tips-grid">
+      <div class="mq-guide-tip-card">
+        <div class="mq-guide-tip-card__header">
+          <span class="mq-mono-label">MANUAL ADDRESS PAIRING</span>
+        </div>
+        <Prose size="small">{guide.getStarted.pairingNote}</Prose>
+      </div>
+      <div class="mq-guide-tip-card">
+        <div class="mq-guide-tip-card__header">
+          <span class="mq-mono-label">CODE VALIDITY & RETRIES</span>
+        </div>
+        <Prose size="small">{guide.getStarted.codeNote}</Prose>
+      </div>
+    </div>
+
+    {/* Tailscale Private Network recommendation */}
+    {!isZhCN && guide.getStarted.networkHeading && (
+      <div class="mq-guide-network-card">
+        <div class="mq-guide-network-card__header">
+          <span class="mq-mono-label">{guide.getStarted.networkBadge}</span>
+          <h3 class="mq-subheading">{guide.getStarted.networkHeading}</h3>
+        </div>
+        <Prose>{guide.getStarted.networkBody}</Prose>
+      </div>
+    )}
+  </Band>
+
+  {/* =========================================================================
+      CHAPTER 02: THE TERMINAL (#terminal)
+      ========================================================================= */}
+  <Band tone="cream" id="terminal">
+    <div class="mq-guide-pane-bar" aria-hidden="true">
+      <span class="mq-guide-pane-bar__dot"></span>
+      <span class="mq-guide-pane-bar__tag"><span class="mq-guide-pane-bar__num">02</span>:terminal</span>
+      <span class="mq-guide-pane-bar__rule"></span>
+      <span class="mq-guide-pane-bar__meta">{guide.contents[1]?.meta}</span>
+    </div>
+
+    <SectionHeading eyebrow={guide.terminal.eyebrow} title={guide.terminal.heading} level={2}>
+      {guide.terminal.lead}
+    </SectionHeading>
+
+    {/* Split: Hierarchy & phone device shot */}
+    <div class="mq-guide-split">
+      <div class="mq-guide-split__left">
+        <div class="mq-guide-group-title">
+          <span class="mq-mono-label">WORKSPACE ARCHITECTURE</span>
+        </div>
+        <div class="mq-guide-cards-grid">
+          {
+            guide.terminal.entries.slice(0, 3).map((entry) => (
+              <article class="mq-guide-card">
+                <h3 class="mq-guide-card__title">{entry.term}</h3>
+                <Prose size="small">{entry.detail}</Prose>
+              </article>
+            ))
+          }
+        </div>
+      </div>
+      <div class="mq-guide-split__right">
+        <DeviceShot name="screen-terminal" alt={guide.terminal.shotAlt} width="14rem" raised />
+      </div>
+    </div>
+
+    {/* Additional terminal features & developer tools */}
+    <div class="mq-guide-section-block">
+      <div class="mq-guide-group-title">
+        <span class="mq-mono-label">CONTROLS, EDITORS & DEVELOPER TOOLS</span>
+      </div>
+      <Grid min="19rem">
+        {
+          guide.terminal.entries.slice(3).map((entry) => (
+            <article class="mq-guide-card">
+              <h3 class="mq-guide-card__title">{entry.term}</h3>
+              <Prose size="small">{entry.detail}</Prose>
+            </article>
+          ))
+        }
+      </Grid>
+    </div>
+
+    {/* Terminal observer guarantee */}
+    <div class="mq-guide-guarantee">
+      <span class="mq-guide-guarantee__marker">●</span>
+      <Prose>{guide.terminal.note}</Prose>
+    </div>
+  </Band>
+
+  {/* =========================================================================
+      CHAPTER 03: THE OPENCODE AGENT (#opencode)
+      ========================================================================= */}
+  <Band tone="cream" tight id="opencode">
+    <div class="mq-guide-pane-bar" aria-hidden="true">
+      <span class="mq-guide-pane-bar__dot"></span>
+      <span class="mq-guide-pane-bar__tag"><span class="mq-guide-pane-bar__num">03</span>:opencode</span>
+      <span class="mq-guide-pane-bar__rule"></span>
+      <span class="mq-guide-pane-bar__meta">{guide.contents[2]?.meta}</span>
+    </div>
+
+    <SectionHeading eyebrow={guide.opencode.eyebrow} title={guide.opencode.heading} level={2}>
+      {guide.opencode.lead}
+    </SectionHeading>
+
+    {/* Zero-Account / Local Credential Security Guarantee */}
+    <div class="mq-guide-security-claim">
+      <div class="mq-guide-security-claim__badge">
+        <span class="mq-mono-label">{guide.opencode.noSignInBadge}</span>
+      </div>
+      <h3 class="mq-guide-security-claim__title">{guide.opencode.noSignInHeading}</h3>
+      <Prose>{guide.opencode.noSignIn}</Prose>
+    </div>
+
+    {/* Prerequisites */}
+    <div class="mq-guide-preflight">
+      <div class="mq-guide-preflight__header">
+        <span class="mq-mono-label">{guide.opencode.prerequisitesHeading.toUpperCase()}</span>
+      </div>
+      <FactList items={guide.opencode.prerequisites} />
+    </div>
+
+    {/* OpenCode Feature Grid */}
+    <div class="mq-guide-section-block">
+      <div class="mq-guide-group-title">
+        <span class="mq-mono-label">AGENT CAPABILITIES & WORKFLOW</span>
+      </div>
+      <Grid min="19rem">
+        {
+          guide.opencode.entries.map((entry) => (
+            <article class="mq-guide-card">
+              <h3 class="mq-guide-card__title">{entry.term}</h3>
+              <Prose size="small">{entry.detail}</Prose>
+            </article>
+          ))
+        }
+      </Grid>
+    </div>
+
+    {/* Tool calls note */}
+    <div class="mq-guide-guarantee">
+      <span class="mq-guide-guarantee__marker">●</span>
+      <Prose>{guide.opencode.note}</Prose>
+    </div>
+  </Band>
+
+  {/* =========================================================================
+      CHAPTER 04: CONFIGURING THE GATEWAY (#gateway)
+      ========================================================================= */}
+  <Band tone="recessed" id="gateway">
+    <div class="mq-guide-pane-bar" aria-hidden="true">
+      <span class="mq-guide-pane-bar__dot"></span>
+      <span class="mq-guide-pane-bar__tag"><span class="mq-guide-pane-bar__num">04</span>:gateway</span>
+      <span class="mq-guide-pane-bar__rule"></span>
+      <span class="mq-guide-pane-bar__meta">{guide.contents[3]?.meta}</span>
+    </div>
+
+    <SectionHeading eyebrow={guide.gateway.eyebrow} title={guide.gateway.heading} level={2}>
+      {guide.gateway.lead}
+    </SectionHeading>
+
+    {/* Config File Location */}
+    <div class="mq-guide-config-panel">
+      <div class="mq-guide-config-panel__header">
+        <h3 class="mq-subheading">{guide.gateway.configHeading}</h3>
+        <span class="mq-mono-label">JSON SCHEMA</span>
+      </div>
+      <Prose>{guide.gateway.configBody}</Prose>
+      <div class="mq-guide-config-panel__code">
+        <CodeBlock
+          copy
+          wrap
+          code={guide.gateway.configPath}
+          label={guide.gateway.configPathLabel}
+          copyLabel={copyLabel}
+          copiedLabel={copiedLabel}
+        />
+      </div>
+    </div>
+
+    {/* Configuration Keys Matrix */}
+    <div class="mq-guide-section-block">
+      <div class="mq-guide-group-title">
+        <span class="mq-mono-label">CONFIGURATION KEYS REFERENCE</span>
+      </div>
+      <div class="mq-guide-keys-matrix">
+        {
+          guide.gateway.configKeys.map((entry) => (
+            <article class="mq-key-row">
+              <div class="mq-key-row__name">
+                <code class="mq-mono mq-key-code">{entry.term}</code>
+              </div>
+              <div class="mq-key-row__desc">
+                <Prose size="small">{entry.detail}</Prose>
+              </div>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+
+    {/* Ports Specifications */}
+    <div class="mq-guide-section-block">
+      <div class="mq-guide-group-title">
+        <span class="mq-mono-label">{guide.gateway.portsHeading.toUpperCase()}</span>
+      </div>
+      <Grid min="16rem">
+        {
+          guide.gateway.portsRows.map((row) => (
+            <div class="mq-port-card">
+              <h4 class="mq-port-card__term">{row.term}</h4>
+              <Prose size="small">{row.detail}</Prose>
+            </div>
+          ))
+        }
+      </Grid>
+    </div>
+
+    {/* Two Ways to Keep it Running: Side-by-Side Comparison */}
+    <div class="mq-guide-section-block">
+      <div class="mq-guide-group-title">
+        <span class="mq-mono-label">{guide.gateway.modesHeading.toUpperCase()}</span>
+      </div>
+      <Grid min="20rem">
+        {
+          guide.gateway.modes.map((mode) => (
+            <article class="mq-mode-card">
+              <div class="mq-mode-card__top">
+                <span class="mq-mono-label mq-mode-card__badge">{mode.label.toUpperCase()}</span>
+                <h4 class="mq-mode-card__title">{mode.title}</h4>
+              </div>
+              <div class="mq-mode-card__table">
+                {mode.rows.map((row) => (
+                  <div class="mq-mode-card__row">
+                    <span class="mq-mode-card__key">{row.term}</span>
+                    <span class="mq-mode-card__val"><Prose size="small">{row.detail}</Prose></span>
+                  </div>
+                ))}
+              </div>
+              <div class="mq-mode-card__code">
+                <CodeBlock
+                  copy
+                  wrap
+                  code={mode.code}
+                  label={mode.label}
+                  copyLabel={copyLabel}
+                  copiedLabel={copiedLabel}
+                />
+              </div>
+            </article>
+          ))
+        }
+      </Grid>
+      <div class="mq-guide-callout mq-guide-callout--rule">
+        <span class="mq-guide-callout__marker" aria-hidden="true">!</span>
+        <Prose size="small">{guide.gateway.modesNote}</Prose>
+      </div>
+    </div>
+
+    {/* OpenCode Autostart Sequence */}
+    <div class="mq-guide-section-block">
+      <div class="mq-guide-group-title">
+        <span class="mq-mono-label">{guide.gateway.autostartHeading.toUpperCase()}</span>
+      </div>
+      <ol class="mq-autostart-sequence">
+        {
+          guide.gateway.autostartSteps.map((step, index) => (
+            <li class="mq-autostart-sequence__item">
+              <span class="mq-autostart-sequence__num" aria-hidden="true">
+                0{index + 1}
+              </span>
+              <div class="mq-autostart-sequence__body">
+                <Prose size="small">{step}</Prose>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+      <div class="mq-guide-callout">
+        <span class="mq-guide-callout__marker">●</span>
+        <Prose size="small">{guide.gateway.autostartNote}</Prose>
+      </div>
+      <div class="mq-guide-step-code">
+        <CodeBlock
+          copy
+          wrap
+          code={guide.gateway.autostartOff}
+          label={guide.gateway.autostartOffLabel}
+          copyLabel={copyLabel}
+          copiedLabel={copiedLabel}
+        />
+      </div>
+    </div>
+
+    {/* Pairing Manager Keymap */}
+    <div class="mq-guide-section-block">
+      <div class="mq-guide-group-title">
+        <span class="mq-mono-label">{guide.gateway.managerHeading.toUpperCase()}</span>
+      </div>
+      <Prose>{guide.gateway.managerBody}</Prose>
+      <div class="mq-manager-keymap">
+        {
+          guide.gateway.managerKeys.map((entry) => (
+            <div class="mq-manager-keymap__item">
+              <kbd class="mq-key-pill">{entry.term}</kbd>
+              <div class="mq-manager-keymap__desc">
+                <Prose size="small">{entry.detail}</Prose>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+
+    {/* Capabilities, Upgrade & Logs */}
+    <div class="mq-guide-section-block">
+      <Grid min="20rem">
+        <article class="mq-guide-card">
+          <h3 class="mq-guide-card__title">{guide.gateway.capabilitiesHeading}</h3>
+          <Prose size="small">{guide.gateway.capabilitiesBody}</Prose>
+        </article>
+        <article class="mq-guide-card">
+          <h3 class="mq-guide-card__title">{guide.gateway.upgradeHeading}</h3>
+          <Prose size="small">{guide.gateway.upgradeBody}</Prose>
+        </article>
+      </Grid>
+    </div>
+
+    <div class="mq-guide-section-block">
+      <div class="mq-guide-config-panel">
+        <div class="mq-guide-config-panel__header">
+          <h3 class="mq-subheading">{guide.gateway.logsHeading}</h3>
+          <span class="mq-mono-label">DIAGNOSTICS</span>
+        </div>
+        <Prose>{guide.gateway.logsBody}</Prose>
+        <div class="mq-guide-config-panel__code">
+          <CodeBlock
+            copy
+            wrap
+            code={guide.gateway.logsCommand}
+            label={guide.gateway.logsCommandLabel}
+            copyLabel={copyLabel}
+            copiedLabel={copiedLabel}
+          />
+        </div>
+      </div>
+    </div>
+  </Band>
+
+  {/* =========================================================================
+      CHAPTER 05: THEMES (#themes)
+      ========================================================================= */}
+  <Band tone="cream" id="themes">
+    <div class="mq-guide-pane-bar" aria-hidden="true">
+      <span class="mq-guide-pane-bar__dot"></span>
+      <span class="mq-guide-pane-bar__tag"><span class="mq-guide-pane-bar__num">05</span>:themes</span>
+      <span class="mq-guide-pane-bar__rule"></span>
+      <span class="mq-guide-pane-bar__meta">{guide.contents[4]?.meta}</span>
+    </div>
+
+    <SectionHeading eyebrow={guide.themes.eyebrow} title={guide.themes.heading} level={2}>
+      {guide.themes.lead}
+    </SectionHeading>
+
+    <Grid min="19rem">
       {
-        copy.topics.map((topic) => (
-          <article class="mq-stack">
-            <h3 class="mq-subheading">{topic.title}</h3>
-            <Prose>{topic.body}</Prose>
+        guide.themes.entries.map((entry) => (
+          <article class="mq-guide-card">
+            <h3 class="mq-guide-card__title">{entry.term}</h3>
+            <Prose size="small">{entry.detail}</Prose>
           </article>
         ))
       }
     </Grid>
+
+    <div class="mq-support-link">
+      <Button href={themesPath} variant="quiet" arrow>{guide.themes.galleryLink}</Button>
+    </div>
   </Band>
 
-  <Band tone="recessed" tight>
-    <SectionHeading title={copy.safetyHeading} level={2} />
-    <Prose>{copy.safetyBody}</Prose>
-    <div class="mq-support-link">
-      <Button href={privacyPath} variant="quiet" arrow>{copy.safetyLink}</Button>
+  {/* =========================================================================
+      CHAPTER 06: TROUBLESHOOTING (#troubleshooting)
+      ========================================================================= */}
+  <Band tone="recessed" id="troubleshooting">
+    <div class="mq-guide-pane-bar" aria-hidden="true">
+      <span class="mq-guide-pane-bar__dot"></span>
+      <span class="mq-guide-pane-bar__tag"><span class="mq-guide-pane-bar__num">06</span>:troubleshooting</span>
+      <span class="mq-guide-pane-bar__rule"></span>
+      <span class="mq-guide-pane-bar__meta">{guide.contents[5]?.meta}</span>
+    </div>
+
+    <SectionHeading
+      eyebrow={guide.troubleshooting.eyebrow}
+      title={guide.troubleshooting.heading}
+      level={2}
+    >
+      {guide.troubleshooting.lead}
+    </SectionHeading>
+
+    {/* Part 1: Quick Checks (Commonest issues) */}
+    <div class="mq-guide-section-block">
+      <div class="mq-guide-group-title">
+        <span class="mq-mono-label">{guide.troubleshooting.checksHeading.toUpperCase()}</span>
+      </div>
+      <Grid min="20rem">
+        {
+          guide.troubleshooting.checks.map((check) => (
+            <article class="mq-guide-card mq-guide-card--highlight">
+              <h4 class="mq-guide-card__title">{check.term}</h4>
+              <Prose size="small">{check.detail}</Prose>
+            </article>
+          ))
+        }
+      </Grid>
+    </div>
+
+    {/* Part 2: Diagnostic Solutions */}
+    <div class="mq-guide-section-block">
+      <div class="mq-guide-group-title">
+        <span class="mq-mono-label">DIAGNOSTIC SOLUTIONS</span>
+      </div>
+      <Grid min="20rem">
+        {
+          guide.troubleshooting.entries.map((entry) => (
+            <article class="mq-guide-card">
+              <h3 class="mq-guide-card__title">{entry.term}</h3>
+              <Prose size="small">{entry.detail}</Prose>
+            </article>
+          ))
+        }
+      </Grid>
+    </div>
+  </Band>
+
+  {/* =========================================================================
+      CHAPTER 07: CONTACT & SAFE REPORTING (#contact)
+      ========================================================================= */}
+  <Band tone="cream" tight id="contact">
+    <div class="mq-guide-pane-bar" aria-hidden="true">
+      <span class="mq-guide-pane-bar__dot"></span>
+      <span class="mq-guide-pane-bar__tag"><span class="mq-guide-pane-bar__num">07</span>:contact</span>
+      <span class="mq-guide-pane-bar__rule"></span>
+      <span class="mq-guide-pane-bar__meta">{guide.contents[6]?.meta}</span>
+    </div>
+
+    <SectionHeading eyebrow={guide.contact.eyebrow} title={guide.contact.heading} level={2}>
+      {guide.contact.lead}
+    </SectionHeading>
+
+    <div class="mq-guide-contact-card">
+      <div class="mq-guide-contact-card__report">
+        <span class="mq-mono-label">USEFUL REPORT CHECKLIST</span>
+        <Prose>{guide.contact.reportHint}</Prose>
+      </div>
+
+      <div class="mq-guide-contact-card__cta">
+        <Button href={feedbackIssueUrl} variant="primary" size="lg">
+          {guide.contact.issueCta} ↗
+        </Button>
+      </div>
+    </div>
+
+    {/* Privacy & Safe Reporting */}
+    <div class="mq-guide-safety-panel">
+      <div class="mq-guide-safety-panel__header">
+        <span class="mq-mono-label">PRIVACY GUARANTEE</span>
+        <h3 class="mq-subheading">{guide.contact.safetyHeading}</h3>
+      </div>
+      <Prose>{guide.contact.safetyBody}</Prose>
+      <div class="mq-support-link">
+        <Button href={privacyPath} variant="quiet" arrow>{guide.contact.safetyLink}</Button>
+      </div>
     </div>
   </Band>
 </Layout>
 
 <style>
-  /* Rhythm only; everything with a look of its own is a component. */
-  .mq-support-eyebrow {
-    margin-block-end: var(--mq-space-4);
+  /* =========================================================================
+     HERO & CHAPTER DECK
+     ========================================================================= */
+  .mq-guide-hero {
+    display: flex;
+    flex-direction: column;
+    gap: var(--mq-space-4);
   }
 
-  .mq-support-lead {
-    margin-block-start: var(--mq-space-6);
+  .mq-guide-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--mq-space-2);
+    align-self: flex-start;
+    padding: var(--mq-space-1) var(--mq-space-3);
+    border: 1px solid var(--mq-rule);
+    border-radius: var(--mq-radius-full);
+    background: color-mix(in srgb, var(--mq-canvas) 80%, transparent);
+    margin-block-end: var(--mq-space-2);
   }
 
-  .mq-support-actions {
+  .mq-guide-badge__pulse {
+    inline-size: 6px;
+    block-size: 6px;
+    border-radius: var(--mq-radius-full);
+    background: var(--mq-accent);
+  }
+
+  .mq-guide-hero__title {
+    margin: 0;
+  }
+
+  .mq-guide-hero__lead {
+    max-inline-size: var(--mq-measure);
+    margin-block-start: var(--mq-space-2);
+  }
+
+  .mq-guide-hero__actions {
     display: flex;
     flex-wrap: wrap;
     gap: var(--mq-space-3);
-    margin-block: var(--mq-space-8) var(--mq-space-6);
+    margin-block: var(--mq-space-6) var(--mq-space-10);
   }
 
-  .mq-support-badge {
-    display: inline-flex;
-    margin-block-start: var(--mq-space-2);
+  /* The 7-card Chapter Deck */
+  .mq-guide-deck {
+    margin-block-start: var(--mq-space-6);
+    padding-block-start: var(--mq-space-6);
+    border-block-start: 1px solid var(--mq-hairline);
+  }
+
+  .mq-guide-deck__bar {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--mq-space-4);
+    margin-block-end: var(--mq-space-5);
+  }
+
+  .mq-guide-deck__counter {
+    font-family: var(--mq-font-mono);
+    font-size: var(--mq-size-mono-sm);
+    color: var(--mq-text-muted);
+  }
+
+  .mq-guide-deck__grid {
+    display: grid;
+    gap: var(--mq-space-4);
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 640px) {
+    .mq-guide-deck__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .mq-guide-deck__grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .mq-deck-card {
+    display: flex;
+    flex-direction: column;
+    padding: var(--mq-space-5);
+    background: var(--mq-card);
+    border: 1px solid var(--mq-hairline);
+    border-radius: var(--mq-radius-lg);
+    text-decoration: none;
+    color: inherit;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+    transition:
+      border-color var(--mq-duration-fast) var(--mq-ease-standard),
+      box-shadow var(--mq-duration-fast) var(--mq-ease-standard),
+      transform var(--mq-duration-fast) var(--mq-ease-standard);
+  }
+
+  .mq-deck-card:hover,
+  .mq-deck-card:focus-visible {
+    border-color: var(--mq-rule);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.06);
+    transform: translateY(-3px);
+  }
+
+  .mq-deck-card__top {
+    display: flex;
     align-items: center;
-    min-block-size: var(--mq-control-height-sm);
-    padding-inline: var(--mq-space-4);
-    border: 1px solid var(--mq-rule);
-    border-radius: var(--mq-radius-full);
+    gap: var(--mq-space-2);
+    margin-block-end: var(--mq-space-3);
+    font-family: var(--mq-font-mono);
+    font-size: var(--mq-size-mono-sm);
+  }
+
+  .mq-deck-card__index {
+    color: var(--mq-text-accent);
+    font-weight: var(--mq-weight-strong);
+    background: var(--mq-accent-wash);
+    padding: 2px 8px;
+    border-radius: var(--mq-radius-sm);
+  }
+
+  .mq-deck-card__slug {
+    color: var(--mq-text-muted);
+  }
+
+  .mq-deck-card__arrow {
+    margin-inline-start: auto;
+    color: var(--mq-text-muted);
+    font-weight: var(--mq-weight-strong);
+    transition: transform var(--mq-duration-fast) var(--mq-ease-standard);
+  }
+
+  .mq-deck-card:hover .mq-deck-card__arrow {
+    color: var(--mq-text-accent);
+    transform: translateY(2px);
+  }
+
+  .mq-deck-card__title {
+    margin: 0 0 var(--mq-space-1);
+    font-size: var(--mq-size-body);
+    font-weight: var(--mq-weight-strong);
+    color: var(--mq-text);
+  }
+
+  .mq-deck-card__desc {
+    margin: 0;
     font-size: var(--mq-size-small);
-    font-weight: var(--mq-weight-medium);
+    color: var(--mq-text-muted);
+    line-height: 1.45;
+  }
+
+  /* =========================================================================
+     TMUX PANE BAR HEADER (Chapter Split Bar)
+     ========================================================================= */
+  .mq-guide-pane-bar {
+    display: flex;
+    align-items: center;
+    gap: var(--mq-space-3);
+    margin-block-end: var(--mq-space-8);
+    padding-block-end: var(--mq-space-3);
+    border-block-end: 1px solid var(--mq-rule);
+    font-family: var(--mq-font-mono);
+    font-size: var(--mq-size-mono-sm);
+    letter-spacing: var(--mq-tracking-mono);
+    line-height: 1;
+  }
+
+  .mq-guide-pane-bar__dot {
+    inline-size: 8px;
+    block-size: 8px;
+    border-radius: var(--mq-radius-full);
+    background: var(--mq-accent);
+    flex: 0 0 auto;
+  }
+
+  .mq-guide-pane-bar__tag {
+    color: var(--mq-text-muted);
+    white-space: nowrap;
+  }
+
+  .mq-guide-pane-bar__num {
+    color: var(--mq-text-accent);
+    font-weight: var(--mq-weight-strong);
+  }
+
+  .mq-guide-pane-bar__rule {
+    flex: 1 1 auto;
+    block-size: 1px;
+    background: var(--mq-hairline);
+    min-inline-size: var(--mq-space-4);
+  }
+
+  .mq-guide-pane-bar__meta {
+    font-family: var(--mq-font-body);
+    font-size: var(--mq-size-small);
+    letter-spacing: normal;
+    color: var(--mq-text-muted);
+    white-space: nowrap;
+  }
+
+  /* =========================================================================
+     CARDS, GROUPS & MATRIX
+     ========================================================================= */
+  .mq-guide-section-block {
+    margin-block-start: var(--mq-space-10);
+  }
+
+  .mq-guide-group-title {
+    margin-block-end: var(--mq-space-4);
+    padding-block-end: var(--mq-space-2);
+    border-block-end: 1px solid var(--mq-hairline);
+  }
+
+  .mq-guide-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--mq-space-2);
+    padding: var(--mq-space-5);
+    background: var(--mq-card);
+    border: 1px solid var(--mq-hairline);
+    border-radius: var(--mq-radius-lg);
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.02);
+    height: 100%;
+    transition:
+      border-color var(--mq-duration-fast) var(--mq-ease-standard),
+      box-shadow var(--mq-duration-fast) var(--mq-ease-standard),
+      transform var(--mq-duration-fast) var(--mq-ease-standard);
+  }
+
+  .mq-guide-card:hover {
+    border-color: var(--mq-rule);
+    box-shadow: 0 8px 26px rgba(0, 0, 0, 0.04);
+    transform: translateY(-2px);
+  }
+
+  .mq-guide-card--highlight {
+    border-inline-start: 4px solid var(--mq-accent);
+  }
+
+  .mq-guide-card__title {
+    margin: 0;
+    font-size: var(--mq-size-subheading);
+    font-weight: var(--mq-weight-strong);
+    color: var(--mq-text);
+    line-height: var(--mq-leading-heading);
+  }
+
+  .mq-guide-card :global(.mq-prose) {
+    max-inline-size: var(--mq-measure);
+  }
+
+  /* Split layout in terminal section */
+  .mq-guide-split {
+    display: grid;
+    gap: var(--mq-space-8);
+    align-items: start;
+    margin-block-end: var(--mq-space-8);
+  }
+
+  @media (min-width: 900px) {
+    .mq-guide-split {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+  }
+
+  .mq-guide-cards-grid {
+    display: grid;
+    gap: var(--mq-space-4);
+  }
+
+  /* =========================================================================
+     PRE-FLIGHT & CHECKLIST PANELS
+     ========================================================================= */
+  .mq-guide-preflight {
+    padding: var(--mq-space-6);
+    background: var(--mq-card);
+    border: 1px solid var(--mq-hairline);
+    border-radius: var(--mq-radius-lg);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+    margin-block-end: var(--mq-space-8);
+  }
+
+  .mq-guide-preflight__header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--mq-space-2);
+    margin-block-end: var(--mq-space-4);
+    padding-block-end: var(--mq-space-2);
+    border-block-end: 1px solid var(--mq-hairline);
+  }
+
+  .mq-guide-preflight__badge {
+    font-family: var(--mq-font-mono);
+    font-size: var(--mq-size-mono-sm);
+    color: var(--mq-text-muted);
+  }
+
+  .mq-guide-steps-wrap {
+    margin-block: var(--mq-space-6) var(--mq-space-8);
+  }
+
+  /* Step 2 Start Options Comparison */
+  .mq-guide-start-options {
+    display: grid;
+    gap: var(--mq-space-4);
+    margin-block: var(--mq-space-4);
+  }
+
+  @media (min-width: 640px) {
+    .mq-guide-start-options {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .mq-start-option {
+    display: flex;
+    flex-direction: column;
+    gap: var(--mq-space-3);
+    padding: var(--mq-space-5);
+    background: color-mix(in srgb, var(--mq-canvas) 60%, transparent);
+    border: 1px solid var(--mq-hairline);
+    border-radius: var(--mq-radius-md);
+  }
+
+  .mq-start-option__header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--mq-space-1);
+  }
+
+  .mq-start-option__title {
+    margin: 0;
+    font-size: var(--mq-size-body);
+    font-weight: var(--mq-weight-strong);
+  }
+
+  .mq-start-option__tag {
+    color: var(--mq-text-accent);
+  }
+
+  /* Tips Grid */
+  .mq-guide-tips-grid {
+    display: grid;
+    gap: var(--mq-space-4);
+    margin-block: var(--mq-space-8);
+  }
+
+  @media (min-width: 640px) {
+    .mq-guide-tips-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .mq-guide-tip-card {
+    padding: var(--mq-space-5);
+    background: var(--mq-card);
+    border: 1px solid var(--mq-hairline);
+    border-radius: var(--mq-radius-md);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
+    display: flex;
+    flex-direction: column;
+    gap: var(--mq-space-2);
+  }
+
+  .mq-guide-tip-card__header {
+    padding-block-end: var(--mq-space-2);
+    border-block-end: 1px solid var(--mq-hairline);
+  }
+
+  /* Network Card */
+  .mq-guide-network-card {
+    padding: var(--mq-space-6);
+    background: var(--mq-card);
+    border: 1px solid var(--mq-rule);
+    border-radius: var(--mq-radius-lg);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+    margin-block-start: var(--mq-space-8);
+  }
+
+  .mq-guide-network-card__header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--mq-space-2);
+    margin-block-end: var(--mq-space-3);
+  }
+
+  .mq-guide-network-card h3 {
+    margin: 0;
+  }
+
+  /* =========================================================================
+     CALLOUTS & GUARANTEES
+     ========================================================================= */
+  .mq-guide-callout {
+    display: flex;
+    align-items: baseline;
+    gap: var(--mq-space-3);
+    padding: var(--mq-space-3) var(--mq-space-4);
+    background: color-mix(in srgb, var(--mq-canvas) 50%, transparent);
+    border-radius: var(--mq-radius-sm);
+    margin-block: var(--mq-space-4);
+  }
+
+  .mq-guide-callout--rule {
+    border: 1px solid var(--mq-rule);
+  }
+
+  .mq-guide-callout__marker {
+    font-family: var(--mq-font-mono);
+    font-weight: var(--mq-weight-strong);
+    color: var(--mq-text-accent);
+    flex: 0 0 auto;
+  }
+
+  .mq-guide-guarantee {
+    display: flex;
+    align-items: baseline;
+    gap: var(--mq-space-3);
+    padding: var(--mq-space-4) var(--mq-space-5);
+    border: 1px solid var(--mq-hairline);
+    border-radius: var(--mq-radius-md);
+    background: var(--mq-card);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
+    margin-block-start: var(--mq-space-8);
+  }
+
+  .mq-guide-guarantee__marker {
+    color: var(--mq-accent);
+    flex: 0 0 auto;
+  }
+
+  /* OpenCode Security Claim */
+  .mq-guide-security-claim {
+    padding: var(--mq-space-6);
+    background: var(--mq-card);
+    border: 1px solid var(--mq-rule);
+    border-inline-start: 4px solid var(--mq-verified);
+    border-radius: var(--mq-radius-lg);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+    margin-block-end: var(--mq-space-8);
+  }
+
+  .mq-guide-security-claim__badge {
+    margin-block-end: var(--mq-space-2);
+    color: var(--mq-verified);
+  }
+
+  .mq-guide-security-claim__title {
+    margin: 0 0 var(--mq-space-3);
+    font-size: var(--mq-size-subheading);
+    font-weight: var(--mq-weight-strong);
+  }
+
+  /* =========================================================================
+     GATEWAY CONFIGURATION MATRIX & TABLES
+     ========================================================================= */
+  .mq-guide-config-panel {
+    padding: var(--mq-space-6);
+    background: var(--mq-card);
+    border: 1px solid var(--mq-hairline);
+    border-radius: var(--mq-radius-lg);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+  }
+
+  .mq-guide-config-panel__header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--mq-space-2);
+    margin-block-end: var(--mq-space-3);
+  }
+
+  .mq-guide-config-panel__header h3 {
+    margin: 0;
+  }
+
+  .mq-guide-config-panel__code {
+    margin-block-start: var(--mq-space-4);
+  }
+
+  .mq-guide-keys-matrix {
+    display: grid;
+    gap: 0;
+    background: var(--mq-card);
+    border: 1px solid var(--mq-hairline);
+    border-radius: var(--mq-radius-lg);
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
+  }
+
+  .mq-key-row {
+    display: grid;
+    padding: var(--mq-space-3) var(--mq-space-5);
+    border-block-end: 1px solid var(--mq-hairline);
+    gap: var(--mq-space-2);
+  }
+
+  .mq-key-row:last-child {
+    border-block-end: none;
+  }
+
+  @media (min-width: 640px) {
+    .mq-key-row {
+      grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+      align-items: baseline;
+      gap: var(--mq-space-6);
+    }
+  }
+
+  .mq-key-code {
+    color: var(--mq-text);
+    font-weight: var(--mq-weight-strong);
+    background: color-mix(in srgb, var(--mq-canvas) 80%, transparent);
+    padding: var(--mq-space-1) var(--mq-space-2);
+    border-radius: var(--mq-radius-sm);
+  }
+
+  .mq-key-row__desc :global(.mq-prose) {
+    max-inline-size: var(--mq-measure);
+  }
+
+  /* Ports Cards */
+  .mq-port-card {
+    padding: var(--mq-space-4) var(--mq-space-5);
+    background: var(--mq-card);
+    border: 1px solid var(--mq-hairline);
+    border-radius: var(--mq-radius-md);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
+    display: flex;
+    flex-direction: column;
+    gap: var(--mq-space-2);
+  }
+
+  .mq-port-card__term {
+    margin: 0;
+    font-size: var(--mq-size-body);
+    font-weight: var(--mq-weight-strong);
+  }
+
+  /* Modes Comparison Cards */
+  .mq-mode-card {
+    padding: var(--mq-space-6);
+    background: var(--mq-card);
+    border: 1px solid var(--mq-hairline);
+    border-radius: var(--mq-radius-lg);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+    display: flex;
+    flex-direction: column;
+    gap: var(--mq-space-4);
+  }
+
+  .mq-mode-card__top {
+    display: flex;
+    flex-direction: column;
+    gap: var(--mq-space-1);
+    padding-block-end: var(--mq-space-3);
+    border-block-end: 1px solid var(--mq-hairline);
+  }
+
+  .mq-mode-card__badge {
+    color: var(--mq-text-accent);
+  }
+
+  .mq-mode-card__title {
+    margin: 0;
+    font-size: var(--mq-size-subheading);
+    font-weight: var(--mq-weight-strong);
+  }
+
+  .mq-mode-card__table {
+    display: grid;
+    gap: var(--mq-space-2);
+  }
+
+  .mq-mode-card__row {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: var(--mq-space-3);
+    align-items: baseline;
+    padding-block: var(--mq-space-1);
+    border-block-end: 1px solid var(--mq-hairline);
+  }
+
+  .mq-mode-card__key {
+    font-family: var(--mq-font-mono);
+    font-size: var(--mq-size-mono-sm);
+    color: var(--mq-text-muted);
+  }
+
+  .mq-mode-card__code {
+    margin-block-start: auto;
+  }
+
+  /* Autostart Sequence */
+  .mq-autostart-sequence {
+    display: grid;
+    gap: var(--mq-space-3);
+    margin: 0 0 var(--mq-space-6);
+    padding: 0;
+    list-style: none;
+  }
+
+  .mq-autostart-sequence__item {
+    display: grid;
+    grid-template-columns: 2.5em minmax(0, 1fr);
+    align-items: baseline;
+    padding: var(--mq-space-3) var(--mq-space-4);
+    background: var(--mq-card);
+    border: 1px solid var(--mq-hairline);
+    border-radius: var(--mq-radius-sm);
+  }
+
+  .mq-autostart-sequence__num {
+    font-family: var(--mq-font-mono);
+    font-size: var(--mq-size-mono-sm);
+    color: var(--mq-text-accent);
+    font-weight: var(--mq-weight-strong);
+  }
+
+  /* Manager Keymap */
+  .mq-manager-keymap {
+    display: grid;
+    gap: var(--mq-space-3);
+    margin-block-start: var(--mq-space-4);
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 640px) {
+    .mq-manager-keymap {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .mq-manager-keymap__item {
+    display: grid;
+    grid-template-columns: 4em minmax(0, 1fr);
+    align-items: baseline;
+    gap: var(--mq-space-3);
+    padding: var(--mq-space-3) var(--mq-space-4);
+    background: var(--mq-card);
+    border: 1px solid var(--mq-hairline);
+    border-radius: var(--mq-radius-sm);
+  }
+
+  .mq-key-pill {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    font-family: var(--mq-font-mono);
+    font-size: var(--mq-size-mono-sm);
+    font-weight: var(--mq-weight-strong);
+    color: var(--mq-text);
+    background: var(--mq-canvas);
+    border: 1px solid var(--mq-rule);
+    padding: var(--mq-space-1) var(--mq-space-2);
+    border-radius: var(--mq-radius-sm);
+  }
+
+  /* =========================================================================
+     CONTACT & SAFETY
+     ========================================================================= */
+  .mq-guide-contact-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--mq-space-4);
+    padding: var(--mq-space-6);
+    background: var(--mq-card);
+    border: 1px solid var(--mq-rule);
+    border-radius: var(--mq-radius-lg);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+    margin-block-end: var(--mq-space-8);
+  }
+
+  @media (min-width: 640px) {
+    .mq-guide-contact-card {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+  }
+
+  .mq-guide-contact-card__report {
+    display: flex;
+    flex-direction: column;
+    gap: var(--mq-space-2);
+    max-inline-size: var(--mq-measure);
+  }
+
+  .mq-guide-contact-card__cta {
+    flex: 0 0 auto;
+  }
+
+  .mq-guide-safety-panel {
+    padding: var(--mq-space-6);
+    background: var(--mq-card);
+    border: 1px solid var(--mq-hairline);
+    border-inline-start: 4px solid var(--mq-accent);
+    border-radius: var(--mq-radius-lg);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+  }
+
+  .mq-guide-safety-panel__header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--mq-space-1);
+    margin-block-end: var(--mq-space-3);
+  }
+
+  .mq-guide-safety-panel h3 {
+    margin: 0;
   }
 
   .mq-support-link {
     margin-block-start: var(--mq-space-5);
   }
+
+  .mq-guide-step-code {
+    margin-block-start: var(--mq-space-3);
+  }
+
+  /* =========================================================================
+     MOBILE RESPONSIVE ENHANCEMENTS
+     ========================================================================= */
+  @media (max-width: 899px) {
+    .mq-guide-split :global(.mq-shot-frame) {
+      margin-inline: auto;
+      max-inline-size: 100%;
+    }
+  }
+
+  @media (max-width: 540px) {
+    .mq-guide-hero__actions {
+      flex-direction: column;
+      align-items: stretch;
+      gap: var(--mq-space-2);
+    }
+
+    .mq-guide-hero__actions :global(.mq-button) {
+      inline-size: 100%;
+      justify-content: center;
+      min-block-size: 48px;
+    }
+
+    .mq-guide-pane-bar {
+      flex-wrap: wrap;
+      gap: var(--mq-space-2);
+      padding-block-end: var(--mq-space-2);
+    }
+
+    .mq-guide-pane-bar__tag {
+      font-size: var(--mq-size-mono-sm);
+    }
+
+    .mq-guide-pane-bar__rule {
+      min-inline-size: 8px;
+    }
+
+    .mq-guide-pane-bar__meta {
+      inline-size: 100%;
+      white-space: normal;
+      word-break: break-word;
+      font-size: var(--mq-size-mono-sm);
+      color: var(--mq-text-muted);
+      margin-block-start: 2px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .mq-mode-card__row {
+      grid-template-columns: 1fr;
+      gap: var(--mq-space-1);
+      padding-block: var(--mq-space-2);
+    }
+
+    .mq-manager-keymap__item {
+      grid-template-columns: 3.5em minmax(0, 1fr);
+      gap: var(--mq-space-2);
+      padding: var(--mq-space-3);
+    }
+
+    .mq-autostart-sequence__item {
+      grid-template-columns: 2em minmax(0, 1fr);
+      padding: var(--mq-space-3);
+    }
+
+    .mq-deck-card {
+      padding: var(--mq-space-4);
+      border-radius: var(--mq-radius-md);
+    }
+
+    .mq-guide-card {
+      padding: var(--mq-space-4);
+      border-radius: var(--mq-radius-md);
+    }
+
+    .mq-guide-preflight {
+      padding: var(--mq-space-4);
+      border-radius: var(--mq-radius-md);
+    }
+
+    .mq-guide-config-panel {
+      padding: var(--mq-space-4);
+      border-radius: var(--mq-radius-md);
+    }
+
+    .mq-mode-card {
+      padding: var(--mq-space-4);
+      border-radius: var(--mq-radius-md);
+    }
+
+    .mq-guide-contact-card {
+      padding: var(--mq-space-4);
+      border-radius: var(--mq-radius-md);
+    }
+
+    .mq-guide-safety-panel {
+      padding: var(--mq-space-4);
+      border-radius: var(--mq-radius-md);
+    }
+
+    .mq-guide-security-claim {
+      padding: var(--mq-space-4);
+      border-radius: var(--mq-radius-md);
+    }
+
+    .mq-guide-network-card {
+      padding: var(--mq-space-4);
+      border-radius: var(--mq-radius-md);
+    }
+  }
 </style>
+
+<script>
+  import '@/scripts/guide-motion';
+</script>

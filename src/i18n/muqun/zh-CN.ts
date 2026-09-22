@@ -66,6 +66,11 @@ export const copy: MuqunCopy = {
       heading: "遇到问题？从这里开始。",
       lead: "先检查以下项目。问题仍未解决，请在 GitHub Issues 提供设备型号、系统版本、Gateway 版本和复现步骤。请勿提交令牌或配对二维码。",
       issueCta: "前往 GitHub Issues",
+      networkEyebrow: "",
+      networkHeading: "",
+      networkBadge: "",
+      networkBody: "",
+      networkLink: "",
       checksHeading: "常见问题",
       topics: [
         {

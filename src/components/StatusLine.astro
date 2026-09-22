@@ -250,6 +250,7 @@ const localeTag = locale ?? '';
   .mq-statusline__items {
     display: flex;
     align-items: stretch;
+    justify-content: center;
     gap: 0;
     margin: 0;
     padding: 0;
@@ -315,13 +316,14 @@ const localeTag = locale ?? '';
   /* ---------------------------------------------------------------- */
 
   .mq-statusline__lang {
-    /* The `auto` that used to sit on the version: whichever of the two comes
-       first takes the slack, and this one always does when it is present. */
-    margin-inline-start: auto;
     position: relative;
     flex: 0 0 auto;
     display: flex;
     align-items: stretch;
+  }
+
+  .mq-statusline:not(:has(.mq-statusline__items)) .mq-statusline__lang {
+    margin-inline-start: auto;
   }
 
   .mq-statusline__langbutton {
