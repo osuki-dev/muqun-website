@@ -615,6 +615,7 @@ function HomeEditorialContent({ paint, pad, top, logicalWidth }: { paint: Paint;
   const banner = paint.homeArtwork;
   const cover = paint.manifest.homePresentation?.header === 'cover' && banner !== null;
   const bareToolbar = paint.manifest.homePresentation?.toolbarBackground === false;
+  const coverTitle = identity.name;
   const [coverTitleHeight, setCoverTitleHeight] = useState(0);
   const gutter = logicalWidth >= 752 ? 24 : 12;
   const innerWidth = Math.max(0, logicalWidth - gutter * 2);
@@ -639,15 +640,18 @@ function HomeEditorialContent({ paint, pad, top, logicalWidth }: { paint: Paint;
       <Art art={scene} />
       <div
         className="dm-editorial__page"
-        style={{ paddingInline: pad ? 24 : 12, paddingTop: pad ? 24 : top + NAV_HEADER_TOP_GAP }}
+        style={{
+          paddingInline: pad ? 24 : 12,
+          paddingTop: cover ? (pad ? 12 : top + 12) : pad ? 24 : top + NAV_HEADER_TOP_GAP,
+        }}
       >
         {cover ? (
           <section className="dm-editorial-cover">
-            <CoverTitle text={identity.name ?? paint.manifest.name} color={colors.text} onHeight={setCoverTitleHeight} />
+            {coverTitle ? <CoverTitle text={coverTitle} color={colors.text} onHeight={setCoverTitleHeight} /> : null}
             <div className="dm-editorial-cover__art">
               <Art art={banner} />
             </div>
-            <div className="dm-editorial-cover__utilities" style={{ top: coverTitleHeight + 8 }}>{headerActions}</div>
+            <div className="dm-editorial-cover__utilities" style={{ top: coverTitle ? coverTitleHeight + 8 : 16 }}>{headerActions}</div>
             <div className="dm-editorial-cover__launches">
               <EditorialLaunches paint={paint} rail />
             </div>

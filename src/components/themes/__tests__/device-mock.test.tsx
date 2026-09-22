@@ -150,6 +150,19 @@ describe('editorial Home preview contract', () => {
     expect(markup.match(/dm-home__control--bare/g)).toHaveLength(2);
     expect(markup).not.toContain('dm-editorial__identity');
   });
+
+  test('keeps untitled cover utilities at the App offset', () => {
+    const pack = previewPackage({
+      name: { mode: 'hidden' },
+      logo: { mode: 'hidden' },
+    });
+    pack.manifest.homePresentation = { header: 'cover', toolbarBackground: true };
+    const markup = renderEditorial(pack);
+
+    expect(markup).not.toContain('Editorial Contract</h2>');
+    expect(markup).toContain('dm-editorial-cover__utilities" style="top:16px"');
+    expect(markup).not.toContain('dm-home__control--bare');
+  });
 });
 
 describe('shared Home artwork contract', () => {
