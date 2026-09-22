@@ -484,14 +484,30 @@ function ServerCard({ paint, server, layout }: { paint: Paint; server: Server; l
 }
 
 /** `HeaderButton`: a 40pt circle on `surface`, carrying `navigation.background`, a muted 20pt glyph. */
-function HeaderButton({ paint, icon, editorial = false, bare = false }: { paint: Paint; icon: string[]; editorial?: boolean; bare?: boolean }) {
+function HeaderButton({
+  paint,
+  icon,
+  name,
+  editorial = false,
+  bare = false,
+}: {
+  paint: Paint;
+  icon: string[];
+  name?: string;
+  editorial?: boolean;
+  bare?: boolean;
+}) {
   const { colors } = paint;
   return (
     <span
       className={`dm-home__control${editorial ? ' dm-home__control--editorial' : ''}${bare ? ' dm-home__control--bare' : ''}`}
       style={bare ? undefined : { background: paint.fill(colors.surface), borderColor: editorial ? colors.borderStrong : undefined }}>
       {!bare ? <Art art={paint.art('navigation.background', colors.surface)} /> : null}
-      <Lucide icon={icon} size={20} color={colors.textMuted} />
+      {name ? (
+        <Glyph paint={paint} name={name} size={20} color={colors.textMuted} fallback={icon} />
+      ) : (
+        <Lucide icon={icon} size={20} color={colors.textMuted} />
+      )}
     </span>
   );
 }
@@ -625,7 +641,7 @@ function EditorialRecent({ paint }: { paint: Paint }) {
             <strong style={{ color: colors.text }}>{title}</strong>
             <span style={{ color: colors.textMuted }}>{kind} · {context}</span>
           </span>
-          <Lucide icon={ICON.chevronRight} size={16} color={colors.primary} />
+          <Glyph paint={paint} name="home.arrow" size={16} color={colors.primary} fallback={ICON.chevronRight} />
         </div>
       ))}
     </div>
@@ -643,7 +659,7 @@ function EditorialAttention({ paint }: { paint: Paint }) {
         <span style={{ color: colors.textSubtle }}>Last checked recently</span>
         <span style={{ color: colors.primary }}>Open to check the current state</span>
       </span>
-      <Lucide icon={ICON.chevronRight} size={16} color={colors.primary} />
+      <Glyph paint={paint} name="home.arrow" size={16} color={colors.primary} fallback={ICON.chevronRight} />
     </div>
   );
 }
@@ -707,8 +723,8 @@ function HomeEditorialContent({ paint, pad, top, logicalWidth }: { paint: Paint;
   ].filter(Boolean).join(' ');
   const headerActions = (
     <>
-      <HeaderButton paint={paint} icon={ICON.scanLine} editorial bare={bareToolbar} />
-      <HeaderButton paint={paint} icon={ICON.settings} editorial bare={bareToolbar} />
+      <HeaderButton paint={paint} name="chrome.scan" icon={ICON.scanLine} editorial bare={bareToolbar} />
+      <HeaderButton paint={paint} name="chrome.settings" icon={ICON.settings} editorial bare={bareToolbar} />
     </>
   );
   return (
@@ -834,8 +850,8 @@ function HomeContent({ paint, pad, top }: { paint: Paint; pad: boolean; top: num
       {!pad && (
         <div className="dm-home__bar" style={{ paddingTop: top + NAV_HEADER_TOP_GAP }}>
           <HeaderButton paint={paint} icon={ICON.squareTerminal} />
-          <HeaderButton paint={paint} icon={ICON.scanLine} />
-          <HeaderButton paint={paint} icon={ICON.settings} />
+          <HeaderButton paint={paint} name="chrome.scan" icon={ICON.scanLine} />
+          <HeaderButton paint={paint} name="chrome.settings" icon={ICON.settings} />
         </div>
       )}
       <div
@@ -913,9 +929,17 @@ function Rail({ paint, selected, editorial = false }: { paint: Paint; selected?:
       </div>
       {/* Three glyphs, not three explained rows: the rail has servers in it. */}
       <div className="dm-rail__actions">
-        {[ICON.scanLine, ICON.squareTerminal, ICON.settings].map((icon, index) => (
+        {[
+          { name: 'chrome.scan', icon: ICON.scanLine },
+          { name: undefined, icon: ICON.squareTerminal },
+          { name: 'chrome.settings', icon: ICON.settings },
+        ].map((item, index) => (
           <span key={index} className="dm-rail__action" style={{ background: paint.fill(colors.background) }}>
-            <Lucide icon={icon} size={18} color={colors.textMuted} />
+            {item.name ? (
+              <Glyph paint={paint} name={item.name} size={18} color={colors.textMuted} fallback={item.icon} />
+            ) : (
+              <Lucide icon={item.icon} size={18} color={colors.textMuted} />
+            )}
           </span>
         ))}
       </div>
