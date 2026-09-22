@@ -824,6 +824,7 @@
   z-index: 1;
   margin: 0;
   font-family: var(--mq-font-display);
+  font-weight: 900;
   letter-spacing: -0.065em;
   white-space: nowrap;
   inline-size: max-content;
