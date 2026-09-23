@@ -31,13 +31,14 @@
  * fictional session content in the machine register, or the theme's own
  * name; none of it is translated, exactly as the aperture's stream is not.
  */
+import { AmbientEffect } from './ambient-effect';
+export { AmbientEffect } from './ambient-effect';
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 
 import {
   resolveHomeArtwork,
   resolveHomeIdentity,
   resolveThemeEffects,
-  type ThemeAmbientEffect,
   type ThemeEffects,
   type ThemeManifest,
   type ThemeMode,
@@ -170,72 +171,6 @@ function Art({ art, banner = false }: { art: ResolvedArtwork | null; banner?: bo
  * Visual ambient overlay for device mockups (rain, particles, scanlines, bloom),
  * matching the native Skia ambient shader effects in the app.
  */
-function AmbientEffect({
-  effect,
-  intensity = 0.5,
-  accentColor,
-}: {
-  effect: ThemeAmbientEffect;
-  intensity?: number;
-  accentColor: string;
-}) {
-  if (!effect || effect === 'none') return null;
-
-  return (
-    <div
-      className={`dm-ambient dm-ambient--${effect}`}
-      style={{
-        opacity: Math.max(0.1, Math.min(1, intensity)),
-        ['--ambient-accent' as string]: accentColor,
-      }}
-      aria-hidden="true"
-    >
-      {effect === 'rain' && (
-        <div className="dm-rain">
-          {Array.from({ length: 24 }, (_, i) => (
-            <span
-              key={i}
-              className="dm-rain__streak"
-              style={{
-                left: `${(i * 17) % 100}%`,
-                animationDelay: `${((i * 0.13) % 1.6).toFixed(2)}s`,
-                animationDuration: `${(0.75 + ((i * 0.17) % 0.65)).toFixed(2)}s`,
-                opacity: 0.3 + ((i % 5) * 0.14),
-              }}
-            />
-          ))}
-        </div>
-      )}
-      {effect === 'particles' && (
-        <div className="dm-particles">
-          {Array.from({ length: 20 }, (_, i) => (
-            <span
-              key={i}
-              className="dm-particle"
-              style={{
-                left: `${(i * 19 + 7) % 96}%`,
-                bottom: `${(i * 23) % 60}%`,
-                width: `${2 + (i % 3)}px`,
-                height: `${2 + (i % 3)}px`,
-                animationDelay: `${((i * 0.31) % 3).toFixed(2)}s`,
-                animationDuration: `${(3 + ((i * 0.47) % 3)).toFixed(2)}s`,
-                opacity: 0.3 + ((i % 4) * 0.2),
-              }}
-            />
-          ))}
-        </div>
-      )}
-      {effect === 'scanlines' && (
-        <>
-          <div className="dm-scanlines" />
-          <div className="dm-scanlines__beam" />
-        </>
-      )}
-      {effect === 'bloom' && <div className="dm-bloom" />}
-    </div>
-  );
-}
-
 /**
  * Home's illustration is content rather than wallpaper. Use an image element
  * here so a decode failure removes the whole wrapper and leaves no empty band.
@@ -251,13 +186,32 @@ function HomeArtwork({
 }) {
   const hero = paint.homeArtwork;
   const [failed, setFailed] = useState<string | null>(null);
+  const [foreground, setForeground] = useState<string | null>(null);
   if (!hero || failed === hero.url) return null;
   const objectPosition = `${Math.round((hero.image.focalPoint?.x ?? 0.5) * 100)}% ${Math.round((hero.image.focalPoint?.y ?? 0.5) * 100)}%`;
   return (
-    <div className={className}>
+    <div className={`${className}${foreground === hero.url ? ' dm-home-artwork--foreground' : ''}`}>
       <img
         src={hero.url}
+        crossOrigin="anonymous"
         alt=""
+        onLoad={(event) => {
+          const image = event.currentTarget;
+          try {
+            const canvas = document.createElement('canvas');
+            canvas.width = 8;
+            canvas.height = 1;
+            const context = canvas.getContext('2d', { willReadFrequently: true });
+            if (!context) return;
+            const points = [[0, 0], [0.5, 0], [1, 0], [1, 0.5], [1, 1], [0.5, 1], [0, 1], [0, 0.5]];
+            points.forEach(([x, y], index) => context.drawImage(image, Math.round(x * (image.naturalWidth - 1)), Math.round(y * (image.naturalHeight - 1)), 1, 1, index, 0, 1, 1));
+            const rgba = context.getImageData(0, 0, 8, 1).data;
+            const transparent = points.filter((_, index) => rgba[index * 4 + 3] < 32).length >= 2;
+            setForeground(transparent ? hero.url : null);
+          } catch {
+            // Cross-origin images without CORS retain the opaque-art treatment.
+          }
+        }}
         style={{ opacity: hero.opacity, objectPosition }}
         onError={() => {
           setFailed(hero.url);
@@ -512,19 +466,24 @@ function HeaderButton({
   );
 }
 
-function EditorialSection({
-  paint,
-  title,
-  children,
-}: {
-  paint: Paint;
-  title: string;
-  children: ReactNode;
-}) {
+function EditorialSection({ paint, title, children }: { paint: Paint; title: string; children: ReactNode }) {
   return (
     <section className="dm-editorial__section" style={{ borderColor: paint.colors.border }}>
       <div className="dm-editorial__section-head" style={{ borderColor: paint.colors.border }}>
-        <h3 style={{ color: paint.colors.text }}>{title}</h3>
+        <h3
+          style={{
+            color: paint.colors.text,
+            ...(paint.homeArtwork || paint.has('shell.wallpaper')
+              ? {
+                  background: paint.fill(paint.colors.surface),
+                  padding: '4px 8px',
+                  borderRadius: 4,
+                }
+              : {}),
+          }}
+        >
+          {title}
+        </h3>
       </div>
       <div className="dm-editorial__section-body">{children}</div>
     </section>
@@ -651,7 +610,13 @@ function EditorialRecent({ paint }: { paint: Paint }) {
 function EditorialAttention({ paint }: { paint: Paint }) {
   const { colors } = paint;
   return (
-    <div className="dm-editorial__attention" style={{ borderColor: colors.warning }}>
+    <div
+      className="dm-editorial__attention"
+      style={{
+        borderColor: colors.warning,
+        background: paint.fill(colors.surface),
+      }}
+    >
       <Lucide icon={ICON.circleAlert} size={20} color={colors.warning} />
       <span className="dm-editorial__attention-copy">
         <strong style={{ color: colors.text }}>3 requests last observed</strong>
@@ -1230,7 +1195,12 @@ export default function DeviceMock({ pack, mode, device, screen, layout = DEFAUL
             <AmbientEffect
               effect={paint.effects.ambient}
               intensity={paint.effects.intensity}
-              accentColor={colors.primary}
+              speed={paint.effects.speed}
+              density={paint.effects.density}
+              size={paint.effects.size}
+              palette={paint.effects.palette}
+              direction={paint.effects.direction}
+              colors={colors}
             />
           )}
           {pad ? (

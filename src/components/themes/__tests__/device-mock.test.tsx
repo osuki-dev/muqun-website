@@ -1,7 +1,7 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, test } from 'bun:test';
 
-import DeviceMock from '../device-mock';
+import DeviceMock, { AmbientEffect } from '../device-mock';
 import { resolveHomeIdentity, type ThemeColors, type ThemeManifest, type ThemePackage } from '@/lib/theme-package';
 
 const colors: ThemeColors = {
@@ -199,7 +199,7 @@ describe('ambient effect preview contract', () => {
     );
 
     expect(markup).toContain('dm-ambient--rain');
-    expect(markup).toContain('dm-rain__streak');
+    expect(markup.match(/class="dm-mote"/g)).toHaveLength(32);
   });
 
   test('does not render ambient effect when none or absent', () => {
@@ -230,3 +230,31 @@ describe('ambient effect preview contract', () => {
   });
 });
 
+
+test('sparse effects have bounded particles, static speed and zero intensity', () => {
+  for (const effect of ['dust', 'embers', 'snow', 'stars'] as const) {
+    const markup = renderToStaticMarkup(<AmbientEffect effect={effect} speed={0} colors={colors} />);
+    expect(markup.match(/class="dm-mote"/g)).toHaveLength(16);
+    expect(markup).toContain('data-paused="true"');
+    expect(renderToStaticMarkup(<AmbientEffect effect={effect} intensity={0} colors={colors} />)).toBe('');
+  }
+});
+
+test('circuit effect has ten static multicolor theme paths', () => {
+  const markup = renderToStaticMarkup(<AmbientEffect effect="scanlines" colors={colors} />);
+  expect(markup.match(/<path /g)).toHaveLength(10);
+  for (const color of [colors.primary, colors.info, colors.success, colors.warning]) expect(markup).toContain(color);
+  expect(markup).not.toContain('dm-scanlines');
+});
+
+test('effect options obey count budgets, palette and unsupported settings', () => {
+  const rain = renderToStaticMarkup(<AmbientEffect effect="rain" density={0.5} size={1.5} direction="left" palette={['warning']} colors={colors} />);
+  expect(rain.match(/class="dm-mote"/g)).toHaveLength(16);
+  expect(rain).toContain(`background:${colors.warning}`);
+  expect(rain).toContain('width:1.5px');
+  expect(renderToStaticMarkup(<AmbientEffect effect="snow" density={0} colors={colors} />)).toBe('');
+  const bloom = renderToStaticMarkup(<AmbientEffect effect="bloom" density={0} direction="left" colors={colors} />);
+  expect(bloom).toContain('dm-bloom');
+  const circuits = renderToStaticMarkup(<AmbientEffect effect="scanlines" density={0.5} palette={['success']} colors={colors} />);
+  expect(circuits.match(/<path /g)).toHaveLength(5);
+});

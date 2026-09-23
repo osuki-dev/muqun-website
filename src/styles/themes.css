@@ -701,7 +701,7 @@
 
 /* Rain */
 .dm-ambient--rain {
-  background: linear-gradient(180deg, rgba(120, 160, 220, 0.06) 0%, transparent 70%);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--ambient-accent) 6%, transparent) 0%, transparent 70%);
 }
 
 .dm-rain {
@@ -714,7 +714,7 @@
   position: absolute;
   width: 1.5px;
   height: 52px;
-  background: linear-gradient(to bottom, transparent, rgba(210, 230, 255, 0.75));
+  background: linear-gradient(to bottom, transparent, color-mix(in srgb, var(--ambient-accent) 75%, transparent));
   border-radius: 1px;
   animation: dm-rain-fall linear infinite;
 }
@@ -737,9 +737,11 @@
 .dm-particle {
   position: absolute;
   border-radius: 50%;
-  background: var(--ambient-accent, #fff);
-  box-shadow: 0 0 8px var(--ambient-accent, #fff);
-  animation: dm-particle-float ease-in-out infinite alternate, dm-particle-rise linear infinite;
+  background: var(--ambient-accent);
+  box-shadow: 0 0 8px var(--ambient-accent);
+  animation:
+    dm-particle-float ease-in-out infinite alternate,
+    dm-particle-rise linear infinite;
 }
 
 @keyframes dm-particle-rise {
@@ -765,48 +767,17 @@
   }
 }
 
-/* Scanlines */
-.dm-scanlines {
-  position: absolute;
-  inset: 0;
-  background: repeating-linear-gradient(
-    0deg,
-    rgba(0, 0, 0, 0.3) 0px,
-    rgba(0, 0, 0, 0.3) 1.5px,
-    transparent 1.5px,
-    transparent 3.5px
-  );
-}
-
-.dm-scanlines__beam {
-  position: absolute;
-  left: 0;
-  right: 0;
-  height: 90px;
-  background: linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.08), transparent);
-  animation: dm-scan-beam 4s linear infinite;
-}
-
-@keyframes dm-scan-beam {
-  0% {
-    top: -90px;
-  }
-  100% {
-    top: 100%;
-  }
-}
-
 /* Bloom */
 .dm-ambient--bloom {
-  animation: dm-bloom-pulse 5.5s ease-in-out infinite alternate;
+  animation: dm-bloom-pulse calc(5.5s / var(--ambient-rate, 1)) ease-in-out infinite alternate;
 }
 
 .dm-bloom {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(ellipse 65% 45% at 50% 12%, var(--ambient-accent, rgba(255, 200, 100, 0.25)), transparent 75%),
-    radial-gradient(ellipse 55% 40% at 80% 85%, var(--ambient-accent, rgba(255, 200, 100, 0.15)), transparent 70%);
+    radial-gradient(ellipse 65% 45% at 50% 12%, var(--ambient-accent), transparent 75%),
+    radial-gradient(ellipse 55% 40% at 80% 85%, var(--ambient-secondary, var(--ambient-accent)), transparent 70%);
   filter: blur(20px);
   mix-blend-mode: screen;
 }
@@ -827,6 +798,52 @@
   }
 }
 
+/* Sparse full-frame particles: transform/opacity only, no blur or shadows. */
+.dm-mote-track {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  animation: dm-mote-rise linear infinite;
+}
+.dm-mote {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.7;
+  animation: dm-mote-drift ease-in-out infinite alternate;
+}
+.dm-mote-track--dust .dm-mote {
+  background: var(--ambient-accent);
+}
+.dm-mote-track--embers .dm-mote {
+  background: var(--ambient-accent);
+}
+@keyframes dm-mote-rise {
+  0% {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  12%,
+  88% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+}
+@keyframes dm-mote-drift {
+  from {
+    transform: translateX(calc(-1 * var(--mote-drift)));
+  }
+  to {
+    transform: translateX(var(--mote-drift));
+  }
+}
+.dm-ambient[data-paused='true'],
+.dm-ambient[data-paused='true'] * {
+  animation-play-state: paused !important;
+}
 
 .dm-icon {
   display: inline-block;
@@ -953,6 +970,11 @@
 }
 
 /* --- Editorial Home ----------------------------------------------------- */
+.dm-home__hero.dm-home-artwork--foreground img {
+  border-radius: 0;
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 72%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 72%, transparent 100%);
+}
 
 .dm-editorial-cover {
   position: relative;
@@ -2595,3 +2617,37 @@
 @media (prefers-reduced-motion: reduce) {
   .showcase__switch::before { transition: none; }
 }
+
+.dm-mote-track--particles .dm-mote,
+.dm-mote-track--snow .dm-mote,
+.dm-mote-track--stars .dm-mote {
+  background: var(--ambient-accent);
+}
+.dm-mote-track--snow,
+.dm-mote-track--particles {
+  animation-direction: reverse;
+}
+.dm-mote-track--stars {
+  bottom: auto;
+  animation-name: dm-star-twinkle;
+}
+.dm-mote-track--stars .dm-mote {
+  animation: none;
+}
+@keyframes dm-star-twinkle {
+  0%,
+  100% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+
+.dm-effect-track { position: absolute; top: 0; left: 0; animation: dm-effect-travel linear infinite; }
+@keyframes dm-effect-travel {
+  0% { transform: translate(var(--from-x), var(--from-y)); opacity: 0; }
+  12%, 88% { opacity: 1; }
+  100% { transform: translate(var(--to-x), var(--to-y)); opacity: 0; }
+}
+.dm-effect-track--star { transform: translate(var(--from-x), var(--from-y)); animation-name: dm-star-twinkle; }
