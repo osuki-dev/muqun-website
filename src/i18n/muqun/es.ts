@@ -25,8 +25,8 @@ export const copy: MuqunCopy = {
       'Un panel de terminal donde un agente de programación se ha detenido para pedir permiso para editar un archivo, con la primera opción seleccionada y el cursor esperando.',
     deviceAlt:
       'La pantalla de inicio de Muqun: un servidor EN LÍNEA, sus agentes listados a lo largo de un hilo coral, cada uno marcado como Trabajando, Bloqueado o Inactivo.',
-    videoPlayLabel: 'Reproducir el vídeo de presentación de 21 segundos',
-    videoLength: '0:21',
+    videoPlayLabel: 'Reproducir el vídeo de presentación de 36 segundos',
+    videoLength: '0:36',
     promptLegend: 'Las tres respuestas del agente',
     promptHint: 'Pulsa 1, 2 o 3 — o responde desde la pantalla de bloqueo.',
     promptCaption:

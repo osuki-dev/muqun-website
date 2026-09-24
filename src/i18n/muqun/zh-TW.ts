@@ -29,8 +29,8 @@ export const copy: MuqunCopy = {
       '一個終端機面板，程式開發代理程式停下來請求編輯檔案的授權，第一個選項已選取，游標停在那裡等著。',
     deviceAlt:
       '牧群的首頁：一台伺服器標示為線上，它的代理程式沿著一條珊瑚色的線排開，各自標示為工作中、等待回應或閒置。',
-    videoPlayLabel: '播放 21 秒的介紹影片',
-    videoLength: '0:21',
+    videoPlayLabel: '播放 36 秒的介紹影片',
+    videoLength: '0:36',
     promptLegend: '代理的三個回答',
     promptHint: '按 1、2 或 3——也可以在鎖定畫面上回答。',
     promptCaption:
