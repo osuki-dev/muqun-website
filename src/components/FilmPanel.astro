@@ -1,26 +1,12 @@
 ---
-/**
- * The intro film, behind its own poster.
- *
- * The poster is the themed screenshot rather than a `<video poster>`
- * attribute, because a poster attribute is one file and this site has two of
- * everything: a reader in light mode would get the dark frame. `MuqunShot`
- * already picks the right one off `html[data-theme]`.
- *
- * Nothing autoplays and nothing is fetched until it is asked for. The
- * `<video>` element is created on the press, so the four megabytes are never
- * spent on a visitor who scrolled past. Without JavaScript the button is
- * never revealed and the panel is simply a screenshot -- which is a smaller
- * page, not a broken one.
- */
-import MuqunShot from './ui/muqun-shot.astro';
-import type { MuqunShotBase } from '@/lib/muqun-shots';
-
+/** A responsive film poster; video bytes load only after an explicit play. */
 interface Props {
   /** The film. Loaded on the press and never before it. */
   src: string;
-  /** The poster, as a shot name from the generated manifest. */
-  shot: MuqunShotBase;
+  portraitSrc: string;
+  portraitPoster: string;
+  /** A frame from the film. */
+  poster: string;
   /** Translated. What is on the screen, not "a screenshot". */
   alt: string;
   /** Translated. The play control's accessible name. */
@@ -30,12 +16,15 @@ interface Props {
   class?: string;
 }
 
-const { src, shot, alt, playLabel, length, class: className } = Astro.props;
+const { src, portraitSrc, portraitPoster, poster, alt, playLabel, length, class: className } = Astro.props;
 ---
 
-<figure class:list={['mq-film', className]} data-film data-film-src={src}>
+<figure class:list={['mq-film', className]} data-film data-film-src={src} data-film-portrait-src={portraitSrc}>
   <div class="mq-film__frame">
-    <MuqunShot name={shot} alt={alt} />
+    <picture>
+      <source media="(max-width: 600px)" srcset={portraitPoster} width="1080" height="1920" />
+      <img src={poster} alt={alt} width="1920" height="1080" loading="lazy" decoding="async" />
+    </picture>
     <button class="mq-film__play" type="button" data-film-play aria-label={playLabel} hidden>
       <span class="mq-film__disc" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -50,19 +39,14 @@ const { src, shot, alt, playLabel, length, class: className } = Astro.props;
 <style>
   .mq-film {
     inline-size: 100%;
-    max-inline-size: 17rem;
+    max-inline-size: 72rem;
+    pointer-events: auto;
     margin: 0;
   }
 
-  /*
-   * `--mq-canvas`, not the ink ground -- see the note in `DeviceShot`, which
-   * had the same bug. The poster is an `auto` capture, so the frame behind it
-   * has to follow the reader's theme too; ink here put a black rectangle on
-   * the cream band for as long as the poster took to arrive. Once the film is
-   * playing the video covers this entirely.
-   */
   .mq-film__frame {
     position: relative;
+    aspect-ratio: 16 / 9;
     border-radius: var(--mq-radius-xl);
     border: 1px solid var(--mq-hairline);
     overflow: clip;
@@ -70,10 +54,17 @@ const { src, shot, alt, playLabel, length, class: className } = Astro.props;
     box-shadow: var(--mq-shadow-raised);
   }
 
+  .mq-film__frame picture,
+  .mq-film__frame img,
   .mq-film__frame :global(video) {
     inline-size: 100%;
-    block-size: auto;
+    block-size: 100%;
+    object-fit: contain;
     display: block;
+  }
+
+  @media (max-width: 600px) {
+    .mq-film__frame { aspect-ratio: 9 / 16; }
   }
 
   .mq-film__play {
@@ -97,6 +88,8 @@ const { src, shot, alt, playLabel, length, class: className } = Astro.props;
     cursor: pointer;
   }
 
+  .mq-film__play[hidden] { display: none; }
+
   .mq-film__disc svg {
     inline-size: 18px;
     block-size: 18px;
@@ -109,7 +102,7 @@ const { src, shot, alt, playLabel, length, class: className } = Astro.props;
    *
    * The `<video>` is built here rather than served hidden in the markup:
    * a hidden `<video src>` still hands the browser a URL it may decide to
-   * fetch, and this file is four megabytes.
+   * fetch, and this file is three megabytes.
    */
   for (const panel of document.querySelectorAll<HTMLElement>('[data-film]')) {
     const button = panel.querySelector<HTMLButtonElement>('[data-film-play]');
@@ -122,10 +115,13 @@ const { src, shot, alt, playLabel, length, class: className } = Astro.props;
       'click',
       () => {
         const video = document.createElement('video');
-        video.src = src;
+        const usePortrait = window.matchMedia('(max-width: 600px)').matches;
+        video.src = usePortrait ? (panel.dataset.filmPortraitSrc ?? src) : src;
+        frame.style.aspectRatio = usePortrait ? '9 / 16' : '16 / 9';
         video.controls = true;
         video.autoplay = true;
         video.playsInline = true;
+        video.setAttribute("aria-label", button.getAttribute("aria-label") ?? "Muqun 3.0");
         frame.replaceChildren(video);
       },
       { once: true },

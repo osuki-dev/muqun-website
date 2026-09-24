@@ -29,8 +29,8 @@ export const copy: MuqunCopy = {
       'コーディングエージェントがファイルの編集許可を求めて手を止めたターミナルのパネル。最初の選択肢が選ばれ、カーソルが待っている。',
     deviceAlt:
       '牧群のホーム画面。1台のサーバーが「オンライン」と表示され、そのエージェントがコーラル色の線に沿って、作業中・応答待ち・待機のいずれかとともに並んでいる。',
-    videoPlayLabel: '21秒の紹介動画を再生',
-    videoLength: '0:21',
+    videoPlayLabel: '36秒の紹介動画を再生',
+    videoLength: '0:36',
     promptLegend: 'エージェントの三つの答え',
     promptHint: '1、2、3 のいずれかを押してください。ロック画面から答えることもできます。',
     promptCaption:

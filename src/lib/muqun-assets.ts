@@ -16,21 +16,9 @@ import { MUQUN_SHOTS, type MuqunShotBase } from './muqun-shots';
 /** The card every link to this site unfurls into. */
 export const ogImage = '/og-muqun.png';
 
-/**
- * The intro film.
- *
- * Four megabytes, and never fetched on load: the hero renders the themed
- * `screen-session` screenshot as its poster and builds a `<video>` only when
- * someone presses play. See `src/components/FilmPanel.astro`, which owns both
- * halves of that.
- *
- * There is deliberately no `poster` file here. The old site shipped
- * `muqun-intro-poster.webp` beside the film and never rendered it — a single
- * poster image cannot serve a page that has a light and a dark capture of every
- * screen, so the `<picture>` pair does that job and the poster was dead weight
- * that only an `existsSync` ever looked at.
- */
-export const introVideoSrc = '/video/muqun-intro.mp4';
+/** The 36-second Muqun 3.0 film, loaded only after pressing play. */
+export const introVideoSrc = '/video/muqun-intro.mp4?v=3.0-opencode-2';
+export const introVideoPoster = '/video/muqun-intro-poster.webp?v=3.0-opencode-2';
 
 /**
  * Whether a name built at runtime is a capture that actually exists.

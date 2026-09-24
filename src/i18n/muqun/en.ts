@@ -25,8 +25,8 @@ export const copy: MuqunCopy = {
       'A terminal pane where a coding agent has stopped to ask permission to edit a file, with the first choice selected and the cursor waiting.',
     deviceAlt:
       'Muqun’s home screen: one server ONLINE, its agents listed down a coral thread, each marked Working, Blocked or Idle.',
-    videoPlayLabel: 'Play the 21-second intro film',
-    videoLength: '0:21',
+    videoPlayLabel: 'Play the 36-second intro film',
+    videoLength: '0:36',
     promptLegend: 'The agent’s three answers',
     promptHint: 'Press 1, 2 or 3 — or answer it from the Lock Screen.',
     promptCaption:

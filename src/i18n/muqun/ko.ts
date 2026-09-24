@@ -29,8 +29,8 @@ export const copy: MuqunCopy = {
       '코딩 에이전트가 파일 편집 권한을 물으며 멈춰 선 터미널 패널. 첫 번째 선택지가 선택되어 있고 커서가 기다리고 있습니다.',
     deviceAlt:
       'Muqun 홈 화면. 서버 하나가 온라인으로 표시되고, 그 에이전트들이 산호색 선을 따라 작업 중, 응답 대기, 대기로 표시되어 있습니다.',
-    videoPlayLabel: '21초 소개 영상 재생',
-    videoLength: '0:21',
+    videoPlayLabel: '36초 소개 영상 재생',
+    videoLength: '0:36',
     promptLegend: '에이전트의 세 가지 답',
     promptHint: '1, 2, 3 중 하나를 누르세요. 잠금 화면에서 답해도 됩니다.',
     promptCaption:
