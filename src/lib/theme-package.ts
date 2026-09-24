@@ -65,12 +65,19 @@ export interface ThemeTerminal {
   ansi: string[];
 }
 
-export const THEME_AMBIENT_EFFECTS = ['none', 'rain', 'particles', 'scanlines', 'bloom'] as const;
+export const THEME_AMBIENT_EFFECTS = ['none', 'rain', 'particles', 'scanlines', 'bloom', 'dust', 'embers', 'snow', 'stars'] as const;
 export type ThemeAmbientEffect = (typeof THEME_AMBIENT_EFFECTS)[number];
+export const EFFECT_PALETTE_ROLES = ['primary', 'text', 'textMuted', 'info', 'success', 'warning'] as const;
+export const EFFECT_DIRECTIONS = ['up', 'down', 'left', 'right', 'up-left', 'up-right', 'down-left', 'down-right'] as const;
 
 export interface ThemeEffects {
   ambient?: ThemeAmbientEffect;
   intensity?: number;
+  speed?: number;
+  density?: number;
+  size?: number;
+  palette?: (typeof EFFECT_PALETTE_ROLES)[number][];
+  direction?: (typeof EFFECT_DIRECTIONS)[number];
 }
 
 export interface ThemeVariant {
@@ -371,14 +378,43 @@ function readTerminal(value: unknown, path: string): ThemeTerminal {
 
 function readEffects(value: unknown): ThemeEffects | undefined {
   if (!isRecord(value)) return undefined;
-  const ambient = typeof value.ambient === 'string' && (THEME_AMBIENT_EFFECTS as readonly string[]).includes(value.ambient)
-    ? (value.ambient as ThemeAmbientEffect)
+  const ambient =
+    typeof value.ambient === 'string' && (THEME_AMBIENT_EFFECTS as readonly string[]).includes(value.ambient)
+      ? (value.ambient as ThemeAmbientEffect)
+      : undefined;
+  const intensity =
+    typeof value.intensity === 'number' && Number.isFinite(value.intensity)
+      ? Math.max(0, Math.min(1, value.intensity))
+      : undefined;
+  const speed =
+    typeof value.speed === 'number' && Number.isFinite(value.speed) ? Math.max(0, Math.min(2, value.speed)) : undefined;
+  const density =
+    typeof value.density === 'number' && Number.isFinite(value.density)
+      ? Math.max(0, Math.min(1, value.density))
+      : undefined;
+  const size =
+    typeof value.size === 'number' && Number.isFinite(value.size) ? Math.max(0.5, Math.min(2, value.size)) : undefined;
+  const palette =
+    Array.isArray(value.palette) &&
+    value.palette.length >= 1 &&
+    value.palette.length <= 4 &&
+    value.palette.every((role) => EFFECT_PALETTE_ROLES.includes(role))
+      ? (value.palette as ThemeEffects['palette'])
+      : undefined;
+  const direction = EFFECT_DIRECTIONS.includes(value.direction as never)
+    ? (value.direction as ThemeEffects['direction'])
     : undefined;
-  const intensity = typeof value.intensity === 'number' && Number.isFinite(value.intensity)
-    ? Math.max(0, Math.min(1, value.intensity))
-    : undefined;
-  if (!ambient && intensity === undefined) return undefined;
-  return { ambient, intensity };
+  if (
+    !ambient &&
+    intensity === undefined &&
+    speed === undefined &&
+    density === undefined &&
+    size === undefined &&
+    !palette &&
+    !direction
+  )
+    return undefined;
+  return { ambient, intensity, speed, density, size, palette, direction };
 }
 
 function readVariant(value: unknown, path: string): ThemeVariant {
@@ -603,7 +639,15 @@ export function resolveThemeEffects(manifest: ThemeManifest, mode: ThemeMode): T
   const sharedEffects = manifest.effects;
   const ambient = variantEffects?.ambient ?? sharedEffects?.ambient ?? 'none';
   const intensity = variantEffects?.intensity ?? sharedEffects?.intensity ?? 0.5;
+  const speed = variantEffects?.speed ?? sharedEffects?.speed ?? 1;
   if (ambient === 'none') return undefined;
-  return { ambient, intensity };
+  return {
+    ambient,
+    intensity,
+    speed,
+    density: variantEffects?.density ?? sharedEffects?.density,
+    size: variantEffects?.size ?? sharedEffects?.size,
+    palette: variantEffects?.palette ?? sharedEffects?.palette,
+    direction: variantEffects?.direction ?? sharedEffects?.direction,
+  };
 }
-

@@ -156,9 +156,9 @@ describe('Theme effects resolution', () => {
     expect(parsed.variants.dark.effects).toEqual({ ambient: 'rain', intensity: 0.8 });
 
     // Light falls back to shared effects
-    expect(resolveThemeEffects(parsed, 'light')).toEqual({ ambient: 'scanlines', intensity: 0.4 });
+    expect(resolveThemeEffects(parsed, 'light')).toEqual({ ambient: 'scanlines', intensity: 0.4, speed: 1 });
     // Dark uses variant override
-    expect(resolveThemeEffects(parsed, 'dark')).toEqual({ ambient: 'rain', intensity: 0.8 });
+    expect(resolveThemeEffects(parsed, 'dark')).toEqual({ ambient: 'rain', intensity: 0.8, speed: 1 });
   });
 
   test('resolves to undefined when ambient effect is none or unspecified', () => {
@@ -171,3 +171,29 @@ describe('Theme effects resolution', () => {
   });
 });
 
+
+test('dust and embers retain inherited speed and static variant override', () => {
+  const theme = manifest({
+    effects: { ambient: 'dust', speed: 0.6, intensity: 0.3 },
+  });
+  theme.variants.dark.effects = { ambient: 'embers', speed: 0 };
+  const parsed = parseThemeManifest(JSON.stringify(theme));
+  expect(resolveThemeEffects(parsed, 'light')).toEqual({
+    ambient: 'dust',
+    speed: 0.6,
+    intensity: 0.3,
+  });
+  expect(resolveThemeEffects(parsed, 'dark')).toEqual({
+    ambient: 'embers',
+    speed: 0,
+    intensity: 0.3,
+  });
+});
+
+test('effect controls inherit individually and retain zero density', () => {
+  const theme = manifest({ effects: { ambient: 'rain', density: 0.5, size: 1.5, palette: ['primary', 'warning'], direction: 'left' } });
+  theme.variants.dark.effects = { density: 0, palette: ['text'] };
+  const parsed = parseThemeManifest(JSON.stringify(theme));
+  expect(resolveThemeEffects(parsed, 'light')).toMatchObject({ ambient: 'rain', density: 0.5, size: 1.5, palette: ['primary', 'warning'], direction: 'left' });
+  expect(resolveThemeEffects(parsed, 'dark')).toMatchObject({ ambient: 'rain', density: 0, size: 1.5, palette: ['text'], direction: 'left' });
+});
