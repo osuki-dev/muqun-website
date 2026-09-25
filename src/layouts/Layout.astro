@@ -81,13 +81,6 @@ const chrome = getChrome(locale);
 
 const home = localizedPath('/', locale);
 const themes = localizedPath('/themes', locale);
-/**
- * The gallery ships before it is announced: the page and /api/themes/ are
- * live so the CLI and the app can read the catalogue, but the navigation
- * does not point at it until there are themes worth showing. Flip this to
- * link it from the header and footer again.
- */
-const SHOW_THEMES_NAV = false;
 const support = localizedPath('/support', locale);
 const privacy = localizedPath('/privacy', locale);
 
@@ -137,9 +130,7 @@ const year = new Date().getFullYear();
     {/* Hidden under 600px along with the GitHub link (`site-theme.css`):
         with it the controls overrun a 390px viewport in every Latin locale
         and the page scrolls sideways. The footer carries it everywhere. */}
-    {SHOW_THEMES_NAV && (
-      <Button href={themes} variant="quiet" class="mq-header-themes">{chrome.nav.themes}</Button>
-    )}
+    <Button href={themes} variant="quiet" class="mq-header-themes">{chrome.nav.themes}</Button>
     <Button href={support} variant="quiet">{chrome.nav.support}</Button>
     <Button href={appRepoUrl} variant="quiet">GitHub ↗</Button>
   </PageHeader>
@@ -151,7 +142,7 @@ const year = new Date().getFullYear();
     <LocaleMenu locales={locales} current={locale} label={chrome.header.aria.language} />
 
     <Fragment slot="meta">
-      {SHOW_THEMES_NAV && <Button href={themes} variant="quiet">{chrome.nav.themes}</Button>}
+      <Button href={themes} variant="quiet">{chrome.nav.themes}</Button>
       <Button href={support} variant="quiet">{chrome.nav.support}</Button>
       <Button href={privacy} variant="quiet">{chrome.nav.privacy}</Button>
       <Button href={appRepoUrl} variant="quiet">{chrome.footer.github}</Button>
