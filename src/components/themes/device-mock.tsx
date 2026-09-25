@@ -333,7 +333,6 @@ const ICON = {
   paperclip: ['m16 6-8.414 8.586a2 2 0 0 0 2.829 2.829l8.414-8.586a4 4 0 1 0-5.657-5.657l-8.379 8.551a6 6 0 1 0 8.485 8.485l8.379-8.551'],
   zap: ['M15.914 4a1.5 1.5 0 00-2.474-1.561l-9 9A1.5 1.5 0 005.5 14h4.002a.5.5 0 01.471.666L8.086 20a1.5 1.5 0 002.475 1.56l9-9A1.5 1.5 0 0018.5 10h-3.997a.5.5 0 01-.472-.667z'],
   shieldAlert: ['M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z', 'M12 8v4', 'M12 16h.01'],
-  circleAlert: ['M12 3a9 9 0 1 0 9 9A9 9 0 0 0 12 3z', 'M12 8v4', 'M12 16h.01'],
   check: ['M20 6 9 17l-5-5'],
   checkCheck: ['M18 6 7 17l-5-5', 'm22 10-7.5 7.5L13 16'],
   x: ['M18 6 6 18', 'm6 6 12 12'],
@@ -607,28 +606,6 @@ function EditorialRecent({ paint }: { paint: Paint }) {
   );
 }
 
-function EditorialAttention({ paint }: { paint: Paint }) {
-  const { colors } = paint;
-  return (
-    <div
-      className="dm-editorial__attention"
-      style={{
-        borderColor: colors.warning,
-        background: paint.fill(colors.surface),
-      }}
-    >
-      <Lucide icon={ICON.circleAlert} size={20} color={colors.warning} />
-      <span className="dm-editorial__attention-copy">
-        <strong style={{ color: colors.text }}>3 requests last observed</strong>
-        <span style={{ color: colors.textMuted }}>studio · ~/project</span>
-        <span style={{ color: colors.textSubtle }}>Last checked recently</span>
-        <span style={{ color: colors.primary }}>Open to check the current state</span>
-      </span>
-      <Glyph paint={paint} name="home.arrow" size={16} color={colors.primary} fallback={ICON.chevronRight} />
-    </div>
-  );
-}
-
 function EditorialConnections({ paint }: { paint: Paint }) {
   const { colors } = paint;
   return (
@@ -748,7 +725,6 @@ function HomeEditorialContent({ paint, pad, top, logicalWidth }: { paint: Paint;
         {!cover ? <EditorialLaunches paint={paint} /> : null}
         <div className="dm-editorial__grid">
           <main className="dm-editorial__main">
-            {!pad && <EditorialAttention paint={paint} />}
             <EditorialSection paint={paint} title="Continue">
               <EditorialRecent paint={paint} />
             </EditorialSection>
@@ -759,7 +735,6 @@ function HomeEditorialContent({ paint, pad, top, logicalWidth }: { paint: Paint;
             )}
           </main>
           {pad && <aside className="dm-editorial__aside">
-            <EditorialAttention paint={paint} />
             <EditorialSection paint={paint} title="Connections">
               <EditorialConnections paint={paint} />
             </EditorialSection>

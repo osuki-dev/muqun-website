@@ -74,7 +74,7 @@ function renderEditorial(pack = previewPackage()) {
 }
 
 describe('editorial Home preview contract', () => {
-  test('uses App launch and attention vocabulary without inventing a request payload', () => {
+  test('shows Home actions without a sample request notice', () => {
     const markup = renderEditorial();
 
     expect(markup).toContain('dm-home--editorial');
@@ -96,9 +96,9 @@ describe('editorial Home preview contract', () => {
     expect(markup).toContain('New terminal');
     expect(markup).toContain('SSH hosts');
     expect(markup).not.toContain('SSH connection');
-    expect(markup).toContain('3 requests last observed');
-    expect(markup).toContain('Last checked recently');
-    expect(markup).toContain('Open to check the current state');
+    expect(markup).not.toContain('3 requests last observed');
+    expect(markup).not.toContain('Last checked recently');
+    expect(markup).not.toContain('Open to check the current state');
     expect(markup).toContain('Manage connections');
     expect(markup).toContain('Saved SSH host');
     expect(markup).toContain('Offline, not answering');
