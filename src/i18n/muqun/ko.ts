@@ -30,7 +30,7 @@ export const copy: MuqunCopy = {
     deviceAlt:
       'Muqun 홈 화면. 서버 하나가 온라인으로 표시되고, 그 에이전트들이 산호색 선을 따라 작업 중, 응답 대기, 대기로 표시되어 있습니다.',
     videoPlayLabel: '36초 소개 영상 재생',
-    videoLength: '0:36',
+    videoLength: '0:20',
     promptLegend: '에이전트의 세 가지 답',
     promptHint: '1, 2, 3 중 하나를 누르세요. 잠금 화면에서 답해도 됩니다.',
     promptCaption:

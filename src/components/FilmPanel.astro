@@ -102,7 +102,7 @@ const { src, portraitSrc, portraitPoster, poster, alt, playLabel, length, class:
    *
    * The `<video>` is built here rather than served hidden in the markup:
    * a hidden `<video src>` still hands the browser a URL it may decide to
-   * fetch, and this file is three megabytes.
+   * fetch, and this file is several megabytes.
    */
   for (const panel of document.querySelectorAll<HTMLElement>('[data-film]')) {
     const button = panel.querySelector<HTMLButtonElement>('[data-film-play]');
@@ -119,6 +119,9 @@ const { src, portraitSrc, portraitPoster, poster, alt, playLabel, length, class:
         video.src = usePortrait ? (panel.dataset.filmPortraitSrc ?? src) : src;
         frame.style.aspectRatio = usePortrait ? '9 / 16' : '16 / 9';
         video.controls = true;
+        // Sound stays off until the viewer turns it on from the controls.
+        video.muted = true;
+        video.defaultMuted = true;
         video.autoplay = true;
         video.playsInline = true;
         video.setAttribute("aria-label", button.getAttribute("aria-label") ?? "Muqun 3.0");

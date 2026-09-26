@@ -30,7 +30,7 @@ export const copy: MuqunCopy = {
     deviceAlt:
       '牧群的首頁：一台伺服器標示為線上，它的代理程式沿著一條珊瑚色的線排開，各自標示為工作中、等待回應或閒置。',
     videoPlayLabel: '播放 36 秒的介紹影片',
-    videoLength: '0:36',
+    videoLength: '0:20',
     promptLegend: '代理的三個回答',
     promptHint: '按 1、2 或 3——也可以在鎖定畫面上回答。',
     promptCaption:
