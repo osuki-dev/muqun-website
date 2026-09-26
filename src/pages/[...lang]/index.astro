@@ -1,6 +1,6 @@
 ---
 import FilmPanel from "@/components/FilmPanel.astro";
-import { introVideoSrc, introVideoPoster } from "@/lib/muqun-assets";
+import { introVideoSrc, introVideoPoster, introVideoPortraitSrc, introVideoPortraitPoster } from "@/lib/muqun-assets";
 import Layout from "@/layouts/Layout.astro";
 import PocketWorld from "@/components/world/PocketWorld";
 import FeatureGallery from "@/components/FeatureGallery.astro";
@@ -81,7 +81,7 @@ const opencodeGuideHref = `${localizedPath("/support", locale)}#opencode`;
       </section>
       <section id="film" class="home-film" aria-label="Muqun 3.0">
         <p class="world-eyebrow">MUQUN / 3.0</p>
-        <FilmPanel src={introVideoSrc} poster={introVideoPoster} portraitSrc="/video/muqun-intro-portrait.mp4?v=3.0-opencode-2" portraitPoster="/video/muqun-intro-portrait-poster.webp?v=3.0-opencode-2" alt="Muqun 3.0" playLabel={copy.hero.videoPlayLabel} length="0:36" />
+        <FilmPanel src={introVideoSrc} poster={introVideoPoster} portraitSrc={introVideoPortraitSrc} portraitPoster={introVideoPortraitPoster} alt="Muqun 3.0" playLabel={copy.hero.videoPlayLabel} length="0:20" />
       </section>
       <section class="story-chapter terminal-chapter" id="terminal">
         <div class="chapter-copy" data-world-reveal>

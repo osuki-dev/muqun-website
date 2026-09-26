@@ -25,7 +25,7 @@ export const copy: MuqunCopy = {
     deviceAlt:
       'L’écran d’accueil de Muqun : un serveur EN LIGNE, ses agents listés le long d’un fil corail, chacun marqué En cours, Bloqué ou Inactif.',
     videoPlayLabel: 'Lire le film de présentation de 36 secondes',
-    videoLength: '0:36',
+    videoLength: '0:20',
     promptLegend: 'Les trois réponses de l’agent',
     promptHint: 'Appuie sur 1, 2 ou 3 — ou réponds depuis l’écran verrouillé.',
     promptCaption:

@@ -26,7 +26,7 @@ export const copy: MuqunCopy = {
     deviceAlt:
       'Der Startbildschirm von Muqun: ein Server ONLINE, seine Agents an einem korallenfarbenen Faden aufgelistet, jeder als Arbeitet, Blockiert oder Inaktiv markiert.',
     videoPlayLabel: 'Den 36-sekündigen Intro-Film abspielen',
-    videoLength: '0:36',
+    videoLength: '0:20',
     promptLegend: 'Die drei Antworten des Agents',
     promptHint: 'Drücke 1, 2 oder 3 — oder antworte vom Sperrbildschirm aus.',
     promptCaption:

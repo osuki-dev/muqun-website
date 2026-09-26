@@ -26,7 +26,7 @@ export const copy: MuqunCopy = {
     deviceAlt:
       'Muqun’s home screen: one server ONLINE, its agents listed down a coral thread, each marked Working, Blocked or Idle.',
     videoPlayLabel: 'Play the 36-second intro film',
-    videoLength: '0:36',
+    videoLength: '0:20',
     promptLegend: 'The agent’s three answers',
     promptHint: 'Press 1, 2 or 3 — or answer it from the Lock Screen.',
     promptCaption:

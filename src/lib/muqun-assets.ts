@@ -16,9 +16,11 @@ import { MUQUN_SHOTS, type MuqunShotBase } from './muqun-shots';
 /** The card every link to this site unfurls into. */
 export const ogImage = '/og-muqun.png';
 
-/** The 36-second Muqun 3.0 film, loaded only after pressing play. */
-export const introVideoSrc = '/video/muqun-intro.mp4?v=3.0-opencode-2';
-export const introVideoPoster = '/video/muqun-intro-poster.webp?v=3.0-opencode-2';
+/** The 20-second Muqun film, loaded only after pressing play. */
+export const introVideoSrc = '/video/muqun-intro.mp4?v=4-editorial';
+export const introVideoPoster = '/video/muqun-intro-poster.webp?v=4-editorial';
+export const introVideoPortraitSrc = '/video/muqun-intro-portrait.mp4?v=4-editorial';
+export const introVideoPortraitPoster = '/video/muqun-intro-portrait-poster.webp?v=4-editorial';
 
 /**
  * Whether a name built at runtime is a capture that actually exists.
