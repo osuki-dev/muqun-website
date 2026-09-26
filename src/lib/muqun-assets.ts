@@ -16,7 +16,7 @@ import { MUQUN_SHOTS, type MuqunShotBase } from './muqun-shots';
 /** The card every link to this site unfurls into. */
 export const ogImage = '/og-muqun.png';
 
-/** The 20-second Muqun film, loaded only after pressing play, and muted until unmuted. */
+/** The 20-second Muqun film, loaded only after pressing play. */
 export const introVideoSrc = '/video/muqun-intro.mp4?v=4-editorial';
 export const introVideoPoster = '/video/muqun-intro-poster.webp?v=4-editorial';
 export const introVideoPortraitSrc = '/video/muqun-intro-portrait.mp4?v=4-editorial';

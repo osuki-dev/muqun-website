@@ -119,9 +119,6 @@ const { src, portraitSrc, portraitPoster, poster, alt, playLabel, length, class:
         video.src = usePortrait ? (panel.dataset.filmPortraitSrc ?? src) : src;
         frame.style.aspectRatio = usePortrait ? '9 / 16' : '16 / 9';
         video.controls = true;
-        // Sound stays off until the viewer turns it on from the controls.
-        video.muted = true;
-        video.defaultMuted = true;
         video.autoplay = true;
         video.playsInline = true;
         video.setAttribute("aria-label", button.getAttribute("aria-label") ?? "Muqun 3.0");
