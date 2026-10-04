@@ -1,4 +1,3 @@
-import type { SiteLocale } from '@/lib/locales';
 
 /** One entry of the in-page table of contents, and one section's anchor. */
 export interface GuideAnchor {
@@ -31,6 +30,14 @@ export interface GuideStep {
   commands?: readonly GuideCommand[];
   /** One line under the commands. The "pick one" rule. */
   note?: string;
+}
+
+/** One agent the Gateway can attach. Name and id are not translated. */
+export interface GuideAgent {
+  name: string;
+  /** The id the Gateway and its agent command use. Mono, ASCII. */
+  id: string;
+  detail: string;
 }
 
 /** A term and what it means. The config table and the troubleshooting list. */
@@ -77,7 +84,44 @@ export interface UserGuide {
     /** Translated. What is happening on the screen, not "a screenshot". */
     shotAlt: string;
     entries: readonly GuideEntry[];
+    /** One sheet for terminal panes and agent sessions (3.1). */
+    changes: {
+      heading: string;
+      lead: string;
+      entries: readonly GuideEntry[];
+    };
+    /** The Pad keyboard, and what a backend needs to deliver its chords. */
+    keyboard: {
+      heading: string;
+      lead: string;
+      entries: readonly GuideEntry[];
+      /** Under the tmux commands: how to make them permanent. */
+      persistNote: string;
+    };
     note: string;
+  };
+
+  /** What an agent session is, the agents 3.1 supports, and their setup. */
+  agents: {
+    eyebrow: string;
+    heading: string;
+    lead: string;
+    /** Two entries: a terminal, then an agent session. */
+    versus: readonly GuideEntry[];
+    supportedHeading: string;
+    /** OpenCode, DeepSeek Harness, T3 Code, in the Gateway's preference order. */
+    supported: readonly GuideAgent[];
+    cliHeading: string;
+    cliBody: string;
+    /** The agent command and its three setup forms. */
+    commands: readonly GuideCommand[];
+    restartNote: string;
+    manualHeading: string;
+    manualBody: string;
+    /** Where the T3 credential is kept. */
+    credentialNote: string;
+    phoneHeading: string;
+    entries: readonly GuideEntry[];
   };
 
   opencode: {

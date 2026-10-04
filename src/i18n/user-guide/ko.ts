@@ -29,9 +29,16 @@ export const ko: UserGuide = {
       desc: '워크스페이스, 그룹, 패널, 모바일 전용 키 바 및 개발 도구.',
     },
     {
+      id: 'agents',
+      label: "에이전트",
+      nav: "에이전트",
+      meta: "opencode · deepseek · t3",
+      desc: "에이전트 세션과 터미널의 차이, 3.1이 지원하는 세 에이전트, 그리고 호스트에서 각각 설정하는 방법.",
+    },
+    {
       id: 'opencode',
       label: 'OpenCode 에이전트',
-      nav: 'AI도우미',
+      nav: 'opencode',
       meta: '자율 에이전트',
       desc: '로컬 Agent 서비스, 모델 선택, 인라인 Diff 도구 호출 및 권한 승인.',
     },
@@ -120,6 +127,43 @@ export const ko: UserGuide = {
       '스마트폰과 Gateway 컴퓨터를 동일한 Tailscale tailnet에 연결하는 것을 강력히 권장합니다. 공유기 포트포워딩이 필요 없으며 Gateway를 공용 인터넷에 노출하지 않습니다. Tailscale Serve를 통해 비공개 HTTPS 주소를 추가할 수 있습니다 (Muqun에 Tailscale Funnel은 사용하지 마세요).',
   },
 
+  agents: {
+    eyebrow: "muqun-gateway agent",
+    heading: "에이전트.",
+    lead: "터미널은 직접 입력하는 셸입니다. 에이전트 세션은 컴퓨터에서 실행되는 코딩 에이전트——OpenCode, DeepSeek Harness, T3 Code——와 나누는 대화로, 앱은 이를 글자로 가득한 화면이 아니라 메시지, 도구 카드, 질문으로 그립니다. 둘 다 같은 Gateway와 같은 페어링을 거치며, 다른 점은 Gateway가 대신 대화하는 상대입니다.",
+    versus: [
+      { term: "터미널", detail: "호스트의 tmux 또는 Herdr. 앱은 창에 보이는 그대로를 보여 주고, 보낸 키는 그대로 프로그램에 도착합니다. 그래서 어떤 프로그램이든 쓸 수 있고, Claude Code나 Codex처럼 터미널에서 도는 에이전트도 쓸 수 있습니다." },
+      { term: "에이전트 세션", detail: "Gateway가 에이전트 자체 API로 대화하는 상대입니다. 각 세션은 한 에이전트에 속하고 언제나 그 에이전트로 돌아갑니다. 작업 화면——모드, 모델, 슬래시 명령, 스킬, 첨부, 실행 취소, 압축, 백그라운드 실행——은 그 에이전트가 지원하는 것만 보여 줍니다." },
+    ],
+    supportedHeading: "3.1이 지원하는 에이전트",
+    supported: [
+      { name: "OpenCode", id: "opencode", detail: "OpenCode는 설정이 필요 없습니다. Gateway가 이미 실행 중인 OpenCode 서비스를 이어받거나, 없으면 직접 시작합니다. OpenCode 2가 필요합니다. 작업 화면의 모든 기능을 지원합니다." },
+      { name: "DeepSeek Harness", id: "deepseek", detail: "DeepSeek Harness는 켜기 전까지 꺼져 있습니다. 호스트에서 Harness를 시작한 뒤 Gateway가 그쪽을 보게 하세요. 모드는 Harness 자체 프리셋이며 세션을 만들 때 고릅니다. 첨부는 호스트의 파일로 전달됩니다." },
+      { name: "T3 Code", id: "t3", detail: "T3 Code는 Gateway가 자격 증명을 갖기 전까지 꺼져 있습니다. Gateway는 T3와 한 번 페어링하고 그 자격 증명을 보관합니다. 첨부, 승인, 실행 취소를 지원하며, T3의 실행 취소는 턴 단위로 되돌리기 때문에 앱이 먼저 확인합니다." },
+    ],
+    cliHeading: "명령줄로 설정하기",
+    cliBody: "Gateway가 실행 중인 컴퓨터에서 실행합니다. muqun-gateway agent는 셸에서 각 에이전트를 확인해 상태, 버전, 주소를 보여 주고, 준비되지 않은 것에는 다음 단계를 알려 줍니다. 활성화된 에이전트를 쓸 수 없는 동안에는 0이 아닌 코드로 끝나므로 스크립트에서도 확인할 수 있습니다.",
+    commands: [
+      { code: "muqun-gateway agent", label: "status", detail: "모든 에이전트의 상태와 다음에 할 일." },
+      { code: "muqun-gateway agent setup t3", label: "t3", detail: "T3 Code를 페어링합니다. 같은 컴퓨터라면 t3 auth session issue로 자격 증명을 발급합니다——T3 데이터가 다른 곳에 있으면 --base-dir을 붙이세요. 다른 호스트의 T3라면 그곳에서 t3 pair를 실행하고 코드를 --token CODE로 넘깁니다." },
+      { code: "muqun-gateway agent setup deepseek", label: "deepseek", detail: "실행 중인 DeepSeek Harness를 찾아 켭니다. 3080과 19387 포트를 살펴보니, 다른 곳에 있다면 --endpoint URL을 지정하세요." },
+      { code: "muqun-gateway agent setup opencode", label: "opencode", detail: "아무것도 바꾸지 않습니다. Gateway가 쓸 OpenCode 바이너리와 버전을 보여 줍니다——2.x가 필요합니다." },
+    ],
+    restartNote: "setup은 config.json에 기록하고, 실행 중인 Gateway가 변경을 반영하려면 재시작이 필요한지 알려 줍니다. 서비스로 설치된 Gateway라면 확인 후 대신 재시작합니다(--yes로 확인 생략). 그렇지 않으면 직접 재시작하세요.",
+    manualHeading: "config.json에 직접 쓰기",
+    manualBody: "같은 설정을 직접 쓰고 싶을 때. 필요한 블록을 추가하고 Gateway를 재시작하세요. t3 pair의 코드는 pairing_token에 넣습니다. 다음 시작 때 Gateway가 한 번 교환하고 그 뒤로는 필요 없습니다. opencode.binary는 특정 OpenCode로 고정할 때만 씁니다.",
+    credentialNote: "T3 자격 증명은 Gateway 상태 디렉터리(Linux에서는 ~/.local/share/muqun-gateway/)의 t3-credential.json에 있으며 본인만 읽을 수 있습니다. T3가 취소했거나 만료되면 agent setup t3를 다시 실행하세요.",
+    phoneHeading: "휴대폰에서",
+    entries: [
+      { term: "에이전트마다 타일 하나", detail: "홈에는 Gateway가 알려 주는 에이전트마다 타일이 있고, 마지막으로 쓴 것이 맨 앞에 옵니다. 세 개를 넘으면 나머지는 더 많은 에이전트 안에 들어갑니다. 둘 이상이 준비되어 있으면 새 세션이 어느 것을 쓸지 묻습니다." },
+      { term: "질문은 푸시로 도착", detail: "세션(하위 에이전트의 세션 포함)이 양식 입력을 요청하면, 페어링된 모든 휴대폰에 입력이 필요하다는 알림이 한 번 옵니다. 권한 요청은 이전처럼 푸시됩니다." },
+      { term: "설정 필요", detail: "Gateway가 에이전트를 볼 수는 있지만 자격 증명이 없습니다. 타일을 열면 호스트에서 실행할 정확한 명령이 나옵니다——T3 Code라면 t3 pair." },
+      { term: "업데이트 필요", detail: "에이전트가 이 Gateway가 모르는 더 새로운 프로토콜을 씁니다. 그 컴퓨터에서 설치 명령을 다시 실행해 Gateway를 업데이트하세요." },
+      { term: "설치 안 됨, 오프라인", detail: "호스트에 에이전트가 없거나 실행 중이 아닙니다. 타일이 어느 쪽인지 알려 주고 그 에이전트용 시작 안내를 엽니다." },
+      { term: "이전 Gateway", detail: "0.13 이전 Gateway는 multi_agent를 제공하지 않으므로, 앱은 OpenCode만 쓰는 단일 에이전트 모드로 남고 새 Gateway가 필요한 기능에서는 그렇다고 알려 줍니다." },
+    ],
+  },
+
   gateway: {
     eyebrow: 'config.json',
     heading: 'Gateway 구성.',
@@ -171,6 +215,8 @@ export const ko: UserGuide = {
         detail:
           '실행할 OpenCode 바이너리 경로. 생략 시 ~/.opencode/bin 또는 시스템 PATH에서 찾습니다. 서비스가 로그인 셸의 PATH를 가져오지 못할 때 고정 경로를 지정합니다.',
       },
+      { term: "deepseek", detail: "DeepSeek Harness. enabled가 true이거나 endpoint가 지정됐을 때만 연결합니다. Harness가 필요로 하면 token과 secret도. Gateway가 포트를 뒤져 찾지는 않습니다." },
+      { term: "t3", detail: "T3 Code. enabled, url(기본값 http://127.0.0.1:3773), 그리고 t3 pair의 pairing_token 또는 이미 가진 token. runtime_mode는 권한 정책이며 기본값은 full-access입니다." },
     ],
     portsHeading: '포트 및 네트워크',
     portsRows: [
@@ -287,8 +333,7 @@ export const ko: UserGuide = {
       },
       {
         term: '변경사항 (Changes)',
-        detail:
-          '패널이 위치한 디렉터리의 Git 상태를 보여줍니다. 변경된 파일 수, 스테이징 여부 필터 및 실제 Diff를 확인합니다. Git 체크아웃 내부이고 Gateway가 기능을 지원할 때만 나타납니다.',
+        detail: "창이 있는 디렉터리의 git 변경을 보여 주며, 에이전트 세션과 같은 시트입니다——아래 변경 사항 시트를 보세요. 버튼에는 변경된 파일 수가 붙고, 창이 git 체크아웃 안에 있고 Gateway가 diff를 제공할 수 있을 때만 나타납니다.",
       },
       {
         term: '파일 탐색기 (Files)',
@@ -306,6 +351,28 @@ export const ko: UserGuide = {
           '자주 사용하는 명령어, 프롬프트, 단축키를 저장해 두고 한 번에 실행할 수 있습니다. 자유롭게 추가하고 편집할 수 있습니다.',
       },
     ],
+    changes: {
+      heading: "변경 사항 시트",
+      lead: "터미널 창과 에이전트 세션은 같은 변경 사항 시트를 씁니다. 호스트에서, 창이나 세션의 디렉터리에서 git을 실행합니다.",
+      entries: [
+        { term: "트리", detail: "변경된 파일을 폴더 트리로, 파일 수와 줄 수 합계와 함께 보여 줍니다. 긴 이름은 가운데를 줄여 확장자가 보이게 하고, 깊은 폴더는 세 단계 이후로는 들여쓰지 않습니다." },
+        { term: "범위", detail: "위쪽 메뉴에서 커밋되지 않은 변경과 브랜치 기준점과의 비교를 전환합니다. 기준점은 origin/HEAD와의 merge-base이며, 없으면 main이나 master입니다." },
+        { term: "패치는 열 때 불러오기", detail: "목록에는 diff가 없으므로 큰 변경도 빨리 열립니다. 문맥 더 보기로 읽고 있는 패치를 넓힐 수 있습니다." },
+        { term: "버리기", detail: "파일의 … 메뉴에서 확인 후 실행합니다. 추적 중인 파일은 되돌리고, 추적되지 않은 파일은 삭제합니다. 저장소가 홈 디렉터리 자체이거나, 저장소 밖으로 나가는 경로(바깥을 가리키는 심볼릭 링크 포함)라면 Gateway가 거부합니다." },
+        { term: "이전 Gateway에서는", detail: "터미널에서 기준점 비교와 버리기를 하려면 pane_vcs_files를 제공하는 Gateway가 필요합니다. 없으면 터미널 시트는 커밋되지 않은 변경의 같은 트리만 보여 줍니다." },
+      ],
+    },
+    keyboard: {
+      heading: "Pad 키보드와 확장 키",
+      lead: "태블릿의 화면 키보드는 온전한 키보드입니다. 숨길 수 있는 기능 키 줄, 숫자 줄, 고정되는 ctrl·alt·shift(두 번 탭하면 잠금), 화살표 위의 Home, End, Page Up, Page Down. 기본 조합 밖의 키——Ctrl+Enter, Shift+Enter, Ctrl+화살표, Alt+문자, F 키——는 Gateway가 전달할 수 있다고 할 때만 보냅니다.",
+      entries: [
+        { term: "보낼 수 없는 키", detail: "Gateway가 전달할 수 없는 키는 흐리게 그려지고, 누르면 이유를 알려 줍니다. 수정 키를 누르고 있는 동안에는 그 조합으로 닿지 않는 키가 어두워지며, 거부된 조합도 한 번용 수정 키는 해제합니다." },
+        { term: "Herdr", detail: "모든 조합을 전달합니다. 설정할 것이 없습니다." },
+        { term: "tmux", detail: "tmux 3.2 이상에서 extended-keys를 켜야 하고, 창의 프로그램이 확장 키를 요청해야 합니다. Ctrl+Enter와 Shift+Enter에는 extended-keys-format csi-u도 필요합니다." },
+        { term: "Codex와 Claude Code", detail: "tmux 안의 Codex는 Shift+Enter를 받지 못합니다. 줄바꿈은 ⌃J를 쓰세요. Claude Code는 \\ 다음 Enter로 줄을 바꿉니다." },
+      ],
+      persistNote: "이 두 줄은 바로 적용되며 tmux 서버가 끝날 때까지 유지됩니다. 계속 쓰려면 앞의 tmux를 뺀 같은 두 줄을 ~/.tmux.conf에 넣으세요.",
+    },
     note: 'Muqun은 항상 안전한 관찰자로 동작합니다. 세션을 열어도 창 배치가 흐트러지지 않으며 앱을 닫아도 백그라운드 작업이 종료되지 않습니다.',
   },
 
@@ -513,8 +580,7 @@ export const ko: UserGuide = {
       },
       {
         term: 'Changes 버튼이 나타나지 않음',
-        detail:
-          '터미널이 Git 저장소 내부이고 Gateway가 Diff 기능을 지원할 때만 표시됩니다. 설치 명령어를 다시 실행하여 Gateway를 업데이트하세요.',
+        detail: "터미널이 git 체크아웃 안에 있고 Gateway가 diff를 제공할 만큼 새로울 때만 나타납니다. 기준점 비교와 버리기에는 Gateway 0.13 이상이 필요합니다. 설치 명령을 다시 실행해 업그레이드하세요.",
       },
       {
         term: '최신 Gateway가 필요하다는 안내가 뜸',
@@ -526,6 +592,9 @@ export const ko: UserGuide = {
         detail:
           '모델 제공자와 통신하는 주체는 사용자 컴퓨터입니다. 인터넷 접근에 프록시가 필요한 경우 컴퓨터의 OpenCode에 프록시 설정을 완료하세요. Muqun은 트래픽을 프록시하지 않습니다.',
       },
+      { term: "터미널을 사용할 수 없음", detail: "Gateway는 실행 중인데 터미널 백엔드가 없습니다——tmux는 설치됐지만 tmux 서버가 없거나 Herdr가 시작되지 않은 경우입니다. 화면에 Gateway의 백엔드와 상태가 나오니, 하나를 시작하면 터미널이 저절로 나타납니다. 그동안 에이전트 세션은 계속 쓸 수 있습니다." },
+      { term: "“이 터미널은 ⌃↵를 보낼 수 없습니다”", detail: "Gateway가 조합을 거부했습니다. tmux라면 tmux set -s extended-keys on을, Ctrl+Enter에는 tmux set -s extended-keys-format csi-u도 실행하세요. 메시지 아래 힌트가 Gateway의 설명을 그대로 보여 줍니다." },
+      { term: "에이전트 타일이 설정 필요 또는 업데이트 필요", detail: "호스트에서 muqun-gateway agent를 실행하면 에이전트마다 다음 단계를 알려 줍니다. 업데이트 필요는 이 Gateway가 에이전트의 프로토콜보다 오래됐다는 뜻입니다——설치 명령을 다시 실행하세요." },
     ],
   },
 

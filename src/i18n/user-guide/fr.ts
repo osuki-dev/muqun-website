@@ -29,9 +29,16 @@ export const fr: UserGuide = {
       desc: 'Espaces de travail, groupes, panneaux, barre de touches et outils mobiles.',
     },
     {
+      id: 'agents',
+      label: "Agents",
+      nav: "agents",
+      meta: "opencode · deepseek · t3",
+      desc: "Sessions d’agent et terminaux, les trois agents pris en charge par 3.1, et leur mise en place sur l’hôte.",
+    },
+    {
       id: 'opencode',
       label: 'L’agent OpenCode',
-      nav: 'Agent',
+      nav: 'opencode',
       meta: 'Agent autonome',
       desc: 'Service d’agent local, modèles, diffs en direct et demandes d’autorisation.',
     },
@@ -120,6 +127,43 @@ export const fr: UserGuide = {
       'Nous vous recommandons vivement de placer votre téléphone et votre ordinateur sur le même réseau Tailscale tailnet. Cela évite toute redirection de port et protège votre Gateway d’Internet. Tailscale Serve permet d’ajouter une adresse HTTPS privée (n’utilisez pas Tailscale Funnel avec Muqun).',
   },
 
+  agents: {
+    eyebrow: "muqun-gateway agent",
+    heading: "Agents.",
+    lead: "Un terminal est un shell dans lequel vous tapez. Une session d’agent est une conversation avec un agent de code qui tourne sur votre ordinateur — OpenCode, DeepSeek Harness ou T3 Code — que l’app dessine en messages, cartes d’outil et questions plutôt qu’en écran de texte. Les deux passent par le même Gateway et le même jumelage ; ils diffèrent par ce à quoi le Gateway parle pour vous.",
+    versus: [
+      { term: "Un terminal", detail: "tmux ou Herdr sur l’hôte. L’app montre ce que montre le volet, et les touches que vous envoyez sont celles que le programme reçoit — tout programme fonctionne donc, y compris les agents qui vivent dans un terminal, comme Claude Code et Codex." },
+      { term: "Une session d’agent", detail: "Un agent auquel le Gateway parle par sa propre API. Chaque session appartient à un agent et revient toujours à lui. L’atelier — modes, modèles, commandes slash, skills, pièces jointes, annulation, compaction, exécutions en arrière-plan — ne montre que ce que cet agent prend en charge." },
+    ],
+    supportedHeading: "Les agents pris en charge par 3.1",
+    supported: [
+      { name: "OpenCode", id: "opencode", detail: "OpenCode ne demande aucune configuration. Le Gateway reprend un service OpenCode déjà lancé, ou en démarre un lui-même ; il faut OpenCode 2. Tout l’atelier est disponible." },
+      { name: "DeepSeek Harness", id: "deepseek", detail: "DeepSeek Harness reste éteint jusqu’à ce que vous l’activiez. Lancez le Harness sur l’hôte, puis indiquez-le au Gateway. Ses modes sont ses propres préréglages, choisis à la création d’une session ; les pièces jointes lui arrivent comme fichiers sur l’hôte." },
+      { name: "T3 Code", id: "t3", detail: "T3 Code reste éteint tant que le Gateway n’a pas d’identifiant pour lui. Le Gateway se jumelle une fois avec T3 et garde cet identifiant. Il gère pièces jointes, approbations et annulation — une annulation T3 revient sur des tours entiers, l’app demande donc confirmation avant." },
+    ],
+    cliHeading: "Les mettre en place en ligne de commande",
+    cliBody: "Sur l’ordinateur qui fait tourner le Gateway. muqun-gateway agent vérifie chaque agent depuis votre shell et affiche son état, sa version et son adresse, avec l’étape suivante pour ceux qui ne sont pas prêts. Il sort avec un code non nul tant qu’un agent activé est inutilisable, ce qu’un script peut aussi vérifier.",
+    commands: [
+      { code: "muqun-gateway agent", label: "status", detail: "L’état de chaque agent, avec l’étape suivante." },
+      { code: "muqun-gateway agent setup t3", label: "t3", detail: "Jumelle T3 Code. Sur la même machine, il émet un identifiant avec t3 auth session issue — ajoutez --base-dir si T3 garde ses données ailleurs. Pour un T3 sur un autre hôte, lancez t3 pair là-bas et passez le code avec --token CODE." },
+      { code: "muqun-gateway agent setup deepseek", label: "deepseek", detail: "Trouve un DeepSeek Harness en marche et l’active. Il cherche sur les ports 3080 et 19387 ; passez --endpoint URL si le Harness est ailleurs." },
+      { code: "muqun-gateway agent setup opencode", label: "opencode", detail: "Ne change rien. Affiche quel binaire OpenCode le Gateway utiliserait et sa version — il faut la 2.x." },
+    ],
+    restartNote: "setup écrit config.json et indique si le Gateway en cours doit redémarrer pour voir la modification. Un Gateway installé comme service est redémarré pour vous après confirmation (--yes la saute) ; sinon, redémarrez-le vous-même.",
+    manualHeading: "À la main, dans config.json",
+    manualBody: "Les mêmes réglages, si vous préférez les écrire vous-même. Ajoutez les blocs nécessaires, puis redémarrez le Gateway. Un code de t3 pair va dans pairing_token ; au démarrage suivant, le Gateway l’échange une fois et n’en a plus besoin. opencode.binary ne sert qu’à imposer un OpenCode précis.",
+    credentialNote: "L’identifiant T3 est rangé dans t3-credential.json, dans le répertoire d’état du Gateway — ~/.local/share/muqun-gateway/ sous Linux — lisible par vous seul. Si T3 le révoque ou s’il expire, relancez agent setup t3.",
+    phoneHeading: "Sur le téléphone",
+    entries: [
+      { term: "Une tuile par agent", detail: "L’accueil affiche une tuile pour chaque agent que le Gateway signale, le dernier utilisé en premier. Au-delà de trois, les autres sont sous Plus d’agents. Quand plusieurs sont prêts, Nouvelle session demande lequel." },
+      { term: "Les questions arrivent en notification", detail: "Quand une session — celle d’un sous-agent comprise — vous demande de remplir un formulaire, chaque téléphone jumelé reçoit une notification indiquant que l’agent attend votre réponse. Les demandes d’autorisation sont notifiées comme avant." },
+      { term: "Configuration requise", detail: "Le Gateway voit l’agent mais n’a pas d’identifiant pour lui. La tuile ouvre un guide avec la commande exacte à lancer sur l’hôte — pour T3 Code, t3 pair." },
+      { term: "Mise à jour requise", detail: "L’agent parle un protocole plus récent que ce que connaît ce Gateway. Mettez à jour le Gateway sur cet ordinateur en relançant la commande d’installation." },
+      { term: "Non installé, Hors ligne", detail: "L’agent n’est pas sur l’hôte, ou ne tourne pas. La tuile dit lequel et ouvre un guide de démarrage écrit pour cet agent." },
+      { term: "Gateways plus anciens", detail: "Un Gateway antérieur à 0.13 n’offre pas multi_agent : l’app reste en mode agent unique avec OpenCode et signale quand une fonction demande un Gateway plus récent." },
+    ],
+  },
+
   gateway: {
     eyebrow: 'config.json',
     heading: 'Configuration de la Gateway.',
@@ -171,6 +215,8 @@ export const fr: UserGuide = {
         detail:
           'Chemin de l’exécutable OpenCode. À spécifier si votre service ne dispose pas du PATH de votre shell habituel.',
       },
+      { term: "deepseek", detail: "DeepSeek Harness. Rattaché seulement si enabled vaut true ou si un endpoint est donné ; token et secret si votre Harness en a besoin. Le Gateway ne balaie jamais les ports pour le trouver." },
+      { term: "t3", detail: "T3 Code. enabled, url (http://127.0.0.1:3773 par défaut), et soit pairing_token issu de t3 pair, soit un token que vous détenez déjà. runtime_mode fixe sa politique d’autorisation ; full-access par défaut." },
     ],
     portsHeading: 'Ports & Écoute',
     portsRows: [
@@ -287,8 +333,7 @@ export const fr: UserGuide = {
       },
       {
         term: 'Modifications Git (Changes)',
-        detail:
-          'Consultez l’état Git du répertoire : fichiers modifiés, filtres Staged/Unstaged et diffs inline. Visible uniquement quand le panneau est dans un dépôt Git compatible.',
+        detail: "La vue git du répertoire du volet, la même feuille que pour une session d’agent — voir La feuille Modifications plus bas. Le bouton porte le nombre de fichiers modifiés et n’apparaît que si le volet est dans un dépôt git et que le Gateway peut fournir des diffs.",
       },
       {
         term: 'Fichiers (Files)',
@@ -306,6 +351,28 @@ export const fr: UserGuide = {
           'Commandes enregistrées, prompts favoris et combinaisons de touches fréquentes. Entièrement personnalisables.',
       },
     ],
+    changes: {
+      heading: "La feuille Modifications",
+      lead: "Les volets de terminal et les sessions d’agent partagent une même feuille Modifications. Elle lance git sur l’hôte, dans le répertoire du volet ou de la session.",
+      entries: [
+        { term: "L’arbre", detail: "Les fichiers modifiés en arbre de dossiers, avec le nombre de fichiers et les totaux de lignes. Les noms longs sont raccourcis au milieu pour garder l’extension visible, et les dossiers profonds cessent de s’indenter après trois niveaux." },
+        { term: "Portée", detail: "Le menu du haut bascule entre les modifications non validées et la comparaison avec la base de la branche — la merge-base avec origin/HEAD, sinon main ou master." },
+        { term: "Les patchs se chargent à l’ouverture", detail: "La liste ne contient pas de diffs, si bien qu’une grosse modification s’ouvre vite. Afficher plus de contexte élargit le patch que vous lisez." },
+        { term: "Annuler les modifications", detail: "Dans le menu … d’un fichier, après confirmation : un fichier suivi est restauré, un fichier non suivi supprimé. Le Gateway refuse quand le dépôt est votre répertoire personnel, et pour tout chemin qui sort du dépôt — y compris un lien symbolique pointant au-dehors." },
+        { term: "Sur un Gateway plus ancien", detail: "La comparaison avec la base et l’annulation dans un terminal demandent un Gateway qui propose pane_vcs_files. Sans lui, la feuille du terminal montre le même arbre de modifications non validées, sans plus." },
+      ],
+    },
+    keyboard: {
+      heading: "Le clavier de tablette et les touches étendues",
+      lead: "Sur une tablette, le clavier à l’écran est un clavier entier : une bande de touches de fonction que l’on peut masquer, une rangée de chiffres, ctrl, alt et shift collants (double touche pour verrouiller), et Début, Fin, Page préc. et Page suiv. au-dessus des flèches. Les combinaisons hors du jeu classique — Ctrl+Entrée, Maj+Entrée, Ctrl+flèches, Alt+lettre, touches F — ne partent que si le Gateway dit pouvoir les transmettre.",
+      entries: [
+        { term: "Les touches qu’il ne peut pas envoyer", detail: "Une touche que le Gateway ne peut pas transmettre est dessinée en atténué et le dit quand on la presse. Tant qu’un modificateur est tenu, les touches que cette combinaison n’atteint pas s’assombrissent, et une combinaison refusée consomme quand même un modificateur à usage unique." },
+        { term: "Herdr", detail: "Transmet toutes les combinaisons. Rien à régler." },
+        { term: "tmux", detail: "tmux 3.2 ou plus récent avec extended-keys on, et le programme du volet doit demander les touches étendues. Ctrl+Entrée et Maj+Entrée demandent aussi extended-keys-format csi-u." },
+        { term: "Codex et Claude Code", detail: "Codex sous tmux ne reçoit pas Maj+Entrée : utilisez ⌃J pour une nouvelle ligne. Claude Code prend \\ suivi d’Entrée pour une nouvelle ligne." },
+      ],
+      persistNote: "Ces deux commandes prennent effet tout de suite et durent jusqu’à l’arrêt du serveur tmux. Pour les garder, mettez les deux mêmes lignes, sans le tmux du début, dans ~/.tmux.conf.",
+    },
     note: 'Muqun reste un observateur : ouvrir une session ne modifie pas votre agencement et fermer l’application n’arrête aucun processus.',
   },
 
@@ -513,8 +580,7 @@ export const fr: UserGuide = {
       },
       {
         term: 'Bouton Modifications absent',
-        detail:
-          'Il n’apparaît que lorsque le terminal se trouve dans un dépôt Git et que la Gateway supporte la fonctionnalité Diff. Mettez à jour votre Gateway si nécessaire.',
+        detail: "Il n’apparaît que si le terminal est dans un dépôt git et que le Gateway est assez récent pour fournir des diffs. La comparaison avec la base et l’annulation demandent Gateway 0.13 ou plus récent. Mettez à jour en relançant la commande d’installation.",
       },
       {
         term: 'Gateway plus récente requise',
@@ -526,6 +592,9 @@ export const fr: UserGuide = {
         detail:
           'C’est votre ordinateur qui dialogue avec vos fournisseurs d’IA. Si un proxy est requis, configurez-le directement dans OpenCode sur la machine.',
       },
+      { term: "Terminal indisponible", detail: "Le Gateway tourne mais aucun backend de terminal — tmux installé sans serveur tmux, ou Herdr non démarré. L’écran liste les backends du Gateway et leur état ; démarrez-en un et le terminal apparaît de lui-même. Les sessions d’agent continuent de fonctionner entre-temps." },
+      { term: "« Ce terminal ne peut pas envoyer ⌃↵ »", detail: "Le Gateway a refusé une combinaison. Sous tmux, lancez tmux set -s extended-keys on, et pour Ctrl+Entrée aussi tmux set -s extended-keys-format csi-u. L’indication sous le message reprend l’explication du Gateway." },
+      { term: "Une tuile d’agent indique Configuration requise ou Mise à jour requise", detail: "Lancez muqun-gateway agent sur l’hôte : il nomme l’étape suivante pour chaque agent. Mise à jour requise signifie que ce Gateway est plus ancien que le protocole de l’agent — relancez la commande d’installation." },
     ],
   },
 

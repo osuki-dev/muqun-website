@@ -16,13 +16,13 @@ for (const locale of locales) {
       assert.ok(html.includes(`href="${href}"`), `${locale}/${page}: missing language destination ${href}`);
     }
     if (!page) {
-      assert.equal((html.match(/id="feature-[^"]+"/g)||[]).length, 9);
+      assert.equal((html.match(/id="feature-[^"]+"/g)||[]).length, 15);
       assert.ok(html.includes('https://apps.apple.com/app/muqun/id6793419283'));
       assert.ok(html.includes('https://play.google.com/store/apps/details?id=dev.osuki.muqun'));
       assert.match(html,/data-copy/);
       assert.doesNotMatch(html,/<select\b|world-controls|world-poster|pocket-poster|\/pull\/58/);
       assert.ok(html.includes('data-code="curl -fsSL https://muqun.dev/gateway.sh | sh"'));
-      for(const id of ['pocket','terminal','connect','anywhere'])assert.ok(html.includes(`id="${id}"`));
+      for(const id of ['pocket','terminal','agents','connect','anywhere'])assert.ok(html.includes(`id="${id}"`));
     }
     routes++;
   }

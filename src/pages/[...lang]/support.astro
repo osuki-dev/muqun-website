@@ -6,7 +6,7 @@
  * A complete developer guide and reference manual for Muqun, the Gateway,
  * and the OpenCode agent.
  *
- * Anchor IDs (#get-started, #terminal, #opencode, #gateway, #themes,
+ * Anchor IDs (#get-started, #terminal, #agents, #opencode, #gateway, #themes,
  * #troubleshooting, #contact) are deep-linked from inside shipped mobile
  * binaries and must remain immutable.
  *
@@ -51,12 +51,31 @@ const world = worldCopy[locale];
 const copyLabel = world?.copyLabel ?? 'Copy';
 const copiedLabel = muqun?.hero?.copiedLabel ?? 'Copied';
 
+/**
+ * Literal, untranslated blocks for the agents chapter and the keyboard
+ * section. They are configuration and commands, so they are the same in
+ * every language; only the sentences around them are translated.
+ */
+const agentsConfig = [
+  '{',
+  '  "opencode": { "binary": "/usr/local/bin/opencode" },',
+  '  "deepseek": { "enabled": true, "endpoint": "http://127.0.0.1:3080" },',
+  '  "t3": {',
+  '    "enabled": true,',
+  '    "url": "http://127.0.0.1:3773",',
+  '    "pairing_token": "CODE-FROM-T3-PAIR"',
+  '  }',
+  '}',
+].join('\n');
+const tmuxNow = 'tmux set -s extended-keys on\ntmux set -s extended-keys-format csi-u';
+const tmuxConf = 'set -s extended-keys on\nset -s extended-keys-format csi-u';
+
 const privacyPath = localizedPath('/privacy', locale);
 const themesPath = localizedPath('/themes', locale);
 
 /**
  * Localized status line entries mapped directly from the guide's chapter anchors:
- * e.g., 0:start  1:terminal  2:opencode  3:gateway  4:themes  5:debug  6:contact
+ * e.g., 0:start  1:terminal  2:agents  3:opencode  4:gateway  5:themes  6:debug  7:contact
  */
 const sections: StatusLineItem[] = guide.contents.map((item, index) => ({
   key: String(index),
@@ -72,7 +91,7 @@ const sections: StatusLineItem[] = guide.contents.map((item, index) => ({
   title={guide.metaTitle}
   description={guide.metaDescription}
   sections={sections}
-  version="1.3.0"
+  version="3.1.0"
 >
   {/* =========================================================================
       HERO: Guide Overview & Interactive Chapter Navigator
@@ -98,11 +117,11 @@ const sections: StatusLineItem[] = guide.contents.map((item, index) => ({
         <Button href={feedbackIssueUrl} variant="quiet" size="lg">{guide.hero.issueCta} ↗</Button>
       </div>
 
-      {/* The Chapter Deck: fast tactile wayfinding into all 7 deep-linked sections */}
+      {/* The Chapter Deck: fast tactile wayfinding into every deep-linked section */}
       <nav class="mq-guide-deck" aria-label={guide.contentsLabel}>
         <div class="mq-guide-deck__bar">
           <span class="mq-mono-label">{guide.contentsLabel}</span>
-          <span class="mq-guide-deck__counter">7 chapters · deep-linkable</span>
+          <span class="mq-guide-deck__counter">{guide.contents.length} chapters · deep-linkable</span>
         </div>
         <div class="mq-guide-deck__grid">
           {
@@ -303,6 +322,49 @@ const sections: StatusLineItem[] = guide.contents.map((item, index) => ({
       </Grid>
     </div>
 
+    {/* The Changes sheet, shared with agent sessions */}
+    <div class="mq-guide-section-block">
+      <div class="mq-guide-group-title">
+        <span class="mq-mono-label">{guide.terminal.changes.heading.toUpperCase()}</span>
+      </div>
+      <Prose>{guide.terminal.changes.lead}</Prose>
+      <Grid min="19rem">
+        {
+          guide.terminal.changes.entries.map((entry) => (
+            <article class="mq-guide-card">
+              <h3 class="mq-guide-card__title">{entry.term}</h3>
+              <Prose size="small">{entry.detail}</Prose>
+            </article>
+          ))
+        }
+      </Grid>
+    </div>
+
+    {/* The Pad keyboard and what tmux needs for its chords */}
+    <div class="mq-guide-section-block">
+      <div class="mq-guide-group-title">
+        <span class="mq-mono-label">{guide.terminal.keyboard.heading.toUpperCase()}</span>
+      </div>
+      <Prose>{guide.terminal.keyboard.lead}</Prose>
+      <Grid min="19rem">
+        {
+          guide.terminal.keyboard.entries.map((entry) => (
+            <article class="mq-guide-card">
+              <h3 class="mq-guide-card__title">{entry.term}</h3>
+              <Prose size="small">{entry.detail}</Prose>
+            </article>
+          ))
+        }
+      </Grid>
+      <div class="mq-guide-step-code">
+        <CodeBlock copy wrap code={tmuxNow} label="tmux" copyLabel={copyLabel} copiedLabel={copiedLabel} />
+      </div>
+      <div class="mq-guide-step-code">
+        <Prose size="small">{guide.terminal.keyboard.persistNote}</Prose>
+        <CodeBlock copy wrap code={tmuxConf} label="~/.tmux.conf" copyLabel={copyLabel} copiedLabel={copiedLabel} />
+      </div>
+    </div>
+
     {/* Terminal observer guarantee */}
     <div class="mq-guide-guarantee">
       <span class="mq-guide-guarantee__marker">●</span>
@@ -311,14 +373,132 @@ const sections: StatusLineItem[] = guide.contents.map((item, index) => ({
   </Band>
 
   {/* =========================================================================
-      CHAPTER 03: THE OPENCODE AGENT (#opencode)
+      CHAPTER 03: AGENTS (#agents)
+      ========================================================================= */}
+  <Band tone="recessed" id="agents">
+    <div class="mq-guide-pane-bar" aria-hidden="true">
+      <span class="mq-guide-pane-bar__dot"></span>
+      <span class="mq-guide-pane-bar__tag"><span class="mq-guide-pane-bar__num">03</span>:agents</span>
+      <span class="mq-guide-pane-bar__rule"></span>
+      <span class="mq-guide-pane-bar__meta">{guide.contents[2]?.meta}</span>
+    </div>
+
+    <SectionHeading eyebrow={guide.agents.eyebrow} title={guide.agents.heading} level={2}>
+      {guide.agents.lead}
+    </SectionHeading>
+
+    {/* A terminal, an agent session: the same questions, side by side */}
+    <div class="mq-guide-section-block">
+      <Grid min="20rem">
+        {
+          guide.agents.versus.map((entry) => (
+            <article class="mq-guide-card mq-guide-card--highlight">
+              <h3 class="mq-guide-card__title">{entry.term}</h3>
+              <Prose size="small">{entry.detail}</Prose>
+            </article>
+          ))
+        }
+      </Grid>
+    </div>
+
+    {/* The three agents */}
+    <div class="mq-guide-section-block">
+      <div class="mq-guide-group-title">
+        <span class="mq-mono-label">{guide.agents.supportedHeading.toUpperCase()}</span>
+      </div>
+      <Grid min="18rem">
+        {
+          guide.agents.supported.map((agent) => (
+            <article class="mq-mode-card">
+              <div class="mq-mode-card__top">
+                <span class="mq-mono-label mq-mode-card__badge">{agent.id}</span>
+                <h4 class="mq-mode-card__title">{agent.name}</h4>
+              </div>
+              <Prose size="small">{agent.detail}</Prose>
+            </article>
+          ))
+        }
+      </Grid>
+    </div>
+
+    {/* The CLI: the primary way to set them up */}
+    <div class="mq-guide-section-block">
+      <div class="mq-guide-group-title">
+        <span class="mq-mono-label">{guide.agents.cliHeading.toUpperCase()}</span>
+      </div>
+      <Prose>{guide.agents.cliBody}</Prose>
+      {
+        guide.agents.commands.map((command) => (
+          <div class="mq-guide-step-code">
+            {command.detail && <Prose size="small">{command.detail}</Prose>}
+            <CodeBlock
+              copy
+              wrap
+              code={command.code}
+              label={command.label}
+              copyLabel={copyLabel}
+              copiedLabel={copiedLabel}
+            />
+          </div>
+        ))
+      }
+      <div class="mq-guide-callout mq-guide-callout--rule">
+        <span class="mq-guide-callout__marker" aria-hidden="true">!</span>
+        <Prose size="small">{guide.agents.restartNote}</Prose>
+      </div>
+    </div>
+
+    {/* The same, by hand */}
+    <div class="mq-guide-section-block">
+      <div class="mq-guide-config-panel">
+        <div class="mq-guide-config-panel__header">
+          <h3 class="mq-subheading">{guide.agents.manualHeading}</h3>
+          <span class="mq-mono-label">CONFIG.JSON</span>
+        </div>
+        <Prose>{guide.agents.manualBody}</Prose>
+        <div class="mq-guide-config-panel__code">
+          <CodeBlock
+            copy
+            code={agentsConfig}
+            label="config.json"
+            copyLabel={copyLabel}
+            copiedLabel={copiedLabel}
+          />
+        </div>
+        <div class="mq-guide-callout">
+          <span class="mq-guide-callout__marker">●</span>
+          <Prose size="small">{guide.agents.credentialNote}</Prose>
+        </div>
+      </div>
+    </div>
+
+    {/* What the phone shows */}
+    <div class="mq-guide-section-block">
+      <div class="mq-guide-group-title">
+        <span class="mq-mono-label">{guide.agents.phoneHeading.toUpperCase()}</span>
+      </div>
+      <Grid min="19rem">
+        {
+          guide.agents.entries.map((entry) => (
+            <article class="mq-guide-card">
+              <h3 class="mq-guide-card__title">{entry.term}</h3>
+              <Prose size="small">{entry.detail}</Prose>
+            </article>
+          ))
+        }
+      </Grid>
+    </div>
+  </Band>
+
+  {/* =========================================================================
+      CHAPTER 04: THE OPENCODE AGENT (#opencode)
       ========================================================================= */}
   <Band tone="cream" tight id="opencode">
     <div class="mq-guide-pane-bar" aria-hidden="true">
       <span class="mq-guide-pane-bar__dot"></span>
-      <span class="mq-guide-pane-bar__tag"><span class="mq-guide-pane-bar__num">03</span>:opencode</span>
+      <span class="mq-guide-pane-bar__tag"><span class="mq-guide-pane-bar__num">04</span>:opencode</span>
       <span class="mq-guide-pane-bar__rule"></span>
-      <span class="mq-guide-pane-bar__meta">{guide.contents[2]?.meta}</span>
+      <span class="mq-guide-pane-bar__meta">{guide.contents[3]?.meta}</span>
     </div>
 
     <SectionHeading eyebrow={guide.opencode.eyebrow} title={guide.opencode.heading} level={2}>
@@ -367,14 +547,14 @@ const sections: StatusLineItem[] = guide.contents.map((item, index) => ({
   </Band>
 
   {/* =========================================================================
-      CHAPTER 04: CONFIGURING THE GATEWAY (#gateway)
+      CHAPTER 05: CONFIGURING THE GATEWAY (#gateway)
       ========================================================================= */}
   <Band tone="recessed" id="gateway">
     <div class="mq-guide-pane-bar" aria-hidden="true">
       <span class="mq-guide-pane-bar__dot"></span>
-      <span class="mq-guide-pane-bar__tag"><span class="mq-guide-pane-bar__num">04</span>:gateway</span>
+      <span class="mq-guide-pane-bar__tag"><span class="mq-guide-pane-bar__num">05</span>:gateway</span>
       <span class="mq-guide-pane-bar__rule"></span>
-      <span class="mq-guide-pane-bar__meta">{guide.contents[3]?.meta}</span>
+      <span class="mq-guide-pane-bar__meta">{guide.contents[4]?.meta}</span>
     </div>
 
     <SectionHeading eyebrow={guide.gateway.eyebrow} title={guide.gateway.heading} level={2}>
@@ -570,14 +750,14 @@ const sections: StatusLineItem[] = guide.contents.map((item, index) => ({
   </Band>
 
   {/* =========================================================================
-      CHAPTER 05: THEMES (#themes)
+      CHAPTER 06: THEMES (#themes)
       ========================================================================= */}
   <Band tone="cream" id="themes">
     <div class="mq-guide-pane-bar" aria-hidden="true">
       <span class="mq-guide-pane-bar__dot"></span>
-      <span class="mq-guide-pane-bar__tag"><span class="mq-guide-pane-bar__num">05</span>:themes</span>
+      <span class="mq-guide-pane-bar__tag"><span class="mq-guide-pane-bar__num">06</span>:themes</span>
       <span class="mq-guide-pane-bar__rule"></span>
-      <span class="mq-guide-pane-bar__meta">{guide.contents[4]?.meta}</span>
+      <span class="mq-guide-pane-bar__meta">{guide.contents[5]?.meta}</span>
     </div>
 
     <SectionHeading eyebrow={guide.themes.eyebrow} title={guide.themes.heading} level={2}>
@@ -601,14 +781,14 @@ const sections: StatusLineItem[] = guide.contents.map((item, index) => ({
   </Band>
 
   {/* =========================================================================
-      CHAPTER 06: TROUBLESHOOTING (#troubleshooting)
+      CHAPTER 07: TROUBLESHOOTING (#troubleshooting)
       ========================================================================= */}
   <Band tone="recessed" id="troubleshooting">
     <div class="mq-guide-pane-bar" aria-hidden="true">
       <span class="mq-guide-pane-bar__dot"></span>
-      <span class="mq-guide-pane-bar__tag"><span class="mq-guide-pane-bar__num">06</span>:troubleshooting</span>
+      <span class="mq-guide-pane-bar__tag"><span class="mq-guide-pane-bar__num">07</span>:troubleshooting</span>
       <span class="mq-guide-pane-bar__rule"></span>
-      <span class="mq-guide-pane-bar__meta">{guide.contents[5]?.meta}</span>
+      <span class="mq-guide-pane-bar__meta">{guide.contents[6]?.meta}</span>
     </div>
 
     <SectionHeading
@@ -655,14 +835,14 @@ const sections: StatusLineItem[] = guide.contents.map((item, index) => ({
   </Band>
 
   {/* =========================================================================
-      CHAPTER 07: CONTACT & SAFE REPORTING (#contact)
+      CHAPTER 08: CONTACT & SAFE REPORTING (#contact)
       ========================================================================= */}
   <Band tone="cream" tight id="contact">
     <div class="mq-guide-pane-bar" aria-hidden="true">
       <span class="mq-guide-pane-bar__dot"></span>
-      <span class="mq-guide-pane-bar__tag"><span class="mq-guide-pane-bar__num">07</span>:contact</span>
+      <span class="mq-guide-pane-bar__tag"><span class="mq-guide-pane-bar__num">08</span>:contact</span>
       <span class="mq-guide-pane-bar__rule"></span>
-      <span class="mq-guide-pane-bar__meta">{guide.contents[6]?.meta}</span>
+      <span class="mq-guide-pane-bar__meta">{guide.contents[7]?.meta}</span>
     </div>
 
     <SectionHeading eyebrow={guide.contact.eyebrow} title={guide.contact.heading} level={2}>

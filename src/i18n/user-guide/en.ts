@@ -29,6 +29,13 @@ export const en: UserGuide = {
       desc: 'Workspaces, groups, panels, custom key row, and mobile developer tools.',
     },
     {
+      id: 'agents',
+      label: "Agents",
+      nav: "agents",
+      meta: "opencode · deepseek · t3",
+      desc: "Agent sessions versus terminals, the three agents 3.1 supports, and setting each up on the host.",
+    },
+    {
       id: 'opencode',
       label: 'The OpenCode agent',
       nav: 'opencode',
@@ -120,6 +127,43 @@ export const en: UserGuide = {
       'We strongly recommend putting your phone and the Gateway computer on the same Tailscale tailnet. It avoids router port forwarding and keeps the Gateway off the public internet. Tailscale Serve can add a private HTTPS address; do not use Tailscale Funnel for Muqun.',
   },
 
+  agents: {
+    eyebrow: "muqun-gateway agent",
+    heading: "Agents.",
+    lead: "A terminal is a shell you type into. An agent session is a conversation with a coding agent running on your computer — OpenCode, DeepSeek Harness or T3 Code — which the app draws as messages, tool cards and questions rather than as a screen of text. Both go through the same Gateway and the same pairing; they differ in what the Gateway talks to on your behalf.",
+    versus: [
+      { term: "A terminal", detail: "tmux or Herdr on the host. The app shows what the pane shows, and the keys you send are the keys the program receives — so any program works, including agents that live in a terminal, such as Claude Code and Codex." },
+      { term: "An agent session", detail: "An agent the Gateway talks to over its own API. Every session belongs to one agent and always goes back to it. The workbench — modes, models, slash commands, skills, attachments, undo, compaction, background runs — shows only what that agent supports." },
+    ],
+    supportedHeading: "The agents 3.1 supports",
+    supported: [
+      { name: "OpenCode", id: "opencode", detail: "OpenCode needs no setup. The Gateway adopts an OpenCode service that is already running, or starts one itself; it needs OpenCode 2. Every part of the workbench is there." },
+      { name: "DeepSeek Harness", id: "deepseek", detail: "DeepSeek Harness is off until you enable it. Start the Harness on the host, then point the Gateway at it. Its modes are its own presets, chosen when a session starts, and attachments reach it as files on the host." },
+      { name: "T3 Code", id: "t3", detail: "T3 Code is off until the Gateway holds a credential for it. The Gateway pairs with T3 once and keeps that credential. It takes attachments, approvals and undo — a T3 undo rolls back whole turns, so the app asks before applying it." },
+    ],
+    cliHeading: "Set them up from the command line",
+    cliBody: "On the computer running the Gateway. muqun-gateway agent checks each agent from your shell and prints its status, version and address, with the next step for any that is not ready. It exits non-zero while an enabled agent is not usable, so a script can check it too.",
+    commands: [
+      { code: "muqun-gateway agent", label: "status", detail: "Every agent’s status, with the next step to take." },
+      { code: "muqun-gateway agent setup t3", label: "t3", detail: "Pairs T3 Code. On the same machine it issues a credential with t3 auth session issue — add --base-dir if T3 keeps its data somewhere else. For a T3 on another host, run t3 pair there and pass the code with --token CODE." },
+      { code: "muqun-gateway agent setup deepseek", label: "deepseek", detail: "Finds a running DeepSeek Harness and enables it. It looks on ports 3080 and 19387; pass --endpoint URL if the Harness is elsewhere." },
+      { code: "muqun-gateway agent setup opencode", label: "opencode", detail: "Changes nothing. It shows which OpenCode binary the Gateway would use and its version — it needs 2.x." },
+    ],
+    restartNote: "setup writes config.json and says whether the running Gateway has to restart to see the change. A Gateway installed as a service is restarted for you after a confirmation (--yes skips it); otherwise, restart it yourself.",
+    manualHeading: "By hand, in config.json",
+    manualBody: "The same settings, for when you would rather write them yourself. Add the blocks you need, then restart the Gateway. A code from t3 pair goes in pairing_token; on its next start the Gateway exchanges it once and no longer needs it. opencode.binary is only for pinning a particular OpenCode.",
+    credentialNote: "The T3 credential lives in t3-credential.json in the Gateway’s state directory — ~/.local/share/muqun-gateway/ on Linux — readable only by you. If T3 revokes it or it expires, run agent setup t3 again.",
+    phoneHeading: "On the phone",
+    entries: [
+      { term: "One tile per agent", detail: "Home shows a tile for each agent the Gateway reports, with the one you used last first. Past three, the rest are under More agents. When more than one is ready, New session asks which." },
+      { term: "Questions arrive as pushes", detail: "When a session — a subagent’s included — asks you to fill in a form, every paired phone gets one notification that the agent needs your input. Permission requests push as before." },
+      { term: "Needs setup", detail: "The Gateway can see the agent but holds no credential for it. The tile opens a guide with the exact command to run on the host — for T3 Code, t3 pair." },
+      { term: "Needs update", detail: "The agent speaks a newer protocol than this Gateway knows. Update the Gateway on that computer by re-running the install command." },
+      { term: "Not installed, Offline", detail: "The agent is not on the host, or is not running. The tile says which and opens a start guide written for that agent." },
+      { term: "Older Gateways", detail: "A Gateway before 0.13 does not offer multi_agent, so the app stays in single-agent mode with OpenCode and says where a feature needs a newer Gateway." },
+    ],
+  },
+
   gateway: {
     eyebrow: 'config.json',
     heading: 'Configuring the Gateway.',
@@ -171,6 +215,8 @@ export const en: UserGuide = {
         detail:
           'Which OpenCode to start. Left out, the Gateway uses the OpenCode in ~/.opencode/bin, or the one on your PATH. Set it to pin a particular binary — the usual reason being a service that cannot see the PATH your login shell has.',
       },
+      { term: "deepseek", detail: "DeepSeek Harness. Attached only when enabled is true or an endpoint is given; token and secret if your Harness needs them. The Gateway never scans ports for it." },
+      { term: "t3", detail: "T3 Code. enabled, url (http://127.0.0.1:3773 by default), and either pairing_token from t3 pair or a token you already hold. runtime_mode sets its permission policy; full-access by default." },
     ],
     portsHeading: 'Ports',
     portsRows: [
@@ -287,8 +333,7 @@ export const en: UserGuide = {
       },
       {
         term: 'Changes',
-        detail:
-          'The git view for the directory the pane is in: the changed files with a count, filtered by All, Staged or Unstaged, and the diffs themselves. The button carries a badge with the number of changed files, and it only appears when the pane is inside a git checkout and the Gateway offers the git_diff capability.',
+        detail: "The git view for the directory the pane is in, the same sheet an agent session uses — see The Changes sheet below. The button carries the number of changed files, and appears only when the pane is inside a git checkout and the Gateway can serve diffs.",
       },
       {
         term: 'Files',
@@ -306,6 +351,28 @@ export const en: UserGuide = {
           'Saved commands, saved prompts and key combinations, with the ones you use most first. You can add your own and edit the defaults.',
       },
     ],
+    changes: {
+      heading: "The Changes sheet",
+      lead: "Terminal panes and agent sessions share one Changes sheet. It runs git on the host, in the directory of the pane or the session.",
+      entries: [
+        { term: "The tree", detail: "Changed files as a folder tree, with a file count and line totals. Long names are shortened in the middle so the extension stays visible, and deep folders stop indenting after three levels." },
+        { term: "Scope", detail: "The menu at the top switches between Uncommitted changes and Compared with the branch’s base — the merge-base with origin/HEAD, or else main or master." },
+        { term: "Patches load when you open a file", detail: "The list carries no diffs, so a large change opens quickly. Show more context widens the patch you are reading." },
+        { term: "Discard", detail: "On a file’s … menu, after a confirmation: a tracked file is restored, an untracked one deleted. The Gateway refuses when the repository is your home directory, and for any path that leads out of the repository — a symlink pointing outside it included." },
+        { term: "On an older Gateway", detail: "Comparing with the base and Discard in a terminal need a Gateway that offers pane_vcs_files. Without it, the terminal sheet shows the same tree of uncommitted changes and nothing more." },
+      ],
+    },
+    keyboard: {
+      heading: "The Pad keyboard and extended keys",
+      lead: "On a tablet the on-screen keyboard is a whole keyboard: a function-key strip you can hide, a number row, sticky ctrl, alt and shift (double-tap to lock), and Home, End, Page Up and Page Down over the arrows. Chords outside the classic set — Ctrl+Enter, Shift+Enter, Ctrl+arrows, Alt+letters, F-keys — are sent only when the Gateway says it can deliver them.",
+      entries: [
+        { term: "Keys it cannot send", detail: "A key the Gateway cannot deliver is drawn muted and says so when pressed. Holding a modifier dims what that combination cannot reach, and a refused chord still uses up a one-tap modifier." },
+        { term: "Herdr", detail: "Delivers every chord. Nothing to set." },
+        { term: "tmux", detail: "tmux 3.2 or newer with extended-keys on, and the program in the pane must ask for extended keys. Ctrl+Enter and Shift+Enter also need extended-keys-format csi-u." },
+        { term: "Codex and Claude Code", detail: "Codex under tmux gets no Shift+Enter: use ⌃J for a new line. Claude Code takes \\ followed by Enter for a new line." },
+      ],
+      persistNote: "Those two take effect at once and last until the tmux server exits. To keep them, put the same two lines, without the leading tmux, in ~/.tmux.conf.",
+    },
     note: 'Muqun only ever observes: opening a session does not re-lay-out your windows, and closing the app does not stop anything.',
   },
 
@@ -513,8 +580,7 @@ export const en: UserGuide = {
       },
       {
         term: 'The Changes button is missing',
-        detail:
-          'It appears only when the terminal is inside a git checkout and the Gateway is new enough to serve diffs. Upgrade the Gateway by re-running the install command.',
+        detail: "It appears only when the terminal is inside a git checkout and the Gateway is new enough to serve diffs. Comparing with the base and Discard need Gateway 0.13 or newer. Upgrade by re-running the install command.",
       },
       {
         term: 'Something needs a newer Gateway',
@@ -526,6 +592,9 @@ export const en: UserGuide = {
         detail:
           'Your machine is what talks to your model provider, so a host that needs a proxy to reach the internet needs OpenCode configured for it on that machine. Muqun neither proxies nor sees that traffic.',
       },
+      { term: "Terminal unavailable", detail: "The Gateway is up but no terminal backend is running — tmux installed with no tmux server, or Herdr not started. The screen lists the Gateway’s backends and their state; start one and the terminal appears on its own. Agent sessions keep working meanwhile." },
+      { term: "This terminal can’t send ⌃↵", detail: "The Gateway refused a chord. On tmux, run tmux set -s extended-keys on, and for Ctrl+Enter also tmux set -s extended-keys-format csi-u. The hint under the message repeats the Gateway’s own explanation." },
+      { term: "An agent tile says Needs setup or Needs update", detail: "Run muqun-gateway agent on the host: it names the next step for each agent. Needs update means this Gateway is older than the agent’s protocol — re-run the install command." },
     ],
   },
 
