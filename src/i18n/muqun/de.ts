@@ -159,6 +159,7 @@ export const copy: MuqunCopy = {
       'Muqun auf einem Telefon nach der Kopplung: eine der Panes der Maschine ist offen — ein Editor mit src/theme.ts — die übrigen Panes in einer Leiste am unteren Rand, Claude Code, nvim, zsh.',
     requirements: [
       'tmux, oder Herdr 0.7.5 oder neuer, auf macOS oder Linux. Windows wird noch nicht unterstützt.',
+      'Gateway 0.13 oder neuer (API 1.9) für mehrere Agenten gleichzeitig; ein älteres Gateway behält OpenCode. Android 8.0 oder neuer.',
       'Kein Konto, kein Abo, keine In-App-Käufe.',
       'Dasselbe Wi-Fi reicht; Tailscale ist besser.',
     ],

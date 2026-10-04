@@ -111,7 +111,7 @@ const { features } = Astro.props;
       <h3>{feature.title}</h3>
       <p>{feature.description}</p>
       {feature.media && (
-        <img src={feature.media.src} alt={feature.media.alt} loading="lazy" />
+        <img src={feature.media.src} alt={feature.media.alt} width={feature.media.width} height={feature.media.height} loading="lazy" decoding="async" />
       )}
       {feature.link && <a href={feature.link.href}>{feature.link.label} ↗</a>}
     </article>

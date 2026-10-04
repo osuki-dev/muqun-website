@@ -163,6 +163,7 @@ export const copy: MuqunCopy = {
       '페어링이 끝난 뒤 휴대폰 속 Muqun. 컴퓨터의 페인 하나가 열려 있고 — src/theme.ts를 띄운 편집기 — 나머지 페인은 아래쪽 띠에 놓여 있습니다. Claude Code, nvim, zsh.',
     requirements: [
       'macOS 또는 Linux에서 tmux, 또는 Herdr 0.7.5 이상. Windows는 아직 지원하지 않습니다.',
+      '여러 에이전트를 함께 쓰려면 Gateway 0.13 이상(API 1.9)이 필요합니다. 이전 Gateway에서도 OpenCode는 쓸 수 있습니다. Android는 8.0 이상.',
       '계정도, 구독도, 인앱 결제도 없습니다.',
       '같은 Wi-Fi여도 됩니다. Tailscale이 더 낫습니다.',
     ],

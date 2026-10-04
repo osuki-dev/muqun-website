@@ -318,6 +318,7 @@ body {
 }
 .feature-card img {
   width: 100%;
+  height: auto;
   border-radius: 12px;
   margin-top: 20px;
 }

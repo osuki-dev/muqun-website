@@ -163,6 +163,7 @@ export const copy: MuqunCopy = {
       '配對完成後，手機上的牧群：機器上的其中一個分頁開著——一個顯示 src/theme.ts 的編輯器——其餘分頁排在下方那條列上，Claude Code、nvim、zsh。',
     requirements: [
       'tmux，或 Herdr 0.7.5 或更新版本，在 macOS 或 Linux 上。目前尚未支援 Windows。',
+      '同時接上多個 AI 助手需要 Gateway 0.13 或更新版本（API 1.9）；舊版 Gateway 仍可使用 OpenCode。Android 需 8.0 或更新版本。',
       '免帳號、免訂閱，也沒有應用程式內購。',
       '同一個 Wi-Fi 就可以；Tailscale 更好。',
     ],

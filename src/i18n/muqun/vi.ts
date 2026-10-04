@@ -31,6 +31,7 @@ export const copy: MuqunCopy = {
       ],
       requirements: [
         "Gateway: macOS hoặc Linux, với tmux hoặc Herdr.",
+        "Gateway 0.13 trở lên (API 1.9) để dùng nhiều trợ lý cùng lúc; Gateway cũ vẫn dùng được OpenCode. Android 8.0 trở lên.",
         "Ứng dụng: iOS hoặc Android.",
       ],
       openSourceLink: "Hướng dẫn cài đặt và mã nguồn",

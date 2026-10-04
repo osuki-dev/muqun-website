@@ -163,6 +163,7 @@ export const copy: MuqunCopy = {
       'ペアリングが済んだあとの、スマートフォン上の牧群。マシンのペインのひとつが開いていて——src/theme.ts を表示したエディタ——残りのペインは下端の帯に並んでいる。Claude Code、nvim、zsh。',
     requirements: [
       'macOS または Linux 上の tmux、または Herdr 0.7.5 以降。Windows にはまだ対応していません。',
+      '複数のエージェントを同時に使うには Gateway 0.13 以降（API 1.9）。古い Gateway でも OpenCode は使えます。Android は 8.0 以降。',
       'アカウントも、サブスクリプションも、アプリ内課金もありません。',
       '同じ Wi-Fi でも動きます。Tailscale のほうが確実です。',
     ],

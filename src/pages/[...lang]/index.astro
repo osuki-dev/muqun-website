@@ -7,7 +7,7 @@ import FeatureGallery from "@/components/FeatureGallery.astro";
 import CodeBlock from "@/components/CodeBlock.astro";
 import { getMuqunCopy } from "@/i18n/muqun";
 import { gatewayHelp, gatewayCommands } from "@/i18n/gateway-help";
-import { opencodeHome } from "@/i18n/opencode-home";
+import { agentsHome } from "@/i18n/agents-home";
 import { worldCopy } from "@/i18n/world";
 import { getFeatures } from "@/lib/features";
 import { localizedPath, siteLocaleCodes, defaultLocale } from "@/lib/locales";
@@ -31,16 +31,16 @@ const copy = getMuqunCopy(locale),
   world = worldCopy[locale];
 const features = getFeatures(locale);
 const help = gatewayHelp[locale];
-const opencode = opencodeHome[locale];
+const agents = agentsHome[locale];
 
 /**
- * The agent chapter's link, which is an anchor on another page.
+ * The agents chapter's link, which is an anchor on another page.
  *
  * Built from `localizedPath` rather than written out, so it carries the
  * reader's language and the trailing slash the rest of the site links with --
- * `/ja/support/#opencode`, not `/support#opencode`.
+ * `/ja/support/#agents`, not `/support#agents`.
  */
-const opencodeGuideHref = `${localizedPath("/support", locale)}#opencode`;
+const agentsGuideHref = `${localizedPath("/support", locale)}#agents`;
 ---
 
 <Layout lang={locale} title={copy.meta.title} description={world.intro}>
@@ -80,7 +80,7 @@ const opencodeGuideHref = `${localizedPath("/support", locale)}#opencode`;
         </div>
       </section>
       <section id="film" class="home-film" aria-label="Muqun 3.0">
-        <p class="world-eyebrow">MUQUN / 3.0</p>
+        <p class="world-eyebrow">MUQUN / 3.1</p>
         <FilmPanel src={introVideoSrc} poster={introVideoPoster} portraitSrc={introVideoPortraitSrc} portraitPoster={introVideoPortraitPoster} alt="Muqun 3.0" playLabel={copy.hero.videoPlayLabel} length="0:20" />
       </section>
       <section class="story-chapter terminal-chapter" id="terminal">
@@ -119,21 +119,21 @@ const opencodeGuideHref = `${localizedPath("/support", locale)}#opencode`;
           ]}
         />
       </section>
-      {/* The agent chapter. After the gallery because it is the one feature
-          with a screen of its own rather than a line in a grid, and before
-          setup because setup is what you do once you want it. */}
-      <section class="story-chapter" id="opencode">
+      {/* The agents chapter. After the gallery because agents are the one
+          feature with a screen of their own rather than a line in a grid, and
+          before setup because setup is what you do once you want it. */}
+      <section class="story-chapter" id="agents">
         <div class="chapter-copy" data-world-reveal>
-          <p class="world-eyebrow">02 / {opencode.eyebrow}</p>
-          <h2>{opencode.heading}</h2>
-          <p>{opencode.body}</p>
+          <p class="world-eyebrow">02 / {agents.eyebrow}</p>
+          <h2>{agents.heading}</h2>
+          <p>{agents.body}</p>
           <ul class="world-requirements">
-            {opencode.facts.map((fact) => (
+            {agents.facts.map((fact) => (
               <li>{fact}</li>
             ))}
           </ul>
-          <a class="text-link" href={opencodeGuideHref}>
-            {opencode.link} ↗
+          <a class="text-link" href={agentsGuideHref}>
+            {agents.link} ↗
           </a>
         </div>
       </section>
@@ -180,7 +180,7 @@ const opencodeGuideHref = `${localizedPath("/support", locale)}#opencode`;
             </div>
           </details>
           <ul class="world-requirements">
-            {copy.setup.requirements.slice(0, 2).map((item) => (
+            {copy.setup.requirements.slice(0, 3).map((item) => (
               <li>{item}</li>
             ))}
           </ul>
