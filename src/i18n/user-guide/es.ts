@@ -3,11 +3,11 @@ import type { UserGuide } from './types';
 export const es: UserGuide = {
   metaTitle: 'Guía de usuario y referencia de Muqun',
   metaDescription:
-    'Guía completa para instalar el Gateway, emparejar tu teléfono, espacios de trabajo, barra de teclas del terminal, agente OpenCode, temas y resolución de problemas.',
+    'Guía completa para instalar el Gateway, emparejar tu teléfono, espacios de trabajo, barra de teclas del terminal, agentes de código (OpenCode, DeepSeek Harness, T3 Code), temas y resolución de problemas.',
   hero: {
     badge: 'GUÍA DE USUARIO · MANUAL DE REFERENCIA',
     heading: 'Todo lo que necesitas para tener tu máquina siempre a mano.',
-    lead: 'Muqun conecta tu teléfono directamente a tu propio ordenador o servidor. Aprende a instalar y configurar el Gateway, navegar por tus terminales, dirigir el agente autónomo OpenCode, instalar temas y resolver problemas de conexión.',
+    lead: 'Muqun conecta tu teléfono directamente a tu propio ordenador o servidor. Aprende a instalar y configurar el Gateway, navegar por tus terminales, preparar y dirigir tus agentes de código (OpenCode, DeepSeek Harness y T3 Code), instalar temas y resolver problemas de conexión.',
     startCta: 'Empezar ↓',
     diagnosticsCta: 'Diagnóstico ↓',
     issueCta: 'Abrir una incidencia',
@@ -386,7 +386,7 @@ export const es: UserGuide = {
       'No requiere iniciar sesión. Muqun no maneja cuentas ni solicita claves API. Quien se comunica con los modelos es OpenCode en tu propio ordenador. El Gateway no almacena ni reenvía tus credenciales.',
     prerequisitesHeading: 'Requisitos',
     prerequisites: [
-      'OpenCode 2.0.1 o superior instalado en el mismo ordenador que el Gateway.',
+      'OpenCode 2.x instalado en el mismo ordenador que el Gateway.',
       'Al menos un proveedor configurado en OpenCode (con opción para filtrar solo modelos gratuitos).',
       'El servicio OpenCode en ejecución (el Gateway lo inicia o conecta automáticamente).',
       'Un Gateway reciente que admita la interfaz del agente.',

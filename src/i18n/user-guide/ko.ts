@@ -3,11 +3,11 @@ import type { UserGuide } from './types';
 export const ko: UserGuide = {
   metaTitle: 'Muqun 사용자 가이드 및 레퍼런스',
   metaDescription:
-    'Gateway 설치, 스마트폰 페어링, 워크스페이스, 터미널 키 바, OpenCode 자율 에이전트, 테마 커스텀 및 연결 문제 해결 가이드.',
+    'Gateway 설치, 스마트폰 페어링, 워크스페이스, 터미널 키 바, 코딩 에이전트(OpenCode, DeepSeek Harness, T3 Code), 테마 커스텀 및 연결 문제 해결 가이드.',
   hero: {
     badge: '사용자 가이드 · 레퍼런스 매뉴얼',
     heading: '손끝에서 언제든 내 컴퓨터와 연결됩니다.',
-    lead: 'Muqun은 스마트폰을 개인 컴퓨터나 서버에 직접 연결합니다. Gateway 설치 및 구성, 터미널 워크스페이스 탐색, OpenCode 자율 에이전트 구동, 테마 설정 및 연결 문제 해결 방법을 안내합니다.',
+    lead: 'Muqun은 스마트폰을 개인 컴퓨터나 서버에 직접 연결합니다. Gateway 설치 및 구성, 터미널 워크스페이스 탐색, 코딩 에이전트(OpenCode, DeepSeek Harness, T3 Code) 설정과 구동, 테마 설정 및 연결 문제 해결 방법을 안내합니다.',
     startCta: '시작하기 ↓',
     diagnosticsCta: '진단 및 문제 해결 ↓',
     issueCta: '이슈 등록',
@@ -386,7 +386,7 @@ export const ko: UserGuide = {
       '로그인이 필요 없습니다. Muqun은 계정을 요구하지도, API 키를 묻지도 않습니다. 모델 제공자와 통신하는 주체는 앱이 아니라 컴퓨터의 OpenCode이기 때문입니다. Gateway는 자격 증명을 전혀 전달받지 않습니다.',
     prerequisitesHeading: '준비 사항',
     prerequisites: [
-      'Gateway와 동일한 컴퓨터에 OpenCode 2.0.1 이상 설치.',
+      'Gateway와 동일한 컴퓨터에 OpenCode 2.x 설치.',
       'OpenCode 내에 최소 하나의 모델 제공자 구성 (무료 전용 필터 지원).',
       'OpenCode 서비스 실행 (Gateway가 자동 시작하거나 기존 서비스에 자동 연결).',
       '에이전트 화면을 지원하는 최신 Gateway (지원하지 않는 경우 버튼이 숨겨지며 터미널만 작동).',

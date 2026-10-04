@@ -3,11 +3,11 @@ import type { UserGuide } from './types';
 export const de: UserGuide = {
   metaTitle: 'Muqun Benutzerhandbuch & Referenz',
   metaDescription:
-    'Vollständige Anleitung zu Gateway-Installation, Handy-Kopplung, Workspaces, Terminal-Bedienelementen, OpenCode-Agent, Themes und Fehlerdiagnose.',
+    'Vollständige Anleitung zu Gateway-Installation, Handy-Kopplung, Workspaces, Terminal-Bedienelementen, Coding-Agenten (OpenCode, DeepSeek Harness, T3 Code), Themes und Fehlerdiagnose.',
   hero: {
     badge: 'BENUTZERHANDBUCH · REFERENZMANUAL',
     heading: 'Alles, was du brauchst, um deinen Rechner stets griffbereit zu haben.',
-    lead: 'Muqun verbindet dein Smartphone direkt mit deinem eigenen Rechner oder Server. Erfahre, wie du das Gateway installierst und einrichtest, Terminal-Workspaces bedienst, den autonomen OpenCode-Agenten steuerst, Themes installierst und Verbindungsfehler behebst.',
+    lead: 'Muqun verbindet dein Smartphone direkt mit deinem eigenen Rechner oder Server. Erfahre, wie du das Gateway installierst und einrichtest, Terminal-Workspaces bedienst, deine Coding-Agenten einrichtest und steuerst — OpenCode, DeepSeek Harness und T3 Code, Themes installierst und Verbindungsfehler behebst.',
     startCta: 'Erste Schritte ↓',
     diagnosticsCta: 'Fehlerdiagnose ↓',
     issueCta: 'Issue eröffnen',
@@ -386,7 +386,7 @@ export const de: UserGuide = {
       'Kein Login erforderlich. Muqun führt keine Konten und verlangt keine API-Schlüssel. Der Rechner selbst kommuniziert über OpenCode mit deinen KI-Anbietern. Das Gateway leitet keinerlei Anmeldedaten weiter.',
     prerequisitesHeading: 'Voraussetzungen',
     prerequisites: [
-      'OpenCode 2.0.1 oder neuer auf demselben Rechner wie das Gateway installiert.',
+      'OpenCode 2.x auf demselben Rechner wie das Gateway installiert.',
       'Mindestens ein konfigurierter Modellanbieter in OpenCode (inklusive Filter für kostenlose Modelle).',
       'Laufender OpenCode-Dienst (wird vom Gateway automatisch gestartet oder angebunden).',
       'Ein aktuelles Gateway, das die Agenten-Oberfläche unterstützt.',

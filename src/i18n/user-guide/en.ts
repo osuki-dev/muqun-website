@@ -3,11 +3,11 @@ import type { UserGuide } from './types';
 export const en: UserGuide = {
   metaTitle: 'Muqun User Guide & Reference',
   metaDescription:
-    'Complete guide to installing the Gateway, pairing your phone, workspaces, terminal controls, OpenCode autonomous agent, themes, and troubleshooting.',
+    'Complete guide to installing the Gateway, pairing your phone, workspaces, terminal controls, coding agents (OpenCode, DeepSeek Harness, T3 Code), themes, and troubleshooting.',
   hero: {
     badge: 'USER GUIDE · REFERENCE MANUAL',
     heading: 'Everything you need to keep your machine in reach.',
-    lead: 'Muqun connects your phone directly to your own computer or server. Learn how to install and configure the Gateway, navigate terminal workspaces, drive the OpenCode autonomous agent, install themes, and troubleshoot connections.',
+    lead: 'Muqun connects your phone directly to your own computer or server. Learn how to install and configure the Gateway, navigate terminal workspaces, set up and drive your coding agents — OpenCode, DeepSeek Harness and T3 Code, install themes, and troubleshoot connections.',
     startCta: 'Get started ↓',
     diagnosticsCta: 'Diagnostics ↓',
     issueCta: 'Open an issue',
@@ -386,7 +386,7 @@ export const en: UserGuide = {
       'There is no sign-in. Muqun has no account and asks for no API key, because it is not the thing talking to your model provider — OpenCode on your own computer is. You configure providers, models, agents and skills there, the way you already do, and the Gateway passes no credential route through at all.',
     prerequisitesHeading: 'What it needs',
     prerequisites: [
-      'OpenCode 2.0.1 installed on the same computer as the Gateway.',
+      'OpenCode 2.x installed on the same computer as the Gateway.',
       'At least one provider configured in OpenCode itself. Free models exist, and the model picker has a Free only filter for finding them.',
       'The OpenCode service running. The Gateway starts it for you by default, and attaches to one you started yourself.',
       'A Gateway new enough to offer the agent surface. Without it the OpenCode button is simply not there, and the terminal is unaffected.',

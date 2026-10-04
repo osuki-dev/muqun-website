@@ -3,11 +3,11 @@ import type { UserGuide } from './types';
 export const zhTW: UserGuide = {
   metaTitle: '牧群 使用者指南與參考手冊',
   metaDescription:
-    '安裝 Gateway、手機配對、工作区管理、終端機按鍵列、OpenCode 自主 AI 助手、主題客製化及連線疑難排解的完整手冊。',
+    '安裝 Gateway、手機配對、工作区管理、終端機按鍵列、程式 AI 助手（OpenCode、DeepSeek Harness、T3 Code）、主題客製化及連線疑難排解的完整手冊。',
   hero: {
     badge: '使用者指南 · 參考手冊',
     heading: '觸手可及，掌控你的每一台電腦。',
-    lead: '牧群將手機與你自己的電腦或伺服器直接相連。了解如何安裝與設定 Gateway、切換終端機工作區、操控 OpenCode 自主 AI 助手、安裝主題並排解連線問題。',
+    lead: '牧群將手機與你自己的電腦或伺服器直接相連。了解如何安裝與設定 Gateway、切換終端機工作區、接上並操控程式 AI 助手（OpenCode、DeepSeek Harness 與 T3 Code）、安裝主題並排解連線問題。',
     startCta: '開始使用 ↓',
     diagnosticsCta: '問題排解 ↓',
     issueCta: '回報問題',
@@ -386,7 +386,7 @@ export const zhTW: UserGuide = {
       '全程無需登入。牧群不提供帳號體系，也不會向你索取 API 金鑰，因為與大模型通訊的不是手機 App，而是你自己電腦上的 OpenCode。你在電腦上設定好 Provider、模型、AI 助手與技能，Gateway 絕不會轉傳任何憑證資料。',
     prerequisitesHeading: '使用先決條件',
     prerequisites: [
-      '在執行 Gateway 的電腦上安裝 OpenCode 2.0.1 或更新版本。',
+      '在執行 Gateway 的電腦上安裝 OpenCode 2.x。',
       '在 OpenCode 中至少設定好一個模型提供商。支援設定各類免費模型，模型選擇器內建「僅免費」過濾條件。',
       'OpenCode 服務正常運作。Gateway 預設會自動為你啟動該服務，也會自動連線你手動啟動的既有服務。',
       'Gateway 版本足夠新並支援 AI 助手 介面。若版本過舊，OpenCode 按鈕會自動隱藏，終端機功能完全不受影響。',

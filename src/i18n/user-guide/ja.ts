@@ -3,11 +3,11 @@ import type { UserGuide } from './types';
 export const ja: UserGuide = {
   metaTitle: '牧群 ユーザーガイドとリファレンス',
   metaDescription:
-    'Gateway のインストール、スマートフォンとのペアリング、ワークスペース管理、端末キーバー、OpenCode 自律エージェント、テーマ、接続トラブルシューティングの完全ガイド。',
+    'Gateway のインストール、スマートフォンとのペアリング、ワークスペース管理、端末キーバー、コーディングエージェント（OpenCode、DeepSeek Harness、T3 Code）、テーマ、接続トラブルシューティングの完全ガイド。',
   hero: {
     badge: 'ユーザーガイド · リファレンスマニュアル',
     heading: '手のひらから、いつでもマシンへ。',
-    lead: '牧群は、スマートフォンをご自身のコンピューターやサーバーへ直接接続します。Gateway のセットアップ、端末ワークスペースの操作、OpenCode 自律エージェントの駆動、テーマの追加、接続トラブルの診断手順を解説します。',
+    lead: '牧群は、スマートフォンをご自身のコンピューターやサーバーへ直接接続します。Gateway のセットアップ、端末ワークスペースの操作、コーディングエージェント（OpenCode、DeepSeek Harness、T3 Code）の設定と操作、テーマの追加、接続トラブルの診断手順を解説します。',
     startCta: '使ってみる ↓',
     diagnosticsCta: 'トラブル診断 ↓',
     issueCta: '問題を報告',
@@ -386,7 +386,7 @@ export const ja: UserGuide = {
       'ログインは一切不要です。牧群アプリはアカウントも API キーも要求しません。なぜなら、モデルプロバイダーと対話するのはアプリではなく、あなた自身のマシン上で動く OpenCode だからです。Gateway は資格情報に一切関与しません。',
     prerequisitesHeading: '動作要件',
     prerequisites: [
-      'Gateway と同じマシンに OpenCode 2.0.1 以降がインストールされていること。',
+      'Gateway と同じマシンに OpenCode 2.xがインストールされていること。',
       'OpenCode 内で少なくとも 1 つのモデルプロバイダーが設定されていること（無料モデルのみの絞り込みにも対応）。',
       'OpenCode サービスが稼働していること（Gateway が自動起動するか、手動起動したプロセスに自動アタッチします）。',
       'エージェント画面に対応した Gateway バージョンであること（古い場合はボタンが非表示になり、端末機能のみが動作します）。',

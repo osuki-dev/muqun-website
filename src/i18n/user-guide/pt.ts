@@ -3,11 +3,11 @@ import type { UserGuide } from './types';
 export const pt: UserGuide = {
   metaTitle: 'Guia do Utilizador & Referência Muqun',
   metaDescription:
-    'Guia completo para instalar o Gateway, emparelhar o telemóvel, espaços de trabalho, barra de teclas do terminal, agente OpenCode, temas e resolução de problemas.',
+    'Guia completo para instalar o Gateway, emparelhar o telemóvel, espaços de trabalho, barra de teclas do terminal, agentes de código (OpenCode, DeepSeek Harness, T3 Code), temas e resolução de problemas.',
   hero: {
     badge: 'GUIA DO UTILIZADOR · MANUAL DE REFERÊNCIA',
     heading: 'Tudo o que precisas para manter a tua máquina sempre à mão.',
-    lead: 'O Muqun liga o teu telemóvel diretamente ao teu próprio computador ou servidor. Descobre como instalar e configurar o Gateway, navegar por terminais, guiar o agente autónomo OpenCode, instalar temas e resolver falhas de ligação.',
+    lead: 'O Muqun liga o teu telemóvel diretamente ao teu próprio computador ou servidor. Descobre como instalar e configurar o Gateway, navegar por terminais, configurar e guiar os teus agentes de código (OpenCode, DeepSeek Harness e T3 Code), instalar temas e resolver falhas de ligação.',
     startCta: 'Começar ↓',
     diagnosticsCta: 'Diagnóstico ↓',
     issueCta: 'Abrir um problema',
@@ -386,7 +386,7 @@ export const pt: UserGuide = {
       'Sem início de sessão. O Muqun não gere contas nem pede chaves de API. Quem conversa com os fornecedores é o OpenCode no teu computador. O Gateway não armazena credenciais.',
     prerequisitesHeading: 'Requisitos',
     prerequisites: [
-      'OpenCode 2.0.1 ou superior no mesmo computador que o Gateway.',
+      'OpenCode 2.x no mesmo computador que o Gateway.',
       'Pelo menos um fornecedor configurado no OpenCode (com filtro para modelos gratuitos).',
       'Serviço OpenCode ativo (o Gateway inicia ou liga-se automaticamente).',
       'Gateway recente compatível com o ecrã de agente.',

@@ -3,11 +3,11 @@ import type { UserGuide } from './types';
 export const fr: UserGuide = {
   metaTitle: 'Guide d’utilisation & Référence Muqun',
   metaDescription:
-    'Guide complet pour installer la Gateway, appairer votre téléphone, gérer vos espaces de travail, les commandes du terminal, l’agent OpenCode, les thèmes et le dépannage.',
+    'Guide complet pour installer la Gateway, appairer votre téléphone, gérer vos espaces de travail, les commandes du terminal, les agents de code (OpenCode, DeepSeek Harness, T3 Code), les thèmes et le dépannage.',
   hero: {
     badge: 'GUIDE D’UTILISATION · MANUEL DE RÉFÉRENCE',
     heading: 'Tout ce dont vous avez besoin pour garder votre machine à portée de main.',
-    lead: 'Muqun connecte votre téléphone directement à votre propre ordinateur ou serveur. Découvrez comment installer et configurer la Gateway, naviguer dans vos terminaux, piloter l’agent autonome OpenCode, installer des thèmes et résoudre les problèmes de connexion.',
+    lead: 'Muqun connecte votre téléphone directement à votre propre ordinateur ou serveur. Découvrez comment installer et configurer la Gateway, naviguer dans vos terminaux, configurer et piloter vos agents de code — OpenCode, DeepSeek Harness et T3 Code, installer des thèmes et résoudre les problèmes de connexion.',
     startCta: 'Commencer ↓',
     diagnosticsCta: 'Diagnostics ↓',
     issueCta: 'Signaler un problème',
@@ -386,7 +386,7 @@ export const fr: UserGuide = {
       'Aucune connexion nécessaire. Muqun ne gère aucun compte et ne vous demande aucune clé d’API. C’est OpenCode sur votre ordinateur qui communique directement avec vos fournisseurs. La Gateway ne fait transiter aucun identifiant.',
     prerequisitesHeading: 'Prérequis',
     prerequisites: [
-      'OpenCode 2.0.1 ou plus récent installé sur le même ordinateur que la Gateway.',
+      'OpenCode 2.x installé sur le même ordinateur que la Gateway.',
       'Au moins un fournisseur configuré dans OpenCode (filtre dédié aux modèles gratuits inclus).',
       'Le service OpenCode actif (démarré ou rattaché automatiquement par la Gateway).',
       'Une version récente de la Gateway compatible avec l’interface agent.',

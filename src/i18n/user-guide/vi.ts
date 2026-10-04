@@ -3,11 +3,11 @@ import type { UserGuide } from './types';
 export const vi: UserGuide = {
   metaTitle: 'Hướng dẫn sử dụng & Tài liệu tham khảo Muqun',
   metaDescription:
-    'Hướng dẫn toàn diện về cài đặt Gateway, ghép nối điện thoại, không gian làm việc, điều khiển terminal, agent tự trị OpenCode, chủ đề và khắc phục sự cố.',
+    'Hướng dẫn toàn diện về cài đặt Gateway, ghép nối điện thoại, không gian làm việc, điều khiển terminal, các trợ lý lập trình (OpenCode, DeepSeek Harness, T3 Code), chủ đề và khắc phục sự cố.',
   hero: {
     badge: 'HƯỚNG DẪN SỬ DỤNG · TÀI LIỆU THAM KHẢO',
     heading: 'Mọi thứ bạn cần để giữ máy tính luôn trong tầm tay.',
-    lead: 'Muqun kết nối điện thoại trực tiếp với máy tính hoặc máy chủ của bạn. Tìm hiểu cách cài đặt và cấu hình Gateway, điều hướng không gian làm việc terminal, điều khiển agent tự trị OpenCode, cài đặt chủ đề và khắc phục sự cố kết nối.',
+    lead: 'Muqun kết nối điện thoại trực tiếp với máy tính hoặc máy chủ của bạn. Tìm hiểu cách cài đặt và cấu hình Gateway, điều hướng không gian làm việc terminal, thiết lập và điều khiển các trợ lý lập trình (OpenCode, DeepSeek Harness và T3 Code), cài đặt chủ đề và khắc phục sự cố kết nối.',
     startCta: 'Bắt đầu ↓',
     diagnosticsCta: 'Chẩn đoán ↓',
     issueCta: 'Tạo issue',
@@ -386,7 +386,7 @@ export const vi: UserGuide = {
       'Không cần đăng nhập. Muqun không yêu cầu tài khoản và không hỏi khóa API, bởi vì ứng dụng không phải là bên kết nối với nhà cung cấp mô hình — chính OpenCode trên máy tính của bạn thực hiện điều đó. Bạn cấu hình nhà cung cấp, mô hình, agent và kỹ năng tại máy tính theo cách quen thuộc, và Gateway hoàn toàn không chuyển tiếp bất kỳ thông tin đăng nhập nào.',
     prerequisitesHeading: 'Điều kiện tiên quyết',
     prerequisites: [
-      'OpenCode 2.0.1 trở lên được cài đặt trên cùng máy tính chạy Gateway.',
+      'OpenCode 2.x được cài đặt trên cùng máy tính chạy Gateway.',
       'Ít nhất một nhà cung cấp mô hình đã được cấu hình trong chính OpenCode. Có hỗ trợ các mô hình miễn phí, và bộ chọn mô hình có bộ lọc Chỉ miễn phí (Free only) để tìm kiếm nhanh.',
       'Dịch vụ OpenCode đang hoạt động. Gateway sẽ mặc định tự khởi động dịch vụ cho bạn và tự gắn vào dịch vụ bạn đã tự chạy trước đó.',
       'Phiên bản Gateway đủ mới để hỗ trợ bề mặt giao diện agent. Nếu Gateway chưa hỗ trợ, nút OpenCode sẽ không hiển thị và terminal vẫn hoạt động bình thường.',
