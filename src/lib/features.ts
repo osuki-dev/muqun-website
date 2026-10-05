@@ -1,4 +1,4 @@
-import { featureCopy, featureMediaAlt, type FeatureId } from "@/i18n/feature-copy";
+import { featureCopy, type FeatureId } from "@/i18n/feature-copy";
 import type { SiteLocale } from "@/lib/locales";
 
 export interface Feature {
@@ -32,18 +32,8 @@ export function getFeatures(locale: SiteLocale): Feature[] {
     { id: "agents", icon: "◇", status: "available" },
     { id: "approve", icon: "↗", status: "available" },
     { id: "renderer", icon: "◐", status: "available" },
-    {
-      id: "changes",
-      icon: "±",
-      status: "available",
-      media: { src: "/shots/feature-changes-tree-light.webp", alt: featureMediaAlt[locale].changes, width: 1200, height: 441 },
-    },
-    {
-      id: "keyboard",
-      icon: "⌃",
-      status: "available",
-      media: { src: "/shots/feature-pad-keyboard-light.webp", alt: featureMediaAlt[locale].keyboard, width: 1200, height: 446 },
-    },
+    { id: "changes", icon: "±", status: "available" },
+    { id: "keyboard", icon: "⌃", status: "available" },
     { id: "pad", icon: "▭", status: "available" },
     { id: "transitions", icon: "≈", status: "available" },
     { id: "watch", icon: "⌘", status: "available" },
