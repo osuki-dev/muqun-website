@@ -29,7 +29,7 @@ export const copy: MuqunCopy = {
       'コーディングエージェントがファイルの編集許可を求めて手を止めたターミナルのパネル。最初の選択肢が選ばれ、カーソルが待っている。',
     deviceAlt:
       '牧群のホーム画面。1台のサーバーが「オンライン」と表示され、そのエージェントがコーラル色の線に沿って、作業中・応答待ち・待機のいずれかとともに並んでいる。',
-    videoPlayLabel: '36秒の紹介動画を再生',
+    videoPlayLabel: '20秒の紹介動画を再生',
     videoLength: '0:20',
     promptLegend: 'エージェントの三つの答え',
     promptHint: '1、2、3 のいずれかを押してください。ロック画面から答えることもできます。',
@@ -163,7 +163,7 @@ export const copy: MuqunCopy = {
       'ペアリングが済んだあとの、スマートフォン上の牧群。マシンのペインのひとつが開いていて——src/theme.ts を表示したエディタ——残りのペインは下端の帯に並んでいる。Claude Code、nvim、zsh。',
     requirements: [
       'macOS または Linux 上の tmux、または Herdr 0.7.5 以降。Windows にはまだ対応していません。',
-      '複数のエージェントを同時に使うには Gateway 0.13 以降（API 1.9）。古い Gateway でも OpenCode は使えます。Android は 8.0 以降。',
+      "Google PlayまたはApp Storeから更新してください。エージェント、タスク、Gitの機能はGatewayが提供する能力に応じます。古いGatewayでも対応するターミナルとOpenCodeを使えます。 Android 8.0+ · iOS/iPadOS 16.4+.",
       'アカウントも、サブスクリプションも、アプリ内課金もありません。',
       '同じ Wi-Fi でも動きます。Tailscale のほうが確実です。',
     ],

@@ -33,7 +33,7 @@ export const zhTW: UserGuide = {
       label: "AI 助手",
       nav: "助手",
       meta: "opencode · deepseek · t3",
-      desc: "AI 助手工作階段與終端機的差別、3.1 支援的三個助手，以及如何在電腦上接上它們。",
+      desc: "AI 助手工作階段與終端機的差別、4.0 支援的三個助手，以及如何在電腦上接上它們。",
     },
     {
       id: 'opencode',
@@ -53,7 +53,7 @@ export const zhTW: UserGuide = {
       id: 'themes',
       label: '主題系統',
       nav: '主題',
-      meta: '內建 24 款主題包',
+      meta: "預設與匯入主題",
       desc: '視覺主題、.muqun-theme 套件格式、背景不透明度調整與主題製作。',
     },
     {
@@ -135,7 +135,7 @@ export const zhTW: UserGuide = {
       { term: "終端機", detail: "電腦上的 tmux 或 Herdr。窗格裡有什麼，App 就顯示什麼；你送出的按鍵，就是程式收到的按鍵。所以任何程式都能用，包括在終端機裡執行的助手，例如 Claude Code 與 Codex。" },
       { term: "AI 助手工作階段", detail: "Gateway 透過助手自己的 API 與它溝通。每個工作階段屬於一個助手，也一定回到該助手。工作台——模式、模型、斜線指令、技能、附件、復原、壓縮、背景執行——只顯示該助手支援的部分。" },
     ],
-    supportedHeading: "3.1 支援的助手",
+    supportedHeading: "4.0 支援的助手",
     supported: [
       { name: "OpenCode", id: "opencode", detail: "OpenCode 不需設定。Gateway 會接手已在執行的 OpenCode 服務，沒有的話就自行啟動一個；需要 OpenCode 2。工作台的所有功能它都支援。" },
       { name: "DeepSeek Harness", id: "deepseek", detail: "DeepSeek Harness 預設關閉，需要你手動啟用。先在電腦上啟動 Harness，再讓 Gateway 指向它。它的模式來自 Harness 自帶的預設，在建立工作階段時選定；附件會以電腦上的檔案路徑交給它。" },
@@ -444,12 +444,11 @@ export const zhTW: UserGuide = {
   themes: {
     eyebrow: 'muqun.dev/themes',
     heading: '主題系統。',
-    lead: '主題能夠同時重繪 App 介面與終端機配色，每一款主題包都包含淺色與深色兩套獨立方案。App 內建 24 款經典主題，社群目錄中更有豐富擴充。',
+    lead: "Cover Courier 是內建預設主題。可從目錄、檔案或連結安裝明暗主題，一起改變圖片、介面與終端機配色。",
     entries: [
       {
-        term: '內建 24 款精選主題',
-        detail:
-          '在「設定 → 外觀 → 主題」中可直接選用，包括 Catppuccin、Gruvbox、Kanagawa、Rosé Pine、Tokyo Night 與 Everforest 等知名配色。色彩模式（系統、淺色或深色）決定顯示該主題的哪個明暗分支，而不是替換主題本身。',
+        term: "預設與匯入主題",
+        detail: "在設定 → 外觀中選擇主題；跟隨系統、明亮與暗色決定其顏色模式。匯入主題更新後會刷新目前主題，並保留你的外觀偏好。",
       },
       {
         term: '線上瀏覽主題目錄',
@@ -463,8 +462,7 @@ export const zhTW: UserGuide = {
       },
       {
         term: '主題資訊清單涵蓋的範圍',
-        detail:
-          '每種模式下的 17 種介面顏色；終端機的背景色、前景色、游標顏色、連結與文字選取反白，以及全部 16 個標準 ANSI 顏色槽位；覆蓋 11 個核心介面的背景插圖（從 Shell 背景到首頁看板）；最多 3 個自訂圖示（返回、傳送、附件）；以及介面和終端機的初始不透明度設定。必須同時提供淺色與深色兩套方案。不允許使用外部字型、SVG 或動畫檔案。',
+        detail: "主題定義介面、終端機和 ANSI 配色、圖片、圖示與透明度。首頁場景、整頁桌布與首頁輸入框插圖各有獨立槽位，可適配手機、Pad 和明暗模式。圖片支援 PNG、JPEG 或 WebP，不支援外部字型、SVG 或動畫檔案。",
       },
       {
         term: '檔案大小與規格限制',

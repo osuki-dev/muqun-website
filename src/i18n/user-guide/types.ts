@@ -84,7 +84,7 @@ export interface UserGuide {
     /** Translated. What is happening on the screen, not "a screenshot". */
     shotAlt: string;
     entries: readonly GuideEntry[];
-    /** One sheet for terminal panes and agent sessions (3.1). */
+    /** One sheet for terminal panes and agent sessions (4.0). */
     changes: {
       heading: string;
       lead: string;
@@ -101,7 +101,7 @@ export interface UserGuide {
     note: string;
   };
 
-  /** What an agent session is, the agents 3.1 supports, and their setup. */
+  /** What an agent session is, the agents 4.0 supports, and their setup. */
   agents: {
     eyebrow: string;
     heading: string;

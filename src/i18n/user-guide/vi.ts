@@ -33,7 +33,7 @@ export const vi: UserGuide = {
       label: "Trợ lý",
       nav: "Trợ lý",
       meta: "opencode · deepseek · t3",
-      desc: "Phiên trợ lý so với terminal, ba trợ lý mà 3.1 hỗ trợ, và cách thiết lập từng trợ lý trên máy chủ.",
+      desc: "Phiên trợ lý so với terminal, ba trợ lý mà 4.0 hỗ trợ, và cách thiết lập từng trợ lý trên máy chủ.",
     },
     {
       id: 'opencode',
@@ -53,7 +53,7 @@ export const vi: UserGuide = {
       id: 'themes',
       label: 'Chủ đề',
       nav: 'Chủ đề',
-      meta: '24 gói tích hợp sẵn',
+      meta: "Chủ đề mặc định và nhập vào",
       desc: 'Chủ đề giao diện, định dạng gói .muqun-theme, thanh trượt độ mờ và tự tạo chủ đề.',
     },
     {
@@ -135,7 +135,7 @@ export const vi: UserGuide = {
       { term: "Terminal", detail: "tmux hoặc Herdr trên máy chủ. Ứng dụng hiển thị đúng những gì ô đang hiện, và phím bạn gửi chính là phím chương trình nhận được — nên chương trình nào cũng chạy được, kể cả các trợ lý sống trong terminal như Claude Code và Codex." },
       { term: "Phiên trợ lý", detail: "Một trợ lý mà Gateway trò chuyện qua API riêng của nó. Mỗi phiên thuộc về một trợ lý và luôn quay về trợ lý đó. Bàn làm việc — chế độ, mô hình, lệnh gạch chéo, kỹ năng, tệp đính kèm, hoàn tác, nén ngữ cảnh, tác vụ nền — chỉ hiện những gì trợ lý đó hỗ trợ." },
     ],
-    supportedHeading: "Các trợ lý 3.1 hỗ trợ",
+    supportedHeading: "Các trợ lý 4.0 hỗ trợ",
     supported: [
       { name: "OpenCode", id: "opencode", detail: "OpenCode không cần thiết lập. Gateway tiếp quản dịch vụ OpenCode đang chạy, hoặc tự khởi động một dịch vụ; cần OpenCode 2. Có đủ mọi phần của bàn làm việc." },
       { name: "DeepSeek Harness", id: "deepseek", detail: "DeepSeek Harness tắt cho đến khi bạn bật. Khởi động Harness trên máy chủ, rồi chỉ cho Gateway biết nó ở đâu. Chế độ là các preset riêng của Harness, chọn khi tạo phiên; tệp đính kèm đến tay nó dưới dạng tệp trên máy chủ." },
@@ -444,12 +444,11 @@ export const vi: UserGuide = {
   themes: {
     eyebrow: 'muqun.dev/themes',
     heading: 'Chủ đề.',
-    lead: 'Chủ đề thay đổi diện mạo của cả ứng dụng và terminal cùng lúc, và mỗi gói chủ đề đều bao gồm giao diện sáng và tối. 24 gói được tích hợp sẵn trong ứng dụng; nhiều chủ đề khác có sẵn trong danh mục cộng đồng.',
+    lead: "Cover Courier là chủ đề tích hợp mặc định. Cài chủ đề sáng và tối từ danh mục, tệp hoặc liên kết để đổi đồng thời ảnh và màu ứng dụng, terminal.",
     entries: [
       {
-        term: 'Các gói đi kèm sẵn',
-        detail:
-          '24 gói, nằm trong Cài đặt → Giao diện → Chủ đề, bao gồm Catppuccin, Gruvbox, Kanagawa, Rosé Pine, Tokyo Night và Everforest. Chế độ màu — Hệ thống, Sáng hoặc Tối — sẽ quyết định hiển thị nửa sáng hay tối của gói, chứ không đổi sang gói khác.',
+        term: "Chủ đề mặc định và nhập vào",
+        detail: "Chọn trong Cài đặt → Giao diện rồi dùng Hệ thống, Sáng hoặc Tối. Cập nhật chủ đề nhập vào làm mới chủ đề đã chọn và giữ tùy chọn giao diện của bạn.",
       },
       {
         term: 'Duyệt danh mục chủ đề',
@@ -463,8 +462,7 @@ export const vi: UserGuide = {
       },
       {
         term: 'Nội dung tệp kê khai (Manifest)',
-        detail:
-          '17 màu giao diện cho mỗi chế độ sáng/tối; màu nền, màu chữ, con trỏ, liên kết và vùng chọn của terminal cùng 16 ô màu ANSI; hình ảnh đồ họa cho 11 bề mặt hiển thị từ hình nền shell đến màn hình chính; tối đa 3 biểu tượng tùy chỉnh — quay lại, gửi và đính kèm; cùng độ mờ khởi đầu cho giao diện và terminal. Bắt buộc phải có cả cấu hình sáng và tối. Không hỗ trợ phông chữ, SVG hay hoạt ảnh.',
+        detail: "Chủ đề định nghĩa màu ứng dụng, terminal và ANSI, ảnh, biểu tượng và độ mờ. Cảnh Trang chủ, nền cả trang và ảnh ô nhập Trang chủ có vị trí riêng cho điện thoại/máy tính bảng và sáng/tối. Hỗ trợ PNG, JPEG và WebP, không hỗ trợ phông ngoài, SVG hoặc tệp hoạt ảnh.",
       },
       {
         term: 'Giới hạn kích thước',

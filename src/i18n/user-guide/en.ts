@@ -33,7 +33,7 @@ export const en: UserGuide = {
       label: "Agents",
       nav: "agents",
       meta: "opencode · deepseek · t3",
-      desc: "Agent sessions versus terminals, the three agents 3.1 supports, and setting each up on the host.",
+      desc: "Agent sessions versus terminals, the three agents 4.0 supports, and setting each up on the host.",
     },
     {
       id: 'opencode',
@@ -53,7 +53,7 @@ export const en: UserGuide = {
       id: 'themes',
       label: 'Themes',
       nav: 'themes',
-      meta: '24 bundled packs',
+      meta: "Default and imported themes",
       desc: 'Visual themes, .muqun-theme package format, opacity sliders, and authoring.',
     },
     {
@@ -135,7 +135,7 @@ export const en: UserGuide = {
       { term: "A terminal", detail: "tmux or Herdr on the host. The app shows what the pane shows, and the keys you send are the keys the program receives — so any program works, including agents that live in a terminal, such as Claude Code and Codex." },
       { term: "An agent session", detail: "An agent the Gateway talks to over its own API. Every session belongs to one agent and always goes back to it. The workbench — modes, models, slash commands, skills, attachments, undo, compaction, background runs — shows only what that agent supports." },
     ],
-    supportedHeading: "The agents 3.1 supports",
+    supportedHeading: "The agents 4.0 supports",
     supported: [
       { name: "OpenCode", id: "opencode", detail: "OpenCode needs no setup. The Gateway adopts an OpenCode service that is already running, or starts one itself; it needs OpenCode 2. Every part of the workbench is there." },
       { name: "DeepSeek Harness", id: "deepseek", detail: "DeepSeek Harness is off until you enable it. Start the Harness on the host, then point the Gateway at it. Its modes are its own presets, chosen when a session starts, and attachments reach it as files on the host." },
@@ -444,12 +444,11 @@ export const en: UserGuide = {
   themes: {
     eyebrow: 'muqun.dev/themes',
     heading: 'Themes.',
-    lead: 'A theme repaints the app and the terminal together, and every pack has a light half and a dark one. Twenty-four ship with the app; more live in the community catalogue.',
+    lead: "Cover Courier is the built-in default. Install light and dark themes from the catalogue, a file or a link to change artwork, app colours and terminal colours together.",
     entries: [
       {
-        term: 'The packs that ship',
-        detail:
-          'Twenty-four, under Settings → Appearance → Theme, including Catppuccin, Gruvbox, Kanagawa, Rosé Pine, Tokyo Night and Everforest. Colour mode — System, Light or Dark — picks which half of the pack you see, not which pack it is.',
+        term: "Default and imported themes",
+        detail: "Choose a theme in Settings → Appearance. System, Light and Dark choose its colour mode. Imported theme updates refresh the selected theme while keeping your appearance preferences.",
       },
       {
         term: 'Browsing the catalogue',
@@ -463,8 +462,7 @@ export const en: UserGuide = {
       },
       {
         term: 'What the manifest covers',
-        detail:
-          'Seventeen interface colours per mode; the terminal’s background, foreground, cursor, link and selection plus all sixteen ANSI slots; artwork for eleven surfaces, from the shell background to the Home hero; up to three custom icons — back, send and attach; and a starting opacity for the interface and the terminal. A light half and a dark half are both required. No fonts, no SVG and no animation.',
+        detail: "A theme defines app and terminal colours, ANSI colours, image artwork, interface icons and opacity. Home scenes, whole-page wallpapers and Home composer artwork have separate slots, with phone/tablet and light/dark variants. Packages use PNG, JPEG or WebP; external fonts, SVG and animation files are not supported.",
       },
       {
         term: 'Its limits',

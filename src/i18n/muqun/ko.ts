@@ -29,7 +29,7 @@ export const copy: MuqunCopy = {
       '코딩 에이전트가 파일 편집 권한을 물으며 멈춰 선 터미널 패널. 첫 번째 선택지가 선택되어 있고 커서가 기다리고 있습니다.',
     deviceAlt:
       'Muqun 홈 화면. 서버 하나가 온라인으로 표시되고, 그 에이전트들이 산호색 선을 따라 작업 중, 응답 대기, 대기로 표시되어 있습니다.',
-    videoPlayLabel: '36초 소개 영상 재생',
+    videoPlayLabel: '20초 소개 영상 재생',
     videoLength: '0:20',
     promptLegend: '에이전트의 세 가지 답',
     promptHint: '1, 2, 3 중 하나를 누르세요. 잠금 화면에서 답해도 됩니다.',
@@ -163,7 +163,7 @@ export const copy: MuqunCopy = {
       '페어링이 끝난 뒤 휴대폰 속 Muqun. 컴퓨터의 페인 하나가 열려 있고 — src/theme.ts를 띄운 편집기 — 나머지 페인은 아래쪽 띠에 놓여 있습니다. Claude Code, nvim, zsh.',
     requirements: [
       'macOS 또는 Linux에서 tmux, 또는 Herdr 0.7.5 이상. Windows는 아직 지원하지 않습니다.',
-      '여러 에이전트를 함께 쓰려면 Gateway 0.13 이상(API 1.9)이 필요합니다. 이전 Gateway에서도 OpenCode는 쓸 수 있습니다. Android는 8.0 이상.',
+      "Google Play 또는 App Store에서 업데이트하세요. 에이전트·작업·Git 기능은 연결된 Gateway의 지원 능력에 따릅니다. 이전 Gateway에서도 지원되는 터미널과 OpenCode를 쓸 수 있습니다. Android 8.0+ · iOS/iPadOS 16.4+.",
       '계정도, 구독도, 인앱 결제도 없습니다.',
       '같은 Wi-Fi여도 됩니다. Tailscale이 더 낫습니다.',
     ],

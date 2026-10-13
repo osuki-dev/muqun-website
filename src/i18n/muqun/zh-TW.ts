@@ -29,7 +29,7 @@ export const copy: MuqunCopy = {
       '一個終端機面板，程式開發代理程式停下來請求編輯檔案的授權，第一個選項已選取，游標停在那裡等著。',
     deviceAlt:
       '牧群的首頁：一台伺服器標示為線上，它的代理程式沿著一條珊瑚色的線排開，各自標示為工作中、等待回應或閒置。',
-    videoPlayLabel: '播放 36 秒的介紹影片',
+    videoPlayLabel: '播放 20 秒的介紹影片',
     videoLength: '0:20',
     promptLegend: '代理的三個回答',
     promptHint: '按 1、2 或 3——也可以在鎖定畫面上回答。',
@@ -163,7 +163,7 @@ export const copy: MuqunCopy = {
       '配對完成後，手機上的牧群：機器上的其中一個分頁開著——一個顯示 src/theme.ts 的編輯器——其餘分頁排在下方那條列上，Claude Code、nvim、zsh。',
     requirements: [
       'tmux，或 Herdr 0.7.5 或更新版本，在 macOS 或 Linux 上。目前尚未支援 Windows。',
-      '同時接上多個 AI 助手需要 Gateway 0.13 或更新版本（API 1.9）；舊版 Gateway 仍可使用 OpenCode。Android 需 8.0 或更新版本。',
+      "透過 Google Play 或 App Store 更新。助手、任務與 Git 功能依所連 Gateway 提供的能力而定；舊版仍可使用其支援的終端機與 OpenCode。 Android 8.0+ · iOS/iPadOS 16.4+.",
       '免帳號、免訂閱，也沒有應用程式內購。',
       '同一個 Wi-Fi 就可以；Tailscale 更好。',
     ],

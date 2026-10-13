@@ -33,7 +33,7 @@ export const ko: UserGuide = {
       label: "에이전트",
       nav: "에이전트",
       meta: "opencode · deepseek · t3",
-      desc: "에이전트 세션과 터미널의 차이, 3.1이 지원하는 세 에이전트, 그리고 호스트에서 각각 설정하는 방법.",
+      desc: "에이전트 세션과 터미널의 차이, 4.0이 지원하는 세 에이전트, 그리고 호스트에서 각각 설정하는 방법.",
     },
     {
       id: 'opencode',
@@ -53,7 +53,7 @@ export const ko: UserGuide = {
       id: 'themes',
       label: '테마',
       nav: '테마',
-      meta: '기본 내장 24팩',
+      meta: "기본 및 가져온 테마",
       desc: '비주얼 테마, .muqun-theme 패키지 포맷, 불투명도 조절 및 테마 제작.',
     },
     {
@@ -135,7 +135,7 @@ export const ko: UserGuide = {
       { term: "터미널", detail: "호스트의 tmux 또는 Herdr. 앱은 창에 보이는 그대로를 보여 주고, 보낸 키는 그대로 프로그램에 도착합니다. 그래서 어떤 프로그램이든 쓸 수 있고, Claude Code나 Codex처럼 터미널에서 도는 에이전트도 쓸 수 있습니다." },
       { term: "에이전트 세션", detail: "Gateway가 에이전트 자체 API로 대화하는 상대입니다. 각 세션은 한 에이전트에 속하고 언제나 그 에이전트로 돌아갑니다. 작업 화면——모드, 모델, 슬래시 명령, 스킬, 첨부, 실행 취소, 압축, 백그라운드 실행——은 그 에이전트가 지원하는 것만 보여 줍니다." },
     ],
-    supportedHeading: "3.1이 지원하는 에이전트",
+    supportedHeading: "4.0이 지원하는 에이전트",
     supported: [
       { name: "OpenCode", id: "opencode", detail: "OpenCode는 설정이 필요 없습니다. Gateway가 이미 실행 중인 OpenCode 서비스를 이어받거나, 없으면 직접 시작합니다. OpenCode 2가 필요합니다. 작업 화면의 모든 기능을 지원합니다." },
       { name: "DeepSeek Harness", id: "deepseek", detail: "DeepSeek Harness는 켜기 전까지 꺼져 있습니다. 호스트에서 Harness를 시작한 뒤 Gateway가 그쪽을 보게 하세요. 모드는 Harness 자체 프리셋이며 세션을 만들 때 고릅니다. 첨부는 호스트의 파일로 전달됩니다." },
@@ -444,12 +444,11 @@ export const ko: UserGuide = {
   themes: {
     eyebrow: 'muqun.dev/themes',
     heading: '테마.',
-    lead: '앱 인터페이스와 터미널 색상을 한 번에 변경합니다. 모든 테마 팩은 라이트 모드와 다크 모드 구성을 갖추고 있습니다. 기본 24팩이 제공되며 커뮤니티 카탈로그에서 추가할 수 있습니다.',
+    lead: "Cover Courier가 기본 내장 테마입니다. 카탈로그, 파일 또는 링크에서 밝고 어두운 테마를 설치해 그림과 앱·터미널 색을 함께 바꿀 수 있습니다.",
     entries: [
       {
-        term: '기본 탑재 24팩',
-        detail:
-          '설정 → 화면 → 테마에서 Catppuccin, Gruvbox, Kanagawa, Rosé Pine, Tokyo Night, Everforest 등을 선택할 수 있습니다. 색상 모드(시스템, 라이트, 다크)에 따라 밝은 버전과 어두운 버전이 적용됩니다.',
+        term: "기본 및 가져온 테마",
+        detail: "설정 → 모양에서 테마를 고르고 시스템·밝게·어둡게로 색상 모드를 선택하세요. 가져온 테마 업데이트는 외관 설정을 유지하며 선택한 테마를 갱신합니다.",
       },
       {
         term: '카탈로그 둘러보기',
@@ -463,8 +462,7 @@ export const ko: UserGuide = {
       },
       {
         term: '지원하는 커스텀 범위',
-        detail:
-          '모드별 17개 인터페이스 색상, 터미널 배경·전경·커서·링크·선택 색상, 16개 ANSI 슬롯, 11개 화면의 배경 아트워크, 3개 커스텀 아이콘, 초기 불투명도 등을 지원합니다. 폰트, SVG, 애니메이션은 지원하지 않습니다.',
+        detail: "테마는 앱·터미널·ANSI 색, 그림, 아이콘과 불투명도를 정의합니다. 홈 장면, 전체 배경과 홈 입력창 그림은 서로 다른 슬롯으로 휴대폰·태블릿·밝고 어두운 모드를 지원합니다. PNG·JPEG·WebP를 사용하며 외부 글꼴·SVG·애니메이션 파일은 지원하지 않습니다.",
       },
       {
         term: '용량 제한',

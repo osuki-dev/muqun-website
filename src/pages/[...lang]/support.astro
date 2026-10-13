@@ -30,6 +30,8 @@ import Step from '@/components/Step.astro';
 import Steps from '@/components/Steps.astro';
 import type { StatusLineItem } from '@/components/types';
 import { userGuide } from '@/i18n/user-guide';
+import { releaseHome } from '@/i18n/release-home';
+import { getFeatures } from '@/lib/features';
 import { worldCopy } from '@/i18n/world';
 import { getMuqunCopy } from '@/i18n/muqun';
 import { feedbackIssueUrl } from '@/lib/muqun-links';
@@ -44,6 +46,8 @@ export function getStaticPaths() {
 
 const { locale } = Astro.props;
 const guide = userGuide[locale];
+const release = releaseHome[locale];
+const releaseFeatures = getFeatures(locale).filter((feature) => ["composer", "tasks", "voice", "media", "worktrees", "storage", "updates"].includes(feature.id));
 const isZhCN = locale === 'zh-CN';
 
 const muqun = getMuqunCopy(locale);
@@ -91,7 +95,7 @@ const sections: StatusLineItem[] = guide.contents.map((item, index) => ({
   title={guide.metaTitle}
   description={guide.metaDescription}
   sections={sections}
-  version="3.1.0"
+  version="4.0.0"
 >
   {/* =========================================================================
       HERO: Guide Overview & Interactive Chapter Navigator
@@ -143,6 +147,21 @@ const sections: StatusLineItem[] = guide.contents.map((item, index) => ({
         </div>
       </nav>
     </div>
+  </Band>
+
+  <Band tone="cream" id="release-4">
+    <SectionHeading eyebrow="MUQUN / 4.0.0" title={release.heading} level={2}>
+      {release.intro}
+    </SectionHeading>
+    <Grid min="19rem" class="mq-release-features">
+      {releaseFeatures.map((feature) => (
+        <article>
+          <h3>{feature.title}</h3>
+          <p>{feature.description}</p>
+        </article>
+      ))}
+    </Grid>
+    <Prose>{release.compatibility}</Prose>
   </Band>
 
   {/* =========================================================================
@@ -1717,3 +1736,10 @@ const sections: StatusLineItem[] = guide.contents.map((item, index) => ({
 <script>
   import '@/scripts/guide-motion';
 </script>
+
+<style>
+  :global(.mq-release-features) { margin-block: var(--mq-space-10); }
+  :global(.mq-release-features) article { min-width: 0; }
+  :global(.mq-release-features) h3 { font-size: var(--mq-size-subheading); margin-bottom: var(--mq-space-3); }
+  :global(.mq-release-features) p { color: var(--mq-text-muted); line-height: 1.75; overflow-wrap: anywhere; }
+</style>

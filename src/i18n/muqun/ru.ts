@@ -31,7 +31,7 @@ export const copy: MuqunCopy = {
       ],
       requirements: [
         "Gateway: macOS или Linux, tmux или Herdr.",
-        "Gateway 0.13 или новее (API 1.9) для нескольких агентов сразу; со старым Gateway остаётся OpenCode. Android 8.0 или новее.",
+        "Обновляйте через Google Play или App Store. Возможности агентов, задач и Git зависят от Gateway. Старые Gateways сохраняют поддерживаемые пути терминала и OpenCode. Android 8.0+ · iOS/iPadOS 16.4+.",
         "Приложение: iOS или Android.",
       ],
       openSourceLink: "Инструкция и исходный код",

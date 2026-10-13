@@ -28,7 +28,7 @@ export const copy: MuqunCopy = {
       ],
       requirements: [
         "Gateway：macOS 或 Linux，安装 tmux 或 Herdr。",
-        "多个 AI 助手同时接入需要 Gateway 0.13 或更新版本（API 1.9）；旧版 Gateway 仍可使用 OpenCode。Android 需 8.0 或更新版本。",
+        "通过 Google Play 或 App Store 更新。助手、任务与 Git 功能取决于所连 Gateway 提供的能力；旧版仍可使用其支持的终端与 OpenCode。 Android 8.0+ · iOS/iPadOS 16.4+.",
         "手机端：iOS 或 Android。",
       ],
       openSourceLink: "安装指南与源码",

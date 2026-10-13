@@ -33,7 +33,7 @@ export const de: UserGuide = {
       label: "Agenten",
       nav: "Agenten",
       meta: "opencode · deepseek · t3",
-      desc: "Agentensitzungen gegenüber Terminals, die drei Agenten, die 3.1 unterstützt, und ihre Einrichtung auf dem Host.",
+      desc: "Agentensitzungen gegenüber Terminals, die drei Agenten, die 4.0 unterstützt, und ihre Einrichtung auf dem Host.",
     },
     {
       id: 'opencode',
@@ -53,7 +53,7 @@ export const de: UserGuide = {
       id: 'themes',
       label: 'Themes',
       nav: 'Themes',
-      meta: '24 mitgelieferte Packs',
+      meta: "Standard und importierte Themes",
       desc: 'Visuelle Themes, .muqun-theme Paketformat, Deckkraft-Regler und Erstellung.',
     },
     {
@@ -135,7 +135,7 @@ export const de: UserGuide = {
       { term: "Ein Terminal", detail: "tmux oder Herdr auf dem Host. Die App zeigt, was der Bereich zeigt, und die Tasten, die du sendest, sind die Tasten, die das Programm bekommt — also läuft jedes Programm, auch Agenten, die im Terminal leben, wie Claude Code und Codex." },
       { term: "Eine Agentensitzung", detail: "Ein Agent, mit dem das Gateway über dessen eigene API spricht. Jede Sitzung gehört einem Agenten und geht immer an ihn zurück. Die Werkbank — Modi, Modelle, Slash-Befehle, Skills, Anhänge, Rückgängig, Komprimierung, Hintergrundläufe — zeigt nur, was dieser Agent unterstützt." },
     ],
-    supportedHeading: "Die Agenten, die 3.1 unterstützt",
+    supportedHeading: "Die Agenten, die 4.0 unterstützt",
     supported: [
       { name: "OpenCode", id: "opencode", detail: "OpenCode braucht keine Einrichtung. Das Gateway übernimmt einen bereits laufenden OpenCode-Dienst oder startet selbst einen; nötig ist OpenCode 2. Die ganze Werkbank ist da." },
       { name: "DeepSeek Harness", id: "deepseek", detail: "DeepSeek Harness ist aus, bis du es einschaltest. Starte das Harness auf dem Host und zeig dem Gateway, wo es läuft. Seine Modi sind seine eigenen Presets, gewählt beim Anlegen einer Sitzung; Anhänge erreichen es als Dateien auf dem Host." },
@@ -444,12 +444,11 @@ export const de: UserGuide = {
   themes: {
     eyebrow: 'muqun.dev/themes',
     heading: 'Themes.',
-    lead: 'Themes passen das Aussehen der App und des Terminals synchron an. Jedes Theme-Pack enthält eine helle und eine dunkle Variante. 24 Packs werden mitgeliefert; viele weitere gibt es im Katalog.',
+    lead: "Cover Courier ist das integrierte Standard-Theme. Installiere helle und dunkle Themes aus dem Katalog, einer Datei oder einem Link, um Bilder sowie App- und Terminalfarben gemeinsam zu ändern.",
     entries: [
       {
-        term: '24 mitgelieferte Packs',
-        detail:
-          'Unter Einstellungen → Darstellung → Theme, inklusive Catppuccin, Gruvbox, Kanagawa, Rosé Pine, Tokyo Night und Everforest.',
+        term: "Standard und importierte Themes",
+        detail: "Wähle das Theme unter Einstellungen → Darstellung und den Farbmodus System, Hell oder Dunkel. Updates importierter Themes erneuern das ausgewählte Theme und behalten deine Darstellungseinstellungen.",
       },
       {
         term: 'Katalog durchstöbern',
@@ -463,8 +462,7 @@ export const de: UserGuide = {
       },
       {
         term: 'Anpassungsumfang',
-        detail:
-          '17 Schnittstellenfarben je Modus, Terminalfarben für Cursor, Links und alle 16 ANSI-Slots, Grafiken für 11 Oberflächen und 3 benutzerdefinierte Icons.',
+        detail: "Themes definieren App-, Terminal- und ANSI-Farben, Bilder, Symbole und Deckkraft. Home-Szene, Seitenhintergrund und Home-Eingabebilder haben separate Plätze mit Telefon-/Tablet- und Hell-/Dunkelvarianten. PNG, JPEG und WebP werden unterstützt; externe Fonts, SVG und Animationsdateien nicht.",
       },
       {
         term: 'Dateigrößenlimits',

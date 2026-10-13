@@ -33,7 +33,7 @@ export const zhCN: UserGuide = {
       label: "AI 助手",
       nav: "助手",
       meta: "opencode · deepseek · t3",
-      desc: "AI 助手会话和终端的区别、3.1 支持的三个助手，以及在电脑上怎样接入。",
+      desc: "AI 助手会话和终端的区别、4.0 支持的三个助手，以及在电脑上怎样接入。",
     },
     {
       id: 'opencode',
@@ -53,7 +53,7 @@ export const zhCN: UserGuide = {
       id: 'themes',
       label: '主题系统',
       nav: '主题',
-      meta: '内置 24 款主题包',
+      meta: "默认与导入主题",
       desc: '视觉主题、.muqun-theme 包格式、背景透明度调节与主题制作。',
     },
     {
@@ -134,7 +134,7 @@ export const zhCN: UserGuide = {
       { term: "终端", detail: "电脑上的 tmux 或 Herdr。窗格里有什么，App 就显示什么；你发出的按键，就是程序收到的按键。所以任何程序都能用，包括跑在终端里的助手，比如 Claude Code 和 Codex。" },
       { term: "AI 助手会话", detail: "Gateway 通过助手自己的 API 与它对话。每个会话属于一个助手，也总会回到这个助手。工作台——模式、模型、斜杠命令、技能、附件、撤销、压缩、后台任务——只显示这个助手支持的部分。" },
     ],
-    supportedHeading: "3.1 支持的助手",
+    supportedHeading: "4.0 支持的助手",
     supported: [
       { name: "OpenCode", id: "opencode", detail: "OpenCode 无需设置。Gateway 会接管已经在运行的 OpenCode 服务，没有就自己启动一个；需要 OpenCode 2。工作台的所有功能它都支持。" },
       { name: "DeepSeek Harness", id: "deepseek", detail: "DeepSeek Harness 默认关闭，需要你手动开启。先在电脑上启动 Harness，再让 Gateway 指向它。它的模式来自 Harness 自带的预设，在新建会话时选定；附件会以电脑上的文件路径交给它。" },
@@ -443,12 +443,11 @@ export const zhCN: UserGuide = {
   themes: {
     eyebrow: 'muqun.dev/themes',
     heading: '主题系统。',
-    lead: '主题能够同时重绘 App 界面与终端配色，每一款主题包都包含明亮与暗色两套独立方案。App 内置 24 款经典主题，社区目录中更有丰富扩展。',
+    lead: "Cover Courier 是内置默认主题。可以从目录、文件或链接安装明暗主题，一起改变图片、界面配色和终端配色。",
     entries: [
       {
-        term: '内置 24 款精选主题',
-        detail:
-          '在“设置 → 外观 → 主题”中可直接选用，包括 Catppuccin、Gruvbox、Kanagawa、Rosé Pine、Tokyo Night 与 Everforest 等知名配色。颜色模式（跟随系统、明亮或暗色）决定显示该主题的哪个明暗分支，而不是替换主题本身。',
+        term: "默认与导入主题",
+        detail: "在设置 → 外观中选择主题；跟随系统、明亮与暗色决定其颜色模式。导入主题更新后会刷新当前主题，并保留你的外观偏好。",
       },
       {
         term: '在线浏览主题目录',
@@ -462,8 +461,7 @@ export const zhCN: UserGuide = {
       },
       {
         term: '主题清单涵盖的范围',
-        detail:
-          '每种模式下的 17 种界面颜色；终端的背景色、前景色、光标颜色、超链接与文字选中高亮，以及全部 16 个标准 ANSI 颜色槽位；覆盖 11 个核心界面的背景插画（从 Shell 背景到主页看板）；最多 3 个自定义图标（返回、发送、附件）；以及界面和终端的初始透明度设定。必须同时提供明亮与暗色两套方案。不允许使用外部字体、SVG 或动画文件。',
+        detail: "主题定义界面、终端和 ANSI 配色、图片、图标及透明度。首页场景、整页壁纸与首页输入框插图各有独立槽位，可分别适配手机、Pad 和明暗模式。图片支持 PNG、JPEG 或 WebP，不支持外部字体、SVG 或动画文件。",
       },
       {
         term: '包体积与规格限制',

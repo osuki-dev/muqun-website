@@ -25,7 +25,7 @@ export const copy: MuqunCopy = {
       'Ein Terminal-Panel, in dem ein Coding-Agent angehalten hat und um Erlaubnis bittet, eine Datei zu bearbeiten — die erste Option ist ausgewählt, der Cursor wartet.',
     deviceAlt:
       'Der Startbildschirm von Muqun: ein Server ONLINE, seine Agents an einem korallenfarbenen Faden aufgelistet, jeder als Arbeitet, Blockiert oder Inaktiv markiert.',
-    videoPlayLabel: 'Den 36-sekündigen Intro-Film abspielen',
+    videoPlayLabel: 'Den 20-sekündigen Intro-Film abspielen',
     videoLength: '0:20',
     promptLegend: 'Die drei Antworten des Agents',
     promptHint: 'Drücke 1, 2 oder 3 — oder antworte vom Sperrbildschirm aus.',
@@ -159,7 +159,7 @@ export const copy: MuqunCopy = {
       'Muqun auf einem Telefon nach der Kopplung: eine der Panes der Maschine ist offen — ein Editor mit src/theme.ts — die übrigen Panes in einer Leiste am unteren Rand, Claude Code, nvim, zsh.',
     requirements: [
       'tmux, oder Herdr 0.7.5 oder neuer, auf macOS oder Linux. Windows wird noch nicht unterstützt.',
-      'Gateway 0.13 oder neuer (API 1.9) für mehrere Agenten gleichzeitig; ein älteres Gateway behält OpenCode. Android 8.0 oder neuer.',
+      "Aktualisiere über Google Play oder den App Store. Agenten-, Aufgaben- und Git-Werkzeuge richten sich nach den Fähigkeiten des Gateways. Ältere Gateways behalten ihre unterstützten Terminal- und OpenCode-Wege. Android 8.0+ · iOS/iPadOS 16.4+.",
       'Kein Konto, kein Abo, keine In-App-Käufe.',
       'Dasselbe Wi-Fi reicht; Tailscale ist besser.',
     ],

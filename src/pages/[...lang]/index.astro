@@ -9,6 +9,7 @@ import { getMuqunCopy } from "@/i18n/muqun";
 import { gatewayHelp, gatewayCommands } from "@/i18n/gateway-help";
 import { agentsHome } from "@/i18n/agents-home";
 import { worldCopy } from "@/i18n/world";
+import { releaseHome } from "@/i18n/release-home";
 import { getFeatures } from "@/lib/features";
 import { localizedPath, siteLocaleCodes, defaultLocale } from "@/lib/locales";
 import {
@@ -31,7 +32,9 @@ const copy = getMuqunCopy(locale),
   world = worldCopy[locale];
 const features = getFeatures(locale);
 const help = gatewayHelp[locale];
-const agents = agentsHome[locale];
+const release = releaseHome[locale];
+const agents = { ...agentsHome[locale], facts: [...agentsHome[locale].facts.slice(0, 4), release.credentials] };
+const featureGroups = (["work", "tools", "appearance"] as const).map((id) => ({ id, title: release[id], offset: features.findIndex((feature) => feature.group === id), features: features.filter((feature) => feature.group === id) }));
 
 /**
  * The agents chapter's link, which is an anchor on another page.
@@ -43,7 +46,7 @@ const agents = agentsHome[locale];
 const agentsGuideHref = `${localizedPath("/support", locale)}#agents`;
 ---
 
-<Layout lang={locale} title={copy.meta.title} description={world.intro}>
+<Layout lang={locale} title={copy.meta.title} description={release.intro} version="4.0.0">
   <div id="world-story" class="world-story">
     <div class="world-stage">
       <PocketWorld client:load />
@@ -52,13 +55,13 @@ const agentsGuideHref = `${localizedPath("/support", locale)}#agents`;
       <section class="world-hero story-chapter" id="pocket">
         <div class="hero-copy">
           <p class="world-eyebrow">
-            <span class="signal-dot"></span> {world.eyebrow}
+            <span class="signal-dot"></span> MUQUN / 4.0.0
           </p>
           <h1>
             <span class="hero-title-lead">{world.title}</span>{" "}
             <span class="hero-title-accent">{world.accent}</span>
           </h1>
-          <p class="world-intro">{world.intro}</p>
+          <p class="world-intro">{release.intro}</p>
           <div class="world-actions">
             {appStoreAvailable ? (
               <a class="world-button primary" href={appStoreUrl} data-tip={storePromoActive ? world.appStoreTip : undefined}>
@@ -80,14 +83,14 @@ const agentsGuideHref = `${localizedPath("/support", locale)}#agents`;
         </div>
       </section>
       <section id="film" class="home-film" aria-label="Muqun 3.0">
-        <p class="world-eyebrow">MUQUN / 3.1</p>
+        <p class="world-eyebrow">MUQUN / 3.0</p>
         <FilmPanel src={introVideoSrc} poster={introVideoPoster} portraitSrc={introVideoPortraitSrc} portraitPoster={introVideoPortraitPoster} alt="Muqun 3.0" playLabel={copy.hero.videoPlayLabel} length="0:20" />
       </section>
       <section class="story-chapter terminal-chapter" id="terminal">
         <div class="chapter-copy" data-world-reveal>
           <p class="world-eyebrow">01 / {copy.pillars.paneLabel}</p>
-          <h2>{world.features}</h2>
-          <p>{world.featureIntro}</p>
+          <h2>{release.heading}</h2>
+          <p>{release.intro}</p>
           <div class="session-preview">
             <div class="session-top">
               <span class="signal-dot"></span> muqun{" "}
@@ -111,13 +114,20 @@ const agentsGuideHref = `${localizedPath("/support", locale)}#agents`;
           </div>
         </div>
       </section>
-      <section class="features-section" aria-label={world.features}>
-        <FeatureGallery
-          features={[
-            ...features.filter((f) => f.spotlight),
-            ...features.filter((f) => !f.spotlight),
-          ]}
-        />
+      <section class="features-section" id="features" aria-label={world.features}>
+        <div class="feature-release-note" data-world-reveal>
+          <p class="world-eyebrow">MUQUN / 4.0.0</p>
+          <p>{release.compatibility}</p>
+        </div>
+        {featureGroups.map((group, index) => (
+          <section class="feature-group" aria-labelledby={`features-${group.id}`}>
+            <div class="feature-group-heading" data-world-reveal>
+              <span class="feature-number">{String(index + 1).padStart(2, "0")}</span>
+              <h2 id={`features-${group.id}`}>{group.title}</h2>
+            </div>
+            <FeatureGallery features={group.features} offset={group.offset} />
+          </section>
+        ))}
       </section>
       {/* The agents chapter. After the gallery because agents are the one
           feature with a screen of their own rather than a line in a grid, and

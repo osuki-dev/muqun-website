@@ -1282,3 +1282,40 @@ html[data-theme="light"] .world-button[data-tip]::after {
     transition: none;
   }
 }
+
+/* Three work-led groups keep the 4.0 feature catalogue readable on every screen. */
+.feature-release-note,
+.feature-group-heading {
+  max-width: 1268px;
+  margin-inline: auto;
+}
+.feature-release-note {
+  margin-bottom: 48px;
+  max-width: 920px;
+  text-align: center;
+}
+.feature-release-note > p:last-child {
+  color: var(--mq-text-muted);
+  font-size: 14px;
+  line-height: 1.8;
+}
+.feature-group + .feature-group { margin-top: 60px; }
+.feature-group-heading {
+  display: flex;
+  gap: 16px;
+  align-items: baseline;
+  margin-bottom: 24px;
+}
+.feature-group-heading h2 {
+  margin: 0;
+  font-size: clamp(24px, 3vw, 34px);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  color: var(--mq-text);
+}
+.feature-card { min-width: 0; overflow-wrap: anywhere; }
+@media (max-width: 699px) {
+  .feature-release-note { text-align: left; margin-bottom: 32px; }
+  .feature-group + .feature-group { margin-top: 40px; }
+  .feature-group-heading { gap: 12px; margin-bottom: 20px; }
+}
