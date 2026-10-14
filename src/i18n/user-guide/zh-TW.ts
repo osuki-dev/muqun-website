@@ -3,11 +3,11 @@ import type { UserGuide } from './types';
 export const zhTW: UserGuide = {
   metaTitle: '牧群 使用者指南與參考手冊',
   metaDescription:
-    '安裝 Gateway、手機配對、工作区管理、終端機按鍵列、OpenCode 自主 AI 助手、主題客製化及連線疑難排解的完整手冊。',
+    '安裝 Gateway、手機配對、工作区管理、終端機按鍵列、程式 AI 助手（Codex、OpenCode、DeepSeek Harness、T3 Code）、主題客製化及連線疑難排解的完整手冊。',
   hero: {
     badge: '使用者指南 · 參考手冊',
     heading: '觸手可及，掌控你的每一台電腦。',
-    lead: '牧群將手機與你自己的電腦或伺服器直接相連。了解如何安裝與設定 Gateway、切換終端機工作區、操控 OpenCode 自主 AI 助手、安裝主題並排解連線問題。',
+    lead: '牧群將手機與你自己的電腦或伺服器直接相連。了解如何安裝與設定 Gateway、切換終端機工作區、接上並操控程式 AI 助手（Codex、OpenCode、DeepSeek Harness 與 T3 Code）、安裝主題並排解連線問題。',
     startCta: '開始使用 ↓',
     diagnosticsCta: '問題排解 ↓',
     issueCta: '回報問題',
@@ -29,9 +29,16 @@ export const zhTW: UserGuide = {
       desc: '工作區、分組、面板、專為行動端設計的按鍵列與開發工具。',
     },
     {
+      id: 'agents',
+      label: "AI 助手",
+      nav: "助手",
+      meta: "codex · opencode · deepseek · t3",
+      desc: "AI 助手工作階段與終端機的差別、4.0 支援的四個助手，以及如何在電腦上接上它們。",
+    },
+    {
       id: 'opencode',
       label: 'OpenCode AI 助手',
-      nav: 'AI助手',
+      nav: 'opencode',
       meta: '自主 AI 助手',
       desc: '本機服務、模型切換、內嵌 Diff 工具呼叫與授權審批。',
     },
@@ -46,7 +53,7 @@ export const zhTW: UserGuide = {
       id: 'themes',
       label: '主題系統',
       nav: '主題',
-      meta: '內建 24 款主題包',
+      meta: "預設與匯入主題",
       desc: '視覺主題、.muqun-theme 套件格式、背景不透明度調整與主題製作。',
     },
     {
@@ -120,6 +127,44 @@ export const zhTW: UserGuide = {
       '我們強烈建議將手機與執行 Gateway 的電腦放入同一個 Tailscale tailnet。這樣可以免除路由器通訊埠轉發，並避免將 Gateway 暴露在公開網際網路上。Tailscale Serve 可以提供私有 HTTPS 位址；請勿為牧群使用 Tailscale Funnel。',
   },
 
+  agents: {
+    eyebrow: "muqun-gateway agent",
+    heading: "AI 助手。",
+    lead: "終端機是你輸入指令的 shell。AI 助手工作階段則是與電腦上執行的程式助手——Codex、OpenCode、DeepSeek Harness 或 T3 Code——的一段對話，App 會把它畫成訊息、工具卡片與提問，而不是一整頁文字。兩者走同一台 Gateway、同一次配對，差別只在 Gateway 替你和誰溝通。",
+    versus: [
+      { term: "終端機", detail: "電腦上的 tmux 或 Herdr。窗格裡有什麼，App 就顯示什麼；你送出的按鍵，就是程式收到的按鍵。所以任何程式都能用，包括在終端機裡執行的命令列助手，例如 Claude Code。" },
+      { term: "AI 助手工作階段", detail: "Gateway 透過助手自己的 API 與它溝通。每個工作階段屬於一個助手，也一定回到該助手。工作台——模式、模型、斜線指令、技能、附件、復原、壓縮、背景執行——只顯示該助手支援的部分。" },
+    ],
+    supportedHeading: "4.0 支援的助手",
+    supported: [
+      { name: "Codex", id: "codex", detail: "Codex 預設啟用。Gateway 會自動偵測 PATH 上的 codex 並接上其常駐 daemon（必要時自動啟動）；直接復用本機的 ~/.codex 憑證，支援原生的助手工作階段、工具卡片與差異顯示。" },
+      { name: "OpenCode", id: "opencode", detail: "OpenCode 不需設定。Gateway 會接手已在執行的 OpenCode 服務，沒有的話就自行啟動一個；需要 OpenCode 2。工作台的所有功能它都支援。" },
+      { name: "DeepSeek Harness", id: "deepseek", detail: "DeepSeek Harness 預設關閉，需要你手動啟用。先在電腦上啟動 Harness，再讓 Gateway 指向它。它的模式來自 Harness 自帶的預設，在建立工作階段時選定；附件會以電腦上的檔案路徑交給它。" },
+      { name: "T3 Code", id: "t3", detail: "T3 Code 在 Gateway 取得憑證前不會啟用。Gateway 與 T3 配對一次，之後一直保存這份憑證。它支援附件、授權審核與復原——T3 的復原會整輪回溯，所以 App 會先確認再執行。" },
+    ],
+    cliHeading: "用命令列接上",
+    cliBody: "在執行 Gateway 的電腦上操作。muqun-gateway agent 會從目前的 shell 逐一檢查助手，列出狀態、版本與位址，尚未就緒的會寫明下一步。只要有已啟用的助手無法使用，它就以非零狀態結束，腳本也能用來檢查。",
+    commands: [
+      { code: "muqun-gateway agent", label: "status", detail: "每個助手的狀態，以及下一步該做什麼。" },
+      { code: "muqun-gateway agent setup t3", label: "t3", detail: "接上 T3 Code。T3 在同一台電腦上時，它会用 t3 auth session issue 簽發憑證——T3 的資料不在預設位置時加上 --base-dir。T3 在另一台電腦上時，先在那台電腦執行 t3 pair，再用 --token CODE 傳入配對碼。" },
+      { code: "muqun-gateway agent setup deepseek", label: "deepseek", detail: "找到正在執行的 DeepSeek Harness 並啟用它。預設尋找 3080 與 19387 通訊埠；不在這兩個埠時，用 --endpoint URL 指定。" },
+      { code: "muqun-gateway agent setup opencode", label: "opencode", detail: "不做任何修改，只顯示 Gateway 會使用哪個 OpenCode 程式及其版本——需要 2.x。" },
+    ],
+    restartNote: "setup 會寫入 config.json，並告訴你執行中的 Gateway 是否需要重新啟動才會生效。若 Gateway 以服務方式安裝，確認後會替你重新啟動（加 --yes 略過確認）；否則請自行重新啟動。",
+    manualHeading: "手動寫入 config.json",
+    manualBody: "同樣的設定，給想自己動手的人。加上需要的設定區塊，然後重新啟動 Gateway。t3 pair 給的配對碼填在 pairing_token；Gateway 下次啟動時會兌換一次，之後就不再需要。opencode.binary 與 codex.binary 只在你想固定使用某個程式路徑時才需要。",
+    credentialNote: "T3 的憑證存放在 Gateway 狀態目錄中的 t3-credential.json（Linux 上為 ~/.local/share/muqun-gateway/），只有你本人可讀。T3 撤銷它或它過期時，重新執行 agent setup t3 即可。",
+    phoneHeading: "在手機上",
+    entries: [
+      { term: "每個助手一個入口", detail: "首頁為 Gateway 回報的每個助手顯示一個入口，上次用過的排在最前。超過三個時，其餘收進「更多助手」。有不只一個助手就緒時，建立工作階段會先問你要用哪一個。" },
+      { term: "提問會推播到手機", detail: "任何工作階段（包含子助手的工作階段）需要你填寫表單時，所有已配對的手機都會收到一則「需要你的輸入」通知。授權要求照常推播。" },
+      { term: "需要設定", detail: "Gateway 看得到這個助手，但還沒有它的憑證。點開入口會顯示要在電腦上執行的確切指令——T3 Code 是 t3 pair。" },
+      { term: "需要更新", detail: "助手使用的協定比這台 Gateway 認得的還新。在那台電腦上重新執行安裝指令，更新 Gateway 即可。" },
+      { term: "未安裝、離線", detail: "電腦上沒有這個助手，或它沒有在執行。入口會說明是哪一種，並開啟為該助手撰寫的啟動指南。" },
+      { term: "舊版 Gateway", detail: "0.13 之前的 Gateway 不提供 multi_agent，App 會維持只連 OpenCode 的單一助手模式，並在功能需要新版 Gateway 時告訴你。" },
+    ],
+  },
+
   gateway: {
     eyebrow: 'config.json',
     heading: '設定 Gateway。',
@@ -171,6 +216,13 @@ export const zhTW: UserGuide = {
         detail:
           '指定啟動的 OpenCode 執行檔路徑。未指定時，Gateway 會使用 ~/.opencode/bin 中的路徑或系統 PATH。當背景服務無法讀取登入 Shell 的 PATH 時，可用此項固定路徑。',
       },
+      {
+        term: 'codex',
+        detail:
+          'Codex 程式助手。預設開啟（enabled: true），自動尋找 PATH 上的 codex 並接上常駐 daemon；可用 codex.binary 指定執行檔絕對路徑，或將 enabled 設為 false 關閉。',
+      },
+      { term: "deepseek", detail: "DeepSeek Harness。只有 enabled 為 true 或填了 endpoint 時才會接上；Harness 需要時再填 token 與 secret。Gateway 不會掃描通訊埠尋找它。" },
+      { term: "t3", detail: "T3 Code。enabled、url（預設 http://127.0.0.1:3773），再加上 t3 pair 給的 pairing_token 或你已有的 token。runtime_mode 決定它的授權策略，預設為 full-access。" },
     ],
     portsHeading: '通訊埠與繫結',
     portsRows: [
@@ -287,8 +339,7 @@ export const zhTW: UserGuide = {
       },
       {
         term: '變更（Changes）',
-        detail:
-          '檢視窗格所在目錄的 Git 狀態：已修改檔案總數計數，支援「全部」、「暫存」與「未暫存」篩選，並能直接檢視程式碼 Diff。按鈕帶有變更計數標記，僅在窗格處於 Git 倉儲且 Gateway 支援 git_diff 功能時才會出現。',
+        detail: "查看窗格所在目錄的 Git 變更，與 AI 助手工作階段用的是同一個面板，詳見下方「變更面板」。按鈕上的標記是變更檔案數，只有窗格位於 Git 儲存庫內、且 Gateway 能提供差異時才會出現。",
       },
       {
         term: '檔案瀏覽器（Files）',
@@ -306,6 +357,28 @@ export const zhTW: UserGuide = {
           '儲存常用指令、常用 Prompt 與快速鍵組合，最常用的操作排在最前。支援自由新增與編輯預設指令。',
       },
     ],
+    changes: {
+      heading: "變更面板",
+      lead: "終端機窗格與 AI 助手工作階段共用同一個變更面板。它在電腦上、於窗格或工作階段所在的目錄執行 git。",
+      entries: [
+        { term: "目錄樹", detail: "變更的檔案依目錄樹排列，附檔案數與增減行數。過長的名稱從中間省略，讓副檔名保持可見；目錄超過三層後就不再縮排。" },
+        { term: "比較範圍", detail: "頂端選單可在「未提交的變更」與「與分支基準比較」之間切換。基準是與 origin/HEAD 的合併基準，沒有時用 main 或 master。" },
+        { term: "打開檔案時才載入修補", detail: "清單本身不含差異內容，所以再大的變更也能很快打開。「顯示更多上下文」可展開你正在看的修補。" },
+        { term: "捨棄變更", detail: "在檔案的 … 選單中，確認後執行：已追蹤的檔案還原，未追蹤的檔案刪除。儲存庫就是你的家目錄時，Gateway 會拒絕；任何指向儲存庫外的路徑也會被拒絕，包括指向外部的符號連結。" },
+        { term: "舊版 Gateway", detail: "終端機裡的「與基準比較」與「捨棄變更」需要提供 pane_vcs_files 的 Gateway。沒有的話，終端機面板只顯示同樣的未提交變更目錄樹。" },
+      ],
+    },
+    keyboard: {
+      heading: "Pad 鍵盤與延伸按鍵",
+      lead: "在平板上，螢幕鍵盤是一整套鍵盤：可隱藏的功能鍵列、數字列、可黏滯的 ctrl、alt、shift（點兩下鎖定），方向鍵上方還有 Home、End、Page Up、Page Down。經典組合以外的按鍵——Ctrl+Enter、Shift+Enter、Ctrl+方向鍵、Alt+字母、F 鍵——只有在 Gateway 表示能送達時才會送出。",
+      entries: [
+        { term: "送不出去的鍵", detail: "Gateway 無法送達的鍵會以淡色顯示，按下時會說明原因。按住修飾鍵時，該組合碰不到的鍵會變暗；被拒絕的組合同樣會用掉單次修飾鍵。" },
+        { term: "Herdr", detail: "所有組合鍵都能送達，不需設定。" },
+        { term: "tmux", detail: "需要 tmux 3.2 或更新版本並開啟 extended-keys，而且窗格中的程式要主動要求延伸按鍵。Ctrl+Enter 與 Shift+Enter 另外需要 extended-keys-format csi-u。" },
+        { term: "Codex 與 Claude Code", detail: "tmux 裡的 Codex 收不到 Shift+Enter，換行請用 ⌃J。Claude Code 以 \\ 加 Enter 換行。" },
+      ],
+      persistNote: "這兩道指令會立即生效，直到 tmux 伺服器結束為止。想長期保留，把同樣兩行去掉開頭的 tmux，寫進 ~/.tmux.conf。",
+    },
     note: '牧群始終只作為觀察者：開啟工作階段絕不會打亂你的視窗排版，關閉手機 App 也絕不會停止任何背景工作。',
   },
 
@@ -319,7 +392,7 @@ export const zhTW: UserGuide = {
       '全程無需登入。牧群不提供帳號體系，也不會向你索取 API 金鑰，因為與大模型通訊的不是手機 App，而是你自己電腦上的 OpenCode。你在電腦上設定好 Provider、模型、AI 助手與技能，Gateway 絕不會轉傳任何憑證資料。',
     prerequisitesHeading: '使用先決條件',
     prerequisites: [
-      '在執行 Gateway 的電腦上安裝 OpenCode 2.0.1 或更新版本。',
+      '在執行 Gateway 的電腦上安裝 OpenCode 2.x。',
       '在 OpenCode 中至少設定好一個模型提供商。支援設定各類免費模型，模型選擇器內建「僅免費」過濾條件。',
       'OpenCode 服務正常運作。Gateway 預設會自動為你啟動該服務，也會自動連線你手動啟動的既有服務。',
       'Gateway 版本足夠新並支援 AI 助手 介面。若版本過舊，OpenCode 按鈕會自動隱藏，終端機功能完全不受影響。',
@@ -377,12 +450,11 @@ export const zhTW: UserGuide = {
   themes: {
     eyebrow: 'muqun.dev/themes',
     heading: '主題系統。',
-    lead: '主題能夠同時重繪 App 介面與終端機配色，每一款主題包都包含淺色與深色兩套獨立方案。App 內建 24 款經典主題，社群目錄中更有豐富擴充。',
+    lead: "Cover Courier 是內建預設主題。可從目錄、檔案或連結安裝明暗主題，一起改變圖片、介面與終端機配色。",
     entries: [
       {
-        term: '內建 24 款精選主題',
-        detail:
-          '在「設定 → 外觀 → 主題」中可直接選用，包括 Catppuccin、Gruvbox、Kanagawa、Rosé Pine、Tokyo Night 與 Everforest 等知名配色。色彩模式（系統、淺色或深色）決定顯示該主題的哪個明暗分支，而不是替換主題本身。',
+        term: "預設與匯入主題",
+        detail: "在設定 → 外觀中選擇主題；跟隨系統、明亮與暗色決定其顏色模式。匯入主題更新後會刷新目前主題，並保留你的外觀偏好。",
       },
       {
         term: '線上瀏覽主題目錄',
@@ -396,8 +468,7 @@ export const zhTW: UserGuide = {
       },
       {
         term: '主題資訊清單涵蓋的範圍',
-        detail:
-          '每種模式下的 17 種介面顏色；終端機的背景色、前景色、游標顏色、連結與文字選取反白，以及全部 16 個標準 ANSI 顏色槽位；覆蓋 11 個核心介面的背景插圖（從 Shell 背景到首頁看板）；最多 3 個自訂圖示（返回、傳送、附件）；以及介面和終端機的初始不透明度設定。必須同時提供淺色與深色兩套方案。不允許使用外部字型、SVG 或動畫檔案。',
+        detail: "主題定義介面、終端機和 ANSI 配色、圖片、圖示與透明度。首頁場景、整頁桌布與首頁輸入框插圖各有獨立槽位，可適配手機、Pad 和明暗模式。圖片支援 PNG、JPEG 或 WebP，不支援外部字型、SVG 或動畫檔案。",
       },
       {
         term: '檔案大小與規格限制',
@@ -513,8 +584,7 @@ export const zhTW: UserGuide = {
       },
       {
         term: '找不到「變更（Changes）」按鈕',
-        detail:
-          '該按鈕僅在當前終端機窗格處於 Git 倉儲目錄內、且 Gateway 版本足夠新並支援 Diff 功能時才會顯現。重新執行安裝指令碼升級 Gateway 即可。',
+        detail: "只有終端機位於 Git 儲存庫內，且 Gateway 版本足以提供差異時，按鈕才會出現。「與基準比較」與「捨棄變更」需要 Gateway 0.13 或更新版本。重新執行安裝指令即可升級。",
       },
       {
         term: '部分功能提示需要更新 Gateway',
@@ -526,6 +596,9 @@ export const zhTW: UserGuide = {
         detail:
           '與大模型提供商通訊的是你的電腦，因此如果電腦需要透過 Proxy 才能連線外網，必須在電腦端的 OpenCode 中妥善設定網路代理環境變數。牧群不會轉發也不會接觸此類流量。',
       },
+      { term: "終端機無法使用", detail: "Gateway 在執行，但沒有任何終端機後端在執行——裝了 tmux 卻沒有 tmux 伺服器，或 Herdr 尚未啟動。畫面會列出 Gateway 的各個後端與狀態；啟動其中一個，終端機就會自動出現。AI 助手工作階段不受影響。" },
+      { term: "「此終端機無法傳送 ⌃↵」", detail: "Gateway 拒絕了這個組合鍵。使用 tmux 時執行 tmux set -s extended-keys on；要用 Ctrl+Enter，再執行 tmux set -s extended-keys-format csi-u。提示下方會轉述 Gateway 自己的說明。" },
+      { term: "助手入口顯示「需要設定」或「需要更新」", detail: "在電腦上執行 muqun-gateway agent，它會寫明每個助手的下一步。「需要更新」表示這台 Gateway 比助手的協定舊——重新執行安裝指令即可。" },
     ],
   },
 

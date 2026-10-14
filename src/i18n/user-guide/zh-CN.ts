@@ -3,11 +3,11 @@ import type { UserGuide } from './types';
 export const zhCN: UserGuide = {
   metaTitle: '牧群 用户指南与参考手册',
   metaDescription:
-    '安装 Gateway、手机配对、工作区管理、终端按键行、OpenCode 自主AI助手、主题定制及连接排错的完整指南。',
+    '安装 Gateway、手机配对、工作区管理、终端按键行、编程 AI 助手（Codex、OpenCode、DeepSeek Harness、T3 Code）、主题定制及连接排错的完整指南。',
   hero: {
     badge: '用户指南 · 参考手册',
     heading: '触手可及，掌控你的每一台机器。',
-    lead: '牧群将手机与你自己的电脑或服务器直接相连。了解如何安装与配置 Gateway、管理终端工作区、驱动 OpenCode 自主AI助手、安装主题并排查连接故障。',
+    lead: '牧群将手机与你自己的电脑或服务器直接相连。了解如何安装与配置 Gateway、管理终端工作区、接入并使用编程 AI 助手（Codex、OpenCode、DeepSeek Harness 和 T3 Code）、安装主题并排查连接故障。',
     startCta: '开始使用 ↓',
     diagnosticsCta: '故障排查 ↓',
     issueCta: '反馈问题',
@@ -29,9 +29,16 @@ export const zhCN: UserGuide = {
       desc: '工作区、分组、面板、专为移动端设计的按键行与开发工具。',
     },
     {
+      id: 'agents',
+      label: "AI 助手",
+      nav: "助手",
+      meta: "codex · opencode · deepseek · t3",
+      desc: "AI 助手会话和终端的区别、4.0 支持的四个助手，以及在电脑上怎样接入。",
+    },
+    {
       id: 'opencode',
       label: 'OpenCode AI助手',
-      nav: 'AI助手',
+      nav: 'opencode',
       meta: '自主AI助手',
       desc: '本地服务、模型选择、带内联 Diff 的工具调用与权限确认表单。',
     },
@@ -46,7 +53,7 @@ export const zhCN: UserGuide = {
       id: 'themes',
       label: '主题系统',
       nav: '主题',
-      meta: '内置 24 款主题包',
+      meta: "默认与导入主题",
       desc: '视觉主题、.muqun-theme 包格式、背景透明度调节与主题制作。',
     },
     {
@@ -119,6 +126,44 @@ export const zhCN: UserGuide = {
     networkBody: '',
   },
 
+  agents: {
+    eyebrow: "muqun-gateway agent",
+    heading: "AI 助手。",
+    lead: "终端是你敲命令的 shell。AI 助手会话则是和电脑上运行的编程助手——Codex、OpenCode、DeepSeek Harness 或 T3 Code——的一段对话，App 把它画成消息、工具卡片和提问，而不是一屏文字。两者走的是同一台 Gateway、同一次配对，区别只在于 Gateway 替你和谁说话。",
+    versus: [
+      { term: "终端", detail: "电脑上的 tmux 或 Herdr。窗格里有什么，App 就显示什么；你发出的按键，就是程序收到的按键。所以任何程序都能用，包括跑在终端里的命令行助手，比如 Claude Code。" },
+      { term: "AI 助手会话", detail: "Gateway 通过助手自己的 API 与它对话。每个会话属于一个助手，也总会回到这个助手。工作台——模式、模型、斜杠命令、技能、附件、撤销、压缩、后台任务——只显示这个助手支持的部分。" },
+    ],
+    supportedHeading: "4.0 支持的助手",
+    supported: [
+      { name: "Codex", id: "codex", detail: "Codex 默认启用。Gateway 会自动发现 PATH 上的 codex 并接入其常驻 daemon（必要时自动启动）；直接复用本机的 ~/.codex 凭据，支持原生的助手会话、工具卡片与差异展示。" },
+      { name: "OpenCode", id: "opencode", detail: "OpenCode 无需设置。Gateway 会接管已经在运行的 OpenCode 服务，没有就自己启动一个；需要 OpenCode 2。工作台的所有功能它都支持。" },
+      { name: "DeepSeek Harness", id: "deepseek", detail: "DeepSeek Harness 默认关闭，需要你手动开启。先在电脑上启动 Harness，再让 Gateway 指向它。它的模式来自 Harness 自带的预设，在新建会话时选定；附件会以电脑上的文件路径交给它。" },
+      { name: "T3 Code", id: "t3", detail: "T3 Code 在 Gateway 拿到凭据之前不会启用。Gateway 与 T3 配对一次，之后一直保存这份凭据。它支持附件、权限审批和撤销——T3 的撤销会整轮回滚，所以 App 会先确认再执行。" },
+    ],
+    cliHeading: "用命令行接入",
+    cliBody: "在运行 Gateway 的电脑上执行。muqun-gateway agent 会从当前 shell 逐个检查助手，列出状态、版本和地址，没就绪的会写明下一步该做什么。只要有已启用的助手不可用，它就以非零状态退出，脚本也能拿来检查。",
+    commands: [
+      { code: "muqun-gateway agent", label: "status", detail: "每个助手的状态，以及下一步该做什么。" },
+      { code: "muqun-gateway agent setup t3", label: "t3", detail: "接入 T3 Code。T3 在同一台电脑上时，它会用 t3 auth session issue 签发凭据——T3 的数据不在默认位置时加上 --base-dir。T3 在另一台电脑上时，先在那台电脑运行 t3 pair，再用 --token CODE 传入配对码。" },
+      { code: "muqun-gateway agent setup deepseek", label: "deepseek", detail: "找到正在运行的 DeepSeek Harness 并启用它。默认查找 3080 和 19387 端口；不在这两个端口时，用 --endpoint URL 指定。" },
+      { code: "muqun-gateway agent setup opencode", label: "opencode", detail: "不做任何修改，只显示 Gateway 会使用哪个 OpenCode 程序及其版本——需要 2.x。" },
+    ],
+    restartNote: "setup 会写入 config.json，并告诉你正在运行的 Gateway 是否需要重启才能生效。如果 Gateway 以服务方式安装，确认后会替你重启（加 --yes 跳过确认）；否则请自己重启。",
+    manualHeading: "手动写入 config.json",
+    manualBody: "同样的设置，适合想自己动手的人。加上需要的配置块，然后重启 Gateway。t3 pair 给出的配对码填在 pairing_token；Gateway 下次启动时会兑换一次，之后不再需要它。opencode.binary 与 codex.binary 只在你想固定使用某个程序路径时才用。",
+    credentialNote: "T3 的凭据保存在 Gateway 状态目录下的 t3-credential.json 里（Linux 上是 ~/.local/share/muqun-gateway/），只有你本人可读。T3 吊销了它或它过期时，重新运行 agent setup t3 即可。",
+    phoneHeading: "在手机上",
+    entries: [
+      { term: "每个助手一个入口", detail: "首页为 Gateway 报告的每个助手显示一个入口，上次用过的排在最前。超过三个时，其余的收进“更多助手”。有不止一个助手就绪时，新建会话会先问你用哪个。" },
+      { term: "提问会推送到手机", detail: "任何会话（包括子助手的会话）需要你填写表单时，所有已配对的手机都会收到一条“需要你的输入”的通知。权限请求照旧推送。" },
+      { term: "需要设置", detail: "Gateway 能看到这个助手，但还没有它的凭据。点开入口会显示要在电脑上运行的确切命令——T3 Code 是 t3 pair。" },
+      { term: "需要更新", detail: "助手使用的协议比这台 Gateway 认识的更新。在那台电脑上重新运行安装命令，更新 Gateway 即可。" },
+      { term: "未安装、离线", detail: "电脑上没有这个助手，或者它没在运行。入口会说明是哪种情况，并打开为这个助手写的启动指南。" },
+      { term: "旧版 Gateway", detail: "0.13 之前的 Gateway 不提供 multi_agent，App 会停留在只连 OpenCode 的单助手模式，并在某个功能需要新版 Gateway 时告诉你。" },
+    ],
+  },
+
   gateway: {
     eyebrow: 'config.json',
     heading: '配置 Gateway。',
@@ -170,6 +215,13 @@ export const zhCN: UserGuide = {
         detail:
           '指定启动的 OpenCode 二进制路径。未指定时，Gateway 会使用 ~/.opencode/bin 中的路径或系统 PATH。当后台服务无法继承登录 Shell 的 PATH 时，可用此项固定路径。',
       },
+      {
+        term: 'codex',
+        detail:
+          'Codex 编程助手。默认开启（enabled: true），自动寻找 PATH 上的 codex 并接入常驻 daemon；可用 codex.binary 指定可执行文件绝对路径，或将 enabled 设为 false 关闭。',
+      },
+      { term: "deepseek", detail: "DeepSeek Harness。只有 enabled 为 true 或填了 endpoint 时才会接入；Harness 需要时再填 token 和 secret。Gateway 不会扫描端口去找它。" },
+      { term: "t3", detail: "T3 Code。enabled、url（默认 http://127.0.0.1:3773），再加上 t3 pair 给出的 pairing_token 或你已有的 token。runtime_mode 决定它的权限策略，默认 full-access。" },
     ],
     portsHeading: '端口与绑定',
     portsRows: [
@@ -286,8 +338,7 @@ export const zhCN: UserGuide = {
       },
       {
         term: '代码变更（Changes）',
-        detail:
-          '查看窗格所在目录的 Git 状态：已修改文件总数计数，支持“全部”、“暂存”与“未暂存”筛选，并能直接查看代码 Diff。按钮带有变更计数角标，仅在窗格处于 Git 仓库且 Gateway 支持 git_diff 能力时才会出现。',
+        detail: "查看窗格所在目录的 Git 改动，和 AI 助手会话用的是同一个面板，详见下方“代码变更面板”。按钮上的角标是改动文件数，只有窗格在 Git 仓库里、且 Gateway 能提供差异时才会出现。",
       },
       {
         term: '文件浏览器（Files）',
@@ -305,6 +356,28 @@ export const zhCN: UserGuide = {
           '保存常用命令、常用 Prompt 与快捷键组合，最常用的操作排在最前。支持自由添加与编辑默认指令。',
       },
     ],
+    changes: {
+      heading: "代码变更面板",
+      lead: "终端窗格和 AI 助手会话共用同一个代码变更面板。它在电脑上、在窗格或会话所在的目录里运行 git。",
+      entries: [
+        { term: "目录树", detail: "改动的文件按目录树排列，附文件数和增删行数。过长的名字从中间省略，保证扩展名可见；目录超过三层后不再继续缩进。" },
+        { term: "比较范围", detail: "顶部菜单在“未提交的改动”和“与分支基点比较”之间切换。基点是与 origin/HEAD 的合并基点，没有时用 main 或 master。" },
+        { term: "打开文件时才加载补丁", detail: "列表本身不带差异内容，所以改动再大也打开得快。“显示更多上下文”可以展开你正在看的补丁。" },
+        { term: "丢弃改动", detail: "在文件的 … 菜单里，确认后执行：已跟踪的文件恢复原状，未跟踪的文件直接删除。仓库就是你的主目录时，Gateway 会拒绝；任何指向仓库之外的路径也会被拒绝，包括指向外部的符号链接。" },
+        { term: "旧版 Gateway", detail: "终端里的“与基点比较”和“丢弃改动”需要提供 pane_vcs_files 的 Gateway。没有它，终端面板只显示同样的未提交改动目录树。" },
+      ],
+    },
+    keyboard: {
+      heading: "Pad 键盘与扩展按键",
+      lead: "在平板上，屏幕键盘是一整套键盘：可隐藏的功能键行、数字行、可粘滞的 ctrl、alt、shift（双击锁定），方向键上方还有 Home、End、Page Up、Page Down。经典组合之外的按键——Ctrl+Enter、Shift+Enter、Ctrl+方向键、Alt+字母、F 键——只有在 Gateway 表示能送达时才会发送。",
+      entries: [
+        { term: "送不出去的键", detail: "Gateway 送达不了的键会显示为灰色，按下时会说明原因。按住修饰键时，这个组合够不到的键会变暗；被拒绝的组合同样会消耗掉单次修饰键。" },
+        { term: "Herdr", detail: "所有组合键都能送达，无需设置。" },
+        { term: "tmux", detail: "需要 tmux 3.2 或更新版本，并开启 extended-keys，窗格里的程序也要主动请求扩展按键。Ctrl+Enter 和 Shift+Enter 还需要 extended-keys-format csi-u。" },
+        { term: "Codex 与 Claude Code", detail: "tmux 里的 Codex 收不到 Shift+Enter，换行请用 ⌃J。Claude Code 用 \\ 加回车换行。" },
+      ],
+      persistNote: "这两条命令立即生效，直到 tmux 服务器退出为止。想长期保留，把同样两行去掉开头的 tmux，写进 ~/.tmux.conf。",
+    },
     note: '牧群始终只作为观察者：打开会话绝不会打乱你的窗口布局，关闭手机 App 也绝不会终止任何后台任务。',
   },
 
@@ -318,7 +391,7 @@ export const zhCN: UserGuide = {
       '全程无需注册登录。牧群不提供账号体系，也不要求你填写 API 密钥，因为与大模型通信的不是手机 App，而是你自己电脑上的 OpenCode。你在电脑上配置好 Provider、模型、AI助手与技能，Gateway 绝不会中转传递任何凭据数据。',
     prerequisitesHeading: '使用前提',
     prerequisites: [
-      '在运行 Gateway 的电脑上安装 OpenCode 2.0.1 或更高版本。',
+      '在运行 Gateway 的电脑上安装 OpenCode 2.x。',
       '在 OpenCode 中至少配置好一个模型服务商。支持配置各类免费模型，模型选择器内置“仅免费”过滤筛选项。',
       'OpenCode 服务正常运行。Gateway 默认会自动为你拉起该服务，也会自动挂载你手动启动的现有服务。',
       'Gateway 版本足够新并支持 AI助手 界面。如果版本过旧，OpenCode 按钮会自动隐藏，终端功能完全不受影响。',
@@ -376,12 +449,11 @@ export const zhCN: UserGuide = {
   themes: {
     eyebrow: 'muqun.dev/themes',
     heading: '主题系统。',
-    lead: '主题能够同时重绘 App 界面与终端配色，每一款主题包都包含明亮与暗色两套独立方案。App 内置 24 款经典主题，社区目录中更有丰富扩展。',
+    lead: "Cover Courier 是内置默认主题。可以从目录、文件或链接安装明暗主题，一起改变图片、界面配色和终端配色。",
     entries: [
       {
-        term: '内置 24 款精选主题',
-        detail:
-          '在“设置 → 外观 → 主题”中可直接选用，包括 Catppuccin、Gruvbox、Kanagawa、Rosé Pine、Tokyo Night 与 Everforest 等知名配色。颜色模式（跟随系统、明亮或暗色）决定显示该主题的哪个明暗分支，而不是替换主题本身。',
+        term: "默认与导入主题",
+        detail: "在设置 → 外观中选择主题；跟随系统、明亮与暗色决定其颜色模式。导入主题更新后会刷新当前主题，并保留你的外观偏好。",
       },
       {
         term: '在线浏览主题目录',
@@ -395,8 +467,7 @@ export const zhCN: UserGuide = {
       },
       {
         term: '主题清单涵盖的范围',
-        detail:
-          '每种模式下的 17 种界面颜色；终端的背景色、前景色、光标颜色、超链接与文字选中高亮，以及全部 16 个标准 ANSI 颜色槽位；覆盖 11 个核心界面的背景插画（从 Shell 背景到主页看板）；最多 3 个自定义图标（返回、发送、附件）；以及界面和终端的初始透明度设定。必须同时提供明亮与暗色两套方案。不允许使用外部字体、SVG 或动画文件。',
+        detail: "主题定义界面、终端和 ANSI 配色、图片、图标及透明度。首页场景、整页壁纸与首页输入框插图各有独立槽位，可分别适配手机、Pad 和明暗模式。图片支持 PNG、JPEG 或 WebP，不支持外部字体、SVG 或动画文件。",
       },
       {
         term: '包体积与规格限制',
@@ -512,14 +583,16 @@ export const zhCN: UserGuide = {
       },
       {
         term: '找不到“代码变更（Changes）”按钮',
-        detail:
-          '该按钮仅在当前终端窗格处于 Git 仓库目录内、且 Gateway 版本足够新并支持 Diff 功能时才会显现。重新运行安装脚本升级 Gateway 即可。',
+        detail: "只有终端位于 Git 仓库内，且 Gateway 版本足以提供差异时，这个按钮才会出现。“与基点比较”和“丢弃改动”需要 Gateway 0.13 或更新版本。重新运行安装命令即可升级。",
       },
       {
         term: '部分特性提示需要更新 Gateway',
         detail:
           '牧群会主动探测 Gateway 的功能支持集，旧版 Gateway 只是无法使用新特性，终端核心连接完全不受影响。将任务指派给子AI助手这一特性额外需要会话后端为 Herdr 0.9.0 或更高版本（tmux 会话暂不支持），当缺少时 App 会明确指出需要升级哪个组件。',
       },
+      { term: "终端不可用", detail: "Gateway 在运行，但没有终端后端在运行——装了 tmux 却没有 tmux 服务器，或者 Herdr 没启动。屏幕上会列出 Gateway 的各个后端及其状态；启动其中一个，终端就会自动出现。AI 助手会话不受影响。" },
+      { term: "“此终端无法发送 ⌃↵”", detail: "Gateway 拒绝了这个组合键。用 tmux 时运行 tmux set -s extended-keys on；要用 Ctrl+Enter，再运行 tmux set -s extended-keys-format csi-u。提示下方会转述 Gateway 自己给出的说明。" },
+      { term: "助手入口显示“需要设置”或“需要更新”", detail: "在电脑上运行 muqun-gateway agent，它会写明每个助手的下一步。“需要更新”表示这台 Gateway 比助手的协议旧——重新运行安装命令即可。" },
     ],
   },
 

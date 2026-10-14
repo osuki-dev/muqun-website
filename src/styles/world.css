@@ -318,6 +318,7 @@ body {
 }
 .feature-card img {
   width: 100%;
+  height: auto;
   border-radius: 12px;
   margin-top: 20px;
 }
@@ -1280,4 +1281,162 @@ html[data-theme="light"] .world-button[data-tip]::after {
   .world-button[data-tip]::after {
     transition: none;
   }
+}
+
+/* Three work-led groups keep the 4.0 feature catalogue readable on every screen. */
+.feature-release-note,
+.feature-group-heading {
+  max-width: 1268px;
+  margin-inline: auto;
+}
+.feature-release-note {
+  margin-bottom: 48px;
+  max-width: 920px;
+  text-align: center;
+}
+.feature-release-note > p:last-child {
+  color: var(--mq-text-muted);
+  font-size: 14px;
+  line-height: 1.8;
+}
+.feature-group + .feature-group { margin-top: 60px; }
+.feature-group-heading {
+  display: flex;
+  gap: 16px;
+  align-items: baseline;
+  margin-bottom: 24px;
+}
+.feature-group-heading h2 {
+  margin: 0;
+  font-size: clamp(24px, 3vw, 34px);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  color: var(--mq-text);
+}
+.feature-card { min-width: 0; overflow-wrap: anywhere; }
+@media (max-width: 699px) {
+  .feature-release-note { text-align: left; margin-bottom: 32px; }
+  .feature-group + .feature-group { margin-top: 40px; }
+  .feature-group-heading { gap: 12px; margin-bottom: 20px; }
+}
+
+/* Hero agent pills strip */
+.hero-agents-strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+  margin-top: clamp(16px, 2.5vw, 24px);
+}
+.hero-agents-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #8f859d;
+  font-family: var(--mq-font-mono, monospace);
+  margin-right: 2px;
+}
+.hero-agents-label .signal-dot {
+  width: 6px;
+  height: 6px;
+}
+.hero-agent-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #d1c8dc;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+.hero-agent-pill--highlight {
+  background: rgba(234, 197, 255, 0.12);
+  border-color: rgba(234, 197, 255, 0.35);
+  color: #f5e8ff;
+  box-shadow: 0 0 12px rgba(234, 197, 255, 0.15);
+}
+.hero-agent-pill:hover {
+  transform: translateY(-1px);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+/* Agent cards grid in Section 02 */
+.agent-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 22px 0 18px;
+}
+@media (max-width: 520px) {
+  .agent-cards-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+}
+.agent-highlight-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  background: rgba(20, 23, 38, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 14px 16px;
+  backdrop-filter: blur(12px);
+  transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+.agent-highlight-card--featured {
+  background: linear-gradient(135deg, rgba(29, 25, 45, 0.75), rgba(18, 21, 34, 0.75));
+  border-color: rgba(234, 197, 255, 0.2);
+}
+.agent-highlight-card:hover {
+  border-color: rgba(255, 255, 255, 0.22);
+  transform: translateY(-1px);
+}
+.agent-highlight-card--featured:hover {
+  border-color: rgba(234, 197, 255, 0.45);
+  box-shadow: 0 4px 20px rgba(234, 197, 255, 0.09);
+}
+.agent-highlight-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 7px;
+}
+.agent-highlight-card .agent-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #f2f0f6;
+  letter-spacing: -0.01em;
+}
+.agent-highlight-card .agent-tag {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #9f95ad;
+  font-family: var(--mq-font-mono, monospace);
+  line-height: 1.4;
+}
+.agent-highlight-card .agent-tag--primary {
+  background: rgba(156, 218, 231, 0.15);
+  color: #9cdae7;
+  border: 1px solid rgba(156, 218, 231, 0.3);
+}
+.agent-highlight-card .agent-desc {
+  font-size: 12px;
+  line-height: 1.6;
+  color: #aba1b7;
+  margin: 0;
+  flex: 1;
 }

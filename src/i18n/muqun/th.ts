@@ -6,7 +6,7 @@ export const copy: MuqunCopy = {
     heading: 'ผู้ช่วย AI กำลังรอคำตอบจากคุณ', sub: 'คำสั่งเดียว สแกนครั้งเดียว แล้วติดตามผู้ช่วยทุกตัวบนคอมพิวเตอร์ผ่านมือถือได้เลย',
     appStore: 'ดาวน์โหลด Muqun', googlePlay: 'ดาวน์โหลดบน Google Play', installLabel: 'จากนั้นรันบนคอมพิวเตอร์ของคุณ:', copyLabel: 'คัดลอกคำสั่งติดตั้ง', copiedLabel: 'คัดลอกแล้ว',
     terminalAlt: 'เทอร์มินัลของผู้ช่วยเขียนโค้ดที่กำลังรออนุญาตให้แก้ไขไฟล์ โดยเลือกคำตอบแรกไว้', deviceAlt: 'หน้าแรกของ Muqun แสดงเซิร์ฟเวอร์ออนไลน์และสถานะของผู้ช่วยแต่ละตัว',
-    videoPlayLabel: 'เล่นวิดีโอแนะนำ 36 วินาที', videoLength: '0:20', promptLegend: 'สามคำตอบสำหรับผู้ช่วย', promptHint: 'กด 1, 2 หรือ 3 หรือตอบจากหน้าจอล็อก', promptCaption: 'ผู้ช่วยขอแก้ไข src/theme.ts และกำลังรอหนึ่งในสามคำตอบ',
+    videoPlayLabel: 'เล่นวิดีโอแนะนำ 20 วินาที', videoLength: '0:20', promptLegend: 'สามคำตอบสำหรับผู้ช่วย', promptHint: 'กด 1, 2 หรือ 3 หรือตอบจากหน้าจอล็อก', promptCaption: 'ผู้ช่วยขอแก้ไข src/theme.ts และกำลังรอหนึ่งในสามคำตอบ',
   },
   pillars: {
     paneLabel: 'ใช้งานได้อย่างไร',
@@ -42,7 +42,7 @@ export const copy: MuqunCopy = {
     ],
     inspectLead: 'อยากอ่านก่อนรัน? ดาวน์โหลด ตรวจดูไฟล์ แล้วรันไฟล์เดียวกัน:', panelFallbackLabel: 'ไม่เห็นแผง?', panelFallbackBody: 'เปิดเองได้จากเทอร์มินัล:', panelFallbackAfter: 'หลังจับคู่แล้ว แผงจะแสดงตัวจัดการ กด p เพื่อแสดงรหัส QR อีกครั้ง', panelCopyLabel: 'คัดลอกคำสั่งเปิดแผง', inspectCopyLabel: 'คัดลอกทั้งสามคำสั่ง', onlineLabel: 'ออนไลน์',
     qrPanelAlt: 'แผง Gateway พร้อมรหัส QR สำหรับจับคู่และปุ่ม p, x, u', onlinePanelAlt: 'การ์ดเซิร์ฟเวอร์แสดงสถานะออนไลน์หลังจับคู่สำเร็จ', pairPhoneAlt: 'Muqun ที่ยังไม่มีเซิร์ฟเวอร์พร้อมปุ่มจับคู่', panelsPhoneAlt: 'Muqun หลังจับคู่ แสดงตัวแก้ไข src/theme.ts และแท็บ Claude Code, nvim, zsh',
-    requirements: ['ต้องมี tmux หรือ Herdr 0.7.5 ขึ้นไป บน macOS หรือ Linux ยังไม่รองรับ Windows', 'ไม่ต้องมีบัญชี ไม่มีค่าสมาชิกหรือการซื้อภายในแอป', 'ใช้ Wi-Fi เดียวกันได้ แต่แนะนำ Tailscale'],
+    requirements: ['ต้องมี tmux หรือ Herdr 0.7.5 ขึ้นไป บน macOS หรือ Linux ยังไม่รองรับ Windows', "อัปเดตผ่าน Google Play หรือ App Store เครื่องมือผู้ช่วย งาน และ Git ขึ้นกับความสามารถของ Gateway รุ่นเก่ายังคงใช้เทอร์มินัลและ OpenCode ที่รองรับได้ Android 8.0+ · iOS/iPadOS 16.4+.", 'ไม่ต้องมีบัญชี ไม่มีค่าสมาชิกหรือการซื้อภายในแอป', 'ใช้ Wi-Fi เดียวกันได้ แต่แนะนำ Tailscale'],
     tailscaleBefore: 'แนะนำให้เชื่อมต่อทั้งสองอุปกรณ์ผ่าน Tailscale และใช้', tailscaleLink: 'Tailscale Serve', tailscaleAfter: 'เพื่อรับที่อยู่ HTTPS ส่วนตัว โดยไม่ต้องส่งต่อพอร์ตหรือเปิดข้อมูลสู่สาธารณะ ใช้ Serve ไม่ใช่ Funnel',
     updatingLabel: 'เมื่อต้องการอัปเดต:', updatingBody: 'รันคำสั่งเดิมอีกครั้งเพื่ออัปเดตและเริ่ม Gateway ใหม่ อุปกรณ์ที่จับคู่ไว้จะยังอยู่', openSourceBefore: 'Gateway เป็นโอเพนซอร์ส —', openSourceLink: 'ดูโค้ดและคู่มือติดตั้งฉบับเต็ม',
   },

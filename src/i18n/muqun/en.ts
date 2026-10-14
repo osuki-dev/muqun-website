@@ -25,7 +25,7 @@ export const copy: MuqunCopy = {
       'A terminal pane where a coding agent has stopped to ask permission to edit a file, with the first choice selected and the cursor waiting.',
     deviceAlt:
       'Muqun’s home screen: one server ONLINE, its agents listed down a coral thread, each marked Working, Blocked or Idle.',
-    videoPlayLabel: 'Play the 36-second intro film',
+    videoPlayLabel: 'Play the 20-second intro film',
     videoLength: '0:20',
     promptLegend: 'The agent’s three answers',
     promptHint: 'Press 1, 2 or 3 — or answer it from the Lock Screen.',
@@ -159,6 +159,7 @@ export const copy: MuqunCopy = {
       'Muqun on a phone once pairing is done: one of the machine’s panes open — an editor holding src/theme.ts — with the other panes in a strip along the bottom, Claude Code, nvim, zsh.',
     requirements: [
       'tmux, or Herdr 0.7.5 or newer, on macOS or Linux. Windows is not supported yet.',
+      "Update through Google Play or the App Store. Agent, task and Git tools follow the connected Gateway’s capabilities; older Gateways keep their supported terminal and OpenCode paths. Android 8.0+ · iOS/iPadOS 16.4+.",
       'No account, no subscription, no in-app purchase.',
       'Same Wi-Fi works; Tailscale is better.',
     ],

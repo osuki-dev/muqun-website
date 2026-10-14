@@ -3,11 +3,11 @@ import type { UserGuide } from './types';
 export const ja: UserGuide = {
   metaTitle: '牧群 ユーザーガイドとリファレンス',
   metaDescription:
-    'Gateway のインストール、スマートフォンとのペアリング、ワークスペース管理、端末キーバー、OpenCode 自律エージェント、テーマ、接続トラブルシューティングの完全ガイド。',
+    'Gateway のインストール、スマートフォンとのペアリング、ワークスペース管理、端末キーバー、コーディングエージェント（Codex、OpenCode、DeepSeek Harness、T3 Code）、テーマ、接続トラブルシューティングの完全ガイド。',
   hero: {
     badge: 'ユーザーガイド · リファレンスマニュアル',
     heading: '手のひらから、いつでもマシンへ。',
-    lead: '牧群は、スマートフォンをご自身のコンピューターやサーバーへ直接接続します。Gateway のセットアップ、端末ワークスペースの操作、OpenCode 自律エージェントの駆動、テーマの追加、接続トラブルの診断手順を解説します。',
+    lead: '牧群は、スマートフォンをご自身のコンピューターやサーバーへ直接接続します。Gateway のセットアップ、端末ワークスペースの操作、コーディングエージェント（Codex、OpenCode、DeepSeek Harness、T3 Code）の設定と操作、テーマの追加、接続トラブルの診断手順を解説します。',
     startCta: '使ってみる ↓',
     diagnosticsCta: 'トラブル診断 ↓',
     issueCta: '問題を報告',
@@ -29,9 +29,16 @@ export const ja: UserGuide = {
       desc: 'ワークスペース、グループ、パネル、専用キーバー、モバイル開発ツール。',
     },
     {
+      id: 'agents',
+      label: "エージェント",
+      nav: "エージェント",
+      meta: "codex · opencode · deepseek · t3",
+      desc: "エージェントのセッションとターミナルの違い、4.0 が対応する 4 つのエージェント、ホストでの設定方法。",
+    },
+    {
       id: 'opencode',
       label: 'OpenCode エージェント',
-      nav: 'AI助手',
+      nav: 'opencode',
       meta: '自律エージェント',
       desc: 'ローカル Agent サービス、モデル選択、インライン Diff ツール呼び出し、権限承認。',
     },
@@ -46,7 +53,7 @@ export const ja: UserGuide = {
       id: 'themes',
       label: 'テーマ',
       nav: 'テーマ',
-      meta: '同梱 24 パック',
+      meta: "標準テーマとインポート",
       desc: 'ビジュアルテーマ、.muqun-theme パッケージ形式、不透明度スライダー、自作方法。',
     },
     {
@@ -120,6 +127,44 @@ export const ja: UserGuide = {
       'スマートフォンと Gateway が動くコンピューターを同じ Tailscale tailnet に参加させることを強くお勧めします。ルーターのポート転送が不要になり、Gateway を公衆インターネットに公開せずに済みます。Tailscale Serve でプライベート HTTPS アドレスを追加できます（牧群では Tailscale Funnel を使用しないでください）。',
   },
 
+  agents: {
+    eyebrow: "muqun-gateway agent",
+    heading: "エージェント。",
+    lead: "ターミナルは入力するためのシェルです。エージェントのセッションは、あなたのコンピューターで動くコーディングエージェント——Codex、OpenCode、DeepSeek Harness、T3 Code——との会話で、アプリはそれを文字の画面ではなく、メッセージ、ツールカード、質問として描きます。どちらも同じ Gateway、同じペアリングを通ります。違うのは、Gateway があなたの代わりに話す相手です。",
+    versus: [
+      { term: "ターミナル", detail: "ホストの tmux か Herdr。ペインに映っているものをそのまま表示し、送ったキーはそのままプログラムに届きます。だからどんなプログラムでも動き、Claude Code のようにターミナルで直接動く CLI エージェントも使えます。" },
+      { term: "エージェントのセッション", detail: "Gateway がエージェント自身の API で話す相手です。各セッションはひとつのエージェントに属し、必ずそこへ戻ります。ワークベンチ——モード、モデル、スラッシュコマンド、スキル、添付、取り消し、コンパクション、バックグラウンド実行——は、そのエージェントが対応するものだけを表示します。" },
+    ],
+    supportedHeading: "4.0 が対応するエージェント",
+    supported: [
+      { name: "Codex", id: "codex", detail: "Codex はデフォルトで有効です。Gateway は PATH 上の codex を自動検出し、その常駐 daemon に接続します（必要に応じて自動起動）。~/.codex のローカル認証を引き継ぎ、ネイティブなエージェントセッションとツール連携に対応します。" },
+      { name: "OpenCode", id: "opencode", detail: "OpenCode は設定不要です。Gateway はすでに動いている OpenCode サービスを引き継ぎ、なければ自分で起動します。OpenCode 2 が必要です。ワークベンチのすべてに対応しています。" },
+      { name: "DeepSeek Harness", id: "deepseek", detail: "DeepSeek Harness は有効にするまでオフです。ホストで Harness を起動し、Gateway にその場所を教えます。モードは Harness 自身のプリセットで、セッション作成時に選びます。添付はホスト上のファイルとして渡されます。" },
+      { name: "T3 Code", id: "t3", detail: "T3 Code は Gateway が資格情報を持つまでオフです。Gateway は T3 と一度ペアリングし、その資格情報を保持します。添付、承認、取り消しに対応——T3 の取り消しはターン単位で巻き戻すため、アプリは実行前に確認します。" },
+    ],
+    cliHeading: "コマンドラインで設定する",
+    cliBody: "Gateway が動いているコンピューターで実行します。muqun-gateway agent はシェルから各エージェントを確認し、状態、バージョン、アドレスと、準備ができていないものには次の手順を表示します。有効なエージェントが使えない間は 0 以外で終了するので、スクリプトからも確認できます。",
+    commands: [
+      { code: "muqun-gateway agent", label: "status", detail: "すべてのエージェントの状態と、次にやること。" },
+      { code: "muqun-gateway agent setup t3", label: "t3", detail: "T3 Code をペアリングします。同じマシンでは t3 auth session issue で資格情報を発行します——T3 のデータが別の場所にあるなら --base-dir を付けます。別のホストの T3 なら、そちらで t3 pair を実行し、コードを --token CODE で渡します。" },
+      { code: "muqun-gateway agent setup deepseek", label: "deepseek", detail: "動いている DeepSeek Harness を見つけて有効にします。ポート 3080 と 19387 を探すので、別の場所なら --endpoint URL を指定します。" },
+      { code: "muqun-gateway agent setup opencode", label: "opencode", detail: "何も変更しません。Gateway が使う OpenCode のバイナリとそのバージョンを表示します——2.x が必要です。" },
+    ],
+    restartNote: "setup は config.json を書き換え、動いている Gateway に反映するために再起動が必要かどうかを伝えます。サービスとしてインストールした Gateway なら確認のうえ再起動します（--yes で確認を省略）。そうでなければ自分で再起動してください。",
+    manualHeading: "config.json に手で書く",
+    manualBody: "同じ設定を自分で書きたい場合に。必要なブロックを足して Gateway を再起動します。t3 pair のコードは pairing_token に入れます。次の起動時に Gateway が一度だけ交換し、その後は不要になります。opencode.binary と codex.binary は特定のバイナリに固定したいときだけ使います。",
+    credentialNote: "T3 の資格情報は Gateway の状態ディレクトリ（Linux では ~/.local/share/muqun-gateway/）の t3-credential.json にあり、あなただけが読めます。T3 に取り消されたり期限が切れたりしたら、agent setup t3 をもう一度実行します。",
+    phoneHeading: "スマホでは",
+    entries: [
+      { term: "エージェントごとのタイル", detail: "ホームには Gateway が報告するエージェントごとにタイルが並び、最後に使ったものが先頭に来ます。3 つを超えると残りは「その他のエージェント」に入ります。複数が準備できていれば、新しいセッションはどれを使うか尋ねます。" },
+      { term: "質問はプッシュで届く", detail: "セッション（サブエージェントのものも含む）がフォームへの入力を求めると、ペアリング済みのすべてのスマホに「入力が必要です」という通知が一度届きます。権限リクエストはこれまでどおりプッシュされます。" },
+      { term: "要設定", detail: "Gateway からエージェントは見えていますが、資格情報がありません。タイルを開くと、ホストで実行するコマンドがそのまま表示されます——T3 Code なら t3 pair。" },
+      { term: "要アップデート", detail: "エージェントが、この Gateway の知らない新しいプロトコルを話しています。そのコンピューターでインストールコマンドをもう一度実行して Gateway を更新します。" },
+      { term: "未インストール、オフライン", detail: "エージェントがホストにない、または動いていません。タイルがどちらかを示し、そのエージェント向けの起動ガイドを開きます。" },
+      { term: "古い Gateway", detail: "0.13 より前の Gateway は multi_agent を提供しないため、アプリは OpenCode だけのシングルエージェントモードのままになり、新しい Gateway が必要な機能ではその旨を伝えます。" },
+    ],
+  },
+
   gateway: {
     eyebrow: 'config.json',
     heading: 'Gateway の設定。',
@@ -171,6 +216,13 @@ export const ja: UserGuide = {
         detail:
           '起動する OpenCode のバイナリパス。省略時は ~/.opencode/bin 内またはシステム PATH から探します。常駐サービスがログインシェルの PATH を引き継げない場合に明示します。',
       },
+      {
+        term: 'codex',
+        detail:
+          'Codex コーディングエージェント。デフォルトで有効（enabled: true）。PATH 上の codex を検出し共有 daemon に接続します。codex.binary で実行ファイルの絶対パスを指定するか、enabled を false にして無効化します。',
+      },
+      { term: "deepseek", detail: "DeepSeek Harness。enabled が true か、endpoint が指定されたときだけ接続します。Harness が必要とするなら token と secret も。Gateway がポートを探しに行くことはありません。" },
+      { term: "t3", detail: "T3 Code。enabled、url（既定は http://127.0.0.1:3773）、そして t3 pair の pairing_token か手持ちの token。runtime_mode は権限の方針で、既定は full-access です。" },
     ],
     portsHeading: 'ポートと接続',
     portsRows: [
@@ -287,8 +339,7 @@ export const ja: UserGuide = {
       },
       {
         term: '変更履歴（Changes）',
-        detail:
-          'ペインのディレクトリの Git 状態を確認できます。変更されたファイル数、ステージ済み / 未ステージの絞り込み、Diff のインライン表示が可能です。Git 管理下かつ Gateway が対応している場合のみ表示されます。',
+        detail: "ペインのあるディレクトリの git の変更を表示します。エージェントのセッションと同じシートです——下の「変更シート」を参照。ボタンには変更ファイル数が付き、ペインが git のチェックアウト内にあり、Gateway が差分を提供できるときだけ表示されます。",
       },
       {
         term: 'ファイル閲覧（Files）',
@@ -306,6 +357,28 @@ export const ja: UserGuide = {
           'よく使うコマンドやプロンプト、キー操作を保存しておけます。使用頻度の高いものが上位に表示され、カスタマイズも自由に行えます。',
       },
     ],
+    changes: {
+      heading: "変更シート",
+      lead: "ターミナルのペインとエージェントのセッションは同じ変更シートを使います。ホスト上で、ペインまたはセッションのディレクトリで git を実行します。",
+      entries: [
+        { term: "ツリー", detail: "変更されたファイルをフォルダのツリーで、ファイル数と行数の合計付きで表示します。長い名前は中央を省略して拡張子が見えるようにし、深いフォルダは 3 段より先はインデントしません。" },
+        { term: "範囲", detail: "上部のメニューで「未コミットの変更」と、ブランチの起点との比較を切り替えます。起点は origin/HEAD とのマージベース、なければ main か master です。" },
+        { term: "パッチは開いたときに読み込む", detail: "一覧には差分を含まないので、大きな変更でもすぐ開きます。「前後をもっと表示」で読んでいるパッチを広げられます。" },
+        { term: "破棄", detail: "ファイルの … メニューから、確認のうえで。追跡中のファイルは元に戻り、未追跡のファイルは削除されます。リポジトリがホームディレクトリそのものの場合と、リポジトリの外へ出るパス（外を指すシンボリックリンクを含む）は、Gateway が拒否します。" },
+        { term: "古い Gateway では", detail: "ターミナルでの起点との比較と破棄には、pane_vcs_files を提供する Gateway が必要です。ない場合、ターミナルのシートは未コミットの変更の同じツリーだけを表示します。" },
+      ],
+    },
+    keyboard: {
+      heading: "Pad のキーボードと拡張キー",
+      lead: "タブレットのオンスクリーンキーボードは、キーボードまるごとです。隠せるファンクションキーの列、数字の列、固定できる ctrl・alt・shift（ダブルタップでロック）、矢印キーの上に Home、End、Page Up、Page Down。従来の組み合わせ以外——Ctrl+Enter、Shift+Enter、Ctrl+矢印、Alt+文字、F キー——は、Gateway が届けられると答えたときだけ送ります。",
+      entries: [
+        { term: "送れないキー", detail: "Gateway が届けられないキーは淡く描かれ、押すとその旨を伝えます。修飾キーを押さえている間は、その組み合わせで届かないキーが暗くなります。拒否された組み合わせでも、一回限りの修飾キーは解除されます。" },
+        { term: "Herdr", detail: "すべての組み合わせを届けます。設定は不要です。" },
+        { term: "tmux", detail: "tmux 3.2 以降で extended-keys をオンにし、ペインのプログラムが拡張キーを要求している必要があります。Ctrl+Enter と Shift+Enter にはさらに extended-keys-format csi-u が必要です。" },
+        { term: "Codex と Claude Code", detail: "tmux 上の Codex には Shift+Enter が届きません。改行には ⌃J を使います。Claude Code は \\ に続けて Enter で改行します。" },
+      ],
+      persistNote: "この 2 つはすぐに効き、tmux サーバーが終了するまで続きます。残しておくには、先頭の tmux を除いた同じ 2 行を ~/.tmux.conf に書きます。",
+    },
     note: '牧群は常に安全なオブザーバーとして振る舞います。セッションを開いてもウィンドウレイアウトは崩れず、アプリを閉じてもバックグラウンドの処理が止まることはありません。',
   },
 
@@ -319,7 +392,7 @@ export const ja: UserGuide = {
       'ログインは一切不要です。牧群アプリはアカウントも API キーも要求しません。なぜなら、モデルプロバイダーと対話するのはアプリではなく、あなた自身のマシン上で動く OpenCode だからです。Gateway は資格情報に一切関与しません。',
     prerequisitesHeading: '動作要件',
     prerequisites: [
-      'Gateway と同じマシンに OpenCode 2.0.1 以降がインストールされていること。',
+      'Gateway と同じマシンに OpenCode 2.xがインストールされていること。',
       'OpenCode 内で少なくとも 1 つのモデルプロバイダーが設定されていること（無料モデルのみの絞り込みにも対応）。',
       'OpenCode サービスが稼働していること（Gateway が自動起動するか、手動起動したプロセスに自動アタッチします）。',
       'エージェント画面に対応した Gateway バージョンであること（古い場合はボタンが非表示になり、端末機能のみが動作します）。',
@@ -377,12 +450,11 @@ export const ja: UserGuide = {
   themes: {
     eyebrow: 'muqun.dev/themes',
     heading: 'テーマ機能。',
-    lead: 'アプリと端末の配色を統一して美しく彩ります。すべてのテーマパックにライト用とダーク用の 2 つのパレットが用意されています。24 種類がプリセットされており、コミュニティカタログから自由に追加できます。',
+    lead: "内蔵の標準テーマはCover Courierです。カタログ、ファイル、リンクから明暗テーマを入れ、画像とアプリ・ターミナルの色をまとめて変えられます。",
     entries: [
       {
-        term: '標準同梱の 24 パック',
-        detail:
-          '「設定 → 外観 → テーマ」から選択できます。Catppuccin、Gruvbox、Kanagawa、Rosé Pine、Tokyo Night、Everforest などを収録。カラーモード（自動、ライト、ダーク）でどちらの明暗パレットを適用するかを切り替えます。',
+        term: "標準テーマとインポート",
+        detail: "設定 → 外観でテーマを選び、システム・ライト・ダークで表示モードを選択します。インポートしたテーマの更新は外観設定を保ちながら選択中のテーマに反映されます。",
       },
       {
         term: 'カタログをブラウズ',
@@ -396,8 +468,7 @@ export const ja: UserGuide = {
       },
       {
         term: 'カスタマイズ可能な範囲',
-        detail:
-          '各モード 17 種類のインターフェースカラー、端末の背景・文字・カーソル・リンク・選択色、全 16 色の ANSI カラー、11 箇所の背景アートワーク、3 つのカスタムアイコン（戻る、送信、添付）、初期不透明度などが指定できます。フォントや SVG、アニメーションは含まれません。',
+        detail: "テーマはアプリ・ターミナル・ANSIの色、画像、アイコン、不透明度を定義します。ホームの場面、全画面壁紙、ホーム入力欄の画像は別々のスロットで、スマホ・タブレット・明暗に対応できます。PNG・JPEG・WebPに対応し、外部フォント・SVG・アニメーションファイルには対応しません。",
       },
       {
         term: 'ファイル制限',
@@ -513,8 +584,7 @@ export const ja: UserGuide = {
       },
       {
         term: '「Changes」ボタンが表示されない',
-        detail:
-          '端末のカレントディレクトリが Git 管理下にあり、かつ Gateway が Diff 機能に対応している場合のみ表示されます。最新のインストーラーを実行して Gateway を更新してください。',
+        detail: "ターミナルが git のチェックアウト内にあり、Gateway が差分を提供できる新しさのときだけ表示されます。起点との比較と破棄には Gateway 0.13 以降が必要です。インストールコマンドをもう一度実行すれば更新できます。",
       },
       {
         term: 'より新しい Gateway が必要と表示される',
@@ -526,6 +596,9 @@ export const ja: UserGuide = {
         detail:
           'モデルプロバイダーと通信するのはコンピューター側です。インターネット接続にプロキシが必要な環境では、ホストの OpenCode にプロキシ設定を行ってください。牧群が通信を中継することはありません。',
       },
+      { term: "ターミナルを利用できません", detail: "Gateway は動いているのに、ターミナルのバックエンドが動いていません——tmux はあっても tmux サーバーがない、または Herdr が起動していない状態です。画面に Gateway のバックエンドと状態が並ぶので、どれかを起動すればターミナルは自動的に現れます。その間もエージェントのセッションは使えます。" },
+      { term: "「このターミナルには ⌃↵ を送れません」", detail: "Gateway が組み合わせを拒否しました。tmux なら tmux set -s extended-keys on を、Ctrl+Enter にはさらに tmux set -s extended-keys-format csi-u を実行します。メッセージの下のヒントは Gateway 自身の説明を繰り返します。" },
+      { term: "エージェントのタイルが「要設定」「要アップデート」", detail: "ホストで muqun-gateway agent を実行すると、エージェントごとの次の手順がわかります。「要アップデート」は Gateway がエージェントのプロトコルより古いという意味です——インストールコマンドをもう一度実行します。" },
     ],
   },
 

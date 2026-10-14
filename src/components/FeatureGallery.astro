@@ -2,8 +2,9 @@
 import type { Feature } from "@/lib/features";
 interface Props {
   features: Feature[];
+  offset?: number;
 }
-const { features } = Astro.props;
+const { features, offset = 0 } = Astro.props;
 ---
 
 <div class="feature-grid">
@@ -20,7 +21,9 @@ const { features } = Astro.props;
         <span class="feature-symbol" aria-hidden="true">
           {feature.icon}
         </span>
-        <span class="feature-number">{String(index + 1).padStart(2, "0")}</span>
+        <span class="feature-number">
+          {String(index + offset + 1).padStart(2, "0")}
+        </span>
       </div>
       {feature.spotlight && (
         <div
@@ -111,7 +114,14 @@ const { features } = Astro.props;
       <h3>{feature.title}</h3>
       <p>{feature.description}</p>
       {feature.media && (
-        <img src={feature.media.src} alt={feature.media.alt} loading="lazy" />
+        <img
+          src={feature.media.src}
+          alt={feature.media.alt}
+          width={feature.media.width}
+          height={feature.media.height}
+          loading="lazy"
+          decoding="async"
+        />
       )}
       {feature.link && <a href={feature.link.href}>{feature.link.label} ↗</a>}
     </article>

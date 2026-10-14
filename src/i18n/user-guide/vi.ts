@@ -3,11 +3,11 @@ import type { UserGuide } from './types';
 export const vi: UserGuide = {
   metaTitle: 'Hướng dẫn sử dụng & Tài liệu tham khảo Muqun',
   metaDescription:
-    'Hướng dẫn toàn diện về cài đặt Gateway, ghép nối điện thoại, không gian làm việc, điều khiển terminal, agent tự trị OpenCode, chủ đề và khắc phục sự cố.',
+    'Hướng dẫn toàn diện về cài đặt Gateway, ghép nối điện thoại, không gian làm việc, điều khiển terminal, các trợ lý lập trình (Codex, OpenCode, DeepSeek Harness, T3 Code), chủ đề và khắc phục sự cố.',
   hero: {
     badge: 'HƯỚNG DẪN SỬ DỤNG · TÀI LIỆU THAM KHẢO',
     heading: 'Mọi thứ bạn cần để giữ máy tính luôn trong tầm tay.',
-    lead: 'Muqun kết nối điện thoại trực tiếp với máy tính hoặc máy chủ của bạn. Tìm hiểu cách cài đặt và cấu hình Gateway, điều hướng không gian làm việc terminal, điều khiển agent tự trị OpenCode, cài đặt chủ đề và khắc phục sự cố kết nối.',
+    lead: 'Muqun kết nối điện thoại trực tiếp với máy tính hoặc máy chủ của bạn. Tìm hiểu cách cài đặt và cấu hình Gateway, điều hướng không gian làm việc terminal, thiết lập và điều khiển các trợ lý lập trình (Codex, OpenCode, DeepSeek Harness và T3 Code), cài đặt chủ đề và khắc phục sự cố kết nối.',
     startCta: 'Bắt đầu ↓',
     diagnosticsCta: 'Chẩn đoán ↓',
     issueCta: 'Tạo issue',
@@ -29,9 +29,16 @@ export const vi: UserGuide = {
       desc: 'Không gian làm việc, nhóm, bảng điều khiển, hàng phím tùy chỉnh và công cụ phát triển di động.',
     },
     {
+      id: 'agents',
+      label: "Trợ lý",
+      nav: "Trợ lý",
+      meta: "codex · opencode · deepseek · t3",
+      desc: "Phiên trợ lý so với terminal, bốn trợ lý mà 4.0 hỗ trợ, và cách thiết lập từng trợ lý trên máy chủ.",
+    },
+    {
       id: 'opencode',
       label: 'Agent OpenCode',
-      nav: 'Agent',
+      nav: 'opencode',
       meta: 'agent tự trị',
       desc: 'Dịch vụ agent cục bộ, mô hình, gọi công cụ kèm diff và biểu mẫu cấp quyền.',
     },
@@ -46,7 +53,7 @@ export const vi: UserGuide = {
       id: 'themes',
       label: 'Chủ đề',
       nav: 'Chủ đề',
-      meta: '24 gói tích hợp sẵn',
+      meta: "Chủ đề mặc định và nhập vào",
       desc: 'Chủ đề giao diện, định dạng gói .muqun-theme, thanh trượt độ mờ và tự tạo chủ đề.',
     },
     {
@@ -120,6 +127,44 @@ export const vi: UserGuide = {
       'Chúng tôi đặc biệt khuyến nghị kết nối điện thoại và máy tính chạy Gateway vào cùng một tailnet Tailscale. Điều này giúp tránh việc mở cổng trên router (port forwarding) và giữ Gateway an toàn khỏi mạng internet công cộng. Tailscale Serve có thể cung cấp thêm địa chỉ HTTPS riêng; tuyệt đối không dùng Tailscale Funnel cho Muqun.',
   },
 
+  agents: {
+    eyebrow: "muqun-gateway agent",
+    heading: "Trợ lý.",
+    lead: "Terminal là shell để bạn gõ lệnh. Phiên trợ lý là cuộc trò chuyện với một trợ lý lập trình chạy trên máy tính của bạn — Codex, OpenCode, DeepSeek Harness hoặc T3 Code — được ứng dụng vẽ thành tin nhắn, thẻ công cụ và câu hỏi thay vì một màn hình chữ. Cả hai đi qua cùng một Gateway và cùng một lần ghép nối; khác nhau ở chỗ Gateway thay bạn nói chuyện với ai.",
+    versus: [
+      { term: "Terminal", detail: "tmux hoặc Herdr trên máy chủ. Ứng dụng hiển thị đúng những gì ô đang hiện, và phím bạn gửi chính là phím chương trình nhận được — nên chương trình nào cũng chạy được, kể cả các trợ lý CLI chạy trực tiếp trong terminal như Claude Code." },
+      { term: "Phiên trợ lý", detail: "Một trợ lý mà Gateway trò chuyện qua API riêng của nó. Mỗi phiên thuộc về một trợ lý và luôn quay về trợ lý đó. Bàn làm việc — chế độ, mô hình, lệnh gạch chéo, kỹ năng, tệp đính kèm, hoàn tác, nén ngữ cảnh, tác vụ nền — chỉ hiện những gì trợ lý đó hỗ trợ." },
+    ],
+    supportedHeading: "Các trợ lý 4.0 hỗ trợ",
+    supported: [
+      { name: "Codex", id: "codex", detail: "Codex được bật theo mặc định. Gateway tự động tìm thấy codex trên PATH của bạn, kết nối với daemon dùng chung (tự khởi động khi cần) và kế thừa xác thực ~/.codex cục bộ cho các phiên trợ lý và công cụ gốc." },
+      { name: "OpenCode", id: "opencode", detail: "OpenCode không cần thiết lập. Gateway tiếp quản dịch vụ OpenCode đang chạy, hoặc tự khởi động một dịch vụ; cần OpenCode 2. Có đủ mọi phần của bàn làm việc." },
+      { name: "DeepSeek Harness", id: "deepseek", detail: "DeepSeek Harness tắt cho đến khi bạn bật. Khởi động Harness trên máy chủ, rồi chỉ cho Gateway biết nó ở đâu. Chế độ là các preset riêng của Harness, chọn khi tạo phiên; tệp đính kèm đến tay nó dưới dạng tệp trên máy chủ." },
+      { name: "T3 Code", id: "t3", detail: "T3 Code tắt cho đến khi Gateway có thông tin xác thực cho nó. Gateway ghép nối với T3 một lần và giữ thông tin đó. Hỗ trợ tệp đính kèm, phê duyệt và hoàn tác — hoàn tác trên T3 quay lui cả lượt, nên ứng dụng hỏi trước khi áp dụng." },
+    ],
+    cliHeading: "Thiết lập bằng dòng lệnh",
+    cliBody: "Trên máy tính đang chạy Gateway. muqun-gateway agent kiểm tra từng trợ lý từ shell của bạn và in trạng thái, phiên bản, địa chỉ, kèm bước tiếp theo cho trợ lý chưa sẵn sàng. Lệnh thoát với mã khác 0 khi còn trợ lý đã bật mà không dùng được, nên script cũng kiểm tra được.",
+    commands: [
+      { code: "muqun-gateway agent", label: "status", detail: "Trạng thái của từng trợ lý, kèm bước tiếp theo." },
+      { code: "muqun-gateway agent setup t3", label: "t3", detail: "Ghép nối T3 Code. Trên cùng máy, nó cấp thông tin xác thực bằng t3 auth session issue — thêm --base-dir nếu T3 lưu dữ liệu ở nơi khác. Với T3 trên máy khác, chạy t3 pair ở đó rồi truyền mã bằng --token CODE." },
+      { code: "muqun-gateway agent setup deepseek", label: "deepseek", detail: "Tìm DeepSeek Harness đang chạy và bật nó. Tìm ở cổng 3080 và 19387; dùng --endpoint URL nếu Harness ở chỗ khác." },
+      { code: "muqun-gateway agent setup opencode", label: "opencode", detail: "Không thay đổi gì. Chỉ hiện Gateway sẽ dùng tệp chạy OpenCode nào và phiên bản của nó — cần bản 2.x." },
+    ],
+    restartNote: "setup ghi config.json và cho biết Gateway đang chạy có cần khởi động lại để nhận thay đổi hay không. Gateway cài dưới dạng dịch vụ sẽ được khởi động lại giúp bạn sau khi xác nhận (--yes bỏ qua câu hỏi); nếu không, hãy tự khởi động lại.",
+    manualHeading: "Viết tay trong config.json",
+    manualBody: "Cùng các thiết lập đó, nếu bạn muốn tự viết. Thêm các khối cần thiết rồi khởi động lại Gateway. Mã từ t3 pair đặt vào pairing_token; lần khởi động sau, Gateway đổi nó một lần và không cần nữa. opencode.binary và codex.binary chỉ dùng khi muốn cố định một tệp chạy cụ thể.",
+    credentialNote: "Thông tin xác thực T3 nằm trong t3-credential.json ở thư mục trạng thái của Gateway — ~/.local/share/muqun-gateway/ trên Linux — và chỉ bạn đọc được. Nếu T3 thu hồi hoặc nó hết hạn, chạy lại agent setup t3.",
+    phoneHeading: "Trên điện thoại",
+    entries: [
+      { term: "Mỗi trợ lý một ô", detail: "Màn hình chính có một ô cho mỗi trợ lý Gateway báo về, trợ lý bạn dùng gần nhất đứng đầu. Quá ba thì phần còn lại nằm trong Thêm trợ lý. Khi có hơn một trợ lý sẵn sàng, Phiên mới sẽ hỏi bạn chọn cái nào." },
+      { term: "Câu hỏi đến dưới dạng thông báo", detail: "Khi một phiên — kể cả phiên của trợ lý con — cần bạn điền biểu mẫu, mọi điện thoại đã ghép nối nhận một thông báo rằng trợ lý đang chờ bạn. Yêu cầu cấp quyền vẫn được thông báo như trước." },
+      { term: "Cần thiết lập", detail: "Gateway thấy trợ lý nhưng chưa có thông tin xác thực cho nó. Ô sẽ mở hướng dẫn với đúng lệnh cần chạy trên máy chủ — với T3 Code là t3 pair." },
+      { term: "Cần cập nhật", detail: "Trợ lý dùng giao thức mới hơn những gì Gateway này biết. Cập nhật Gateway trên máy đó bằng cách chạy lại lệnh cài đặt." },
+      { term: "Chưa cài, Ngoại tuyến", detail: "Trợ lý không có trên máy chủ, hoặc chưa chạy. Ô cho biết trường hợp nào và mở hướng dẫn khởi động viết riêng cho trợ lý đó." },
+      { term: "Gateway cũ hơn", detail: "Gateway trước 0.13 không có multi_agent, nên ứng dụng ở chế độ một trợ lý với OpenCode và báo cho bạn khi một tính năng cần Gateway mới hơn." },
+    ],
+  },
+
   gateway: {
     eyebrow: 'config.json',
     heading: 'Cấu hình Gateway.',
@@ -171,6 +216,13 @@ export const vi: UserGuide = {
         detail:
           'Đường dẫn tệp nhị phân OpenCode cần khởi động. Nếu bỏ qua, Gateway sẽ sử dụng OpenCode trong ~/.opencode/bin hoặc trong PATH hệ thống. Dùng tùy chọn này để chỉ định tệp nhị phân cụ thể — hữu ích khi dịch vụ hệ thống không nhìn thấy PATH của shell đăng nhập.',
       },
+      {
+        term: 'codex',
+        detail:
+          'Trợ lý lập trình Codex. Mặc định bật (enabled: true); Gateway tìm codex trên PATH và kết nối với daemon dùng chung. Dùng codex.binary để chỉ định tệp chạy chính xác, hoặc đặt enabled thành false để tắt.',
+      },
+      { term: "deepseek", detail: "DeepSeek Harness. Chỉ được gắn khi enabled là true hoặc có endpoint; token và secret nếu Harness của bạn cần. Gateway không bao giờ quét cổng để tìm nó." },
+      { term: "t3", detail: "T3 Code. enabled, url (mặc định http://127.0.0.1:3773), và hoặc pairing_token từ t3 pair, hoặc token bạn đã có. runtime_mode đặt chính sách quyền; mặc định là full-access." },
     ],
     portsHeading: 'Cổng mạng (Ports)',
     portsRows: [
@@ -287,8 +339,7 @@ export const vi: UserGuide = {
       },
       {
         term: 'Thay đổi tệp (Changes)',
-        detail:
-          'Giao diện git cho thư mục mà pane đang mở: danh sách các tệp bị thay đổi kèm số lượng, bộ lọc Tất cả (All), Đã stage (Staged) hoặc Chưa stage (Unstaged), và nội dung diff chi tiết. Nút hiển thị huy hiệu số lượng tệp thay đổi, và chỉ xuất hiện khi pane nằm trong kho lưu trữ git và Gateway hỗ trợ tính năng git_diff.',
+        detail: "Chế độ xem git cho thư mục của ô, cùng bảng mà phiên trợ lý dùng — xem Bảng Thay đổi bên dưới. Nút có số tệp thay đổi và chỉ xuất hiện khi ô nằm trong một kho git và Gateway cung cấp được diff.",
       },
       {
         term: 'Tệp tin (Files)',
@@ -306,6 +357,28 @@ export const vi: UserGuide = {
           'Các lệnh lưu sẵn, câu nhắc lệnh đã lưu và tổ hợp phím tắt, ưu tiên hiển thị những mục bạn dùng nhiều nhất. Bạn có thể thêm mục tùy chỉnh và chỉnh sửa mục mặc định.',
       },
     ],
+    changes: {
+      heading: "Bảng Thay đổi",
+      lead: "Ô terminal và phiên trợ lý dùng chung một bảng Thay đổi. Nó chạy git trên máy chủ, trong thư mục của ô hoặc của phiên.",
+      entries: [
+        { term: "Cây thư mục", detail: "Các tệp đã thay đổi dưới dạng cây thư mục, kèm số tệp và tổng số dòng. Tên dài được rút gọn ở giữa để vẫn thấy phần mở rộng, và thư mục sâu thôi thụt lề sau ba cấp." },
+        { term: "Phạm vi", detail: "Menu ở trên chuyển giữa các thay đổi chưa commit và so sánh với gốc của nhánh — merge-base với origin/HEAD, nếu không có thì main hoặc master." },
+        { term: "Bản vá tải khi mở tệp", detail: "Danh sách không kèm diff nên thay đổi lớn vẫn mở nhanh. Hiện thêm ngữ cảnh sẽ mở rộng bản vá bạn đang đọc." },
+        { term: "Hủy thay đổi", detail: "Trong menu … của tệp, sau khi xác nhận: tệp đang theo dõi được khôi phục, tệp chưa theo dõi bị xóa. Gateway từ chối khi kho chính là thư mục home của bạn, và với mọi đường dẫn đi ra ngoài kho — kể cả liên kết tượng trưng trỏ ra ngoài." },
+        { term: "Với Gateway cũ hơn", detail: "So sánh với gốc và Hủy thay đổi trong terminal cần Gateway có pane_vcs_files. Không có nó, bảng của terminal chỉ hiện cùng cây thay đổi chưa commit." },
+      ],
+    },
+    keyboard: {
+      heading: "Bàn phím máy tính bảng và phím mở rộng",
+      lead: "Trên máy tính bảng, bàn phím ảo là một bàn phím đầy đủ: dải phím chức năng có thể ẩn, hàng số, ctrl, alt và shift dính (chạm hai lần để khóa), và Home, End, Page Up, Page Down phía trên các phím mũi tên. Các tổ hợp ngoài bộ cổ điển — Ctrl+Enter, Shift+Enter, Ctrl+mũi tên, Alt+chữ, phím F — chỉ được gửi khi Gateway cho biết có thể chuyển đi.",
+      entries: [
+        { term: "Phím không gửi được", detail: "Phím mà Gateway không chuyển được sẽ hiện mờ và báo lý do khi bấm. Khi giữ một phím bổ trợ, các phím mà tổ hợp đó không tới được sẽ tối đi, và tổ hợp bị từ chối vẫn dùng hết phím bổ trợ một lần." },
+        { term: "Herdr", detail: "Chuyển được mọi tổ hợp. Không cần thiết lập." },
+        { term: "tmux", detail: "tmux 3.2 trở lên với extended-keys on, và chương trình trong ô phải yêu cầu phím mở rộng. Ctrl+Enter và Shift+Enter còn cần extended-keys-format csi-u." },
+        { term: "Codex và Claude Code", detail: "Codex trong tmux không nhận Shift+Enter: dùng ⌃J để xuống dòng. Claude Code xuống dòng bằng \\ rồi Enter." },
+      ],
+      persistNote: "Hai lệnh này có hiệu lực ngay và kéo dài đến khi máy chủ tmux thoát. Để giữ lâu dài, đặt hai dòng đó, bỏ chữ tmux ở đầu, vào ~/.tmux.conf.",
+    },
     note: 'Muqun hoạt động theo nguyên tắc chỉ quan sát: mở phiên làm việc không thay đổi bố cục cửa sổ của bạn và đóng ứng dụng không làm gián đoạn bất kỳ tiến trình nào.',
   },
 
@@ -319,7 +392,7 @@ export const vi: UserGuide = {
       'Không cần đăng nhập. Muqun không yêu cầu tài khoản và không hỏi khóa API, bởi vì ứng dụng không phải là bên kết nối với nhà cung cấp mô hình — chính OpenCode trên máy tính của bạn thực hiện điều đó. Bạn cấu hình nhà cung cấp, mô hình, agent và kỹ năng tại máy tính theo cách quen thuộc, và Gateway hoàn toàn không chuyển tiếp bất kỳ thông tin đăng nhập nào.',
     prerequisitesHeading: 'Điều kiện tiên quyết',
     prerequisites: [
-      'OpenCode 2.0.1 trở lên được cài đặt trên cùng máy tính chạy Gateway.',
+      'OpenCode 2.x được cài đặt trên cùng máy tính chạy Gateway.',
       'Ít nhất một nhà cung cấp mô hình đã được cấu hình trong chính OpenCode. Có hỗ trợ các mô hình miễn phí, và bộ chọn mô hình có bộ lọc Chỉ miễn phí (Free only) để tìm kiếm nhanh.',
       'Dịch vụ OpenCode đang hoạt động. Gateway sẽ mặc định tự khởi động dịch vụ cho bạn và tự gắn vào dịch vụ bạn đã tự chạy trước đó.',
       'Phiên bản Gateway đủ mới để hỗ trợ bề mặt giao diện agent. Nếu Gateway chưa hỗ trợ, nút OpenCode sẽ không hiển thị và terminal vẫn hoạt động bình thường.',
@@ -377,12 +450,11 @@ export const vi: UserGuide = {
   themes: {
     eyebrow: 'muqun.dev/themes',
     heading: 'Chủ đề.',
-    lead: 'Chủ đề thay đổi diện mạo của cả ứng dụng và terminal cùng lúc, và mỗi gói chủ đề đều bao gồm giao diện sáng và tối. 24 gói được tích hợp sẵn trong ứng dụng; nhiều chủ đề khác có sẵn trong danh mục cộng đồng.',
+    lead: "Cover Courier là chủ đề tích hợp mặc định. Cài chủ đề sáng và tối từ danh mục, tệp hoặc liên kết để đổi đồng thời ảnh và màu ứng dụng, terminal.",
     entries: [
       {
-        term: 'Các gói đi kèm sẵn',
-        detail:
-          '24 gói, nằm trong Cài đặt → Giao diện → Chủ đề, bao gồm Catppuccin, Gruvbox, Kanagawa, Rosé Pine, Tokyo Night và Everforest. Chế độ màu — Hệ thống, Sáng hoặc Tối — sẽ quyết định hiển thị nửa sáng hay tối của gói, chứ không đổi sang gói khác.',
+        term: "Chủ đề mặc định và nhập vào",
+        detail: "Chọn trong Cài đặt → Giao diện rồi dùng Hệ thống, Sáng hoặc Tối. Cập nhật chủ đề nhập vào làm mới chủ đề đã chọn và giữ tùy chọn giao diện của bạn.",
       },
       {
         term: 'Duyệt danh mục chủ đề',
@@ -396,8 +468,7 @@ export const vi: UserGuide = {
       },
       {
         term: 'Nội dung tệp kê khai (Manifest)',
-        detail:
-          '17 màu giao diện cho mỗi chế độ sáng/tối; màu nền, màu chữ, con trỏ, liên kết và vùng chọn của terminal cùng 16 ô màu ANSI; hình ảnh đồ họa cho 11 bề mặt hiển thị từ hình nền shell đến màn hình chính; tối đa 3 biểu tượng tùy chỉnh — quay lại, gửi và đính kèm; cùng độ mờ khởi đầu cho giao diện và terminal. Bắt buộc phải có cả cấu hình sáng và tối. Không hỗ trợ phông chữ, SVG hay hoạt ảnh.',
+        detail: "Chủ đề định nghĩa màu ứng dụng, terminal và ANSI, ảnh, biểu tượng và độ mờ. Cảnh Trang chủ, nền cả trang và ảnh ô nhập Trang chủ có vị trí riêng cho điện thoại/máy tính bảng và sáng/tối. Hỗ trợ PNG, JPEG và WebP, không hỗ trợ phông ngoài, SVG hoặc tệp hoạt ảnh.",
       },
       {
         term: 'Giới hạn kích thước',
@@ -513,8 +584,7 @@ export const vi: UserGuide = {
       },
       {
         term: 'Nút Thay đổi (Changes) không xuất hiện',
-        detail:
-          'Nút này chỉ xuất hiện khi terminal đang ở trong một kho lưu trữ git và Gateway đủ mới để cung cấp dữ liệu diff. Nâng cấp Gateway bằng cách chạy lại lệnh cài đặt.',
+        detail: "Nút chỉ xuất hiện khi terminal nằm trong một kho git và Gateway đủ mới để cung cấp diff. So sánh với gốc và Hủy thay đổi cần Gateway 0.13 trở lên. Nâng cấp bằng cách chạy lại lệnh cài đặt.",
       },
       {
         term: 'Tính năng yêu cầu phiên bản Gateway mới hơn',
@@ -526,6 +596,9 @@ export const vi: UserGuide = {
         detail:
           'Máy tính của bạn là nơi trực tiếp giao tiếp với nhà cung cấp mô hình, do đó nếu máy tính cần proxy để truy cập internet thì OpenCode cần được cấu hình proxy trên chính máy tính đó. Muqun không làm trung gian và không nhìn thấy lưu lượng truy cập đó.',
       },
+      { term: "Terminal không khả dụng", detail: "Gateway đang chạy nhưng không có backend terminal nào — đã cài tmux mà không có máy chủ tmux, hoặc Herdr chưa khởi động. Màn hình liệt kê các backend của Gateway và trạng thái; khởi động một cái và terminal tự xuất hiện. Trong lúc đó phiên trợ lý vẫn hoạt động." },
+      { term: "“Terminal này không gửi được ⌃↵”", detail: "Gateway đã từ chối một tổ hợp. Với tmux, chạy tmux set -s extended-keys on, và với Ctrl+Enter thì chạy thêm tmux set -s extended-keys-format csi-u. Gợi ý bên dưới thông báo nhắc lại lời giải thích của chính Gateway." },
+      { term: "Ô trợ lý ghi Cần thiết lập hoặc Cần cập nhật", detail: "Chạy muqun-gateway agent trên máy chủ: nó nêu bước tiếp theo cho từng trợ lý. Cần cập nhật nghĩa là Gateway này cũ hơn giao thức của trợ lý — chạy lại lệnh cài đặt." },
     ],
   },
 

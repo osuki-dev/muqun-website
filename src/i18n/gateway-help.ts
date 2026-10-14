@@ -7,6 +7,8 @@ interface GatewayHelp {
   serviceNote: string;
   modes: [string, string];
   keys: string;
+  /** Caption over `muqun-gateway agent`. */
+  agentLabel: string;
 }
 export const gatewayHelp: Record<SiteLocale, GatewayHelp> = {
   th: {
@@ -31,6 +33,7 @@ export const gatewayHelp: Record<SiteLocale, GatewayHelp> = {
     "โหมดบริการ"
   ],
   "serviceNote": "เลือกใช้เพียงโหมดเดียว การเริ่มโดยตรงใช้ start/stop ส่วนโหมดบริการใช้ได้เมื่อคุณเลือกติดตั้งบริการแล้วเท่านั้น และระบบจะเริ่มให้อัตโนมัติ อย่ารัน start ขณะบริการทำงาน หากต้องการกลับไปเริ่มโดยตรง ให้รัน service uninstall ก่อน อุปกรณ์ที่จับคู่ไว้จะยังอยู่",
+  "agentLabel": "ดูสถานะของผู้ช่วย AI แต่ละตัวและขั้นตอนถัดไป",
   "keys": "ในตัวจัดการ: p แสดง QR อีกครั้ง · x เพิกถอนอุปกรณ์ · u เปลี่ยนที่อยู่เชื่อมต่อ"
 },
   en: {
@@ -40,6 +43,7 @@ export const gatewayHelp: Record<SiteLocale, GatewayHelp> = {
     labels: ['Start in the background', 'Check process status and address', 'Stop the process', 'Enable automatic startup at login', 'Check the background service', 'Remove automatic startup', 'Show all commands and options'],
     modes: ["Direct startup", "Service mode"],
     serviceNote: "Choose one mode only. Direct startup uses start/stop. Service mode is available only after you choose to install the service; it starts automatically. Do not run start alongside the service. To return to direct mode, run service uninstall first; paired devices are kept.",
+    agentLabel: 'Check each agent and the next step',
     keys: 'In the manager: p shows the QR code again · x revokes a device · u changes the connection address.',
   },
   'zh-CN': {
@@ -49,6 +53,7 @@ export const gatewayHelp: Record<SiteLocale, GatewayHelp> = {
     labels: ['后台启动', '查看运行状态和地址', '停止进程', '设置登录后自动启动', '查看后台服务状态', '取消自动启动', '查看全部命令和选项'],
     modes: ["直接启动", "服务模式"],
     serviceNote: "两种模式只能选一种。直接启动使用 start/stop；只有选择安装了服务，才使用服务模式，由系统自动启动。服务运行时不要再执行 start。切回直接启动前，先执行 service uninstall，已配对设备会保留。",
+    agentLabel: '查看每个 AI 助手的状态和下一步',
     keys: '管理器快捷键：p 重新显示二维码 · x 撤销设备授权 · u 修改连接地址。',
   },
   'zh-TW': {
@@ -58,6 +63,7 @@ export const gatewayHelp: Record<SiteLocale, GatewayHelp> = {
     labels: ['在背景啟動', '查看執行狀態與位址', '停止程序', '設定登入後自動啟動', '查看背景服務狀態', '取消自動啟動', '查看所有指令與選項'],
     modes: ["直接啟動", "服務模式"],
     serviceNote: "兩種模式只能擇一。直接啟動使用 start/stop；必須先選擇安裝服務，才能使用由系統自動啟動的服務模式。服務執行時請勿再執行 start。切回直接啟動前，請先執行 service uninstall，已配對裝置會保留。",
+    agentLabel: '查看每個 AI 助手的狀態與下一步',
     keys: '管理員快速鍵：p 重新顯示 QR 碼 · x 撤銷裝置授權 · u 修改連線位址。',
   },
   ja: {
@@ -67,6 +73,7 @@ export const gatewayHelp: Record<SiteLocale, GatewayHelp> = {
     labels: ['バックグラウンドで起動', '実行状態とアドレスを確認', 'プロセスを停止', 'ログイン時の自動起動を設定', 'バックグラウンドサービスを確認', '自動起動を解除', 'すべてのコマンドとオプションを表示'],
     modes: ["直接起動", "サービスモード"],
     serviceNote: "起動方法はどちらか一方を選びます。直接起動では start/stop を使います。サービスモードはサービスのインストールを選択した場合のみ利用でき、自動起動します。サービス実行中に start を実行しないでください。直接起動に戻す前に service uninstall を実行します。ペアリングは保持されます。",
+    agentLabel: '各エージェントの状態と次の手順を確認',
     keys: '管理画面のキー：p で QR コードを再表示 · x で端末の認証を取り消し · u で接続先を変更。',
   },
   ko: {
@@ -76,6 +83,7 @@ export const gatewayHelp: Record<SiteLocale, GatewayHelp> = {
     labels: ['백그라운드에서 시작', '실행 상태와 주소 확인', '프로세스 중지', '로그인 시 자동 시작 설정', '백그라운드 서비스 확인', '자동 시작 해제', '모든 명령어와 옵션 보기'],
     modes: ["직접 실행", "서비스 모드"],
     serviceNote: "두 모드 중 하나만 사용하세요. 직접 실행은 start/stop을 사용합니다. 서비스 모드는 서비스 설치를 선택한 경우에만 사용할 수 있으며 자동으로 시작됩니다. 서비스 실행 중 start를 실행하지 마세요. 직접 실행으로 돌아가려면 먼저 service uninstall을 실행하세요. 페어링은 유지됩니다.",
+    agentLabel: '각 에이전트의 상태와 다음 단계 확인',
     keys: '관리자 단축키: p QR 코드 다시 표시 · x 기기 인증 취소 · u 연결 주소 변경.',
   },
   de: {
@@ -85,6 +93,7 @@ export const gatewayHelp: Record<SiteLocale, GatewayHelp> = {
     labels: ['Im Hintergrund starten', 'Prozessstatus und Adresse prüfen', 'Prozess stoppen', 'Automatisch bei Anmeldung starten', 'Hintergrunddienst prüfen', 'Autostart entfernen', 'Alle Befehle und Optionen anzeigen'],
     modes: ["Direkter Start", "Dienstmodus"],
     serviceNote: "Nur einen Modus verwenden. Der direkte Start nutzt start/stop. Der Dienstmodus setzt voraus, dass die Installation des Dienstes gewählt wurde; er startet automatisch. Nicht zusätzlich start ausführen. Vor dem Wechsel zum direkten Start service uninstall ausführen. Kopplungen bleiben erhalten.",
+    agentLabel: 'Jeden Agenten und den nächsten Schritt prüfen',
     keys: 'Im Manager: p zeigt den QR-Code erneut · x entzieht einem Gerät den Zugriff · u ändert die Verbindungsadresse.',
   },
   fr: {
@@ -94,6 +103,7 @@ export const gatewayHelp: Record<SiteLocale, GatewayHelp> = {
     labels: ['Démarrer en arrière-plan', 'Vérifier l’état du processus et l’adresse', 'Arrêter le processus', 'Activer le démarrage à la connexion', 'Vérifier le service en arrière-plan', 'Désactiver le démarrage automatique', 'Afficher les commandes et options'],
     modes: ["Démarrage direct", "Mode service"],
     serviceNote: "Choisissez un seul mode. Le démarrage direct utilise start/stop. Le mode service nécessite de choisir son installation et démarre automatiquement. Ne lancez pas start en parallèle. Avant de revenir au démarrage direct, exécutez service uninstall. Les appareils jumelés sont conservés.",
+    agentLabel: 'Vérifier chaque agent et l’étape suivante',
     keys: 'Dans le gestionnaire : p réaffiche le QR code · x révoque un appareil · u modifie l’adresse de connexion.',
   },
   es: {
@@ -103,6 +113,7 @@ export const gatewayHelp: Record<SiteLocale, GatewayHelp> = {
     labels: ['Iniciar en segundo plano', 'Consultar el estado y la dirección', 'Detener el proceso', 'Iniciar automáticamente al iniciar sesión', 'Consultar el servicio en segundo plano', 'Desactivar el inicio automático', 'Ver todos los comandos y opciones'],
     modes: ["Inicio directo", "Modo servicio"],
     serviceNote: "Usa solo un modo. El inicio directo usa start/stop. El modo servicio requiere haber elegido instalar el servicio y se inicia automáticamente. No ejecutes start a la vez. Antes de volver al inicio directo, ejecuta service uninstall. Se conservan los dispositivos vinculados.",
+    agentLabel: 'Consultar cada agente y el siguiente paso',
     keys: 'En el gestor: p vuelve a mostrar el QR · x revoca un dispositivo · u cambia la dirección de conexión.',
   },
   pt: {
@@ -112,6 +123,7 @@ export const gatewayHelp: Record<SiteLocale, GatewayHelp> = {
     labels: ['Iniciar em segundo plano', 'Verificar o estado e o endereço', 'Parar o processo', 'Iniciar automaticamente ao entrar na sessão', 'Verificar o serviço em segundo plano', 'Desativar a inicialização automática', 'Ver todos os comandos e opções'],
     modes: ["Inicialização direta", "Modo de serviço"],
     serviceNote: "Escolha apenas um modo. A inicialização direta usa start/stop. O modo de serviço exige que você tenha escolhido instalar o serviço e inicia automaticamente. Não execute start ao mesmo tempo. Antes de voltar ao modo direto, execute service uninstall. Os dispositivos pareados são mantidos.",
+    agentLabel: 'Verificar cada agente e o próximo passo',
     keys: 'No gerenciador: p exibe o QR novamente · x revoga um dispositivo · u altera o endereço de conexão.',
   },
   ru: {
@@ -121,6 +133,7 @@ export const gatewayHelp: Record<SiteLocale, GatewayHelp> = {
     labels: ['Запустить в фоне', 'Проверить состояние и адрес', 'Остановить процесс', 'Включить запуск при входе в систему', 'Проверить фоновую службу', 'Отключить автоматический запуск', 'Показать все команды и параметры'],
     modes: ["Прямой запуск", "Режим службы"],
     serviceNote: "Используйте только один режим. Прямой запуск управляется через start/stop. Режим службы доступен только после выбора её установки и запускается автоматически. Не выполняйте start одновременно со службой. Перед переходом к прямому запуску выполните service uninstall. Сопряжения сохраняются.",
+    agentLabel: 'Проверить каждого агента и следующий шаг',
     keys: 'В менеджере: p — снова показать QR-код · x — отозвать доступ устройства · u — изменить адрес подключения.',
   },
   vi: {
@@ -130,6 +143,7 @@ export const gatewayHelp: Record<SiteLocale, GatewayHelp> = {
     labels: ['Chạy dưới nền', 'Kiểm tra trạng thái và địa chỉ', 'Dừng tiến trình', 'Tự khởi động khi đăng nhập', 'Kiểm tra dịch vụ nền', 'Tắt tự khởi động', 'Xem mọi lệnh và tùy chọn'],
     modes: ["Khởi chạy trực tiếp", "Chế độ dịch vụ"],
     serviceNote: "Chỉ dùng một chế độ. Khởi chạy trực tiếp dùng start/stop. Chế độ dịch vụ chỉ có khi bạn chọn cài dịch vụ và sẽ tự khởi động. Không chạy start khi dịch vụ đang chạy. Trước khi chuyển về chế độ trực tiếp, chạy service uninstall. Các thiết bị đã ghép nối vẫn được giữ lại.",
+    agentLabel: 'Kiểm tra từng trợ lý và bước tiếp theo',
     keys: 'Trong trình quản lý: p hiện lại mã QR · x thu hồi quyền thiết bị · u đổi địa chỉ kết nối.',
   },
 };

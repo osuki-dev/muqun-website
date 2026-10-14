@@ -1,7 +1,12 @@
-import type { SiteLocale } from "@/lib/locales";
+import { siteLocaleCodes, type SiteLocale } from "@/lib/locales";
+import { releaseHome, type ReleaseFeatureId } from "@/i18n/release-home";
 type Entry = readonly [title: string, description: string];
-export type FeatureId =
+type LegacyFeatureId =
   | "ssh"
+  | "agents"
+  | "changes"
+  | "keyboard"
+  | "transitions"
   | "themes"
   | "simulator"
   | "approve"
@@ -10,8 +15,12 @@ export type FeatureId =
   | "files"
   | "serve"
   | "away";
-export const featureCopy: Record<SiteLocale, Record<FeatureId, Entry>> = {
+const legacyFeatureCopy: Record<SiteLocale, Record<LegacyFeatureId, Entry>> = {
   th: {
+    agents: ["เซสชันเนทีฟ Codex & OpenCode", "มากกว่าแค่ข้อความในเทอร์มินัล เซสชันเนทีฟสำหรับ Codex, OpenCode, DeepSeek Harness และ T3 Code: การ์ดเครื่องมือ, diff แบบอินไลน์, คำถามแบบโต้ตอบ และการอนุมัติจากหน้าจอล็อก"],
+    changes: ["ทุกการเปลี่ยนแปลง เป็นแผนผัง", "แผ่นการเปลี่ยนแปลงเดียวกันสำหรับเทอร์มินัลและเซสชันผู้ช่วย แสดงเป็นแผนผังโฟลเดอร์พร้อมจำนวนบรรทัด โหลดแพตช์เมื่อเปิดไฟล์ และละทิ้งการเปลี่ยนแปลงได้ที่ไฟล์"],
+    keyboard: ["คีย์บอร์ดเต็มรูปแบบบนแท็บเล็ต", "ปุ่มฟังก์ชัน ctrl alt และ shift ที่ล็อกได้ และคีย์ผสมที่เทอร์มินัลรับ เช่น Ctrl+Enter, Shift+Enter, Alt+ตัวอักษร เมื่อ Gateway ส่งได้"],
+    transitions: ["การเปลี่ยนที่มองเห็นได้", "ธีมหรือโหมดใหม่แผ่ออกจากแถวที่แตะเหมือนระลอกน้ำ ฟอนต์ใหม่ปรากฏหลังแถบสแกน ความทึบของอินเทอร์เฟซตอนนี้มีผลกับทุกแผ่นและการแจ้งเตือน"],
   "ssh": [
     "SSH ได้ทุกที่",
     "รองรับรหัสผ่าน คีย์ และการตรวจสอบโฮสต์ เปิดเทอร์มินัลหรือเชื่อมต่อ Gateway ผ่านทันเนล"
@@ -26,7 +35,7 @@ export const featureCopy: Record<SiteLocale, Record<FeatureId, Entry>> = {
   ],
   "approve": [
     "แตะแล้วทำงานต่อ",
-    "ตอบคำขออนุญาตของผู้ช่วย AI จากหน้าจอล็อก"
+    "ตอบคำขออนุญาตและคำถามของผู้ช่วย AI จากหน้าจอล็อก"
   ],
   "watch": [
     "เทอร์มินัลจริง",
@@ -50,6 +59,10 @@ export const featureCopy: Record<SiteLocale, Record<FeatureId, Entry>> = {
   ]
 },
   "zh-CN": {
+    agents: ["Codex & OpenCode 原生助手会话", "不只是终端字符。原生接入 Codex、OpenCode、DeepSeek Harness 与 T3 Code：工具调用智能卡片、内嵌 Diff 与交互提问，锁屏一键审批，任务后台跟进。"],
+    changes: ["改动，一棵树看清", "终端和 AI 助手会话共用同一个改动面板：按目录树排列，带行数统计，打开文件时才加载补丁，在文件上就能丢弃改动。"],
+    keyboard: ["Pad 上的完整键盘", "功能键，可锁定的 ctrl、alt、shift，还有终端真正需要的组合键——Ctrl+Enter、Shift+Enter、Alt+字母——只要 Gateway 能送达。"],
+    transitions: ["看得见的切换", "换主题或切换明暗时，新外观从你点的那一行像水波一样漾开；换字体时，一道扫描带掠过，新字体随之出现。界面背景透明度现在覆盖每个面板和通知。"],
     ssh: [
       "随时 SSH",
       "密码、密钥与主机验证。打开终端，或通过隧道连接 Gateway。",
@@ -59,7 +72,7 @@ export const featureCopy: Record<SiteLocale, Record<FeatureId, Entry>> = {
       "手机里的模拟器",
       "通过自己的 simfarm 服务启动、预览和操作模拟器。",
     ],
-    approve: ["轻点，继续工作", "在锁屏上回复AI 助手的权限请求。"],
+    approve: ["轻点，继续工作", "在锁屏上回复 AI 助手的权限请求和提问。"],
     watch: ["真正的终端", "实时输出、精准选取、回看历史，保留AI 助手原本的配色。"],
     send: ["发出下一个想法", "把照片和文件发送给AI 助手。"],
     files: ["查看它的成果", "阅读代码、检查差异、预览图片，无需离开 App。"],
@@ -67,6 +80,10 @@ export const featureCopy: Record<SiteLocale, Record<FeatureId, Entry>> = {
     away: ["离开桌面，保持连接", "从手机切换工作区，查看AI 助手进度。"],
   },
   ru: {
+    agents: ["Нативные сеансы Codex и OpenCode", "Больше, чем просто текст в терминале. Нативные сеансы для Codex, OpenCode, DeepSeek Harness и T3 Code: карточки инструментов, встроенный diff, интерактивные вопросы и подтверждения с экрана блокировки."],
+    changes: ["Все изменения — деревом", "Один лист изменений для терминалов и сеансов агентов: дерево папок с итогами по строкам, патч загружается при открытии файла, отмена изменений — прямо на файле."],
+    keyboard: ["Полная клавиатура на планшете", "Функциональные клавиши, залипающие ctrl, alt и shift и сочетания, которые понимает терминал, — Ctrl+Enter, Shift+Enter, Alt+буква, — везде, где Gateway может их доставить."],
+    transitions: ["Переходы, которые видно", "Новая тема или режим расходится от нажатой строки, как круги по воде; новый шрифт появляется за полосой сканирования. Прозрачность интерфейса теперь действует на каждый лист и уведомление."],
     ssh: [
       "SSH откуда угодно",
       "Пароли, ключи и проверка хоста. Терминал или туннель к Gateway.",
@@ -81,7 +98,7 @@ export const featureCopy: Record<SiteLocale, Record<FeatureId, Entry>> = {
     ],
     approve: [
       "Одно касание — и дальше",
-      "Отвечайте на запросы разрешений с экрана блокировки.",
+      "Отвечайте на запросы разрешений и вопросы агента с экрана блокировки.",
     ],
     watch: [
       "Настоящий терминал",
@@ -102,6 +119,10 @@ export const featureCopy: Record<SiteLocale, Record<FeatureId, Entry>> = {
     ],
   },
   vi: {
+    agents: ["Phiên gốc Codex & OpenCode", "Hơn cả văn bản terminal thông thường. Phiên gốc cho Codex, OpenCode, DeepSeek Harness và T3 Code: thẻ công cụ trực quan, diff nội dòng, câu hỏi tương tác và phê duyệt ngay trên màn hình khóa."],
+    changes: ["Mọi thay đổi, dạng cây", "Một bảng Thay đổi chung cho terminal và phiên trợ lý: cây thư mục kèm tổng số dòng, bản vá chỉ tải khi mở tệp, và hủy thay đổi ngay trên tệp."],
+    keyboard: ["Bàn phím đầy đủ trên máy tính bảng", "Phím chức năng, ctrl, alt và shift có thể khóa, cùng các tổ hợp terminal cần — Ctrl+Enter, Shift+Enter, Alt+chữ — ở bất cứ đâu Gateway chuyển được."],
+    transitions: ["Chuyển đổi nhìn thấy được", "Chủ đề hoặc chế độ mới lan ra từ dòng bạn chạm như gợn sóng; phông chữ mới xuất hiện sau một dải quét. Độ mờ giao diện giờ áp dụng cho mọi bảng và thông báo."],
     ssh: [
       "SSH ở mọi nơi",
       "Mật khẩu, khóa và xác minh máy chủ. Mở terminal hoặc tạo đường hầm đến Gateway.",
@@ -116,7 +137,7 @@ export const featureCopy: Record<SiteLocale, Record<FeatureId, Entry>> = {
     ],
     approve: [
       "Chạm để tiếp tục",
-      "Trả lời yêu cầu cấp quyền của trợ lý từ màn hình khóa.",
+      "Trả lời yêu cầu cấp quyền và câu hỏi của trợ lý từ màn hình khóa.",
     ],
     watch: [
       "Terminal thực thụ",
@@ -137,6 +158,10 @@ export const featureCopy: Record<SiteLocale, Record<FeatureId, Entry>> = {
     ],
   },
   en: {
+    agents: ["Codex & OpenCode native sessions", "More than plain terminal text. Native sessions for Codex, OpenCode, DeepSeek Harness and T3 Code with rich tool cards, inline diffs, interactive questions, and Lock Screen approvals."],
+    changes: ["Every change, as a tree", "One Changes sheet for terminals and agent sessions: a folder tree with line totals, each patch loaded when you open it, and Discard on the file."],
+    keyboard: ["A whole keyboard on the Pad", "Function keys, sticky ctrl, alt and shift, and the chords a terminal takes — Ctrl+Enter, Shift+Enter, Alt+letters — wherever the Gateway can deliver them."],
+    transitions: ["Change you can watch", "A new theme or mode spreads from the row you tapped like a ripple; a new font arrives behind a scan band. Interface opacity now reaches every sheet and notice."],
     ssh: [
       "SSH, anywhere",
       "Passwords, keys and host verification. Open a terminal or tunnel to your Gateway.",
@@ -151,7 +176,7 @@ export const featureCopy: Record<SiteLocale, Record<FeatureId, Entry>> = {
     ],
     approve: [
       "One tap. Back to work.",
-      "Answer agent permission requests from your Lock Screen.",
+      "Answer an agent’s permission requests and questions from your Lock Screen.",
     ],
     watch: [
       "The real terminal",
@@ -172,6 +197,10 @@ export const featureCopy: Record<SiteLocale, Record<FeatureId, Entry>> = {
     ],
   },
   "zh-TW": {
+    agents: ["Codex & OpenCode 原生助手工作階段", "不只是終端機文字。原生接入 Codex、OpenCode、DeepSeek Harness 與 T3 Code：工具呼叫卡片、內嵌 Diff 與互動提問，鎖屏一鍵審批，任務背景跟進。"],
+    changes: ["變更，一棵樹看清", "終端機與 AI 助手工作階段共用同一個變更面板：依目錄樹排列，附行數統計，打開檔案時才載入修補，在檔案上就能捨棄變更。"],
+    keyboard: ["Pad 上的完整鍵盤", "功能鍵，可鎖定的 ctrl、alt、shift，以及終端機真正需要的組合鍵——Ctrl+Enter、Shift+Enter、Alt+字母——只要 Gateway 能送達。"],
+    transitions: ["看得見的切換", "換主題或切換深淺色時，新外觀從你點的那一列像水波一樣擴散；換字型時，一道掃描帶掠過，新字型隨之出現。介面背景透明度現在涵蓋每個面板與通知。"],
     ssh: [
       "SSH，隨時連線",
       "密碼、金鑰、主機驗證。開啟終端機，或透過 SSH 通道連上 Gateway。",
@@ -184,7 +213,7 @@ export const featureCopy: Record<SiteLocale, Record<FeatureId, Entry>> = {
       "手機，就是預覽視窗",
       "透過自己的 simfarm 服務，啟動、預覽並操作模擬器。",
     ],
-    approve: ["點一下，繼續工作", "直接在鎖定畫面回應 AI 助手的授權要求。"],
+    approve: ["點一下，繼續工作", "直接在鎖定畫面回應 AI 助手的授權要求與提問。"],
     watch: ["完整的終端機", "即時輸出、精準選取、捲動回看，保留原有配色。"],
     send: ["傳送下一個靈感", "將照片與檔案傳給 AI 助手。"],
     files: ["看看它做了什麼", "程式碼、差異、圖片，不離開 App 就能查看。"],
@@ -192,6 +221,10 @@ export const featureCopy: Record<SiteLocale, Record<FeatureId, Entry>> = {
     away: ["一眼掌握進度", "回來就知道哪些已完成、哪些正等你。"],
   },
   ja: {
+    agents: ["Codex & OpenCode ネイティブセッション", "単なるターミナル文字ではありません。Codex、OpenCode、DeepSeek Harness、T3 Code にネイティブ対応：ツールカード、インライン差分、対話型質問、ロック画面での承認。"],
+    changes: ["変更を、ツリーで", "ターミナルにもエージェントのセッションにも同じ変更シート。フォルダのツリーと行数、開いたときに読み込むパッチ、ファイルごとの破棄。"],
+    keyboard: ["Pad に、キーボードをまるごと", "ファンクションキー、固定できる ctrl・alt・shift、そしてターミナルが受け取る組み合わせ — Ctrl+Enter、Shift+Enter、Alt+文字 — を、Gateway が届けられる限り。"],
+    transitions: ["目に見える切り替え", "テーマやライト・ダークを変えると、タップした行から波紋のように広がり、フォントを変えるとスキャンの帯の後ろから新しい書体が現れます。インターフェースの不透明度はすべてのシートと通知に届きます。"],
     ssh: [
       "どこでもSSH",
       "パスワード、鍵、ホスト確認。ターミナルもGatewayへのトンネルも。",
@@ -206,7 +239,7 @@ export const featureCopy: Record<SiteLocale, Record<FeatureId, Entry>> = {
     ],
     approve: [
       "ワンタップで再開",
-      "ロック画面からエージェントの権限リクエストに応答。",
+      "ロック画面からエージェントの権限リクエストや質問に応答。",
     ],
     watch: [
       "本物のターミナル",
@@ -224,6 +257,10 @@ export const featureCopy: Record<SiteLocale, Record<FeatureId, Entry>> = {
     ],
   },
   ko: {
+    agents: ["Codex & OpenCode 네이티브 세션", "단순 터미널 텍스트가 아닙니다. Codex, OpenCode, DeepSeek Harness, T3 Code 네이티브 지원: 도구 카드, 인라인 diff, 대화형 질문 및 잠금 화면 승인."],
+    changes: ["모든 변경을 트리로", "터미널과 에이전트 세션이 같은 변경 사항 시트를 써요. 줄 수가 표시된 폴더 트리, 열 때 불러오는 패치, 파일마다 버리기."],
+    keyboard: ["Pad에 온전한 키보드", "기능 키, 고정되는 ctrl·alt·shift, 그리고 터미널이 받는 조합 — Ctrl+Enter, Shift+Enter, Alt+문자 — 을 Gateway가 전달할 수 있는 곳이라면 어디서나."],
+    transitions: ["눈에 보이는 전환", "테마나 라이트·다크를 바꾸면 누른 줄에서 물결처럼 퍼지고, 글꼴을 바꾸면 스캔 띠 뒤로 새 글꼴이 나타나요. 인터페이스 불투명도는 이제 모든 시트와 알림에 적용돼요."],
     ssh: [
       "어디서나 SSH",
       "비밀번호, 키, 호스트 확인. 터미널을 열거나 Gateway로 터널 연결.",
@@ -238,7 +275,7 @@ export const featureCopy: Record<SiteLocale, Record<FeatureId, Entry>> = {
     ],
     approve: [
       "한 번 탭하면 다시 작업",
-      "잠금 화면에서 에이전트의 권한 요청에 답하세요.",
+      "잠금 화면에서 에이전트의 권한 요청과 질문에 답하세요.",
     ],
     watch: [
       "진짜 터미널",
@@ -256,6 +293,10 @@ export const featureCopy: Record<SiteLocale, Record<FeatureId, Entry>> = {
     ],
   },
   de: {
+    agents: ["Codex & OpenCode native Sitzungen", "Mehr als nur Terminaltext. Native Sitzungen für Codex, OpenCode, DeepSeek Harness und T3 Code: Werkzeugkarten, Inline-Diffs, interaktive Fragen und Freigaben vom Sperrbildschirm."],
+    changes: ["Jede Änderung als Baum", "Ein Änderungen-Sheet für Terminals und Agentensitzungen: ein Ordnerbaum mit Zeilensummen, jeder Patch erst beim Öffnen geladen, Verwerfen direkt an der Datei."],
+    keyboard: ["Eine ganze Tastatur auf dem Pad", "Funktionstasten, feststellbares Strg, Alt und Shift und die Kombinationen, die ein Terminal versteht — Strg+Enter, Shift+Enter, Alt+Buchstabe —, wo das Gateway sie zustellen kann."],
+    transitions: ["Wechsel, die man sieht", "Ein neues Theme oder ein neuer Modus breitet sich wie eine Welle von der getippten Zeile aus; eine neue Schrift erscheint hinter einem Scan-Band. Die Interface-Deckkraft erreicht jetzt jedes Sheet und jede Meldung."],
     ssh: [
       "SSH, überall",
       "Passwörter, Schlüssel und Hostprüfung. Terminal öffnen oder zum Gateway tunneln.",
@@ -270,7 +311,7 @@ export const featureCopy: Record<SiteLocale, Record<FeatureId, Entry>> = {
     ],
     approve: [
       "Ein Tipp. Weiter geht’s.",
-      "Berechtigungsanfragen direkt vom Sperrbildschirm beantworten.",
+      "Berechtigungsanfragen und Fragen direkt vom Sperrbildschirm beantworten.",
     ],
     watch: [
       "Das echte Terminal",
@@ -294,6 +335,10 @@ export const featureCopy: Record<SiteLocale, Record<FeatureId, Entry>> = {
     ],
   },
   fr: {
+    agents: ["Sessions natives Codex & OpenCode", "Bien plus que du texte de terminal. Sessions natives pour Codex, OpenCode, DeepSeek Harness et T3 Code : cartes d’outils, diffs intégrés, questions interactives et approbations sur l’écran verrouillé."],
+    changes: ["Chaque modification, en arbre", "Une seule feuille Modifications pour les terminaux et les sessions d’agent : un arbre de dossiers avec les totaux de lignes, chaque patch chargé à l’ouverture, et l’annulation sur le fichier lui-même."],
+    keyboard: ["Un clavier entier sur la tablette", "Touches de fonction, ctrl, alt et shift verrouillables, et les combinaisons qu’un terminal accepte — Ctrl+Entrée, Maj+Entrée, Alt+lettre — là où le Gateway peut les transmettre."],
+    transitions: ["Des changements qu’on voit", "Un nouveau thème ou mode se propage depuis la ligne touchée comme une onde ; une nouvelle police arrive derrière une bande de balayage. L’opacité de l’interface atteint désormais chaque feuille et chaque avis."],
     ssh: [
       "SSH, partout",
       "Mots de passe, clés et vérification d’hôte. Terminal ou tunnel vers votre Gateway.",
@@ -308,7 +353,7 @@ export const featureCopy: Record<SiteLocale, Record<FeatureId, Entry>> = {
     ],
     approve: [
       "Un geste. Le travail reprend.",
-      "Répondez aux demandes d’autorisation depuis l’écran verrouillé.",
+      "Répondez aux demandes d’autorisation et aux questions depuis l’écran verrouillé.",
     ],
     watch: [
       "Le vrai terminal",
@@ -332,6 +377,10 @@ export const featureCopy: Record<SiteLocale, Record<FeatureId, Entry>> = {
     ],
   },
   es: {
+    agents: ["Sesiones nativas de Codex y OpenCode", "Más que texto de terminal. Sesiones nativas para Codex, OpenCode, DeepSeek Harness y T3 Code: tarjetas de herramientas, diffs integrados, preguntas interactivas y aprobaciones en pantalla de bloqueo."],
+    changes: ["Cada cambio, en árbol", "Una sola hoja de Cambios para terminales y sesiones de agente: un árbol de carpetas con totales de líneas, cada parche cargado al abrirlo y Descartar en el archivo."],
+    keyboard: ["Un teclado entero en la tableta", "Teclas de función, ctrl, alt y shift fijables, y las combinaciones que acepta un terminal — Ctrl+Intro, Mayús+Intro, Alt+letra — donde el Gateway pueda entregarlas."],
+    transitions: ["Cambios que se ven", "Un tema o modo nuevo se extiende desde la fila que tocaste como una onda; una fuente nueva llega tras una banda de escaneo. La opacidad de la interfaz llega ahora a cada hoja y aviso."],
     ssh: [
       "SSH, estés donde estés",
       "Contraseñas, claves y verificación del host. Terminal o túnel a tu Gateway.",
@@ -346,7 +395,7 @@ export const featureCopy: Record<SiteLocale, Record<FeatureId, Entry>> = {
     ],
     approve: [
       "Un toque. Y sigue.",
-      "Responde a los permisos del agente desde la pantalla de bloqueo.",
+      "Responde a los permisos y preguntas del agente desde la pantalla de bloqueo.",
     ],
     watch: [
       "El terminal real",
@@ -367,6 +416,10 @@ export const featureCopy: Record<SiteLocale, Record<FeatureId, Entry>> = {
     ],
   },
   pt: {
+    agents: ["Sessões nativas Codex e OpenCode", "Muito mais do que texto no terminal. Sessões nativas para Codex, OpenCode, DeepSeek Harness e T3 Code: cartões de ferramentas, diffs em linha, perguntas interativas e aprovações na tela bloqueada."],
+    changes: ["Cada alteração, em árvore", "Uma só folha de Alterações para terminais e sessões de agente: uma árvore de pastas com totais de linhas, cada patch carregado ao abrir e Descartar no arquivo."],
+    keyboard: ["Um teclado inteiro no tablet", "Teclas de função, ctrl, alt e shift fixáveis, e as combinações que um terminal aceita — Ctrl+Enter, Shift+Enter, Alt+letra — onde o Gateway puder entregá-las."],
+    transitions: ["Mudanças que se veem", "Um novo tema ou modo se espalha a partir da linha tocada como uma onda; uma nova fonte chega atrás de uma faixa de varredura. A opacidade da interface agora alcança cada folha e aviso."],
     ssh: [
       "SSH, de qualquer lugar",
       "Senhas, chaves e verificação do host. Terminal ou túnel para seu Gateway.",
@@ -381,7 +434,7 @@ export const featureCopy: Record<SiteLocale, Record<FeatureId, Entry>> = {
     ],
     approve: [
       "Um toque. De volta ao trabalho.",
-      "Responda às permissões do agente pela tela bloqueada.",
+      "Responda às permissões e perguntas do agente pela tela bloqueada.",
     ],
     watch: [
       "O terminal de verdade",
@@ -402,3 +455,63 @@ export const featureCopy: Record<SiteLocale, Record<FeatureId, Entry>> = {
     ],
   },
 };
+
+/**
+ * What the two real captures in the gallery show, for screen readers.
+ * The captures are from the app on an Android tablet, light mode.
+ */
+export const featureMediaAlt: Record<SiteLocale, Record<"changes" | "keyboard", string>> = {
+  en: {
+    changes: "The Changes sheet on a tablet: five changed files in a folder tree, each marked Modified or Untracked with its line count, and Uncommitted changes chosen in the scope menu.",
+    keyboard: "The tablet's on-screen keyboard: a row of shortcut keys, a function-key strip, a number row, ctrl, alt and shift, and Home, End, Page Up and Page Down beside the arrows.",
+  },
+  "zh-CN": {
+    changes: "平板上的改动面板：五个改动文件按目录树排列，分别标着已修改或未跟踪和行数，范围菜单选的是“未提交的改动”。",
+    keyboard: "平板上的屏幕键盘：一排快捷键、功能键行、数字行，ctrl、alt、shift，以及方向键旁的 Home、End、Page Up、Page Down。",
+  },
+  "zh-TW": {
+    changes: "平板上的變更面板：五個變更檔案依目錄樹排列，各自標示已修改或未追蹤與行數，範圍選單選的是「未提交的變更」。",
+    keyboard: "平板上的螢幕鍵盤：一排快捷鍵、功能鍵列、數字列，ctrl、alt、shift，以及方向鍵旁的 Home、End、Page Up、Page Down。",
+  },
+  ja: {
+    changes: "タブレットの変更シート。変更された 5 つのファイルがフォルダのツリーに並び、それぞれ変更済みか未追跡かと行数が表示され、範囲メニューでは未コミットの変更が選ばれている。",
+    keyboard: "タブレットのオンスクリーンキーボード。ショートカットキーの列、ファンクションキー、数字の列、ctrl・alt・shift、矢印キーの横に Home、End、Page Up、Page Down。",
+  },
+  ko: {
+    changes: "태블릿의 변경 사항 시트: 변경된 파일 다섯 개가 폴더 트리로 놓이고, 각각 수정됨 또는 추적 안 됨과 줄 수가 표시되며, 범위 메뉴에서 커밋되지 않은 변경이 선택되어 있다.",
+    keyboard: "태블릿의 화면 키보드: 단축키 줄, 기능 키 줄, 숫자 줄, ctrl·alt·shift, 화살표 옆의 Home, End, Page Up, Page Down.",
+  },
+  de: {
+    changes: "Das Änderungen-Sheet auf einem Tablet: fünf geänderte Dateien in einem Ordnerbaum, jede als geändert oder nicht verfolgt markiert, mit Zeilenzahl; im Bereichsmenü sind die nicht committeten Änderungen gewählt.",
+    keyboard: "Die Bildschirmtastatur auf dem Tablet: eine Reihe Kurzbefehle, eine Funktionstastenleiste, eine Zahlenreihe, Strg, Alt und Shift sowie Pos1, Ende, Bild auf und Bild ab neben den Pfeiltasten.",
+  },
+  fr: {
+    changes: "La feuille Modifications sur une tablette : cinq fichiers modifiés dans un arbre de dossiers, chacun marqué modifié ou non suivi avec son nombre de lignes, et les modifications non validées choisies dans le menu de portée.",
+    keyboard: "Le clavier à l’écran de la tablette : une rangée de raccourcis, une bande de touches de fonction, une rangée de chiffres, ctrl, alt et shift, et Début, Fin, Page préc. et Page suiv. à côté des flèches.",
+  },
+  es: {
+    changes: "La hoja de Cambios en una tableta: cinco archivos cambiados en un árbol de carpetas, cada uno marcado como modificado o sin seguimiento con su número de líneas, y los cambios sin confirmar elegidos en el menú de alcance.",
+    keyboard: "El teclado en pantalla de la tableta: una fila de atajos, una franja de teclas de función, una fila de números, ctrl, alt y shift, e Inicio, Fin, RePág y AvPág junto a las flechas.",
+  },
+  pt: {
+    changes: "A folha de Alterações num tablet: cinco arquivos alterados numa árvore de pastas, cada um marcado como modificado ou não rastreado com seu número de linhas, e as alterações não confirmadas escolhidas no menu de escopo.",
+    keyboard: "O teclado na tela do tablet: uma fileira de atalhos, uma faixa de teclas de função, uma fileira de números, ctrl, alt e shift, e Home, End, Page Up e Page Down ao lado das setas.",
+  },
+  ru: {
+    changes: "Лист изменений на планшете: пять изменённых файлов в дереве папок, у каждого отметка «изменён» или «не отслеживается» и число строк; в меню области выбраны незафиксированные изменения.",
+    keyboard: "Экранная клавиатура планшета: ряд быстрых клавиш, полоса функциональных клавиш, цифровой ряд, ctrl, alt и shift, а рядом со стрелками Home, End, Page Up и Page Down.",
+  },
+  vi: {
+    changes: "Bảng Thay đổi trên máy tính bảng: năm tệp đã thay đổi trong cây thư mục, mỗi tệp ghi Đã sửa hoặc Chưa theo dõi kèm số dòng, và menu phạm vi đang chọn thay đổi chưa commit.",
+    keyboard: "Bàn phím ảo trên máy tính bảng: một hàng phím tắt, dải phím chức năng, hàng số, ctrl, alt và shift, cùng Home, End, Page Up và Page Down cạnh các phím mũi tên.",
+  },
+  th: {
+    changes: "แผ่นการเปลี่ยนแปลงบนแท็บเล็ต: ไฟล์ที่เปลี่ยนห้าไฟล์ในแผนผังโฟลเดอร์ แต่ละไฟล์ระบุว่าแก้ไขหรือยังไม่ติดตามพร้อมจำนวนบรรทัด และเมนูขอบเขตเลือกการเปลี่ยนแปลงที่ยังไม่คอมมิต",
+    keyboard: "คีย์บอร์ดบนหน้าจอของแท็บเล็ต: แถวปุ่มลัด แถบปุ่มฟังก์ชัน แถวตัวเลข ctrl alt และ shift และ Home, End, Page Up, Page Down ข้างปุ่มลูกศร",
+  },
+};
+
+export type FeatureId = LegacyFeatureId | ReleaseFeatureId | "pad" | "renderer";
+export const featureCopy = Object.fromEntries(
+  siteLocaleCodes.map((locale) => [locale, { ...legacyFeatureCopy[locale], ...releaseHome[locale].features }]),
+) as Record<SiteLocale, Record<FeatureId, Entry>>;
