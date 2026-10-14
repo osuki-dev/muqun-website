@@ -4,7 +4,7 @@
  *
  * ── What this page is ───────────────────────────────────────────────────────
  * A complete developer guide and reference manual for Muqun, the Gateway,
- * and the OpenCode agent.
+ * and native coding agents (Codex, OpenCode, DeepSeek Harness, T3 Code).
  *
  * Anchor IDs (#get-started, #terminal, #agents, #opencode, #gateway, #themes,
  * #troubleshooting, #contact) are deep-linked from inside shipped mobile
@@ -63,6 +63,7 @@ const copiedLabel = muqun?.hero?.copiedLabel ?? 'Copied';
 const agentsConfig = [
   '{',
   '  "opencode": { "binary": "/usr/local/bin/opencode" },',
+  '  "codex": { "enabled": true },',
   '  "deepseek": { "enabled": true, "endpoint": "http://127.0.0.1:3080" },',
   '  "t3": {',
   '    "enabled": true,',
@@ -420,7 +421,7 @@ const sections: StatusLineItem[] = guide.contents.map((item, index) => ({
       </Grid>
     </div>
 
-    {/* The three agents */}
+    {/* Supported agents */}
     <div class="mq-guide-section-block">
       <div class="mq-guide-group-title">
         <span class="mq-mono-label">{guide.agents.supportedHeading.toUpperCase()}</span>

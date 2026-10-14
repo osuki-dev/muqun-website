@@ -3,11 +3,11 @@ import type { UserGuide } from './types';
 export const en: UserGuide = {
   metaTitle: 'Muqun User Guide & Reference',
   metaDescription:
-    'Complete guide to installing the Gateway, pairing your phone, workspaces, terminal controls, coding agents (OpenCode, DeepSeek Harness, T3 Code), themes, and troubleshooting.',
+    'Complete guide to installing the Gateway, pairing your phone, workspaces, terminal controls, coding agents (Codex, OpenCode, DeepSeek Harness, T3 Code), themes, and troubleshooting.',
   hero: {
     badge: 'USER GUIDE · REFERENCE MANUAL',
     heading: 'Everything you need to keep your machine in reach.',
-    lead: 'Muqun connects your phone directly to your own computer or server. Learn how to install and configure the Gateway, navigate terminal workspaces, set up and drive your coding agents — OpenCode, DeepSeek Harness and T3 Code, install themes, and troubleshoot connections.',
+    lead: 'Muqun connects your phone directly to your own computer or server. Learn how to install and configure the Gateway, navigate terminal workspaces, set up and drive your coding agents — Codex, OpenCode, DeepSeek Harness and T3 Code, install themes, and troubleshoot connections.',
     startCta: 'Get started ↓',
     diagnosticsCta: 'Diagnostics ↓',
     issueCta: 'Open an issue',
@@ -32,8 +32,8 @@ export const en: UserGuide = {
       id: 'agents',
       label: "Agents",
       nav: "agents",
-      meta: "opencode · deepseek · t3",
-      desc: "Agent sessions versus terminals, the three agents 4.0 supports, and setting each up on the host.",
+      meta: "codex · opencode · deepseek · t3",
+      desc: "Agent sessions versus terminals, the four agents 4.0 supports, and setting each up on the host.",
     },
     {
       id: 'opencode',
@@ -130,13 +130,14 @@ export const en: UserGuide = {
   agents: {
     eyebrow: "muqun-gateway agent",
     heading: "Agents.",
-    lead: "A terminal is a shell you type into. An agent session is a conversation with a coding agent running on your computer — OpenCode, DeepSeek Harness or T3 Code — which the app draws as messages, tool cards and questions rather than as a screen of text. Both go through the same Gateway and the same pairing; they differ in what the Gateway talks to on your behalf.",
+    lead: "A terminal is a shell you type into. An agent session is a conversation with a coding agent running on your computer — Codex, OpenCode, DeepSeek Harness or T3 Code — which the app draws as messages, tool cards and questions rather than as a screen of text. Both go through the same Gateway and the same pairing; they differ in what the Gateway talks to on your behalf.",
     versus: [
-      { term: "A terminal", detail: "tmux or Herdr on the host. The app shows what the pane shows, and the keys you send are the keys the program receives — so any program works, including agents that live in a terminal, such as Claude Code and Codex." },
+      { term: "A terminal", detail: "tmux or Herdr on the host. The app shows what the pane shows, and the keys you send are the keys the program receives — so any program works, including CLI agents that live directly in a terminal, such as Claude Code." },
       { term: "An agent session", detail: "An agent the Gateway talks to over its own API. Every session belongs to one agent and always goes back to it. The workbench — modes, models, slash commands, skills, attachments, undo, compaction, background runs — shows only what that agent supports." },
     ],
     supportedHeading: "The agents 4.0 supports",
     supported: [
+      { name: "Codex", id: "codex", detail: "Codex is enabled by default. The Gateway discovers codex on your PATH, adopts its shared daemon (starting it if needed), and inherits your local credentials from ~/.codex for native agent sessions and tools." },
       { name: "OpenCode", id: "opencode", detail: "OpenCode needs no setup. The Gateway adopts an OpenCode service that is already running, or starts one itself; it needs OpenCode 2. Every part of the workbench is there." },
       { name: "DeepSeek Harness", id: "deepseek", detail: "DeepSeek Harness is off until you enable it. Start the Harness on the host, then point the Gateway at it. Its modes are its own presets, chosen when a session starts, and attachments reach it as files on the host." },
       { name: "T3 Code", id: "t3", detail: "T3 Code is off until the Gateway holds a credential for it. The Gateway pairs with T3 once and keeps that credential. It takes attachments, approvals and undo — a T3 undo rolls back whole turns, so the app asks before applying it." },
@@ -151,7 +152,7 @@ export const en: UserGuide = {
     ],
     restartNote: "setup writes config.json and says whether the running Gateway has to restart to see the change. A Gateway installed as a service is restarted for you after a confirmation (--yes skips it); otherwise, restart it yourself.",
     manualHeading: "By hand, in config.json",
-    manualBody: "The same settings, for when you would rather write them yourself. Add the blocks you need, then restart the Gateway. A code from t3 pair goes in pairing_token; on its next start the Gateway exchanges it once and no longer needs it. opencode.binary is only for pinning a particular OpenCode.",
+    manualBody: "The same settings, for when you would rather write them yourself. Add the blocks you need, then restart the Gateway. A code from t3 pair goes in pairing_token; on its next start the Gateway exchanges it once and no longer needs it. opencode.binary and codex.binary are only for pinning a particular binary.",
     credentialNote: "The T3 credential lives in t3-credential.json in the Gateway’s state directory — ~/.local/share/muqun-gateway/ on Linux — readable only by you. If T3 revokes it or it expires, run agent setup t3 again.",
     phoneHeading: "On the phone",
     entries: [
@@ -214,6 +215,11 @@ export const en: UserGuide = {
         term: 'opencode.binary',
         detail:
           'Which OpenCode to start. Left out, the Gateway uses the OpenCode in ~/.opencode/bin, or the one on your PATH. Set it to pin a particular binary — the usual reason being a service that cannot see the PATH your login shell has.',
+      },
+      {
+        term: 'codex',
+        detail:
+          'Codex coding agent. Enabled by default (enabled: true); the Gateway finds codex on your PATH and connects to the shared daemon. Use codex.binary to specify an exact executable, or set enabled to false to disable it.',
       },
       { term: "deepseek", detail: "DeepSeek Harness. Attached only when enabled is true or an endpoint is given; token and secret if your Harness needs them. The Gateway never scans ports for it." },
       { term: "t3", detail: "T3 Code. enabled, url (http://127.0.0.1:3773 by default), and either pairing_token from t3 pair or a token you already hold. runtime_mode sets its permission policy; full-access by default." },

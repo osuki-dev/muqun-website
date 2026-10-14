@@ -3,11 +3,11 @@ import type { UserGuide } from './types';
 export const ja: UserGuide = {
   metaTitle: '牧群 ユーザーガイドとリファレンス',
   metaDescription:
-    'Gateway のインストール、スマートフォンとのペアリング、ワークスペース管理、端末キーバー、コーディングエージェント（OpenCode、DeepSeek Harness、T3 Code）、テーマ、接続トラブルシューティングの完全ガイド。',
+    'Gateway のインストール、スマートフォンとのペアリング、ワークスペース管理、端末キーバー、コーディングエージェント（Codex、OpenCode、DeepSeek Harness、T3 Code）、テーマ、接続トラブルシューティングの完全ガイド。',
   hero: {
     badge: 'ユーザーガイド · リファレンスマニュアル',
     heading: '手のひらから、いつでもマシンへ。',
-    lead: '牧群は、スマートフォンをご自身のコンピューターやサーバーへ直接接続します。Gateway のセットアップ、端末ワークスペースの操作、コーディングエージェント（OpenCode、DeepSeek Harness、T3 Code）の設定と操作、テーマの追加、接続トラブルの診断手順を解説します。',
+    lead: '牧群は、スマートフォンをご自身のコンピューターやサーバーへ直接接続します。Gateway のセットアップ、端末ワークスペースの操作、コーディングエージェント（Codex、OpenCode、DeepSeek Harness、T3 Code）の設定と操作、テーマの追加、接続トラブルの診断手順を解説します。',
     startCta: '使ってみる ↓',
     diagnosticsCta: 'トラブル診断 ↓',
     issueCta: '問題を報告',
@@ -32,8 +32,8 @@ export const ja: UserGuide = {
       id: 'agents',
       label: "エージェント",
       nav: "エージェント",
-      meta: "opencode · deepseek · t3",
-      desc: "エージェントのセッションとターミナルの違い、4.0 が対応する 3 つのエージェント、ホストでの設定方法。",
+      meta: "codex · opencode · deepseek · t3",
+      desc: "エージェントのセッションとターミナルの違い、4.0 が対応する 4 つのエージェント、ホストでの設定方法。",
     },
     {
       id: 'opencode',
@@ -130,13 +130,14 @@ export const ja: UserGuide = {
   agents: {
     eyebrow: "muqun-gateway agent",
     heading: "エージェント。",
-    lead: "ターミナルは入力するためのシェルです。エージェントのセッションは、あなたのコンピューターで動くコーディングエージェント——OpenCode、DeepSeek Harness、T3 Code——との会話で、アプリはそれを文字の画面ではなく、メッセージ、ツールカード、質問として描きます。どちらも同じ Gateway、同じペアリングを通ります。違うのは、Gateway があなたの代わりに話す相手です。",
+    lead: "ターミナルは入力するためのシェルです。エージェントのセッションは、あなたのコンピューターで動くコーディングエージェント——Codex、OpenCode、DeepSeek Harness、T3 Code——との会話で、アプリはそれを文字の画面ではなく、メッセージ、ツールカード、質問として描きます。どちらも同じ Gateway、同じペアリングを通ります。違うのは、Gateway があなたの代わりに話す相手です。",
     versus: [
-      { term: "ターミナル", detail: "ホストの tmux か Herdr。ペインに映っているものをそのまま表示し、送ったキーはそのままプログラムに届きます。だからどんなプログラムでも動き、Claude Code や Codex のようにターミナルで動くエージェントも使えます。" },
+      { term: "ターミナル", detail: "ホストの tmux か Herdr。ペインに映っているものをそのまま表示し、送ったキーはそのままプログラムに届きます。だからどんなプログラムでも動き、Claude Code のようにターミナルで直接動く CLI エージェントも使えます。" },
       { term: "エージェントのセッション", detail: "Gateway がエージェント自身の API で話す相手です。各セッションはひとつのエージェントに属し、必ずそこへ戻ります。ワークベンチ——モード、モデル、スラッシュコマンド、スキル、添付、取り消し、コンパクション、バックグラウンド実行——は、そのエージェントが対応するものだけを表示します。" },
     ],
     supportedHeading: "4.0 が対応するエージェント",
     supported: [
+      { name: "Codex", id: "codex", detail: "Codex はデフォルトで有効です。Gateway は PATH 上の codex を自動検出し、その常駐 daemon に接続します（必要に応じて自動起動）。~/.codex のローカル認証を引き継ぎ、ネイティブなエージェントセッションとツール連携に対応します。" },
       { name: "OpenCode", id: "opencode", detail: "OpenCode は設定不要です。Gateway はすでに動いている OpenCode サービスを引き継ぎ、なければ自分で起動します。OpenCode 2 が必要です。ワークベンチのすべてに対応しています。" },
       { name: "DeepSeek Harness", id: "deepseek", detail: "DeepSeek Harness は有効にするまでオフです。ホストで Harness を起動し、Gateway にその場所を教えます。モードは Harness 自身のプリセットで、セッション作成時に選びます。添付はホスト上のファイルとして渡されます。" },
       { name: "T3 Code", id: "t3", detail: "T3 Code は Gateway が資格情報を持つまでオフです。Gateway は T3 と一度ペアリングし、その資格情報を保持します。添付、承認、取り消しに対応——T3 の取り消しはターン単位で巻き戻すため、アプリは実行前に確認します。" },
@@ -151,7 +152,7 @@ export const ja: UserGuide = {
     ],
     restartNote: "setup は config.json を書き換え、動いている Gateway に反映するために再起動が必要かどうかを伝えます。サービスとしてインストールした Gateway なら確認のうえ再起動します（--yes で確認を省略）。そうでなければ自分で再起動してください。",
     manualHeading: "config.json に手で書く",
-    manualBody: "同じ設定を自分で書きたい場合に。必要なブロックを足して Gateway を再起動します。t3 pair のコードは pairing_token に入れます。次の起動時に Gateway が一度だけ交換し、その後は不要になります。opencode.binary は特定の OpenCode に固定したいときだけ使います。",
+    manualBody: "同じ設定を自分で書きたい場合に。必要なブロックを足して Gateway を再起動します。t3 pair のコードは pairing_token に入れます。次の起動時に Gateway が一度だけ交換し、その後は不要になります。opencode.binary と codex.binary は特定のバイナリに固定したいときだけ使います。",
     credentialNote: "T3 の資格情報は Gateway の状態ディレクトリ（Linux では ~/.local/share/muqun-gateway/）の t3-credential.json にあり、あなただけが読めます。T3 に取り消されたり期限が切れたりしたら、agent setup t3 をもう一度実行します。",
     phoneHeading: "スマホでは",
     entries: [
@@ -214,6 +215,11 @@ export const ja: UserGuide = {
         term: 'opencode.binary',
         detail:
           '起動する OpenCode のバイナリパス。省略時は ~/.opencode/bin 内またはシステム PATH から探します。常駐サービスがログインシェルの PATH を引き継げない場合に明示します。',
+      },
+      {
+        term: 'codex',
+        detail:
+          'Codex コーディングエージェント。デフォルトで有効（enabled: true）。PATH 上の codex を検出し共有 daemon に接続します。codex.binary で実行ファイルの絶対パスを指定するか、enabled を false にして無効化します。',
       },
       { term: "deepseek", detail: "DeepSeek Harness。enabled が true か、endpoint が指定されたときだけ接続します。Harness が必要とするなら token と secret も。Gateway がポートを探しに行くことはありません。" },
       { term: "t3", detail: "T3 Code。enabled、url（既定は http://127.0.0.1:3773）、そして t3 pair の pairing_token か手持ちの token。runtime_mode は権限の方針で、既定は full-access です。" },

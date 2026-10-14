@@ -109,7 +109,7 @@ export interface UserGuide {
     /** Two entries: a terminal, then an agent session. */
     versus: readonly GuideEntry[];
     supportedHeading: string;
-    /** OpenCode, DeepSeek Harness, T3 Code, in the Gateway's preference order. */
+    /** Codex, OpenCode, DeepSeek Harness, T3 Code, in the Gateway's preference order. */
     supported: readonly GuideAgent[];
     cliHeading: string;
     cliBody: string;

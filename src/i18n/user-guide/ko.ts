@@ -3,11 +3,11 @@ import type { UserGuide } from './types';
 export const ko: UserGuide = {
   metaTitle: 'Muqun 사용자 가이드 및 레퍼런스',
   metaDescription:
-    'Gateway 설치, 스마트폰 페어링, 워크스페이스, 터미널 키 바, 코딩 에이전트(OpenCode, DeepSeek Harness, T3 Code), 테마 커스텀 및 연결 문제 해결 가이드.',
+    'Gateway 설치, 스마트폰 페어링, 워크스페이스, 터미널 키 바, 코딩 에이전트(Codex, OpenCode, DeepSeek Harness, T3 Code), 테마 커스텀 및 연결 문제 해결 가이드.',
   hero: {
     badge: '사용자 가이드 · 레퍼런스 매뉴얼',
     heading: '손끝에서 언제든 내 컴퓨터와 연결됩니다.',
-    lead: 'Muqun은 스마트폰을 개인 컴퓨터나 서버에 직접 연결합니다. Gateway 설치 및 구성, 터미널 워크스페이스 탐색, 코딩 에이전트(OpenCode, DeepSeek Harness, T3 Code) 설정과 구동, 테마 설정 및 연결 문제 해결 방법을 안내합니다.',
+    lead: 'Muqun은 스마트폰을 개인 컴퓨터나 서버에 직접 연결합니다. Gateway 설치 및 구성, 터미널 워크스페이스 탐색, 코딩 에이전트(Codex, OpenCode, DeepSeek Harness, T3 Code) 설정과 구동, 테마 설정 및 연결 문제 해결 방법을 안내합니다.',
     startCta: '시작하기 ↓',
     diagnosticsCta: '진단 및 문제 해결 ↓',
     issueCta: '이슈 등록',
@@ -32,8 +32,8 @@ export const ko: UserGuide = {
       id: 'agents',
       label: "에이전트",
       nav: "에이전트",
-      meta: "opencode · deepseek · t3",
-      desc: "에이전트 세션과 터미널의 차이, 4.0이 지원하는 세 에이전트, 그리고 호스트에서 각각 설정하는 방법.",
+      meta: "codex · opencode · deepseek · t3",
+      desc: "에이전트 세션과 터미널의 차이, 4.0이 지원하는 네 에이전트, 그리고 호스트에서 각각 설정하는 방법.",
     },
     {
       id: 'opencode',
@@ -130,13 +130,14 @@ export const ko: UserGuide = {
   agents: {
     eyebrow: "muqun-gateway agent",
     heading: "에이전트.",
-    lead: "터미널은 직접 입력하는 셸입니다. 에이전트 세션은 컴퓨터에서 실행되는 코딩 에이전트——OpenCode, DeepSeek Harness, T3 Code——와 나누는 대화로, 앱은 이를 글자로 가득한 화면이 아니라 메시지, 도구 카드, 질문으로 그립니다. 둘 다 같은 Gateway와 같은 페어링을 거치며, 다른 점은 Gateway가 대신 대화하는 상대입니다.",
+    lead: "터미널은 직접 입력하는 셸입니다. 에이전트 세션은 컴퓨터에서 실행되는 코딩 에이전트——Codex, OpenCode, DeepSeek Harness, T3 Code——와 나누는 대화로, 앱은 이를 글자로 가득한 화면이 아니라 메시지, 도구 카드, 질문으로 그립니다. 둘 다 같은 Gateway와 같은 페어링을 거치며, 다른 점은 Gateway가 대신 대화하는 상대입니다.",
     versus: [
-      { term: "터미널", detail: "호스트의 tmux 또는 Herdr. 앱은 창에 보이는 그대로를 보여 주고, 보낸 키는 그대로 프로그램에 도착합니다. 그래서 어떤 프로그램이든 쓸 수 있고, Claude Code나 Codex처럼 터미널에서 도는 에이전트도 쓸 수 있습니다." },
+      { term: "터미널", detail: "호스트의 tmux 또는 Herdr. 앱은 창에 보이는 그대로를 보여 주고, 보낸 키는 그대로 프로그램에 도착합니다. 그래서 어떤 프로그램이든 쓸 수 있고, Claude Code처럼 터미널에서 직접 도는 CLI 에이전트도 쓸 수 있습니다." },
       { term: "에이전트 세션", detail: "Gateway가 에이전트 자체 API로 대화하는 상대입니다. 각 세션은 한 에이전트에 속하고 언제나 그 에이전트로 돌아갑니다. 작업 화면——모드, 모델, 슬래시 명령, 스킬, 첨부, 실행 취소, 압축, 백그라운드 실행——은 그 에이전트가 지원하는 것만 보여 줍니다." },
     ],
     supportedHeading: "4.0이 지원하는 에이전트",
     supported: [
+      { name: "Codex", id: "codex", detail: "Codex는 기본 활성화되어 있습니다. Gateway는 PATH의 codex를 자동 검색하고 상주 daemon에 연결합니다(필요 시 자동 시작). ~/.codex의 로컬 인증을 이어받아 네이티브 에이전트 세션과 도구 연동을 완벽히 지원합니다." },
       { name: "OpenCode", id: "opencode", detail: "OpenCode는 설정이 필요 없습니다. Gateway가 이미 실행 중인 OpenCode 서비스를 이어받거나, 없으면 직접 시작합니다. OpenCode 2가 필요합니다. 작업 화면의 모든 기능을 지원합니다." },
       { name: "DeepSeek Harness", id: "deepseek", detail: "DeepSeek Harness는 켜기 전까지 꺼져 있습니다. 호스트에서 Harness를 시작한 뒤 Gateway가 그쪽을 보게 하세요. 모드는 Harness 자체 프리셋이며 세션을 만들 때 고릅니다. 첨부는 호스트의 파일로 전달됩니다." },
       { name: "T3 Code", id: "t3", detail: "T3 Code는 Gateway가 자격 증명을 갖기 전까지 꺼져 있습니다. Gateway는 T3와 한 번 페어링하고 그 자격 증명을 보관합니다. 첨부, 승인, 실행 취소를 지원하며, T3의 실행 취소는 턴 단위로 되돌리기 때문에 앱이 먼저 확인합니다." },
@@ -151,7 +152,7 @@ export const ko: UserGuide = {
     ],
     restartNote: "setup은 config.json에 기록하고, 실행 중인 Gateway가 변경을 반영하려면 재시작이 필요한지 알려 줍니다. 서비스로 설치된 Gateway라면 확인 후 대신 재시작합니다(--yes로 확인 생략). 그렇지 않으면 직접 재시작하세요.",
     manualHeading: "config.json에 직접 쓰기",
-    manualBody: "같은 설정을 직접 쓰고 싶을 때. 필요한 블록을 추가하고 Gateway를 재시작하세요. t3 pair의 코드는 pairing_token에 넣습니다. 다음 시작 때 Gateway가 한 번 교환하고 그 뒤로는 필요 없습니다. opencode.binary는 특정 OpenCode로 고정할 때만 씁니다.",
+    manualBody: "같은 설정을 직접 쓰고 싶을 때. 필요한 블록을 추가하고 Gateway를 재시작하세요. t3 pair의 코드는 pairing_token에 넣습니다. 다음 시작 때 Gateway가 한 번 교환하고 그 뒤로는 필요 없습니다. opencode.binary와 codex.binary는 특정 바이너리로 고정할 때만 씁니다.",
     credentialNote: "T3 자격 증명은 Gateway 상태 디렉터리(Linux에서는 ~/.local/share/muqun-gateway/)의 t3-credential.json에 있으며 본인만 읽을 수 있습니다. T3가 취소했거나 만료되면 agent setup t3를 다시 실행하세요.",
     phoneHeading: "휴대폰에서",
     entries: [
@@ -214,6 +215,11 @@ export const ko: UserGuide = {
         term: 'opencode.binary',
         detail:
           '실행할 OpenCode 바이너리 경로. 생략 시 ~/.opencode/bin 또는 시스템 PATH에서 찾습니다. 서비스가 로그인 셸의 PATH를 가져오지 못할 때 고정 경로를 지정합니다.',
+      },
+      {
+        term: 'codex',
+        detail:
+          'Codex 코딩 에이전트. 기본 활성화(enabled: true)이며, PATH의 codex를 찾아 공유 daemon에 연결합니다. codex.binary로 실행 파일 절대 경로를 지정하거나, enabled를 false로 설정해 끌 수 있습니다.',
       },
       { term: "deepseek", detail: "DeepSeek Harness. enabled가 true이거나 endpoint가 지정됐을 때만 연결합니다. Harness가 필요로 하면 token과 secret도. Gateway가 포트를 뒤져 찾지는 않습니다." },
       { term: "t3", detail: "T3 Code. enabled, url(기본값 http://127.0.0.1:3773), 그리고 t3 pair의 pairing_token 또는 이미 가진 token. runtime_mode는 권한 정책이며 기본값은 full-access입니다." },

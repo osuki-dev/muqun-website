@@ -3,11 +3,11 @@ import type { UserGuide } from './types';
 export const vi: UserGuide = {
   metaTitle: 'Hướng dẫn sử dụng & Tài liệu tham khảo Muqun',
   metaDescription:
-    'Hướng dẫn toàn diện về cài đặt Gateway, ghép nối điện thoại, không gian làm việc, điều khiển terminal, các trợ lý lập trình (OpenCode, DeepSeek Harness, T3 Code), chủ đề và khắc phục sự cố.',
+    'Hướng dẫn toàn diện về cài đặt Gateway, ghép nối điện thoại, không gian làm việc, điều khiển terminal, các trợ lý lập trình (Codex, OpenCode, DeepSeek Harness, T3 Code), chủ đề và khắc phục sự cố.',
   hero: {
     badge: 'HƯỚNG DẪN SỬ DỤNG · TÀI LIỆU THAM KHẢO',
     heading: 'Mọi thứ bạn cần để giữ máy tính luôn trong tầm tay.',
-    lead: 'Muqun kết nối điện thoại trực tiếp với máy tính hoặc máy chủ của bạn. Tìm hiểu cách cài đặt và cấu hình Gateway, điều hướng không gian làm việc terminal, thiết lập và điều khiển các trợ lý lập trình (OpenCode, DeepSeek Harness và T3 Code), cài đặt chủ đề và khắc phục sự cố kết nối.',
+    lead: 'Muqun kết nối điện thoại trực tiếp với máy tính hoặc máy chủ của bạn. Tìm hiểu cách cài đặt và cấu hình Gateway, điều hướng không gian làm việc terminal, thiết lập và điều khiển các trợ lý lập trình (Codex, OpenCode, DeepSeek Harness và T3 Code), cài đặt chủ đề và khắc phục sự cố kết nối.',
     startCta: 'Bắt đầu ↓',
     diagnosticsCta: 'Chẩn đoán ↓',
     issueCta: 'Tạo issue',
@@ -32,8 +32,8 @@ export const vi: UserGuide = {
       id: 'agents',
       label: "Trợ lý",
       nav: "Trợ lý",
-      meta: "opencode · deepseek · t3",
-      desc: "Phiên trợ lý so với terminal, ba trợ lý mà 4.0 hỗ trợ, và cách thiết lập từng trợ lý trên máy chủ.",
+      meta: "codex · opencode · deepseek · t3",
+      desc: "Phiên trợ lý so với terminal, bốn trợ lý mà 4.0 hỗ trợ, và cách thiết lập từng trợ lý trên máy chủ.",
     },
     {
       id: 'opencode',
@@ -130,13 +130,14 @@ export const vi: UserGuide = {
   agents: {
     eyebrow: "muqun-gateway agent",
     heading: "Trợ lý.",
-    lead: "Terminal là shell để bạn gõ lệnh. Phiên trợ lý là cuộc trò chuyện với một trợ lý lập trình chạy trên máy tính của bạn — OpenCode, DeepSeek Harness hoặc T3 Code — được ứng dụng vẽ thành tin nhắn, thẻ công cụ và câu hỏi thay vì một màn hình chữ. Cả hai đi qua cùng một Gateway và cùng một lần ghép nối; khác nhau ở chỗ Gateway thay bạn nói chuyện với ai.",
+    lead: "Terminal là shell để bạn gõ lệnh. Phiên trợ lý là cuộc trò chuyện với một trợ lý lập trình chạy trên máy tính của bạn — Codex, OpenCode, DeepSeek Harness hoặc T3 Code — được ứng dụng vẽ thành tin nhắn, thẻ công cụ và câu hỏi thay vì một màn hình chữ. Cả hai đi qua cùng một Gateway và cùng một lần ghép nối; khác nhau ở chỗ Gateway thay bạn nói chuyện với ai.",
     versus: [
-      { term: "Terminal", detail: "tmux hoặc Herdr trên máy chủ. Ứng dụng hiển thị đúng những gì ô đang hiện, và phím bạn gửi chính là phím chương trình nhận được — nên chương trình nào cũng chạy được, kể cả các trợ lý sống trong terminal như Claude Code và Codex." },
+      { term: "Terminal", detail: "tmux hoặc Herdr trên máy chủ. Ứng dụng hiển thị đúng những gì ô đang hiện, và phím bạn gửi chính là phím chương trình nhận được — nên chương trình nào cũng chạy được, kể cả các trợ lý CLI chạy trực tiếp trong terminal như Claude Code." },
       { term: "Phiên trợ lý", detail: "Một trợ lý mà Gateway trò chuyện qua API riêng của nó. Mỗi phiên thuộc về một trợ lý và luôn quay về trợ lý đó. Bàn làm việc — chế độ, mô hình, lệnh gạch chéo, kỹ năng, tệp đính kèm, hoàn tác, nén ngữ cảnh, tác vụ nền — chỉ hiện những gì trợ lý đó hỗ trợ." },
     ],
     supportedHeading: "Các trợ lý 4.0 hỗ trợ",
     supported: [
+      { name: "Codex", id: "codex", detail: "Codex được bật theo mặc định. Gateway tự động tìm thấy codex trên PATH của bạn, kết nối với daemon dùng chung (tự khởi động khi cần) và kế thừa xác thực ~/.codex cục bộ cho các phiên trợ lý và công cụ gốc." },
       { name: "OpenCode", id: "opencode", detail: "OpenCode không cần thiết lập. Gateway tiếp quản dịch vụ OpenCode đang chạy, hoặc tự khởi động một dịch vụ; cần OpenCode 2. Có đủ mọi phần của bàn làm việc." },
       { name: "DeepSeek Harness", id: "deepseek", detail: "DeepSeek Harness tắt cho đến khi bạn bật. Khởi động Harness trên máy chủ, rồi chỉ cho Gateway biết nó ở đâu. Chế độ là các preset riêng của Harness, chọn khi tạo phiên; tệp đính kèm đến tay nó dưới dạng tệp trên máy chủ." },
       { name: "T3 Code", id: "t3", detail: "T3 Code tắt cho đến khi Gateway có thông tin xác thực cho nó. Gateway ghép nối với T3 một lần và giữ thông tin đó. Hỗ trợ tệp đính kèm, phê duyệt và hoàn tác — hoàn tác trên T3 quay lui cả lượt, nên ứng dụng hỏi trước khi áp dụng." },
@@ -151,7 +152,7 @@ export const vi: UserGuide = {
     ],
     restartNote: "setup ghi config.json và cho biết Gateway đang chạy có cần khởi động lại để nhận thay đổi hay không. Gateway cài dưới dạng dịch vụ sẽ được khởi động lại giúp bạn sau khi xác nhận (--yes bỏ qua câu hỏi); nếu không, hãy tự khởi động lại.",
     manualHeading: "Viết tay trong config.json",
-    manualBody: "Cùng các thiết lập đó, nếu bạn muốn tự viết. Thêm các khối cần thiết rồi khởi động lại Gateway. Mã từ t3 pair đặt vào pairing_token; lần khởi động sau, Gateway đổi nó một lần và không cần nữa. opencode.binary chỉ dùng khi muốn cố định một OpenCode cụ thể.",
+    manualBody: "Cùng các thiết lập đó, nếu bạn muốn tự viết. Thêm các khối cần thiết rồi khởi động lại Gateway. Mã từ t3 pair đặt vào pairing_token; lần khởi động sau, Gateway đổi nó một lần và không cần nữa. opencode.binary và codex.binary chỉ dùng khi muốn cố định một tệp chạy cụ thể.",
     credentialNote: "Thông tin xác thực T3 nằm trong t3-credential.json ở thư mục trạng thái của Gateway — ~/.local/share/muqun-gateway/ trên Linux — và chỉ bạn đọc được. Nếu T3 thu hồi hoặc nó hết hạn, chạy lại agent setup t3.",
     phoneHeading: "Trên điện thoại",
     entries: [
@@ -214,6 +215,11 @@ export const vi: UserGuide = {
         term: 'opencode.binary',
         detail:
           'Đường dẫn tệp nhị phân OpenCode cần khởi động. Nếu bỏ qua, Gateway sẽ sử dụng OpenCode trong ~/.opencode/bin hoặc trong PATH hệ thống. Dùng tùy chọn này để chỉ định tệp nhị phân cụ thể — hữu ích khi dịch vụ hệ thống không nhìn thấy PATH của shell đăng nhập.',
+      },
+      {
+        term: 'codex',
+        detail:
+          'Trợ lý lập trình Codex. Mặc định bật (enabled: true); Gateway tìm codex trên PATH và kết nối với daemon dùng chung. Dùng codex.binary để chỉ định tệp chạy chính xác, hoặc đặt enabled thành false để tắt.',
       },
       { term: "deepseek", detail: "DeepSeek Harness. Chỉ được gắn khi enabled là true hoặc có endpoint; token và secret nếu Harness của bạn cần. Gateway không bao giờ quét cổng để tìm nó." },
       { term: "t3", detail: "T3 Code. enabled, url (mặc định http://127.0.0.1:3773), và hoặc pairing_token từ t3 pair, hoặc token bạn đã có. runtime_mode đặt chính sách quyền; mặc định là full-access." },

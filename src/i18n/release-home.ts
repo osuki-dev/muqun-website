@@ -24,7 +24,7 @@ export const releaseHome: Record<SiteLocale, ReleaseHomeCopy> = {
   en: {
     heading: "One workspace, from the first goal to the next change.",
     intro:
-      "Start work from Home, follow tasks, review replies and open Git without leaving your paired computer’s workspace.",
+      "Native sessions for Codex, OpenCode, DeepSeek Harness and T3 Code. Approve permissions, follow tasks and review diffs from your pocket — straight to your own computer.",
     compatibility:
       "Update through Google Play or the App Store. Agent, task and Git tools follow the connected Gateway’s capabilities; older Gateways keep their supported terminal and OpenCode paths.",
     credentials:
@@ -74,7 +74,7 @@ export const releaseHome: Record<SiteLocale, ReleaseHomeCopy> = {
   "zh-CN": {
     heading: "从第一个目标到下一次改动，都在同一工作区。",
     intro:
-      "从首页开始工作，跟进任务，查看回复，打开 Git；始终连接着你自己的电脑。",
+      "原生接入 Codex 与 OpenCode 等 AI 助手会话。在手机上完成权限审批、跟进任务与实时 Diff，直连你自己的电脑。",
     compatibility:
       "通过 Google Play 或 App Store 更新。助手、任务与 Git 功能取决于所连 Gateway 提供的能力；旧版仍可使用其支持的终端与 OpenCode。",
     credentials:
@@ -121,7 +121,7 @@ export const releaseHome: Record<SiteLocale, ReleaseHomeCopy> = {
   "zh-TW": {
     heading: "從第一個目標到下一次變更，都在同一工作區。",
     intro:
-      "從首頁開始工作，追蹤任務、閱讀回覆、開啟 Git；始終連著你自己的電腦。",
+      "原生接入 Codex 與 OpenCode 等 AI 助手工作階段。在手機上完成權限審批、跟進任務與即時 Diff，直連你自己的電腦。",
     compatibility:
       "透過 Google Play 或 App Store 更新。助手、任務與 Git 功能依所連 Gateway 提供的能力而定；舊版仍可使用其支援的終端機與 OpenCode。",
     credentials:
@@ -168,7 +168,7 @@ export const releaseHome: Record<SiteLocale, ReleaseHomeCopy> = {
   ja: {
     heading: "最初の目標から次の変更まで、ひとつのワークスペースで。",
     intro:
-      "ホームから作業を始め、タスクを追い、返信を読み、Gitを開く。接続先はいつも自分のパソコンです。",
+      "Codex、OpenCode、DeepSeek Harness、T3 Code のネイティブセッションに対応。スマホから権限承認やタスク追跡、差分確認を自分のマシン直結で行えます。",
     compatibility:
       "Google PlayまたはApp Storeから更新してください。エージェント、タスク、Gitの機能はGatewayが提供する能力に応じます。古いGatewayでも対応するターミナルとOpenCodeを使えます。",
     credentials:
@@ -218,7 +218,7 @@ export const releaseHome: Record<SiteLocale, ReleaseHomeCopy> = {
   ko: {
     heading: "첫 목표부터 다음 변경까지, 하나의 작업 공간에서.",
     intro:
-      "홈에서 일을 시작하고, 작업을 살피고, 답변을 읽고, Git을 여세요. 연결 대상은 언제나 내 컴퓨터입니다.",
+      "Codex, OpenCode, DeepSeek Harness, T3 Code 네이티브 세션 지원. 내 컴퓨터에 직접 연결해 휴대폰에서 권한 승인, 작업 추적, 실시간 diff를 확인하세요.",
     compatibility:
       "Google Play 또는 App Store에서 업데이트하세요. 에이전트·작업·Git 기능은 연결된 Gateway의 지원 능력에 따릅니다. 이전 Gateway에서도 지원되는 터미널과 OpenCode를 쓸 수 있습니다.",
     credentials:
@@ -268,7 +268,7 @@ export const releaseHome: Record<SiteLocale, ReleaseHomeCopy> = {
   de: {
     heading: "Ein Arbeitsbereich, vom ersten Ziel bis zur nächsten Änderung.",
     intro:
-      "Starte auf Home, verfolge Aufgaben, lies Antworten und öffne Git im Arbeitsbereich deines verbundenen Rechners.",
+      "Native Sitzungen für Codex, OpenCode, DeepSeek Harness und T3 Code. Berechtigungen freigeben, Aufgaben verfolgen und Diffs prüfen — direkt auf deinem eigenen Rechner.",
     compatibility:
       "Aktualisiere über Google Play oder den App Store. Agenten-, Aufgaben- und Git-Werkzeuge richten sich nach den Fähigkeiten des Gateways. Ältere Gateways behalten ihre unterstützten Terminal- und OpenCode-Wege.",
     credentials:
@@ -319,7 +319,7 @@ export const releaseHome: Record<SiteLocale, ReleaseHomeCopy> = {
     heading:
       "Un espace de travail, du premier objectif à la prochaine modification.",
     intro:
-      "Démarrez depuis l’accueil, suivez les tâches, lisez les réponses et ouvrez Git dans l’espace de votre ordinateur connecté.",
+      "Sessions natives pour Codex, OpenCode, DeepSeek Harness et T3 Code. Approuvez les permissions, suivez les tâches et examinez les diffs depuis votre poche, relié à votre machine.",
     compatibility:
       "Mettez à jour via Google Play ou l’App Store. Les outils d’agent, de tâches et de Git suivent les capacités du Gateway. Les anciens Gateways conservent leurs accès compatibles au terminal et à OpenCode.",
     credentials:
@@ -369,7 +369,7 @@ export const releaseHome: Record<SiteLocale, ReleaseHomeCopy> = {
   es: {
     heading: "Un espacio, desde el primer objetivo hasta el siguiente cambio.",
     intro:
-      "Empieza desde Inicio, sigue tareas, lee respuestas y abre Git en el espacio de tu ordenador conectado.",
+      "Sesiones nativas para Codex, OpenCode, DeepSeek Harness y T3 Code. Aprueba permisos, sigue tareas y revisa diffs desde tu bolsillo, directo a tu propia máquina.",
     compatibility:
       "Actualiza desde Google Play o App Store. Las herramientas de agentes, tareas y Git dependen de las capacidades del Gateway. Los Gateways antiguos conservan sus opciones compatibles de terminal y OpenCode.",
     credentials:
@@ -419,7 +419,7 @@ export const releaseHome: Record<SiteLocale, ReleaseHomeCopy> = {
   pt: {
     heading: "Um espaço, do primeiro objetivo à próxima alteração.",
     intro:
-      "Comece pela tela inicial, acompanhe tarefas, leia respostas e abra o Git no espaço do seu computador conectado.",
+      "Sessões nativas para Codex, OpenCode, DeepSeek Harness e T3 Code. Aprove permissões, acompanhe tarefas e revise diffs do seu bolso, direto na sua máquina.",
     compatibility:
       "Atualize pelo Google Play ou pela App Store. Agentes, tarefas e Git seguem os recursos do Gateway conectado. Gateways antigos mantêm os caminhos compatíveis de terminal e OpenCode.",
     credentials:
@@ -469,7 +469,7 @@ export const releaseHome: Record<SiteLocale, ReleaseHomeCopy> = {
   ru: {
     heading: "Одно пространство — от первой цели до следующего изменения.",
     intro:
-      "Начинайте с главного экрана, следите за задачами, читайте ответы и открывайте Git в пространстве подключённого компьютера.",
+      "Нативные сеансы для Codex, OpenCode, DeepSeek Harness и T3 Code. Подтверждайте разрешения, следите за задачами и проверяйте diff прямо с телефона на своем компьютере.",
     compatibility:
       "Обновляйте через Google Play или App Store. Возможности агентов, задач и Git зависят от Gateway. Старые Gateways сохраняют поддерживаемые пути терминала и OpenCode.",
     credentials:
@@ -519,7 +519,7 @@ export const releaseHome: Record<SiteLocale, ReleaseHomeCopy> = {
   vi: {
     heading: "Một không gian, từ mục tiêu đầu tiên đến thay đổi tiếp theo.",
     intro:
-      "Bắt đầu từ Trang chủ, theo dõi tác vụ, đọc trả lời và mở Git trong không gian máy tính đã ghép nối.",
+      "Phiên gốc cho Codex, OpenCode, DeepSeek Harness và T3 Code. Phê duyệt quyền, theo dõi tác vụ và xem diff trực tiếp trên máy của bạn ngay từ điện thoại.",
     compatibility:
       "Cập nhật qua Google Play hoặc App Store. Công cụ trợ lý, tác vụ và Git tùy thuộc khả năng Gateway. Gateway cũ giữ các đường terminal và OpenCode được hỗ trợ.",
     credentials:
@@ -569,7 +569,7 @@ export const releaseHome: Record<SiteLocale, ReleaseHomeCopy> = {
   th: {
     heading: "พื้นที่เดียว ตั้งแต่เป้าหมายแรกถึงการเปลี่ยนแปลงถัดไป",
     intro:
-      "เริ่มจากหน้าแรก ติดตามงาน อ่านคำตอบ และเปิด Git ในพื้นที่ของคอมพิวเตอร์ที่จับคู่ไว้",
+      "เซสชันเนทีฟสำหรับ Codex, OpenCode, DeepSeek Harness และ T3 Code อนุมัติสิทธิ์ ติดตามงาน และตรวจดู diff จากมือถือของคุณตรงสู่คอมพิวเตอร์ของคุณเอง",
     compatibility:
       "อัปเดตผ่าน Google Play หรือ App Store เครื่องมือผู้ช่วย งาน และ Git ขึ้นกับความสามารถของ Gateway รุ่นเก่ายังคงใช้เทอร์มินัลและ OpenCode ที่รองรับได้",
     credentials:

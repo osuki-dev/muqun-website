@@ -108,3 +108,40 @@ html[data-theme="light"] .simfarm-device > div:not(.phone-camera),
 html[data-theme="light"] .simfarm-phone i { background: #779e9566; }
 .gateway-mode { margin: 24px 0; padding-top: 20px; border-top: 1px solid var(--mq-hairline); }
 .gateway-mode h3 { font-size: 17px; margin-bottom: 16px; color: var(--mq-text); }
+
+html[data-theme="light"] .hero-agent-pill {
+  background: rgba(0, 0, 0, 0.04);
+  border-color: rgba(52, 70, 84, 0.15);
+  color: #4a4552;
+}
+html[data-theme="light"] .hero-agent-pill--highlight {
+  background: rgba(138, 63, 180, 0.08);
+  border-color: rgba(138, 63, 180, 0.28);
+  color: #6a259c;
+  box-shadow: none;
+}
+html[data-theme="light"] .agent-highlight-card {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: rgba(52, 70, 84, 0.14);
+  box-shadow: 0 4px 16px rgba(52, 70, 84, 0.05);
+}
+html[data-theme="light"] .agent-highlight-card--featured {
+  background: linear-gradient(135deg, #ffffff, #faf6fc);
+  border-color: rgba(138, 63, 180, 0.25);
+  box-shadow: 0 4px 16px rgba(138, 63, 180, 0.07);
+}
+html[data-theme="light"] .agent-highlight-card .agent-name {
+  color: #1a1721;
+}
+html[data-theme="light"] .agent-highlight-card .agent-tag {
+  background: rgba(0, 0, 0, 0.06);
+  color: #554e5e;
+}
+html[data-theme="light"] .agent-highlight-card .agent-tag--primary {
+  background: rgba(39, 107, 121, 0.12);
+  color: #1b6d7a;
+  border-color: rgba(39, 107, 121, 0.25);
+}
+html[data-theme="light"] .agent-highlight-card .agent-desc {
+  color: #55505e;
+}

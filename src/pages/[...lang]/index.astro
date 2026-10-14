@@ -33,7 +33,7 @@ const copy = getMuqunCopy(locale),
 const features = getFeatures(locale);
 const help = gatewayHelp[locale];
 const release = releaseHome[locale];
-const agents = { ...agentsHome[locale], facts: [...agentsHome[locale].facts.slice(0, 4), release.credentials] };
+const agents = { ...agentsHome[locale], facts: [...agentsHome[locale].facts.slice(1, 4), release.credentials] };
 const featureGroups = (["work", "tools", "appearance"] as const).map((id) => ({ id, title: release[id], offset: features.findIndex((feature) => feature.group === id), features: features.filter((feature) => feature.group === id) }));
 
 /**
@@ -74,6 +74,13 @@ const agentsGuideHref = `${localizedPath("/support", locale)}#agents`;
               Google Play <span aria-hidden="true">↗</span>
             </a>
           </div>
+          <div class="hero-agents-strip">
+            <span class="hero-agents-label"><span class="signal-dot mini"></span>{locale.startsWith('zh') ? '原生助手' : locale === 'ja' ? 'ネイティブ' : locale === 'ko' ? '네이티브' : 'Native'}</span>
+            <span class="hero-agent-pill hero-agent-pill--highlight">✦ Codex</span>
+            <span class="hero-agent-pill hero-agent-pill--highlight">✦ OpenCode</span>
+            <span class="hero-agent-pill">DeepSeek Harness</span>
+            <span class="hero-agent-pill">T3 Code</span>
+          </div>
         </div>
         <a class="hero-coordinate hero-scroll" href="#terminal">
           {world.explore} <span aria-hidden="true">↓</span>
@@ -94,7 +101,7 @@ const agentsGuideHref = `${localizedPath("/support", locale)}#agents`;
           <div class="session-preview">
             <div class="session-top">
               <span class="signal-dot"></span> muqun{" "}
-              <span>claude · codex · nvim</span>
+              <span>claude · nvim · zsh</span>
             </div>
             <div class="session-lines">
               <span class="code-muted">~/your-next-big-idea</span>
@@ -137,6 +144,19 @@ const agentsGuideHref = `${localizedPath("/support", locale)}#agents`;
           <p class="world-eyebrow">02 / {agents.eyebrow}</p>
           <h2>{agents.heading}</h2>
           <p>{agents.body}</p>
+          {agents.cards && (
+            <div class="agent-cards-grid">
+              {agents.cards.map((card) => (
+                <div class={`agent-highlight-card ${card.id === 'codex' || card.id === 'opencode' ? 'agent-highlight-card--featured' : ''}`}>
+                  <div class="agent-highlight-card__header">
+                    <span class="agent-name">{card.name}</span>
+                    <span class={`agent-tag ${card.id === 'codex' || card.id === 'opencode' ? 'agent-tag--primary' : ''}`}>{card.tag}</span>
+                  </div>
+                  <p class="agent-desc">{card.desc}</p>
+                </div>
+              ))}
+            </div>
+          )}
           <ul class="world-requirements">
             {agents.facts.map((fact) => (
               <li>{fact}</li>

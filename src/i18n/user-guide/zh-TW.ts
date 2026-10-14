@@ -3,11 +3,11 @@ import type { UserGuide } from './types';
 export const zhTW: UserGuide = {
   metaTitle: '牧群 使用者指南與參考手冊',
   metaDescription:
-    '安裝 Gateway、手機配對、工作区管理、終端機按鍵列、程式 AI 助手（OpenCode、DeepSeek Harness、T3 Code）、主題客製化及連線疑難排解的完整手冊。',
+    '安裝 Gateway、手機配對、工作区管理、終端機按鍵列、程式 AI 助手（Codex、OpenCode、DeepSeek Harness、T3 Code）、主題客製化及連線疑難排解的完整手冊。',
   hero: {
     badge: '使用者指南 · 參考手冊',
     heading: '觸手可及，掌控你的每一台電腦。',
-    lead: '牧群將手機與你自己的電腦或伺服器直接相連。了解如何安裝與設定 Gateway、切換終端機工作區、接上並操控程式 AI 助手（OpenCode、DeepSeek Harness 與 T3 Code）、安裝主題並排解連線問題。',
+    lead: '牧群將手機與你自己的電腦或伺服器直接相連。了解如何安裝與設定 Gateway、切換終端機工作區、接上並操控程式 AI 助手（Codex、OpenCode、DeepSeek Harness 與 T3 Code）、安裝主題並排解連線問題。',
     startCta: '開始使用 ↓',
     diagnosticsCta: '問題排解 ↓',
     issueCta: '回報問題',
@@ -32,8 +32,8 @@ export const zhTW: UserGuide = {
       id: 'agents',
       label: "AI 助手",
       nav: "助手",
-      meta: "opencode · deepseek · t3",
-      desc: "AI 助手工作階段與終端機的差別、4.0 支援的三個助手，以及如何在電腦上接上它們。",
+      meta: "codex · opencode · deepseek · t3",
+      desc: "AI 助手工作階段與終端機的差別、4.0 支援的四個助手，以及如何在電腦上接上它們。",
     },
     {
       id: 'opencode',
@@ -130,13 +130,14 @@ export const zhTW: UserGuide = {
   agents: {
     eyebrow: "muqun-gateway agent",
     heading: "AI 助手。",
-    lead: "終端機是你輸入指令的 shell。AI 助手工作階段則是與電腦上執行的程式助手——OpenCode、DeepSeek Harness 或 T3 Code——的一段對話，App 會把它畫成訊息、工具卡片與提問，而不是一整頁文字。兩者走同一台 Gateway、同一次配對，差別只在 Gateway 替你和誰溝通。",
+    lead: "終端機是你輸入指令的 shell。AI 助手工作階段則是與電腦上執行的程式助手——Codex、OpenCode、DeepSeek Harness 或 T3 Code——的一段對話，App 會把它畫成訊息、工具卡片與提問，而不是一整頁文字。兩者走同一台 Gateway、同一次配對，差別只在 Gateway 替你和誰溝通。",
     versus: [
-      { term: "終端機", detail: "電腦上的 tmux 或 Herdr。窗格裡有什麼，App 就顯示什麼；你送出的按鍵，就是程式收到的按鍵。所以任何程式都能用，包括在終端機裡執行的助手，例如 Claude Code 與 Codex。" },
+      { term: "終端機", detail: "電腦上的 tmux 或 Herdr。窗格裡有什麼，App 就顯示什麼；你送出的按鍵，就是程式收到的按鍵。所以任何程式都能用，包括在終端機裡執行的命令列助手，例如 Claude Code。" },
       { term: "AI 助手工作階段", detail: "Gateway 透過助手自己的 API 與它溝通。每個工作階段屬於一個助手，也一定回到該助手。工作台——模式、模型、斜線指令、技能、附件、復原、壓縮、背景執行——只顯示該助手支援的部分。" },
     ],
     supportedHeading: "4.0 支援的助手",
     supported: [
+      { name: "Codex", id: "codex", detail: "Codex 預設啟用。Gateway 會自動偵測 PATH 上的 codex 並接上其常駐 daemon（必要時自動啟動）；直接復用本機的 ~/.codex 憑證，支援原生的助手工作階段、工具卡片與差異顯示。" },
       { name: "OpenCode", id: "opencode", detail: "OpenCode 不需設定。Gateway 會接手已在執行的 OpenCode 服務，沒有的話就自行啟動一個；需要 OpenCode 2。工作台的所有功能它都支援。" },
       { name: "DeepSeek Harness", id: "deepseek", detail: "DeepSeek Harness 預設關閉，需要你手動啟用。先在電腦上啟動 Harness，再讓 Gateway 指向它。它的模式來自 Harness 自帶的預設，在建立工作階段時選定；附件會以電腦上的檔案路徑交給它。" },
       { name: "T3 Code", id: "t3", detail: "T3 Code 在 Gateway 取得憑證前不會啟用。Gateway 與 T3 配對一次，之後一直保存這份憑證。它支援附件、授權審核與復原——T3 的復原會整輪回溯，所以 App 會先確認再執行。" },
@@ -145,13 +146,13 @@ export const zhTW: UserGuide = {
     cliBody: "在執行 Gateway 的電腦上操作。muqun-gateway agent 會從目前的 shell 逐一檢查助手，列出狀態、版本與位址，尚未就緒的會寫明下一步。只要有已啟用的助手無法使用，它就以非零狀態結束，腳本也能用來檢查。",
     commands: [
       { code: "muqun-gateway agent", label: "status", detail: "每個助手的狀態，以及下一步該做什麼。" },
-      { code: "muqun-gateway agent setup t3", label: "t3", detail: "接上 T3 Code。T3 在同一台電腦上時，它會用 t3 auth session issue 簽發憑證——T3 的資料不在預設位置時加上 --base-dir。T3 在另一台電腦上時，先在那台電腦執行 t3 pair，再用 --token CODE 傳入配對碼。" },
+      { code: "muqun-gateway agent setup t3", label: "t3", detail: "接上 T3 Code。T3 在同一台電腦上時，它会用 t3 auth session issue 簽發憑證——T3 的資料不在預設位置時加上 --base-dir。T3 在另一台電腦上時，先在那台電腦執行 t3 pair，再用 --token CODE 傳入配對碼。" },
       { code: "muqun-gateway agent setup deepseek", label: "deepseek", detail: "找到正在執行的 DeepSeek Harness 並啟用它。預設尋找 3080 與 19387 通訊埠；不在這兩個埠時，用 --endpoint URL 指定。" },
       { code: "muqun-gateway agent setup opencode", label: "opencode", detail: "不做任何修改，只顯示 Gateway 會使用哪個 OpenCode 程式及其版本——需要 2.x。" },
     ],
     restartNote: "setup 會寫入 config.json，並告訴你執行中的 Gateway 是否需要重新啟動才會生效。若 Gateway 以服務方式安裝，確認後會替你重新啟動（加 --yes 略過確認）；否則請自行重新啟動。",
     manualHeading: "手動寫入 config.json",
-    manualBody: "同樣的設定，給想自己動手的人。加上需要的設定區塊，然後重新啟動 Gateway。t3 pair 給的配對碼填在 pairing_token；Gateway 下次啟動時會兌換一次，之後就不再需要。opencode.binary 只在你想固定使用某個 OpenCode 時才需要。",
+    manualBody: "同樣的設定，給想自己動手的人。加上需要的設定區塊，然後重新啟動 Gateway。t3 pair 給的配對碼填在 pairing_token；Gateway 下次啟動時會兌換一次，之後就不再需要。opencode.binary 與 codex.binary 只在你想固定使用某個程式路徑時才需要。",
     credentialNote: "T3 的憑證存放在 Gateway 狀態目錄中的 t3-credential.json（Linux 上為 ~/.local/share/muqun-gateway/），只有你本人可讀。T3 撤銷它或它過期時，重新執行 agent setup t3 即可。",
     phoneHeading: "在手機上",
     entries: [
@@ -214,6 +215,11 @@ export const zhTW: UserGuide = {
         term: 'opencode.binary',
         detail:
           '指定啟動的 OpenCode 執行檔路徑。未指定時，Gateway 會使用 ~/.opencode/bin 中的路徑或系統 PATH。當背景服務無法讀取登入 Shell 的 PATH 時，可用此項固定路徑。',
+      },
+      {
+        term: 'codex',
+        detail:
+          'Codex 程式助手。預設開啟（enabled: true），自動尋找 PATH 上的 codex 並接上常駐 daemon；可用 codex.binary 指定執行檔絕對路徑，或將 enabled 設為 false 關閉。',
       },
       { term: "deepseek", detail: "DeepSeek Harness。只有 enabled 為 true 或填了 endpoint 時才會接上；Harness 需要時再填 token 與 secret。Gateway 不會掃描通訊埠尋找它。" },
       { term: "t3", detail: "T3 Code。enabled、url（預設 http://127.0.0.1:3773），再加上 t3 pair 給的 pairing_token 或你已有的 token。runtime_mode 決定它的授權策略，預設為 full-access。" },

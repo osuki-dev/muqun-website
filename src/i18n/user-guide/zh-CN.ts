@@ -3,11 +3,11 @@ import type { UserGuide } from './types';
 export const zhCN: UserGuide = {
   metaTitle: '牧群 用户指南与参考手册',
   metaDescription:
-    '安装 Gateway、手机配对、工作区管理、终端按键行、编程 AI 助手（OpenCode、DeepSeek Harness、T3 Code）、主题定制及连接排错的完整指南。',
+    '安装 Gateway、手机配对、工作区管理、终端按键行、编程 AI 助手（Codex、OpenCode、DeepSeek Harness、T3 Code）、主题定制及连接排错的完整指南。',
   hero: {
     badge: '用户指南 · 参考手册',
     heading: '触手可及，掌控你的每一台机器。',
-    lead: '牧群将手机与你自己的电脑或服务器直接相连。了解如何安装与配置 Gateway、管理终端工作区、接入并使用编程 AI 助手（OpenCode、DeepSeek Harness 和 T3 Code）、安装主题并排查连接故障。',
+    lead: '牧群将手机与你自己的电脑或服务器直接相连。了解如何安装与配置 Gateway、管理终端工作区、接入并使用编程 AI 助手（Codex、OpenCode、DeepSeek Harness 和 T3 Code）、安装主题并排查连接故障。',
     startCta: '开始使用 ↓',
     diagnosticsCta: '故障排查 ↓',
     issueCta: '反馈问题',
@@ -32,8 +32,8 @@ export const zhCN: UserGuide = {
       id: 'agents',
       label: "AI 助手",
       nav: "助手",
-      meta: "opencode · deepseek · t3",
-      desc: "AI 助手会话和终端的区别、4.0 支持的三个助手，以及在电脑上怎样接入。",
+      meta: "codex · opencode · deepseek · t3",
+      desc: "AI 助手会话和终端的区别、4.0 支持的四个助手，以及在电脑上怎样接入。",
     },
     {
       id: 'opencode',
@@ -129,13 +129,14 @@ export const zhCN: UserGuide = {
   agents: {
     eyebrow: "muqun-gateway agent",
     heading: "AI 助手。",
-    lead: "终端是你敲命令的 shell。AI 助手会话则是和电脑上运行的编程助手——OpenCode、DeepSeek Harness 或 T3 Code——的一段对话，App 把它画成消息、工具卡片和提问，而不是一屏文字。两者走的是同一台 Gateway、同一次配对，区别只在于 Gateway 替你和谁说话。",
+    lead: "终端是你敲命令的 shell。AI 助手会话则是和电脑上运行的编程助手——Codex、OpenCode、DeepSeek Harness 或 T3 Code——的一段对话，App 把它画成消息、工具卡片和提问，而不是一屏文字。两者走的是同一台 Gateway、同一次配对，区别只在于 Gateway 替你和谁说话。",
     versus: [
-      { term: "终端", detail: "电脑上的 tmux 或 Herdr。窗格里有什么，App 就显示什么；你发出的按键，就是程序收到的按键。所以任何程序都能用，包括跑在终端里的助手，比如 Claude Code 和 Codex。" },
+      { term: "终端", detail: "电脑上的 tmux 或 Herdr。窗格里有什么，App 就显示什么；你发出的按键，就是程序收到的按键。所以任何程序都能用，包括跑在终端里的命令行助手，比如 Claude Code。" },
       { term: "AI 助手会话", detail: "Gateway 通过助手自己的 API 与它对话。每个会话属于一个助手，也总会回到这个助手。工作台——模式、模型、斜杠命令、技能、附件、撤销、压缩、后台任务——只显示这个助手支持的部分。" },
     ],
     supportedHeading: "4.0 支持的助手",
     supported: [
+      { name: "Codex", id: "codex", detail: "Codex 默认启用。Gateway 会自动发现 PATH 上的 codex 并接入其常驻 daemon（必要时自动启动）；直接复用本机的 ~/.codex 凭据，支持原生的助手会话、工具卡片与差异展示。" },
       { name: "OpenCode", id: "opencode", detail: "OpenCode 无需设置。Gateway 会接管已经在运行的 OpenCode 服务，没有就自己启动一个；需要 OpenCode 2。工作台的所有功能它都支持。" },
       { name: "DeepSeek Harness", id: "deepseek", detail: "DeepSeek Harness 默认关闭，需要你手动开启。先在电脑上启动 Harness，再让 Gateway 指向它。它的模式来自 Harness 自带的预设，在新建会话时选定；附件会以电脑上的文件路径交给它。" },
       { name: "T3 Code", id: "t3", detail: "T3 Code 在 Gateway 拿到凭据之前不会启用。Gateway 与 T3 配对一次，之后一直保存这份凭据。它支持附件、权限审批和撤销——T3 的撤销会整轮回滚，所以 App 会先确认再执行。" },
@@ -150,7 +151,7 @@ export const zhCN: UserGuide = {
     ],
     restartNote: "setup 会写入 config.json，并告诉你正在运行的 Gateway 是否需要重启才能生效。如果 Gateway 以服务方式安装，确认后会替你重启（加 --yes 跳过确认）；否则请自己重启。",
     manualHeading: "手动写入 config.json",
-    manualBody: "同样的设置，适合想自己动手的人。加上需要的配置块，然后重启 Gateway。t3 pair 给出的配对码填在 pairing_token；Gateway 下次启动时会兑换一次，之后不再需要它。opencode.binary 只在你想固定使用某个 OpenCode 时才用。",
+    manualBody: "同样的设置，适合想自己动手的人。加上需要的配置块，然后重启 Gateway。t3 pair 给出的配对码填在 pairing_token；Gateway 下次启动时会兑换一次，之后不再需要它。opencode.binary 与 codex.binary 只在你想固定使用某个程序路径时才用。",
     credentialNote: "T3 的凭据保存在 Gateway 状态目录下的 t3-credential.json 里（Linux 上是 ~/.local/share/muqun-gateway/），只有你本人可读。T3 吊销了它或它过期时，重新运行 agent setup t3 即可。",
     phoneHeading: "在手机上",
     entries: [
@@ -213,6 +214,11 @@ export const zhCN: UserGuide = {
         term: 'opencode.binary',
         detail:
           '指定启动的 OpenCode 二进制路径。未指定时，Gateway 会使用 ~/.opencode/bin 中的路径或系统 PATH。当后台服务无法继承登录 Shell 的 PATH 时，可用此项固定路径。',
+      },
+      {
+        term: 'codex',
+        detail:
+          'Codex 编程助手。默认开启（enabled: true），自动寻找 PATH 上的 codex 并接入常驻 daemon；可用 codex.binary 指定可执行文件绝对路径，或将 enabled 设为 false 关闭。',
       },
       { term: "deepseek", detail: "DeepSeek Harness。只有 enabled 为 true 或填了 endpoint 时才会接入；Harness 需要时再填 token 和 secret。Gateway 不会扫描端口去找它。" },
       { term: "t3", detail: "T3 Code。enabled、url（默认 http://127.0.0.1:3773），再加上 t3 pair 给出的 pairing_token 或你已有的 token。runtime_mode 决定它的权限策略，默认 full-access。" },
