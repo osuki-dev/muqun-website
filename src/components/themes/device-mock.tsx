@@ -148,11 +148,15 @@ function paintFor(pack: ThemePackage, mode: ThemeMode, device: DeviceKind): Pain
    Building blocks
    -------------------------------------------------------------------------- */
 
-function artStyle(art: ResolvedArtwork, banner = false): CSSProperties {
-  const fit = banner || art.image.fit === 'tile' ? 'contain' : (art.image.fit ?? 'cover');
-  const tile = art.image.fit === 'tile' && !banner;
+function artStyle(art: ResolvedArtwork, banner = false, cover = false): CSSProperties {
+  const fit = cover
+    ? (art.image.fit === 'cover' ? 'cover' : '100% auto')
+    : banner || art.image.fit === 'tile'
+      ? 'contain'
+      : (art.image.fit ?? 'cover');
+  const tile = art.image.fit === 'tile' && !banner && !cover;
   const x = Math.round((art.image.focalPoint?.x ?? 0.5) * 100);
-  const y = Math.round((art.image.focalPoint?.y ?? 0.5) * 100);
+  const y = Math.round((art.image.focalPoint?.y ?? (cover ? 0 : 0.5)) * 100);
   return {
     backgroundImage: `url("${art.url}")`,
     backgroundSize: tile ? 'auto' : fit,
@@ -163,8 +167,8 @@ function artStyle(art: ResolvedArtwork, banner = false): CSSProperties {
 }
 
 /** `ThemeArtworkLayer`: absolute, non-interactive, no layout footprint. */
-function Art({ art, banner = false }: { art: ResolvedArtwork | null; banner?: boolean }) {
-  return art ? <span className="dm-art" style={artStyle(art, banner)} /> : null;
+function Art({ art, banner = false, cover = false }: { art: ResolvedArtwork | null; banner?: boolean; cover?: boolean }) {
+  return art ? <span className="dm-art" style={artStyle(art, banner, cover)} /> : null;
 }
 
 /**
@@ -682,8 +686,11 @@ function HomeEditorialContent({ paint, pad, top, logicalWidth }: { paint: Paint;
         {cover ? (
           <section className="dm-editorial-cover">
             {coverTitle ? <CoverTitle text={coverTitle} color={colors.text} onHeight={setCoverTitleHeight} /> : null}
-            <div className="dm-editorial-cover__art">
-              <Art art={banner} />
+            <div
+              className="dm-editorial-cover__art"
+              style={pad ? undefined : { top: -(top + 12), left: -12, right: -12, bottom: 0 }}
+            >
+              <Art art={banner} cover />
             </div>
             <div className="dm-editorial-cover__utilities" style={{ top: coverTitle ? coverTitleHeight + 8 : 16 }}>{headerActions}</div>
             <div className="dm-editorial-cover__launches">
@@ -784,19 +791,27 @@ function HomeContent({ paint, pad, top }: { paint: Paint; pad: boolean; top: num
   // shell and Home along with it.
   const scene = paint.art('home.wallpaper', null, 'shell.wallpaper');
   const hasScene = paint.has('home.wallpaper', 'shell.wallpaper');
+  const banner = paint.homeArtwork;
+  const cover = paint.manifest.homePresentation?.header === 'cover' && banner !== null;
+  const bareToolbar = paint.manifest.homePresentation?.toolbarBackground === false;
   return (
-    <div className={`dm-home ${pad ? 'dm-home--pad' : ''}`} style={{ background: paint.fill(colors.background) }}>
+    <div className={`dm-home ${pad ? 'dm-home--pad' : ''}${cover ? ' dm-home--classic-cover' : ''}`} style={{ background: paint.fill(colors.background) }}>
       <Art art={scene} />
+      {cover && !pad && (
+        <div className="dm-classic-cover__art">
+          <Art art={banner} cover />
+        </div>
+      )}
       {!pad && (
         <div className="dm-home__bar" style={{ paddingTop: top + NAV_HEADER_TOP_GAP }}>
-          <HeaderButton paint={paint} icon={ICON.squareTerminal} />
-          <HeaderButton paint={paint} name="chrome.scan" icon={ICON.scanLine} />
-          <HeaderButton paint={paint} name="chrome.settings" icon={ICON.settings} />
+          <HeaderButton paint={paint} icon={ICON.squareTerminal} bare={bareToolbar} />
+          <HeaderButton paint={paint} name="chrome.scan" icon={ICON.scanLine} bare={bareToolbar} />
+          <HeaderButton paint={paint} name="chrome.settings" icon={ICON.settings} bare={bareToolbar} />
         </div>
       )}
       <div
         className="dm-home__list"
-        style={{ paddingInline: layout.gutter, gap: layout.cardGap, maxWidth: layout.maxWidth, paddingTop: pad ? 32 : 10 }}
+        style={{ paddingInline: layout.gutter, gap: layout.cardGap, maxWidth: layout.maxWidth, paddingTop: pad ? 32 : (cover ? 20 : 10) }}
       >
         {/* The brand block at its `mark` weight -- the screen has servers, so
             the name is the top of a page, not a poster. The mark stands on the
@@ -812,7 +827,7 @@ function HomeContent({ paint, pad, top }: { paint: Paint; pad: boolean; top: num
             )}
           </div>
         )}
-        <HomeArtwork paint={paint} />
+        {!cover && <HomeArtwork paint={paint} />}
         {SERVERS.map((server) => (
           <ServerCard key={server.name} paint={paint} server={server} layout={layout} />
         ))}

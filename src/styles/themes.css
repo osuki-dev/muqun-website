@@ -998,14 +998,40 @@
 .dm-editorial-cover__art {
   position: absolute;
   z-index: 2;
-  inset: 6% -12px 0;
+  inset: 0 -12px;
   -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 68%, transparent 100%);
   mask-image: linear-gradient(to bottom, #000 0%, #000 68%, transparent 100%);
 }
 
 .dm-editorial-cover__art > .dm-art {
-  background-size: contain;
+  background-size: cover;
   background-repeat: no-repeat;
+}
+
+.dm-classic-cover__art {
+  position: absolute;
+  z-index: 1;
+  inset-block-start: 0;
+  inset-inline: 0;
+  block-size: min(90vw, 360px);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 68%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 68%, transparent 100%);
+  pointer-events: none;
+}
+
+.dm-classic-cover__art > .dm-art {
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.dm-home--classic-cover .dm-home__bar {
+  position: relative;
+  z-index: 3;
+}
+
+.dm-home--classic-cover .dm-home__list {
+  position: relative;
+  z-index: 2;
 }
 
 .dm-editorial-cover__utilities {

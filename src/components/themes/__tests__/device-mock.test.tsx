@@ -181,6 +181,26 @@ describe('shared Home artwork contract', () => {
     expect(markup.match(/dm-home__hero/g)).toHaveLength(1);
     expect(markup).not.toContain('dm-banner');
   });
+
+  test('Classic renders the cover header and bare controls when header: cover', () => {
+    const pack = previewPackage();
+    pack.manifest.homePresentation = { header: 'cover', toolbarBackground: false };
+    const markup = renderToStaticMarkup(
+      <DeviceMock
+        pack={pack}
+        mode="light"
+        device="phone"
+        screen="home"
+        layout="classic"
+        label="Classic Home preview"
+      />,
+    );
+
+    expect(markup).toContain('dm-home--classic-cover');
+    expect(markup).toContain('dm-classic-cover__art');
+    expect(markup.match(/dm-home__control--bare/g)).toHaveLength(3);
+    expect(markup).not.toContain('dm-home__hero');
+  });
 });
 
 describe('ambient effect preview contract', () => {
