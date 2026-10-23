@@ -28,7 +28,7 @@ for (const locale of locales) {
       assert.doesNotMatch(html, /pocket-icon|MUQUN \/ 3\.0/);
       assert.doesNotMatch(html,/<select\b|world-controls|world-poster|pocket-poster|\/pull\/58/);
       assert.ok(html.includes('data-code="curl -fsSL https://muqun.dev/gateway.sh | sh"'));
-      for(const id of ['pocket','film','connect','features','agents','everyday','anywhere'])assert.ok(html.includes(`id="${id}"`));
+      for(const id of ['pocket','film','connect','features','agents','everyday','themes','anywhere'])assert.ok(html.includes(`id="${id}"`));
       assert.doesNotMatch(html, /id="terminal"|class="gateway-help"|class="session-preview"/);
     }
     routes++;
