@@ -3223,3 +3223,86 @@
   font-weight: 600;
   white-space: nowrap;
 }
+
+/* The terminal's icon keys and the 4.0 rail. */
+.dm-key {
+  position: relative;
+}
+.dm-key__badge {
+  position: absolute;
+  inset-block-start: -5px;
+  inset-inline-end: -5px;
+  display: inline-grid;
+  place-items: center;
+  min-inline-size: 16px;
+  block-size: 16px;
+  padding-inline: 4px;
+  border-radius: 8px;
+  font-family: var(--mq-font-sans);
+  font-size: 10px;
+  font-weight: 700;
+}
+.dm-rail--4 {
+  border-radius: 24px;
+  padding: 14px 10px 10px;
+  gap: 6px;
+}
+.dm-rail__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px 10px;
+  font-size: 15px;
+}
+.dm-rail--4 .dm-rail__label {
+  padding: 10px 6px 6px;
+}
+.dm-rail__list {
+  display: flex;
+  flex-direction: column;
+}
+.dm-rail__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+  padding: 10px 8px;
+  border-radius: 12px;
+}
+.dm-rail__row--connection {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 12px;
+}
+.dm-rail__row-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-inline-size: 0;
+  font-size: 11px;
+}
+.dm-rail__row-copy strong {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dm-rail__row-copy span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dm-rail__manage {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 8px;
+  font-size: 12px;
+  font-weight: 500;
+}
+.dm-key {
+  white-space: nowrap;
+}

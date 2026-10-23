@@ -720,64 +720,76 @@ function HomeContent({ paint, pad, top, bottom = 0 }: { paint: Paint; pad: boole
   );
 }
 
-/** `PadServerRail`: the persistent master column on a wide window. */
-function Rail({ paint, selected, editorial = false }: { paint: Paint; selected?: { server: string; pane: string }; editorial?: boolean }) {
+/**
+ * The tablet's workspace rail (4.0): a card inset from the edge with Back,
+ * the Continue list (the open session on `primarySubtle`), the Connections
+ * list, Manage connections, and the three square tools at its foot. The
+ * 3.x brand block, Servers label and per-pane rows are gone.
+ */
+function Rail({ paint, selected }: { paint: Paint; selected: string }) {
   const { colors } = paint;
-  const identity = resolveHomeIdentity(paint.manifest);
+  const sessions: [string[], string, string][] = [
+    [ICON.bot, 'Dark variant for the cover', 'Codex · studio · ~/project'],
+    [ICON.bot, 'Contrast report', 'Codex · studio · ~/project'],
+    [ICON.squareTerminal, 'Claude Code', 'Terminal · studio · ● Working'],
+  ];
+  const connections: [string[], string, string][] = [
+    [ICON.monitor, 'studio', 'Online'],
+    [ICON.monitor, 'build-box', 'Offline'],
+    [ICON.squareTerminal, 'ops@build-box', 'Saved SSH host'],
+  ];
   return (
-    <aside className={`dm-rail${editorial ? ' dm-rail--editorial' : ''}`} style={{ width: RAIL_WIDTH, background: paint.fill(colors.surface) }}>
+    <aside className="dm-rail dm-rail--4" style={{ width: RAIL_WIDTH, background: paint.fill(colors.surface) }}>
       <Art art={paint.art('navigation.background', colors.surface)} />
-      {identity.showBrand && (
-        <div className="dm-rail__brand">
-          {identity.logo && (
-            <span className="dm-rail__tile" style={{ background: paint.fill(colors.surfaceRaised) }}>
-              <Logo paint={paint} size={34} />
+      <span className="dm-rail__back" style={{ color: colors.text }}>
+        <Glyph paint={paint} name="chrome.back" size={18} color={colors.text} fallback={ICON.chevronLeft} /> Back
+      </span>
+      <span className="dm-rail__label" style={{ color: colors.textMuted }}>Continue</span>
+      <div className="dm-rail__list">
+        {sessions.map(([icon, title, caption]) => (
+          <div
+            key={title}
+            className={`dm-rail__row${title === selected ? ' dm-rail__row--on' : ''}`}
+            style={title === selected ? { background: paint.fill(colors.primarySubtle) } : undefined}
+          >
+            <span className="dm-rail__row-copy">
+              <strong style={{ color: colors.text }}>
+                <Lucide icon={icon} size={14} color={colors.primary} />
+                {title}
+              </strong>
+              <span style={{ color: colors.textMuted }}>{caption}</span>
             </span>
-          )}
-          {identity.name !== null && (
-            <span className="dm-rail__copy">
-              <span className="dm-rail__name" style={{ color: colors.text }}>{identity.name}</span>
-              {!editorial ? <span className="dm-rail__tagline" style={{ color: colors.textMuted }}>Your agents, anywhere.</span> : null}
-            </span>
-          )}
-        </div>
-      )}
-      <span className="dm-rail__label" style={{ color: colors.textMuted }}>Servers</span>
-      <div className="dm-rail__groups">
-        {SERVERS.map((server) => {
-          const status = server.reachability === 'live' ? colors.success : colors.textSubtle;
-          const current = selected?.server === server.name;
-          return (
-            <div key={server.name} className="dm-rail__group">
-              <div className="dm-rail__pill" style={current ? { background: paint.fill(colors.primarySubtle) } : undefined}>
-                <span className="dm-rail__icon" style={{ background: paint.fill(colors.surfaceRaised) }}>
-                  <Lucide icon={ICON.server} size={17} color={colors.textMuted} />
-                </span>
-                <span className="dm-rail__server">
-                  <span className="dm-rail__server-name" style={{ color: colors.text }}>{server.name}</span>
-                  <span className="dm-rail__reach" style={{ color: status }}>
-                    <Dot color={status} size={7} filled={server.reachability !== 'unknown'} />
-                    {REACHABILITY[server.reachability]}
-                  </span>
-                </span>
-              </div>
-              <PaneRows paint={paint} server={server} selected={current ? selected?.pane : undefined} compact minHeight={34} />
-            </div>
-          );
-        })}
+            <Glyph paint={paint} name="home.arrow" size={16} color={colors.primary} fallback={ICON.chevronRight} />
+          </div>
+        ))}
       </div>
-      {/* Three glyphs, not three explained rows: the rail has servers in it. */}
+      <span className="dm-rail__label" style={{ color: colors.textMuted }}>Connections</span>
+      <div className="dm-rail__list">
+        {connections.map(([icon, title, caption]) => (
+          <div key={title} className="dm-rail__row dm-rail__row--connection">
+            <Lucide icon={icon} size={20} color={colors.primary} />
+            <span className="dm-rail__row-copy">
+              <strong style={{ color: colors.text }}>{title}</strong>
+              <span style={{ color: colors.textMuted }}>{caption}</span>
+            </span>
+            <Glyph paint={paint} name="home.arrow" size={16} color={colors.primary} fallback={ICON.chevronRight} />
+          </div>
+        ))}
+      </div>
+      <span className="dm-rail__manage" style={{ color: colors.primary }}>
+        Manage connections <Lucide icon={ICON.chevronRight} size={14} color={colors.primary} />
+      </span>
       <div className="dm-rail__actions">
         {[
           { name: 'chrome.scan', icon: ICON.scanLine },
           { name: undefined, icon: ICON.squareTerminal },
-          { name: 'chrome.settings', icon: ICON.settings },
+          { name: 'chrome.settings', icon: ICON.slidersHorizontal },
         ].map((item, index) => (
           <span key={index} className="dm-rail__action" style={{ background: paint.fill(colors.background) }}>
             {item.name ? (
-              <Glyph paint={paint} name={item.name} size={18} color={colors.textMuted} fallback={item.icon} />
+              <Glyph paint={paint} name={item.name} size={18} color={colors.text} fallback={item.icon} />
             ) : (
-              <Lucide icon={item.icon} size={18} color={colors.textMuted} />
+              <Lucide icon={item.icon} size={18} color={colors.text} />
             )}
           </span>
         ))}
@@ -938,7 +950,15 @@ function ConversationContent({ paint, pad, top, bottom }: { paint: Paint; pad: b
    Terminal
    -------------------------------------------------------------------------- */
 
-const KEYS = ['esc', 'tab', 'ctrl', '↑', '↓', '⌘'];
+/** `terminal-composer.tsx`: the icon keys, then the keys a terminal needs. */
+const KEY_ICONS: [string[], number | undefined][] = [
+  [ICON.zap, undefined],
+  [ICON.folder, undefined],
+  [ICON.arrowUpDown, 7],
+  [ICON.keyboard, undefined],
+  [ICON.bot, undefined],
+];
+const KEYS = ['Enter', 'Shift ↵', 'Esc', 'Tab', 'Ctrl C'];
 
 function TerminalContent({ paint, pad, top, bottom }: { paint: Paint; pad: boolean; top: number; bottom: number }) {
   const { colors, terminal } = paint;
@@ -974,18 +994,22 @@ function TerminalContent({ paint, pad, top, bottom }: { paint: Paint; pad: boole
           <span style={{ color: a[2] }}>❯</span> <span className="dm-term__cursor" style={{ background: terminal.cursor }} />
         </pre>
       </div>
-      <NavHeader paint={paint} title="studio · claude" top={top} action={ICON.panelsTopLeft} />
+      <NavHeader paint={paint} title="Claude Code" top={top} action={ICON.panelsTopLeft} />
       <div className="dm-workspace__foot">
         <Dock paint={paint} pad={pad} bottom={bottom}>
+          <SessionChips paint={paint} chips={['Claude Code', 'nvim', 'zsh']} icons={[ICON.bot, ICON.squareTerminal, ICON.squareTerminal]} />
           <div className="dm-keys">
-            <span className="dm-key dm-key--entry" style={{ background: key }}>
-              <Lucide icon={ICON.zap} size={16} color={colors.primary} />
-            </span>
+            {KEY_ICONS.map(([icon, badge], index) => (
+              <span key={index} className="dm-key dm-key--entry" style={{ background: key }}>
+                <Lucide icon={icon} size={16} color={colors.primary} />
+                {badge !== undefined && <span className="dm-key__badge" style={{ background: colors.primary, color: colors.onPrimary }}>{badge}</span>}
+              </span>
+            ))}
             {KEYS.map((label) => (
               <span key={label} className="dm-key" style={{ background: key, color: colors.text }}>{label}</span>
             ))}
           </div>
-          <Composer paint={paint} placeholder="bun test --watch" armed />
+          <Composer paint={paint} placeholder="Send a message" armed={false} />
         </Dock>
       </div>
     </div>
@@ -1350,7 +1374,7 @@ export default function DeviceMock({ pack, mode, device, screen, layout = DEFAUL
           )}
           {pad && screen !== 'home' ? (
             <div className="dm-split" style={{ paddingTop: spec.top + 12, paddingBottom: spec.bottom }}>
-              <Rail paint={paint} editorial={layout === 'editorial'} selected={{ server: 'studio', pane: 'claude' }} />
+              <Rail paint={paint} selected={screen === 'terminal' ? 'Claude Code' : 'Dark variant for the cover'} />
               <div className="dm-split__detail">{content}</div>
             </div>
           ) : (
