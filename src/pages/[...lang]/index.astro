@@ -46,7 +46,7 @@ const featureGroups = (["work", "tools", "appearance"] as const).map((id) => ({ 
 const agentsGuideHref = `${localizedPath("/support", locale)}#agents`;
 ---
 
-<Layout lang={locale} title={copy.meta.title} description={release.intro} version="4.0.0">
+<Layout lang={locale} title={copy.meta.title} description={world.intro} version="4.0.0">
   <div id="world-story" class="world-story">
     <div class="world-stage">
       <PocketWorld client:load />
@@ -61,7 +61,7 @@ const agentsGuideHref = `${localizedPath("/support", locale)}#agents`;
             <span class="hero-title-lead">{world.title}</span>{" "}
             <span class="hero-title-accent">{world.accent}</span>
           </h1>
-          <p class="world-intro">{release.intro}</p>
+          <p class="world-intro">{world.intro}</p>
           <div class="world-actions">
             {appStoreAvailable ? (
               <a class="world-button primary" href={appStoreUrl} data-tip={storePromoActive ? world.appStoreTip : undefined}>
@@ -82,7 +82,7 @@ const agentsGuideHref = `${localizedPath("/support", locale)}#agents`;
             <span class="hero-agent-pill">T3 Code</span>
           </div>
         </div>
-        <a class="hero-coordinate hero-scroll" href="#terminal">
+        <a class="hero-coordinate hero-scroll" href="#connect">
           {world.explore} <span aria-hidden="true">↓</span>
         </a>
         <div class="hero-wordmark" aria-hidden="true">
