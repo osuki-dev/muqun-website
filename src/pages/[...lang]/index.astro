@@ -34,7 +34,8 @@ const features = getFeatures(locale);
 const help = gatewayHelp[locale];
 const release = releaseHome[locale];
 const agents = { ...agentsHome[locale], facts: [...agentsHome[locale].facts.slice(1, 4), release.credentials] };
-const featureGroups = (["work", "tools", "appearance"] as const).map((id) => ({ id, title: release[id], offset: features.findIndex((feature) => feature.group === id), features: features.filter((feature) => feature.group === id) }));
+const fresh = features.filter((feature) => feature.group === "new");
+const everyday = features.filter((feature) => feature.group === "everyday");
 
 /**
  * The agents chapter's link, which is an anchor on another page.
@@ -138,27 +139,22 @@ const agentsGuideHref = `${localizedPath("/support", locale)}#agents`;
           </p>
         </div>
       </section>
-      <section class="features-section" id="features" aria-label={world.features}>
-        <div class="feature-release-note" data-world-reveal>
-          <p class="world-eyebrow">MUQUN / 4.0.0</p>
+      <section class="features-section" id="features" aria-labelledby="features-new">
+        <div class="feature-group-heading" data-world-reveal>
+          <span class="feature-number">02</span>
+          <h2 id="features-new">{world.whatsNew}</h2>
+        </div>
+        <FeatureGallery features={fresh} />
+        <div class="feature-release-note feature-release-note--after" data-world-reveal>
           <p>{release.compatibility}</p>
         </div>
-        {featureGroups.map((group, index) => (
-          <section class="feature-group" aria-labelledby={`features-${group.id}`}>
-            <div class="feature-group-heading" data-world-reveal>
-              <span class="feature-number">{String(index + 1).padStart(2, "0")}</span>
-              <h2 id={`features-${group.id}`}>{group.title}</h2>
-            </div>
-            <FeatureGallery features={group.features} offset={group.offset} />
-          </section>
-        ))}
       </section>
       {/* The agents chapter. After the gallery because agents are the one
           feature with a screen of their own rather than a line in a grid, and
           before setup because setup is what you do once you want it. */}
       <section class="story-chapter" id="agents">
         <div class="chapter-copy" data-world-reveal>
-          <p class="world-eyebrow">02 / {agents.eyebrow}</p>
+          <p class="world-eyebrow">03 / {agents.eyebrow}</p>
           <h2>{agents.heading}</h2>
           <p>{agents.body}</p>
           {agents.cards && (
@@ -183,6 +179,25 @@ const agentsGuideHref = `${localizedPath("/support", locale)}#agents`;
             {agents.link} ↗
           </a>
         </div>
+      </section>
+      {/* The everyday workspace, as a list rather than a wall of tiles: ten
+          things the app does every day, one line each. */}
+      <section class="features-section everyday-section" id="everyday" aria-labelledby="everyday-heading">
+        <div class="feature-group-heading" data-world-reveal>
+          <span class="feature-number">04</span>
+          <h2 id="everyday-heading">{release.tools}</h2>
+        </div>
+        <ul class="everyday-list">
+          {everyday.map((feature) => (
+            <li>
+              <span class="feature-symbol" aria-hidden="true">{feature.icon}</span>
+              <div>
+                <h3>{feature.title}</h3>
+                <p>{feature.description}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
       </section>
       <section class="privacy-strip" data-world-reveal>
         <div>
