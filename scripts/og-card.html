@@ -1,0 +1,66 @@
+<!doctype html>
+<!--
+  The share card, `public/og-muqun.png`: the page every link to this site
+  unfurls into. Rendered from this file rather than drawn in an editor so the
+  icon is the app's (via `scripts/brand-icons.ts`) and the type is the site's.
+
+  Render it with a headless Chromium at exactly 1200×630:
+
+    chromium --headless=new --hide-scrollbars --window-size=1200,630 \
+      --screenshot=public/og-muqun.png scripts/og-card.html
+
+  Fonts and the icon are read relative to this file, so run it from the
+  repository root after `bun scripts/brand-icons.ts`.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Muqun share card</title>
+<style>
+  @font-face { font-family: 'Plex Sans'; font-weight: 400; src: url('../src/styles/fonts/plex-sans-latin-400.woff2') format('woff2'); }
+  @font-face { font-family: 'Plex Sans'; font-weight: 500; src: url('../src/styles/fonts/plex-sans-latin-500.woff2') format('woff2'); }
+  @font-face { font-family: 'Plex Sans'; font-weight: 600; src: url('../src/styles/fonts/plex-sans-latin-600.woff2') format('woff2'); }
+  @font-face { font-family: 'Plex Sans Condensed'; font-weight: 600; src: url('../src/styles/fonts/plex-sans-condensed-latin-600.woff2') format('woff2'); }
+  @font-face { font-family: 'Plex Mono'; font-weight: 400; src: url('../src/styles/fonts/plex-mono-latin-400.woff2') format('woff2'); }
+  @font-face { font-family: 'Plex Mono'; font-weight: 600; src: url('../src/styles/fonts/plex-mono-latin-600.woff2') format('woff2'); }
+
+  html, body { margin: 0; width: 1200px; height: 630px; overflow: hidden; }
+  body {
+    position: relative;
+    background: #090b14;
+    color: #f3efe8;
+    font-family: 'Plex Sans', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  /* The Neon icon's two lights, as the card's only decoration. */
+  .glow { position: absolute; inset: 0; background:
+    radial-gradient(520px 420px at 1010px 330px, rgba(0, 240, 255, 0.16), transparent 70%),
+    radial-gradient(460px 400px at 1140px 90px, rgba(255, 73, 118, 0.14), transparent 70%),
+    radial-gradient(900px 500px at 120px 640px, rgba(255, 112, 92, 0.08), transparent 70%); }
+  .card { position: relative; height: 100%; display: grid; grid-template-columns: 1fr 300px; align-items: center; padding: 0 84px 0 88px; box-sizing: border-box; }
+  .eyebrow { display: flex; align-items: center; gap: 12px; font-family: 'Plex Mono', monospace; font-weight: 600; font-size: 18px; letter-spacing: 0.12em; color: #9aa3b5; }
+  .eyebrow i { width: 9px; height: 9px; border-radius: 50%; background: #98ddc4; box-shadow: 0 0 12px #98ddc4; }
+  h1 { margin: 26px 0 0; font-family: 'Plex Sans Condensed', 'Plex Sans', sans-serif; font-weight: 600; font-size: 98px; line-height: 0.98; letter-spacing: -0.015em; }
+  h1 span { color: #ff8a73; }
+  p { margin: 30px 0 0; max-width: 640px; font-size: 27px; line-height: 1.32; font-weight: 400; color: #d5d9e2; }
+  .foot { position: absolute; left: 88px; right: 84px; bottom: 54px; display: flex; justify-content: space-between; font-family: 'Plex Mono', monospace; font-size: 17px; letter-spacing: 0.06em; color: #7f889a; }
+  .icon { justify-self: end; width: 236px; height: 236px; border-radius: 22.37%; overflow: hidden; box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.08); }
+  .icon img { display: block; width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+  <div class="glow"></div>
+  <div class="card">
+    <div>
+      <div class="eyebrow"><i></i>MUQUN / 4.0.0 · MUQUN.DEV</div>
+      <h1>Your agents,<br /><span>within reach.</span></h1>
+      <p>The phone and tablet app for the coding agents and terminals on your own computers. No account, no relay.</p>
+    </div>
+    <div class="icon"><img src="../public/app-icon-512.png" alt="" /></div>
+  </div>
+  <div class="foot">
+    <span>CODEX · OPENCODE · DEEPSEEK HARNESS · T3 CODE · TERMINAL</span>
+    <span>iOS 16.4+ · ANDROID 8.0+</span>
+  </div>
+</body>
+</html>

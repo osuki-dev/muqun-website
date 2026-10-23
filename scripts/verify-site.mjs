@@ -23,6 +23,8 @@ for (const locale of locales) {
       assert.match(html, /MUQUN \/ 4\.0\.0/);
       for (const group of ['work', 'tools', 'appearance']) assert.ok(html.includes(`id="features-${group}"`));
       for (const id of ['composer','tasks','voice','media','worktrees','storage','updates']) assert.ok(html.includes(`id="feature-${id}"`));
+      for (const href of ['/favicon-32.png','/favicon-dark-32.png','/apple-touch-icon.png','/og-muqun.png']) assert.ok(html.includes(href), `${locale}: missing ${href}`);
+      assert.doesNotMatch(html, /pocket-icon|MUQUN \/ 3\.0/);
       assert.doesNotMatch(html,/<select\b|world-controls|world-poster|pocket-poster|\/pull\/58/);
       assert.ok(html.includes('data-code="curl -fsSL https://muqun.dev/gateway.sh | sh"'));
       for(const id of ['pocket','terminal','features','agents','connect','anywhere'])assert.ok(html.includes(`id="${id}"`));
