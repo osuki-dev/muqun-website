@@ -1440,3 +1440,59 @@ html[data-theme="light"] .world-button[data-tip]::after {
   margin: 0;
   flex: 1;
 }
+
+/* ── The restructure: how-it-works links ────────────────────────────────── */
+.world-step-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  margin: 8px 0 0;
+}
+.chapter-copy > .world-step-links {
+  margin-top: 24px;
+}
+
+/* ── The everyday workspace: a list, not a wall ─────────────────────────── */
+.feature-release-note--after {
+  margin: 40px auto 0;
+}
+.everyday-list {
+  list-style: none;
+  margin: 0 auto;
+  padding: 0;
+  max-width: 1268px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 48px;
+}
+.everyday-list li {
+  display: grid;
+  grid-template-columns: 45px minmax(0, 1fr);
+  gap: 18px;
+  padding: 20px 0;
+  border-top: 1px solid #ffffff13;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+html[data-theme="light"] .everyday-list li {
+  border-color: #34465425;
+}
+.everyday-list h3 {
+  margin: 8px 0 6px;
+  font-size: 18px;
+  line-height: 1.3;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--mq-text);
+}
+.everyday-list p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--mq-text-muted);
+}
+@media (max-width: 699px) {
+  .everyday-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

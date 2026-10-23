@@ -8,7 +8,7 @@ const labels: Record<SiteLocale, string> = {
 const { locale } = Astro.props as { locale: SiteLocale };
 ---
 <button class="mini-pet" type="button" aria-label={labels[locale]} title={labels[locale]} hidden>
-  <span class="mini-pet__scene" aria-hidden="true"><img src="/pocket-icon-transparent-48.png" alt="" /></span>
+  <span class="mini-pet__scene" aria-hidden="true"><img src="/mini-pet.png" alt="" /></span>
   <span class="mini-pet__arrow" aria-hidden="true">↑</span>
   <span class="mini-pet__hint" aria-hidden="true">{labels[locale]}</span>
 </button>

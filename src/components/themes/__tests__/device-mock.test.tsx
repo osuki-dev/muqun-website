@@ -74,45 +74,39 @@ function renderEditorial(pack = previewPackage()) {
 }
 
 describe('editorial Home preview contract', () => {
-  test('shows Home actions without a sample request notice', () => {
+  test('draws the 4.0 Editorial: masthead, tiles, the three sections and the composer', () => {
     const markup = renderEditorial();
 
     expect(markup).toContain('dm-home--editorial');
-    expect(markup).not.toContain('dm-home--editorial-actions-wide');
-    expect(markup).toContain('dm-editorial-cover__rail-wrap');
-    expect(markup).toContain('studio');
-    expect(markup).toContain('dm-editorial__target');
+    expect(markup).toContain('dm-editorial__identity');
+    expect(markup.match(/class="dm-square"/g)).toHaveLength(2);
     expect(markup).toContain('dm-editorial__launch-grid');
-    expect(markup).toContain('dm-editorial__launch-primary');
-    expect(markup).toContain('dm-editorial__launch-secondary');
-    expect(markup).toContain('dm-editorial__launch-header');
     expect(markup.match(/dm-editorial__launch-header/g)).toHaveLength(5);
-    expect(markup.match(/dm-editorial__row-number/g)).toHaveLength(3);
-    expect(markup.match(/dm-editorial__section-head/g)).toHaveLength(2);
+    expect(markup).toContain('dm-editorial__launch-primary');
+    expect(markup).toContain('dm-editorial__launch-stack');
+    expect(markup).toContain('dm-editorial__launch-secondary');
     expect(markup).toContain('OpenCode');
     expect(markup).toContain('New session');
     expect(markup).toContain('Sessions');
-    expect(markup).toContain('Terminal');
     expect(markup).toContain('New terminal');
     expect(markup).toContain('SSH hosts');
-    expect(markup).not.toContain('SSH connection');
-    expect(markup).not.toContain('3 requests last observed');
-    expect(markup).not.toContain('Last checked recently');
-    expect(markup).not.toContain('Open to check the current state');
+    expect(markup.match(/dm-editorial__launch-marker/g)).toHaveLength(5);
+    expect(markup.match(/dm-editorial__section-head/g)).toHaveLength(3);
+    expect(markup).toContain('>Computers<');
+    expect(markup).toContain('>Recent<');
+    expect(markup).toContain('>Connections<');
+    expect(markup.match(/dm-rows__row--numbered/g)).toHaveLength(3);
     expect(markup).toContain('Manage connections');
     expect(markup).toContain('Saved SSH host');
     expect(markup).toContain('Offline, not answering');
-    expect(markup).not.toContain('REACHABLE');
-    expect(markup).not.toContain('Write to src/theme.json?');
-    expect(markup).not.toContain('dm-editorial__controls');
-    expect(markup).not.toContain('PAIR A GATEWAY');
-    expect(markup).not.toContain('OPEN');
+    expect(markup).toContain('dm-hcomposer__field');
+    expect(markup).toContain('New conversation with OpenCode');
+    expect(markup).not.toContain('dm-editorial__target');
     expect(markup).not.toContain('dm-home__bar');
-    expect(markup).not.toContain('HOME / EDITORIAL');
-    expect(markup.indexOf('dm-editorial__target')).toBeLessThan(markup.indexOf('dm-editorial__identity'));
-    expect(markup.indexOf('dm-editorial__launches')).toBeLessThan(markup.indexOf('dm-editorial__grid'));
-    expect(markup).toContain('dm-editorial__masthead-action');
-    expect(markup.indexOf('dm-banner')).toBeLessThan(markup.indexOf('dm-editorial__masthead'));
+    expect(markup).not.toContain('Write to src/theme.json?');
+    expect(markup.indexOf('dm-editorial__identity')).toBeLessThan(markup.indexOf('dm-editorial__launches'));
+    expect(markup.indexOf('dm-editorial__hero')).toBeLessThan(markup.indexOf('dm-editorial__launches'));
+    expect(markup.indexOf('dm-editorial__launches')).toBeLessThan(markup.indexOf('dm-editorial__main'));
   });
 
   test('renders the default identity mark and keeps custom identity resolution aligned', () => {
@@ -144,11 +138,11 @@ describe('editorial Home preview contract', () => {
     expect(markup).toContain('dm-editorial-cover__art');
     expect(markup).toContain('dm-editorial-cover__launches');
     expect(markup).toContain('dm-editorial-cover__rail');
-    expect(markup).toContain('dm-editorial-cover__edge--right');
-    expect(markup).not.toContain('dm-editorial-cover__edge--left');
+    expect(markup.match(/dm-editorial__launch-header/g)).toHaveLength(5);
     expect(markup).toContain('RIBBON REVERIE');
-    expect(markup.match(/dm-home__control--bare/g)).toHaveLength(2);
+    expect(markup.match(/dm-square--bare/g)).toHaveLength(2);
     expect(markup).not.toContain('dm-editorial__identity');
+    expect(markup).not.toContain('dm-editorial__hero');
   });
 
   test('keeps untitled cover utilities at the App offset', () => {
@@ -161,7 +155,7 @@ describe('editorial Home preview contract', () => {
 
     expect(markup).not.toContain('Editorial Contract</h2>');
     expect(markup).toContain('dm-editorial-cover__utilities" style="top:16px"');
-    expect(markup).not.toContain('dm-home__control--bare');
+    expect(markup).not.toContain('dm-square--bare');
   });
 });
 
@@ -277,4 +271,36 @@ test('effect options obey count budgets, palette and unsupported settings', () =
   expect(bloom).toContain('dm-bloom');
   const circuits = renderToStaticMarkup(<AmbientEffect effect="scanlines" density={0.5} palette={['success']} colors={colors} />);
   expect(circuits.match(/<path /g)).toHaveLength(5);
+});
+
+describe('4.0 Home preview contract', () => {
+  const render = (device: 'phone' | 'tablet', layout?: 'stage' | 'classic' | 'editorial') =>
+    renderToStaticMarkup(
+      <DeviceMock pack={previewPackage()} mode="dark" device={device} screen="home" layout={layout} label="Home preview" />,
+    );
+
+  test('a phone defaults to Stage: HUD, subtitle plate, agent chips, session strip and the composer dock', () => {
+    const markup = render('phone');
+    expect(markup).toContain('dm-home--stage');
+    expect(markup).toContain('dm-stage__kicker');
+    expect(markup.match(/dm-stage__plate/g)).toHaveLength(1);
+    expect(markup.match(/dm-stage__chip"/g)).toHaveLength(3);
+    expect(markup).toContain('dm-stage__strip');
+    expect(markup).toContain('dm-hcomposer__field');
+    expect(markup).toContain('https://example.com/artwork.png');
+    expect(markup).not.toContain('dm-rail');
+  });
+
+  test('the tablet draws one Home for every layout, without the 3.x rail', () => {
+    const stage = render('tablet', 'stage');
+    expect(stage).toContain('dm-pad-home');
+    expect(stage).not.toContain('dm-rail');
+    expect(stage).toContain('dm-hcomposer--pad');
+    expect(stage.match(/dm-editorial__launch-header/g)).toHaveLength(5);
+    expect(stage.match(/dm-editorial__launch--flat/g)).toHaveLength(4);
+    expect(stage.match(/dm-rows__row--numbered/g)).toHaveLength(3);
+    expect(stage).toContain('/muqun-mark.png');
+    expect(render('tablet', 'classic')).toBe(stage);
+    expect(render('tablet', 'editorial')).toBe(stage);
+  });
 });

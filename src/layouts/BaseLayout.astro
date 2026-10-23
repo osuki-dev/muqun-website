@@ -68,13 +68,18 @@ const {
     {description && <meta name="description" content={description} />}
     {canonical && <link rel="canonical" href={String(canonical)} />}
 
+    {/*
+      The app's own launcher icon, cut by `scripts/brand-icons.ts`: the tile
+      on a light tab, the mark alone on a dark one, swapped by the theme
+      script below. Regenerate when the app's default icon changes.
+    */}
     {[16, 32, 48].map((size) => (
       <link rel="icon" type="image/png" sizes={`${size}x${size}`}
-        href={`/pocket-icon-light-${size}.png`}
-        data-light-icon={`/pocket-icon-light-${size}.png`}
-        data-dark-icon={`/pocket-icon-transparent-${size}.png`} />
+        href={`/favicon-${size}.png`}
+        data-light-icon={`/favicon-${size}.png`}
+        data-dark-icon={`/favicon-dark-${size}.png`} />
     ))}
-    <link rel="apple-touch-icon" href="/pocket-icon-180.png" sizes="180x180" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
 
     <meta name="color-scheme" content="light dark" />
     <meta name="theme-color" content="#f6f3ee" />

@@ -1039,7 +1039,7 @@
   z-index: 3;
   inset-inline: 0;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 8px;
   pointer-events: none;
 }
@@ -2575,8 +2575,20 @@
   transform: translateX(calc(100% + 2px));
 }
 
-.showcase__layout-switch[data-layout='editorial']::before {
+.showcase__layout-switch {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.showcase__layout-switch::before {
+  width: calc((100% - 10px) / 3);
+}
+
+.showcase__layout-switch[data-layout='classic']::before {
   transform: translateX(calc(100% + 2px));
+}
+
+.showcase__layout-switch[data-layout='editorial']::before {
+  transform: translateX(calc(200% + 4px));
 }
 
 .showcase__device-switch {
@@ -2653,3 +2665,676 @@
   100% { transform: translate(var(--to-x), var(--to-y)); opacity: 0; }
 }
 .dm-effect-track--star { transform: translate(var(--from-x), var(--from-y)); animation-name: dm-star-twinkle; }
+
+/* ── 4.0 Home: square controls, the composer dock, Stage, the tablet ─────── */
+.dm-square {
+  position: relative;
+  isolation: isolate;
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border-radius: 14px;
+  border: 1px solid transparent;
+  overflow: hidden;
+}
+.dm-hcomposer {
+  position: relative;
+  z-index: 3;
+  padding: 0 12px;
+}
+.dm-hcomposer--pad {
+  padding: 0;
+  margin-block-start: auto;
+}
+.dm-hcomposer__field {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-block-size: 108px;
+  padding: 14px 14px 10px;
+  border-radius: 22px;
+  border: 1px solid transparent;
+  box-shadow: 0 10px 30px rgb(0 0 0 / 0.12);
+  font-size: 15px;
+  overflow: hidden;
+}
+.dm-hcomposer--pad .dm-hcomposer__field {
+  min-block-size: 120px;
+}
+.dm-hcomposer__placeholder {
+  position: relative;
+  z-index: 1;
+}
+.dm-hcomposer__bar {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.dm-hcomposer__send {
+  margin-inline-start: auto;
+  display: inline-grid;
+  place-items: center;
+}
+
+/* Stage: the artwork stands in the middle, HUD above, foot below. */
+.dm-home--stage {
+  isolation: isolate;
+}
+.dm-home--stage > .dm-stage__world {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 120px 0 300px;
+}
+.dm-stage__artwork {
+  display: flex;
+  justify-content: center;
+  inline-size: 100%;
+  block-size: 100%;
+}
+.dm-stage__artwork img {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: contain;
+}
+.dm-home--stage > .dm-stage__scrim {
+  position: absolute;
+  inset-inline: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+.dm-stage__scrim--top {
+  inset-block-start: 0;
+}
+.dm-stage__scrim--bottom {
+  inset-block-end: 0;
+  block-size: 320px;
+}
+.dm-stage__top {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding-inline: 16px;
+}
+.dm-stage__hud {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-inline-size: 0;
+  text-shadow: 0 1px 12px rgb(0 0 0 / 0.35);
+}
+.dm-stage__kicker {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+.dm-stage__name {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+.dm-stage__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+}
+.dm-stage__tools {
+  display: flex;
+  gap: 8px;
+}
+.dm-home--stage > .dm-stage__dashes {
+  position: absolute;
+  inset-inline-start: 16px;
+  z-index: 2;
+  display: flex;
+  gap: 5px;
+}
+.dm-stage__dashes span {
+  display: block;
+  inline-size: 10px;
+  block-size: 3px;
+  border-radius: 2px;
+}
+.dm-stage__foot {
+  position: relative;
+  z-index: 2;
+  margin-block-start: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.dm-stage__subtitles,
+.dm-stage__chips,
+.dm-stage__strip {
+  display: flex;
+  gap: 6px;
+  padding-inline: 16px;
+  list-style: none;
+  margin: 0;
+}
+.dm-stage__subtitles {
+  align-items: flex-start;
+}
+.dm-stage__plate {
+  max-inline-size: 100%;
+  min-block-size: 40px;
+  box-sizing: border-box;
+  padding: 9px 14px;
+  border-radius: 14px;
+  font-size: 12px;
+  line-height: 1.4;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+.dm-stage__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  block-size: 30px;
+  padding-inline: 10px;
+  border-radius: 15px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.dm-stage__chip > span {
+  font-weight: 400;
+}
+.dm-stage__handle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.dm-grabber {
+  display: block;
+  inline-size: 36px;
+  block-size: 4px;
+  border-radius: 2px;
+}
+.dm-stage__strip {
+  overflow: hidden;
+}
+.dm-stage__card {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+  block-size: 40px;
+  padding-inline: 12px;
+  border-radius: 14px;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* The tablet: cover column and work column, no rail. */
+.dm-pad-home {
+  box-sizing: border-box;
+  padding-inline: 24px;
+  padding-block-end: 20px;
+  block-size: 100%;
+}
+.dm-pad-home__bar {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.dm-pad-home__mark {
+  border-radius: 10px;
+}
+.dm-pad-home__tools {
+  display: flex;
+  gap: 10px;
+}
+.dm-pad-home__columns {
+  position: relative;
+  z-index: 1;
+  flex: 1 1 auto;
+  min-block-size: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.55fr);
+  gap: 28px;
+  margin-block-start: 18px;
+}
+.dm-pad-home__cover {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-inline-size: 0;
+}
+.dm-pad-home__art {
+  position: relative;
+  flex: 1 1 auto;
+  min-block-size: 220px;
+  display: flex;
+  align-items: flex-start;
+}
+.dm-pad-home__art h2 {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  font-family: var(--mq-font-display);
+  font-weight: 900;
+  letter-spacing: -0.065em;
+  white-space: nowrap;
+  inline-size: max-content;
+  max-inline-size: none;
+  text-shadow: 0 1px 12px rgb(0 0 0 / 0.18);
+}
+.dm-pad-home__artwork {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 70%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 70%, transparent 100%);
+}
+.dm-pad-home__artwork img {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+  border-radius: 20px;
+}
+.dm-pad-home__work {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-inline-size: 0;
+}
+.dm-pad-home__work h3 {
+  margin: 10px 0 0;
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.dm-tiles {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.dm-tile {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  block-size: 50px;
+  padding-inline: 16px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  font-size: 15px;
+  font-weight: 600;
+  overflow: hidden;
+  align-self: flex-start;
+}
+.dm-tile--primary {
+  align-self: stretch;
+  block-size: 56px;
+}
+.dm-tile__marker {
+  margin-inline-start: 24px;
+  font-family: var(--mq-font-mono);
+  font-size: 11px;
+  font-weight: 400;
+}
+.dm-rows {
+  display: flex;
+  flex-direction: column;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  overflow: hidden;
+}
+.dm-rows__row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+  padding: 12px 16px;
+}
+.dm-rows__row + .dm-rows__row {
+  border-block-start: 1px solid;
+}
+.dm-rows__row--numbered {
+  grid-template-columns: 3.4rem minmax(0, 1fr) auto;
+}
+.dm-rows__number {
+  font-family: var(--mq-font-display);
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+.dm-rows__copy {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-inline-size: 0;
+  font-size: 13px;
+}
+.dm-rows__copy strong {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 600;
+}
+.dm-rows__copy span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dm-rows__manage {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding-inline: 16px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Classic 4.0: the brand tile, the tagline, the card's tasks line. */
+.dm-brand__tile {
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 auto;
+  inline-size: 60px;
+  block-size: 60px;
+  border-radius: 16px;
+}
+.dm-brand__tagline {
+  display: block;
+  margin-block-start: 2px;
+  font-size: 13px;
+  font-weight: 400;
+}
+.dm-card__identity > .dm-icon,
+.dm-card__identity > svg:last-child {
+  margin-inline-start: auto;
+}
+.dm-card__tasks {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.dm-card__tasks-line {
+  display: block;
+  font-size: 12px;
+  line-height: 1.4;
+}
+.dm-card__progress {
+  display: block;
+  block-size: 4px;
+  border-radius: 2px;
+  overflow: hidden;
+}
+.dm-card__progress > span {
+  display: block;
+  block-size: 100%;
+  border-radius: 2px;
+}
+.dm-home--classic-cover .dm-hcomposer,
+.dm-home:not(.dm-home--stage):not(.dm-home--pad) > .dm-hcomposer {
+  margin-block-start: auto;
+}
+
+.dm-brand__copy {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* Editorial 4.0: the masthead identity and the square tools. */
+.dm-editorial__tools {
+  display: flex;
+  gap: 8px;
+}
+.dm-square--bare {
+  background: transparent;
+}
+.dm-brand__tile--small {
+  inline-size: 46px;
+  block-size: 46px;
+  border-radius: 12px;
+}
+.dm-editorial__identity-name {
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.dm-editorial__main .dm-card {
+  margin-block-end: 2px;
+}
+
+/* The 4.0 workspace header, flat on the page. */
+.dm-nav--flat .dm-nav__circle,
+.dm-nav--flat .dm-nav__pill {
+  background: transparent;
+}
+.dm-nav--flat .dm-nav__title {
+  font-size: 16px;
+}
+
+/* The conversation: the reader's message, tool chips, thinking. */
+.dm-chat__user {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px;
+  border-inline-start: 3px solid;
+  border-radius: 6px 12px 12px 6px;
+  font-size: 15px;
+  line-height: 20px;
+}
+.dm-chat__meta {
+  font-size: 12px;
+}
+.dm-chat__tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.dm-chat__tool {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  block-size: 34px;
+  padding-inline: 12px;
+  border-radius: 17px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.dm-chat__tool > span {
+  font-weight: 400;
+}
+.dm-chat__thinking {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  block-size: 34px;
+  padding-inline: 12px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.dm-chat__dots {
+  display: inline-flex;
+  gap: 3px;
+}
+.dm-chat__dots i {
+  inline-size: 4px;
+  block-size: 4px;
+  border-radius: 2px;
+  background: currentColor;
+  opacity: 0.6;
+}
+
+/* The agent composer's chips and controls over the field. */
+.dm-chips {
+  display: flex;
+  gap: 8px;
+  overflow: hidden;
+}
+.dm-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  flex: 0 0 auto;
+  block-size: 40px;
+  padding-inline: 14px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.dm-controls {
+  display: flex;
+  gap: 8px;
+  overflow: hidden;
+}
+.dm-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+  block-size: 38px;
+  padding-inline: 12px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* The terminal's icon keys and the 4.0 rail. */
+.dm-key {
+  position: relative;
+}
+.dm-key__badge {
+  position: absolute;
+  inset-block-start: -5px;
+  inset-inline-end: -5px;
+  display: inline-grid;
+  place-items: center;
+  min-inline-size: 16px;
+  block-size: 16px;
+  padding-inline: 4px;
+  border-radius: 8px;
+  font-family: var(--mq-font-sans);
+  font-size: 10px;
+  font-weight: 700;
+}
+.dm-rail--4 {
+  border-radius: 24px;
+  padding: 14px 10px 10px;
+  gap: 6px;
+}
+.dm-rail__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px 10px;
+  font-size: 15px;
+}
+.dm-rail--4 .dm-rail__label {
+  padding: 10px 6px 6px;
+}
+.dm-rail__list {
+  display: flex;
+  flex-direction: column;
+}
+.dm-rail__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+  padding: 10px 8px;
+  border-radius: 12px;
+}
+.dm-rail__row--connection {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 12px;
+}
+.dm-rail__row-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-inline-size: 0;
+  font-size: 11px;
+}
+.dm-rail__row-copy strong {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dm-rail__row-copy span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dm-rail__manage {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 8px;
+  font-size: 12px;
+  font-weight: 500;
+}
+.dm-key {
+  white-space: nowrap;
+}
+
+/* The launch set: the pad's utility row, and the primary tile's artwork. */
+.dm-pad-home__launches {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.dm-pad-home__launches > .dm-editorial__launch--primary {
+  min-block-size: 56px;
+  padding: 10px 14px;
+}
+/* `launchRowLayout` grid mode: 136pt columns, so the cover column holds two. */
+.dm-pad-home__utilities {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.dm-editorial__launch--flat strong,
+.dm-editorial__launch--flat span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dm-editorial__launch--flat {
+  flex: 1 1 0;
+  min-inline-size: 0;
+}
+.dm-editorial__launch {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}

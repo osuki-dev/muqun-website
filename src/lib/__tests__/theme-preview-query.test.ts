@@ -18,12 +18,12 @@ describe('theme preview query selection', () => {
 
   test('falls back safely for missing or invalid optional parameters', () => {
     expect(parseThemePreviewQuery('?layout=magazine&device=watch&mode=sepia')).toEqual({
-      layout: 'classic',
+      layout: 'stage',
       device: 'all',
       mode: undefined,
     });
     expect(parseThemePreviewQuery('')).toEqual({
-      layout: 'classic',
+      layout: 'stage',
       device: 'all',
       mode: undefined,
     });

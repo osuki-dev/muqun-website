@@ -50,7 +50,7 @@ function modeName(copy: ThemesCopy, mode: ThemeMode): string {
 }
 
 function layoutNameFor(copy: ThemesCopy, layout: ThemePreviewLayout): string {
-  return layout === 'classic' ? copy.screens.classic : copy.screens.editorial;
+  return copy.screens[layout];
 }
 
 /** The mode the site is showing right now: its explicit choice, else the system's. */
@@ -77,7 +77,7 @@ export default function ThemeShowcase({ pack, copy, tokens = true }: Props) {
     <div className="showcase" ref={root}>
       <div className="showcase__switches">
         <div className="showcase__switch showcase__layout-switch" data-layout={layout} role="tablist" aria-label={copy.screens.layout}>
-          {THEME_PREVIEW_LAYOUTS.map((candidate) => (
+          {THEME_PREVIEW_LAYOUTS.map((candidate, index) => (
             <button
               key={candidate}
               type="button"
@@ -89,7 +89,12 @@ export default function ThemeShowcase({ pack, copy, tokens = true }: Props) {
               onKeyDown={(event) => {
                 if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
                 event.preventDefault();
-                const next = event.key === 'Home' ? 'classic' : event.key === 'End' ? 'editorial' : candidate === 'classic' ? 'editorial' : 'classic';
+                const next =
+                  event.key === 'Home'
+                    ? THEME_PREVIEW_LAYOUTS[0]
+                    : event.key === 'End'
+                      ? THEME_PREVIEW_LAYOUTS[THEME_PREVIEW_LAYOUTS.length - 1]
+                      : THEME_PREVIEW_LAYOUTS[(index + (event.key === 'ArrowRight' ? 1 : -1) + THEME_PREVIEW_LAYOUTS.length) % THEME_PREVIEW_LAYOUTS.length]!;
                 setLayout(next);
                 document.getElementById(`${id}-layout-${next}`)?.focus();
               }}

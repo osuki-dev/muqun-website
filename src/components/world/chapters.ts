@@ -1,4 +1,8 @@
-/** One timeline second per semantic chapter. Values are reversible, not wheel deltas. */
+/**
+ * One timeline second per semantic chapter. Values are reversible, not wheel
+ * deltas. `id` is the element the chapter starts at on the home page, in page
+ * order; the camera values are not tied to what the section says.
+ */
 export const chapters = [
   {
     id: "pocket",
@@ -11,7 +15,7 @@ export const chapters = [
     tilt: 0,
   },
   {
-    id: "terminal",
+    id: "connect",
     camera: [0.65, 3.1, 10.2],
     target: [0, 1.4, 0],
     turn: 0.3,
@@ -21,7 +25,7 @@ export const chapters = [
     tilt: -0.08,
   },
   {
-    id: "connect",
+    id: "features",
     camera: [-0.65, 4.4, 10.8],
     target: [0, 1, 0],
     turn: 6.05,
