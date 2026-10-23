@@ -594,7 +594,7 @@ function HomeEditorialContent({ paint, top, bottom }: { paint: Paint; top: numbe
             </div>
             <div className="dm-editorial-cover__utilities" style={{ top: coverTitle ? coverTitleHeight + 8 : 16 }}>{tools}</div>
             <div className="dm-editorial-cover__launches">
-              <LaunchTiles paint={paint} />
+              <EditorialLaunches paint={paint} rail />
             </div>
           </section>
         ) : (
@@ -617,7 +617,7 @@ function HomeEditorialContent({ paint, top, bottom }: { paint: Paint; top: numbe
           </header>
         )}
         {!cover && banner ? <div className="dm-editorial__hero"><Art art={banner} /></div> : null}
-        {!cover ? <LaunchTiles paint={paint} /> : null}
+        {!cover ? <EditorialLaunches paint={paint} /> : null}
         {sections}
       </div>
       <HomeComposer paint={paint} agent="OpenCode" pad={false} bottom={bottom} />
@@ -1215,22 +1215,119 @@ function ConnectionRows({ paint }: { paint: Paint }) {
   );
 }
 
-/** The launch tiles: the default agent on `primary`, a new terminal beside it. */
-function LaunchTiles({ paint }: { paint: Paint }) {
+/**
+ * `HomeLaunchActions`: the launch set of one computer, numbered after the
+ * row is known (`home-launch-model.ts`): the agent tile first (01, its name
+ * and "New session", filled on `primary`), then Sessions (02) and Terminal
+ * (03) as compact rows sharing one cell, New terminal (04) and SSH with its
+ * "SSH hosts" caption (05). Every tile carries its marker and the
+ * `home.arrow` glyph; the compact ones in one row, the full ones under the
+ * icon. On a phone the cells are a horizontal strip (`mode: 'scroll'`); the
+ * pad grid keeps the agent tile and lays the utilities out compact in one row.
+ */
+function LaunchTile({ paint, title, caption, icon, marker, primary = false, compact = false, flat = false }: {
+  paint: Paint;
+  title: string;
+  caption?: string;
+  icon: string[];
+  marker: string;
+  primary?: boolean;
+  compact?: boolean;
+  /** The pad's utility row: compact, but each on its own cell. */
+  flat?: boolean;
+}) {
   const { colors } = paint;
+  const ink = primary ? colors.onPrimary : colors.text;
   return (
-    <div className="dm-tiles">
-      <span className="dm-tile dm-tile--primary" style={{ background: colors.primary, color: colors.onPrimary }}>
-        <Art art={paint.art('buttons.primary.background', colors.primary)} />
-        <Lucide icon={ICON.bot} size={18} color={colors.onPrimary} />
-        OpenCode
-      </span>
-      <span className="dm-tile" style={{ background: paint.fill(colors.surface), borderColor: colors.border, color: colors.text }}>
-        <Lucide icon={ICON.squareTerminal} size={16} color={colors.primary} />
-        New terminal
-        <span className="dm-tile__marker" style={{ color: colors.textMuted }}>04</span>
-        <Lucide icon={ICON.arrowUpRight} size={16} color={colors.primary} />
-      </span>
+    <div
+      className={`dm-editorial__launch${primary ? ' dm-editorial__launch--primary' : ''}${compact ? ' dm-editorial__launch--compact' : ''}${flat ? ' dm-editorial__launch--flat' : ''}`}
+      style={{ background: primary ? colors.primary : paint.fill(colors.surface), borderColor: primary ? colors.primary : colors.borderStrong }}>
+      {primary && <Art art={paint.art('buttons.primary.background', colors.primary)} />}
+      <div className="dm-editorial__launch-header">
+        <Lucide icon={icon} size={compact ? 16 : 22} color={primary ? ink : colors.primary} />
+        <span className="dm-editorial__launch-marker" style={{ color: primary ? ink : colors.textMuted }}>{marker}</span>
+      </div>
+      <strong style={{ color: ink }}>{title}</strong>
+      {caption ? <span style={{ color: primary ? ink : colors.textMuted }}>{caption}</span> : null}
+      <Glyph paint={paint} name="home.arrow" size={compact ? 15 : 18} color={ink} fallback={ICON.arrowUpRight} />
+    </div>
+  );
+}
+
+const LAUNCH_AGENT = { title: 'OpenCode', caption: 'New session', icon: ICON.bot, marker: '01', primary: true };
+const LAUNCH_UTILITIES = [
+  { title: 'Sessions', icon: ICON.panelsTopLeft, marker: '02', compact: true },
+  { title: 'Terminal', icon: ICON.squareTerminal, marker: '03', compact: true },
+  { title: 'New terminal', icon: ICON.squareTerminal, marker: '04' },
+  { title: 'SSH', caption: 'SSH hosts', icon: ICON.link, marker: '05' },
+];
+
+function EditorialLaunches({ paint, rail = false }: { paint: Paint; rail?: boolean }) {
+  const [sessions, terminal, newTerminal, ssh] = LAUNCH_UTILITIES as [typeof LAUNCH_UTILITIES[number], typeof LAUNCH_UTILITIES[number], typeof LAUNCH_UTILITIES[number], typeof LAUNCH_UTILITIES[number]];
+  const cards = (
+    <div className="dm-editorial__launch-grid">
+      <div className="dm-editorial__launch-primary">
+        <LaunchTile paint={paint} {...LAUNCH_AGENT} />
+      </div>
+      <div className="dm-editorial__launch-stack">
+        <LaunchTile paint={paint} {...sessions} />
+        <LaunchTile paint={paint} {...terminal} />
+      </div>
+      <div className="dm-editorial__launch-secondary">
+        <LaunchTile paint={paint} {...newTerminal} />
+        <LaunchTile paint={paint} {...ssh} />
+      </div>
+    </div>
+  );
+  if (rail) return <CoverLaunchRail paint={paint}>{cards}</CoverLaunchRail>;
+  return (
+    <div className="dm-editorial__launches">
+      <CoverLaunchRail paint={paint}>{cards}</CoverLaunchRail>
+    </div>
+  );
+}
+
+/** The strip's edges fade into the page as the app's do, only where there is more to scroll. */
+function CoverLaunchRail({ paint, children }: { paint: Paint; children: ReactNode }) {
+  const rail = useRef<HTMLDivElement>(null);
+  const [edges, setEdges] = useState({ left: false, right: true });
+  useEffect(() => {
+    const element = rail.current;
+    if (!element) return;
+    const measure = () => setEdges({
+      left: element.scrollLeft > 1,
+      right: element.scrollLeft + element.clientWidth < element.scrollWidth - 1,
+    });
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
+  return (
+    <div className="dm-editorial-cover__rail-wrap">
+      <div ref={rail} className="dm-editorial-cover__rail" onScroll={() => {
+        const element = rail.current;
+        if (element) setEdges({
+          left: element.scrollLeft > 1,
+          right: element.scrollLeft + element.clientWidth < element.scrollWidth - 1,
+        });
+      }}>{children}</div>
+      {edges.left ? <span className="dm-editorial-cover__edge dm-editorial-cover__edge--left" style={{ backgroundColor: paint.colors.background }} /> : null}
+      {edges.right ? <span className="dm-editorial-cover__edge dm-editorial-cover__edge--right" style={{ backgroundColor: paint.colors.background }} /> : null}
+    </div>
+  );
+}
+
+/** The pad grid: the agent tile, then every utility compact in one row. */
+function PadLaunches({ paint }: { paint: Paint }) {
+  return (
+    <div className="dm-pad-home__launches">
+      <LaunchTile paint={paint} {...LAUNCH_AGENT} />
+      <div className="dm-pad-home__utilities">
+        {LAUNCH_UTILITIES.map((entry) => (
+          <LaunchTile key={entry.marker} paint={paint} {...entry} compact flat />
+        ))}
+      </div>
     </div>
   );
 }
@@ -1264,7 +1361,7 @@ function HomePadContent({ paint, top }: { paint: Paint; top: number }) {
             <HomeArtwork paint={paint} className="dm-pad-home__artwork" />
             {identity.name ? <CoverTitle text={identity.name} color={colors.text} onHeight={setTitleHeight} /> : null}
           </div>
-          <LaunchTiles paint={paint} />
+          <PadLaunches paint={paint} />
           <HomeComposer paint={paint} agent="OpenCode" pad />
         </div>
         <div className="dm-pad-home__work">

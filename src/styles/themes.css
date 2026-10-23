@@ -3306,3 +3306,35 @@
 .dm-key {
   white-space: nowrap;
 }
+
+/* The launch set: the pad's utility row, and the primary tile's artwork. */
+.dm-pad-home__launches {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.dm-pad-home__launches > .dm-editorial__launch--primary {
+  min-block-size: 56px;
+  padding: 10px 14px;
+}
+/* `launchRowLayout` grid mode: 136pt columns, so the cover column holds two. */
+.dm-pad-home__utilities {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.dm-editorial__launch--flat strong,
+.dm-editorial__launch--flat span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dm-editorial__launch--flat {
+  flex: 1 1 0;
+  min-inline-size: 0;
+}
+.dm-editorial__launch {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}

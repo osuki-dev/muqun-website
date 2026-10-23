@@ -80,9 +80,17 @@ describe('editorial Home preview contract', () => {
     expect(markup).toContain('dm-home--editorial');
     expect(markup).toContain('dm-editorial__identity');
     expect(markup.match(/class="dm-square"/g)).toHaveLength(2);
-    expect(markup).toContain('dm-tiles');
+    expect(markup).toContain('dm-editorial__launch-grid');
+    expect(markup.match(/dm-editorial__launch-header/g)).toHaveLength(5);
+    expect(markup).toContain('dm-editorial__launch-primary');
+    expect(markup).toContain('dm-editorial__launch-stack');
+    expect(markup).toContain('dm-editorial__launch-secondary');
     expect(markup).toContain('OpenCode');
+    expect(markup).toContain('New session');
+    expect(markup).toContain('Sessions');
     expect(markup).toContain('New terminal');
+    expect(markup).toContain('SSH hosts');
+    expect(markup.match(/dm-editorial__launch-marker/g)).toHaveLength(5);
     expect(markup.match(/dm-editorial__section-head/g)).toHaveLength(3);
     expect(markup).toContain('>Computers<');
     expect(markup).toContain('>Recent<');
@@ -96,9 +104,9 @@ describe('editorial Home preview contract', () => {
     expect(markup).not.toContain('dm-editorial__target');
     expect(markup).not.toContain('dm-home__bar');
     expect(markup).not.toContain('Write to src/theme.json?');
-    expect(markup.indexOf('dm-editorial__identity')).toBeLessThan(markup.indexOf('dm-tiles'));
-    expect(markup.indexOf('dm-editorial__hero')).toBeLessThan(markup.indexOf('dm-tiles'));
-    expect(markup.indexOf('dm-tiles')).toBeLessThan(markup.indexOf('dm-editorial__main'));
+    expect(markup.indexOf('dm-editorial__identity')).toBeLessThan(markup.indexOf('dm-editorial__launches'));
+    expect(markup.indexOf('dm-editorial__hero')).toBeLessThan(markup.indexOf('dm-editorial__launches'));
+    expect(markup.indexOf('dm-editorial__launches')).toBeLessThan(markup.indexOf('dm-editorial__main'));
   });
 
   test('renders the default identity mark and keeps custom identity resolution aligned', () => {
@@ -129,6 +137,8 @@ describe('editorial Home preview contract', () => {
     expect(markup).toContain('dm-home--editorial-cover');
     expect(markup).toContain('dm-editorial-cover__art');
     expect(markup).toContain('dm-editorial-cover__launches');
+    expect(markup).toContain('dm-editorial-cover__rail');
+    expect(markup.match(/dm-editorial__launch-header/g)).toHaveLength(5);
     expect(markup).toContain('RIBBON REVERIE');
     expect(markup.match(/dm-square--bare/g)).toHaveLength(2);
     expect(markup).not.toContain('dm-editorial__identity');
@@ -286,6 +296,8 @@ describe('4.0 Home preview contract', () => {
     expect(stage).toContain('dm-pad-home');
     expect(stage).not.toContain('dm-rail');
     expect(stage).toContain('dm-hcomposer--pad');
+    expect(stage.match(/dm-editorial__launch-header/g)).toHaveLength(5);
+    expect(stage.match(/dm-editorial__launch--flat/g)).toHaveLength(4);
     expect(stage.match(/dm-rows__row--numbered/g)).toHaveLength(3);
     expect(stage).toContain('/muqun-mark.png');
     expect(render('tablet', 'classic')).toBe(stage);
