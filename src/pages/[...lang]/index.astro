@@ -89,9 +89,11 @@ const agentsGuideHref = `${localizedPath("/support", locale)}#agents`;
           muqun<span>®</span>
         </div>
       </section>
-      <section id="film" class="home-film" aria-label="Muqun 3.0">
-        <p class="world-eyebrow">MUQUN / 3.0</p>
-        <FilmPanel src={introVideoSrc} poster={introVideoPoster} portraitSrc={introVideoPortraitSrc} portraitPoster={introVideoPortraitPoster} alt="Muqun 3.0" playLabel={copy.hero.videoPlayLabel} length="0:20" />
+      {/* The intro film, cut for 3.0 and not yet re-shot for 4.0: labelled as
+          the film, not as a version, so the page does not carry two numbers. */}
+      <section id="film" class="home-film" aria-label={copy.footer.heading}>
+        <p class="world-eyebrow">MUQUN / FILM · 0:20</p>
+        <FilmPanel src={introVideoSrc} poster={introVideoPoster} portraitSrc={introVideoPortraitSrc} portraitPoster={introVideoPortraitPoster} alt={copy.footer.heading} playLabel={copy.hero.videoPlayLabel} length="0:20" />
       </section>
       <section class="story-chapter terminal-chapter" id="terminal">
         <div class="chapter-copy" data-world-reveal>
