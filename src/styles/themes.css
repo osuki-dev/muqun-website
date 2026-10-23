@@ -3123,3 +3123,103 @@
 .dm-editorial__main .dm-card {
   margin-block-end: 2px;
 }
+
+/* The 4.0 workspace header, flat on the page. */
+.dm-nav--flat .dm-nav__circle,
+.dm-nav--flat .dm-nav__pill {
+  background: transparent;
+}
+.dm-nav--flat .dm-nav__title {
+  font-size: 16px;
+}
+
+/* The conversation: the reader's message, tool chips, thinking. */
+.dm-chat__user {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px;
+  border-inline-start: 3px solid;
+  border-radius: 6px 12px 12px 6px;
+  font-size: 15px;
+  line-height: 20px;
+}
+.dm-chat__meta {
+  font-size: 12px;
+}
+.dm-chat__tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.dm-chat__tool {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  block-size: 34px;
+  padding-inline: 12px;
+  border-radius: 17px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.dm-chat__tool > span {
+  font-weight: 400;
+}
+.dm-chat__thinking {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  block-size: 34px;
+  padding-inline: 12px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.dm-chat__dots {
+  display: inline-flex;
+  gap: 3px;
+}
+.dm-chat__dots i {
+  inline-size: 4px;
+  block-size: 4px;
+  border-radius: 2px;
+  background: currentColor;
+  opacity: 0.6;
+}
+
+/* The agent composer's chips and controls over the field. */
+.dm-chips {
+  display: flex;
+  gap: 8px;
+  overflow: hidden;
+}
+.dm-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  flex: 0 0 auto;
+  block-size: 40px;
+  padding-inline: 14px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.dm-controls {
+  display: flex;
+  gap: 8px;
+  overflow: hidden;
+}
+.dm-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+  block-size: 38px;
+  padding-inline: 12px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+}

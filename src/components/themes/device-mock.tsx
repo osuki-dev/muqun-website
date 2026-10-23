@@ -790,31 +790,24 @@ function Rail({ paint, selected, editorial = false }: { paint: Paint; selected?:
    Workspace chrome shared by the conversation and the terminal
    -------------------------------------------------------------------------- */
 
-function NavHeader({ paint, title, top }: { paint: Paint; title: string; top: number }) {
+/**
+ * `NavHeader` (4.0): the back chevron, the title centred, one action on the
+ * right, all set straight on the page -- the 3.x glass circles and pill are
+ * gone from the workspace.
+ */
+function NavHeader({ paint, title, top, action }: { paint: Paint; title: string; top: number; action: string[] }) {
   const { colors } = paint;
   return (
-    <div className="dm-nav" style={{ paddingTop: top + NAV_HEADER_TOP_GAP }}>
-      <Chrome paint={paint} surface="navigation" className="dm-nav__circle">
-        <Glyph paint={paint} name="chrome.back" size={21} color={colors.text} fallback={ICON.chevronLeft} />
-      </Chrome>
-      <Chrome paint={paint} surface="navigation" className="dm-nav__pill">
+    <div className="dm-nav dm-nav--flat" style={{ paddingTop: top + NAV_HEADER_TOP_GAP }}>
+      <span className="dm-nav__circle">
+        <Glyph paint={paint} name="chrome.back" size={22} color={colors.text} fallback={ICON.chevronLeft} />
+      </span>
+      <span className="dm-nav__pill">
         <span className="dm-nav__title" style={{ color: colors.text }}>{title}</span>
-      </Chrome>
-      <Chrome paint={paint} surface="navigation" className="dm-nav__circle">
-        <Lucide icon={ICON.panelsTopLeft} size={18} color={colors.text} />
-      </Chrome>
-    </div>
-  );
-}
-
-function ConnectionPill({ paint }: { paint: Paint }) {
-  const { colors } = paint;
-  return (
-    <div className="dm-pill-anchor">
-      <Chrome paint={paint} surface="actions" className="dm-pill">
-        <Dot color={colors.success} size={7} />
-        <span style={{ color: colors.text }}>Connected</span>
-      </Chrome>
+      </span>
+      <span className="dm-nav__circle">
+        <Lucide icon={action} size={20} color={colors.text} />
+      </span>
     </div>
   );
 }
@@ -843,6 +836,25 @@ function Composer({ paint, placeholder, armed }: { paint: Paint; placeholder: st
   );
 }
 
+/** The sessions of this computer as chips over the dock; the open one on `primary`. */
+function SessionChips({ paint, chips, icons }: { paint: Paint; chips: string[]; icons?: string[][] }) {
+  const { colors } = paint;
+  return (
+    <div className="dm-chips">
+      {chips.map((chip, index) => (
+        <span
+          key={chip}
+          className={`dm-chip${index === 0 ? ' dm-chip--on' : ''}`}
+          style={index === 0 ? { background: colors.primary, color: colors.onPrimary } : { color: colors.text }}
+        >
+          {icons?.[index] && <Lucide icon={icons[index]!} size={15} color={index === 0 ? colors.onPrimary : colors.textMuted} />}
+          {chip}
+        </span>
+      ))}
+    </div>
+  );
+}
+
 function Dock({ paint, pad, bottom, children }: { paint: Paint; pad: boolean; bottom: number; children: ReactNode }) {
   return (
     <div className={`dm-dock-anchor ${pad ? 'dm-dock-anchor--pad' : ''}`}>
@@ -853,75 +865,69 @@ function Dock({ paint, pad, bottom, children }: { paint: Paint; pad: boolean; bo
   );
 }
 
-/**
- * `ApprovalBanner`: the agent's question, inside the dock above the composer.
- * A raised card; a shield in `warning`; the options as flat rows whose glyph
- * is `primary`, or `danger` for a refusal.
- */
-function ApprovalBanner({ paint }: { paint: Paint }) {
-  const { colors } = paint;
-  const options: [string[], string, boolean][] = [
-    [ICON.check, 'Yes', false],
-    [ICON.checkCheck, 'Yes, and don’t ask again this session', false],
-    [ICON.x, 'No', true],
-  ];
-  return (
-    <div className="dm-approval" style={{ background: paint.fill(colors.surfaceRaised) }}>
-      <div className="dm-approval__head">
-        <Lucide icon={ICON.shieldAlert} size={16} color={colors.warning} />
-        <span className="dm-approval__copy">
-          <span className="dm-approval__prompt" style={{ color: colors.text }}>Allow Write to src/theme.json?</span>
-          <span className="dm-approval__context" style={{ color: colors.textMuted }}>41 lines · variants.dark.surfaces</span>
-        </span>
-      </div>
-      {options.map(([icon, label, deny]) => (
-        <span key={label} className="dm-approval__option">
-          <Lucide icon={icon} size={16} color={deny ? colors.danger : colors.primary} />
-          <span style={{ color: colors.text }}>{label}</span>
-        </span>
-      ))}
-      <span className="dm-approval__hint" style={{ color: colors.textSubtle }}>esc to cancel</span>
-    </div>
-  );
-}
-
 /* --------------------------------------------------------------------------
    Conversation
    -------------------------------------------------------------------------- */
 
 function ConversationContent({ paint, pad, top, bottom }: { paint: Paint; pad: boolean; top: number; bottom: number }) {
   const { colors } = paint;
+  const control = withAlpha(colors.text, 0.08);
   return (
     <div className="dm-workspace">
-      <NavHeader paint={paint} title="claude · ~/project" top={top} />
+      <NavHeader paint={paint} title="Dark variant for the cover" top={top} action={ICON.plus} />
       <div className="dm-chat" style={pad ? { maxWidth: 720 } : undefined}>
-        <div className="dm-chat__prompt" style={{ background: paint.fill(withAlpha(colors.primary, 0.16)), color: colors.text }}>
-          Add a dark variant and keep the terminal readable at 80% opacity.
+        <div className="dm-chat__user" style={{ borderColor: colors.primary, background: paint.fill(colors.surface) }}>
+          <span className="dm-chat__meta"><b style={{ color: colors.primary }}>You</b> <span style={{ color: colors.textMuted }}>2m ago</span></span>
+          <span style={{ color: colors.text }}>Add a dark variant and keep the terminal readable at 80% opacity.</span>
         </div>
         <p className="dm-chat__text" style={{ color: colors.text }}>
           I read <span className="dm-mono">theme.json</span> and the contrast report. Two pairs set the floor: muted text on the raised surface, and the link colour on the terminal.
         </p>
-        <ul className="dm-chat__activity">
-          <li style={{ color: colors.textMuted }}><Dot color={colors.success} size={7} /> Read theme.json</li>
-          <li style={{ color: colors.textMuted }}><Dot color={colors.success} size={7} /> Ran muqun-theme contrast</li>
-        </ul>
+        <div className="dm-chat__tools">
+          {[
+            [ICON.terminalPrompt, 'bash', '42ms'],
+            [ICON.fileText, 'read', '53ms'],
+          ].map(([icon, name, took]) => (
+            <span key={name as string} className="dm-chat__tool" style={{ background: paint.fill(colors.surfaceRaised), color: colors.text }}>
+              <Lucide icon={icon as string[]} size={14} color={colors.textMuted} />
+              {name as string}
+              <span style={{ color: colors.textMuted }}>{took as string}</span>
+              <Lucide icon={ICON.chevronDown} size={13} color={colors.textMuted} />
+            </span>
+          ))}
+        </div>
         <div className="dm-chat__card" style={{ background: paint.fill(colors.surfaceRaised) }}>
           <span className="dm-chat__card-title" style={{ color: colors.text }}>
             <Dot color={colors.warning} size={7} /> Edit
             <span className="dm-chat__card-body" style={{ color: colors.textMuted }}>src/theme.json</span>
           </span>
+          <div className="dm-chat__diff" style={{ borderColor: colors.border, background: paint.fill(colors.surface) }}>
+            <span className="dm-mono" style={{ background: withAlpha(paint.terminal.ansi[1]!, 0.14), color: paint.terminal.ansi[1] }}>- "backgroundOpacity": 1</span>
+            <span className="dm-mono" style={{ background: withAlpha(paint.terminal.ansi[2]!, 0.14), color: paint.terminal.ansi[2] }}>+ "backgroundOpacity": 0.82</span>
+          </div>
         </div>
-        <div className="dm-chat__diff" style={{ borderColor: colors.border, background: paint.fill(colors.surface) }}>
-          <span className="dm-mono" style={{ color: colors.textMuted }}>src/theme.json</span>
-          <span className="dm-mono" style={{ background: withAlpha(paint.terminal.ansi[1]!, 0.14), color: paint.terminal.ansi[1] }}>- "backgroundOpacity": 1</span>
-          <span className="dm-mono" style={{ background: withAlpha(paint.terminal.ansi[2]!, 0.14), color: paint.terminal.ansi[2] }}>+ "backgroundOpacity": 0.82</span>
-        </div>
+        <span className="dm-chat__thinking" style={{ background: paint.fill(colors.surfaceRaised), color: colors.primary }}>
+          <span className="dm-chat__dots" aria-hidden="true"><i /><i /><i /></span> Thinking…
+        </span>
       </div>
       <div className="dm-workspace__foot">
-        <ConnectionPill paint={paint} />
         <Dock paint={paint} pad={pad} bottom={bottom}>
-          <ApprovalBanner paint={paint} />
-          <Composer paint={paint} placeholder="Message claude…" armed={false} />
+          <SessionChips paint={paint} chips={['Dark variant for the cover', 'Contrast report']} />
+          <div className="dm-controls">
+            <span className="dm-control" style={{ background: paint.fill(control) }}>
+              <Lucide icon={ICON.layers} size={16} color={colors.text} />
+            </span>
+            <span className="dm-control" style={{ background: paint.fill(control), color: colors.text }}>
+              Model <Lucide icon={ICON.chevronDown} size={14} color={colors.text} />
+            </span>
+            <span className="dm-control" style={{ background: withAlpha(colors.warning, 0.18), color: colors.warning }}>
+              <Lucide icon={ICON.zap} size={14} color={colors.warning} /> Steer
+            </span>
+            <span className="dm-control" style={{ background: colors.danger, color: colors.onPrimary }}>
+              <Lucide icon={ICON.square} size={13} color={colors.onPrimary} /> Stop
+            </span>
+          </div>
+          <Composer paint={paint} placeholder={pad ? 'Send a message, type / for commands, $ for skills, @ for files' : 'Send a message'} armed={false} />
         </Dock>
       </div>
     </div>
@@ -968,9 +974,8 @@ function TerminalContent({ paint, pad, top, bottom }: { paint: Paint; pad: boole
           <span style={{ color: a[2] }}>❯</span> <span className="dm-term__cursor" style={{ background: terminal.cursor }} />
         </pre>
       </div>
-      <NavHeader paint={paint} title="studio · claude" top={top} />
+      <NavHeader paint={paint} title="studio · claude" top={top} action={ICON.panelsTopLeft} />
       <div className="dm-workspace__foot">
-        <ConnectionPill paint={paint} />
         <Dock paint={paint} pad={pad} bottom={bottom}>
           <div className="dm-keys">
             <span className="dm-key dm-key--entry" style={{ background: key }}>
