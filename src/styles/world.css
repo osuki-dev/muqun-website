@@ -1440,3 +1440,14 @@ html[data-theme="light"] .world-button[data-tip]::after {
   margin: 0;
   flex: 1;
 }
+
+/* ── The restructure: how-it-works links ────────────────────────────────── */
+.world-step-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  margin: 8px 0 0;
+}
+.chapter-copy > .world-step-links {
+  margin-top: 24px;
+}

@@ -6,7 +6,7 @@ import PocketWorld from "@/components/world/PocketWorld";
 import FeatureGallery from "@/components/FeatureGallery.astro";
 import CodeBlock from "@/components/CodeBlock.astro";
 import { getMuqunCopy } from "@/i18n/muqun";
-import { gatewayHelp, gatewayCommands } from "@/i18n/gateway-help";
+import { gatewayHelp } from "@/i18n/gateway-help";
 import { agentsHome } from "@/i18n/agents-home";
 import { worldCopy } from "@/i18n/world";
 import { releaseHome } from "@/i18n/release-home";
@@ -95,32 +95,47 @@ const agentsGuideHref = `${localizedPath("/support", locale)}#agents`;
         <p class="world-eyebrow">MUQUN / FILM · 0:20</p>
         <FilmPanel src={introVideoSrc} poster={introVideoPoster} portraitSrc={introVideoPortraitSrc} portraitPoster={introVideoPortraitPoster} alt={copy.footer.heading} playLabel={copy.hero.videoPlayLabel} length="0:20" />
       </section>
-      <section class="story-chapter terminal-chapter" id="terminal">
+      {/* How it works, straight after the film: the half of the setup a
+          visitor does not expect is the one command on their own computer,
+          so it is the first thing after the pitch rather than the sixth. */}
+      <section class="story-chapter connect-chapter" id="connect">
         <div class="chapter-copy" data-world-reveal>
-          <p class="world-eyebrow">01 / {copy.pillars.paneLabel}</p>
-          <h2>{release.heading}</h2>
-          <p>{release.intro}</p>
-          <div class="session-preview">
-            <div class="session-top">
-              <span class="signal-dot"></span> muqun{" "}
-              <span>claude · nvim · zsh</span>
-            </div>
-            <div class="session-lines">
-              <span class="code-muted">~/your-next-big-idea</span>
-              <br />
-              <span class="code-mint">❯</span> <span>claude</span>
-              <br />
-              <br />
-              <span class="code-coral">●</span>{" "}
-              {features.find((feature) => feature.id === "approve")?.title}
-              <br />
-              <span class="code-muted">src / something-wonderful.ts</span>
-            </div>
-            <div class="session-caption">
-              {world.simulated}
-              <span aria-hidden="true">↗</span>
-            </div>
-          </div>
+          <p class="world-eyebrow">01 / {copy.setup.paneLabel}</p>
+          <h2>{world.howTitle}</h2>
+          <ol class="world-steps">
+            <li>
+              <span>01</span>
+              <div>
+                <h3>{world.how1Title}</h3>
+                <p>{world.how1Body}</p>
+                <p class="world-step-links">
+                  {appStoreAvailable && <a class="text-link" href={appStoreUrl}>App Store ↗</a>}
+                  <a class="text-link" href={playStoreUrl}>Google Play ↗</a>
+                </p>
+              </div>
+            </li>
+            <li>
+              <span>02</span>
+              <div>
+                <h3>{world.how2Title}</h3>
+                <p>{world.how2Body}</p>
+                <CodeBlock copy wrap code={gatewayInstallCommand} label={copy.hero.installLabel} copyLabel={world.copyLabel} copiedLabel={copy.hero.copiedLabel} />
+              </div>
+            </li>
+            <li>
+              <span>03</span>
+              <div>
+                <h3>{world.how3Title}</h3>
+                <p>{world.how3Body}</p>
+                <CodeBlock copy wrap code="muqun-gateway manage" copyLabel={world.copyLabel} copiedLabel={copy.hero.copiedLabel} />
+              </div>
+            </li>
+          </ol>
+          <p class="pairing-note">{help.manual}</p>
+          <p class="world-step-links">
+            <a class="text-link" href={`${localizedPath("/support", locale)}#get-started`}>{world.guideLink} ↗</a>
+            <a class="text-link" href={gatewayRepoUrl}>{copy.setup.openSourceLink} ↗</a>
+          </p>
         </div>
       </section>
       <section class="features-section" id="features" aria-label={world.features}>
@@ -166,59 +181,6 @@ const agentsGuideHref = `${localizedPath("/support", locale)}#agents`;
           </ul>
           <a class="text-link" href={agentsGuideHref}>
             {agents.link} ↗
-          </a>
-        </div>
-      </section>
-      <section class="story-chapter connect-chapter" id="connect">
-        <div class="chapter-copy" data-world-reveal>
-          <p class="world-eyebrow">03 / {copy.setup.paneLabel}</p>
-          <h2>{copy.setup.heading}</h2>
-          <div class="world-command">
-            <CodeBlock
-              copy
-              wrap
-              code={gatewayInstallCommand}
-              label={copy.hero.installLabel}
-              copyLabel={world.copyLabel}
-              copiedLabel={copy.hero.copiedLabel}
-            />
-          </div>
-          <ol class="world-steps">
-            {help.steps.map((step, index) => (
-              <li>
-                <span>{String(index + 1).padStart(2, "0")}</span>
-                <div>
-                  <h3>{step}</h3>
-                  {index === 0 && <CodeBlock copy wrap code="muqun-gateway manage" copyLabel={world.copyLabel} copiedLabel={copy.hero.copiedLabel} /> }
-                </div>
-              </li>
-            ))}
-          </ol>
-          <p class="pairing-note">{help.manual}</p>
-          <details class="gateway-help">
-            <summary>{help.heading}<span aria-hidden="true">+</span></summary>
-            <div class="gateway-help-content">
-              <p>{help.keys}</p>
-              <p>{help.serviceNote}</p>
-              {help.modes.map((mode, modeIndex) => (
-                <section class="gateway-mode">
-                  <h3>{mode}</h3>
-                  {gatewayCommands.slice(modeIndex * 3, modeIndex * 3 + 3).map((command, index) => (
-                    <CodeBlock copy wrap code={`muqun-gateway ${command}`} label={help.labels[modeIndex * 3 + index]} copyLabel={world.copyLabel} copiedLabel={copy.hero.copiedLabel} />
-                  ))}
-                </section>
-              ))}
-              <CodeBlock copy wrap code="muqun-gateway agent" label={help.agentLabel} copyLabel={world.copyLabel} copiedLabel={copy.hero.copiedLabel} />
-              <CodeBlock copy wrap code="muqun-gateway --help" label={help.labels[6]} copyLabel={world.copyLabel} copiedLabel={copy.hero.copiedLabel} />
-            </div>
-          </details>
-          <ul class="world-requirements">
-            {copy.setup.requirements.slice(0, 3).map((item) => (
-              <li>{item}</li>
-            ))}
-          </ul>
-          <a class="text-link" href={gatewayRepoUrl}>
-            {copy.setup.openSourceLink} ↗
           </a>
         </div>
       </section>
