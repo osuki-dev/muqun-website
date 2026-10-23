@@ -7,7 +7,8 @@ export type ReleaseFeatureId =
   | "media"
   | "worktrees"
   | "storage"
-  | "updates";
+  | "updates"
+  | "stage";
 type Entry = readonly [title: string, description: string];
 export interface ReleaseHomeCopy {
   heading: string;
@@ -65,6 +66,10 @@ export const releaseHome: Record<SiteLocale, ReleaseHomeCopy> = {
         "A refreshed native renderer",
         "Skia Graphite draws terminals, theme artwork and effects, with Vulkan on Android. Reduced Motion keeps simple transitions.",
       ],
+      stage: [
+        "Home as a stage",
+        "Stage shows your theme’s art as a 3D world that moves with your phone, with your agents’ status below it. Choose it next to Classic and Editorial; the computer map gains a 3D view too.",
+      ],
       pad: [
         "Room for the whole workspace",
         "Theme artwork and the Home composer sit alongside work on tablets. Detailed sheets use the screen; quick choices stay compact.",
@@ -112,6 +117,10 @@ export const releaseHome: Record<SiteLocale, ReleaseHomeCopy> = {
         "焕新的原生渲染器",
         "Skia Graphite 绘制终端、主题图片和效果，Android 使用 Vulkan；开启减少动态效果时保留简单转场。",
       ],
+      stage: [
+        "把首页变成舞台",
+        "Stage 把主题画作变成随手机移动的 3D 世界，下方是各个助手的状态。可在 Classic 与 Editorial 之外选择；电脑地图也新增 3D 视图。",
+      ],
       pad: [
         "为整个工作区留出空间",
         "Pad 上主题图片、首页输入框与工作并排呈现。详细面板充分利用屏幕，快速选择保持紧凑。",
@@ -158,6 +167,10 @@ export const releaseHome: Record<SiteLocale, ReleaseHomeCopy> = {
       renderer: [
         "更新的原生繪圖引擎",
         "Skia Graphite 繪製終端機、主題圖片與效果，Android 使用 Vulkan；開啟減少動態效果時保留簡單轉場。",
+      ],
+      stage: [
+        "把首頁變成舞台",
+        "Stage 將主題畫作化為隨手機移動的 3D 世界，下方顯示各個助手的狀態。可在 Classic 與 Editorial 之外選擇；電腦地圖也新增 3D 檢視。",
       ],
       pad: [
         "為整個工作區留出空間",
@@ -209,6 +222,10 @@ export const releaseHome: Record<SiteLocale, ReleaseHomeCopy> = {
         "新しくなったネイティブ描画",
         "Skia Graphiteがターミナル、テーマ画像、効果を描画し、AndroidではVulkanを使います。視差効果を減らす設定では簡単な切り替えを保ちます。",
       ],
+      stage: [
+        "ホームをステージに",
+        "Stage はテーマのアートを、端末の動きに合わせて動く 3D の世界として描き、その下にエージェントの状態を並べます。Classic と Editorial に加えて選べ、コンピューターマップにも 3D 表示が加わります。",
+      ],
       pad: [
         "ワークスペース全体にゆとりを",
         "タブレットではテーマ画像とホームの入力欄を作業の横に配置。詳細シートは画面を活用し、素早い選択はコンパクトに。",
@@ -259,6 +276,10 @@ export const releaseHome: Record<SiteLocale, ReleaseHomeCopy> = {
         "새로워진 네이티브 렌더러",
         "Skia Graphite가 터미널, 테마 그림과 효과를 그리며 Android에서는 Vulkan을 사용합니다. 동작 줄이기에서는 간단한 전환을 유지합니다.",
       ],
+      stage: [
+        "홈을 무대로",
+        "Stage는 테마 아트를 기기 움직임에 따라 움직이는 3D 세계로 보여 주고, 그 아래에 에이전트 상태를 둡니다. Classic, Editorial과 함께 고를 수 있고 컴퓨터 지도에도 3D 보기가 더해집니다.",
+      ],
       pad: [
         "작업 공간 전체를 위한 여유",
         "태블릿에서는 테마 그림과 홈 입력창이 작업 옆에 놓입니다. 자세한 화면은 넓게, 빠른 선택은 간결하게 보여 줍니다.",
@@ -308,6 +329,10 @@ export const releaseHome: Record<SiteLocale, ReleaseHomeCopy> = {
       renderer: [
         "Ein erneuerter nativer Renderer",
         "Skia Graphite zeichnet Terminals, Theme-Bilder und Effekte, auf Android mit Vulkan. Reduzierte Bewegung behält einfache Übergänge bei.",
+      ],
+      stage: [
+        "Home als Bühne",
+        "Stage zeigt das Artwork deines Themes als 3D-Welt, die sich mit dem Telefon bewegt, darunter den Status deiner Agenten. Wähle es neben Classic und Editorial; die Rechnerkarte bekommt ebenfalls eine 3D-Ansicht.",
       ],
       pad: [
         "Platz für den ganzen Arbeitsbereich",
@@ -360,6 +385,10 @@ export const releaseHome: Record<SiteLocale, ReleaseHomeCopy> = {
         "Un moteur natif renouvelé",
         "Skia Graphite dessine terminaux, images de thème et effets, avec Vulkan sur Android. Réduire les animations conserve des transitions simples.",
       ],
+      stage: [
+        "L’accueil comme une scène",
+        "Stage transforme l’illustration de votre thème en un monde 3D qui bouge avec le téléphone, avec l’état de vos agents en dessous. Choisissez-le à côté de Classic et Editorial ; la carte des ordinateurs gagne aussi une vue 3D.",
+      ],
       pad: [
         "De la place pour tout l’espace",
         "Sur tablette, les images du thème et la saisie d’accueil accompagnent le travail. Les vues détaillées utilisent l’écran ; les choix rapides restent compacts.",
@@ -409,6 +438,10 @@ export const releaseHome: Record<SiteLocale, ReleaseHomeCopy> = {
       renderer: [
         "Un renovado renderizador nativo",
         "Skia Graphite dibuja terminales, imágenes de temas y efectos, con Vulkan en Android. Reducir movimiento mantiene transiciones sencillas.",
+      ],
+      stage: [
+        "Tu inicio como escenario",
+        "Stage convierte el arte de tu tema en un mundo 3D que se mueve con el teléfono, con el estado de tus agentes debajo. Elígelo junto a Classic y Editorial; el mapa de equipos también gana una vista 3D.",
       ],
       pad: [
         "Sitio para todo el espacio",
@@ -460,6 +493,10 @@ export const releaseHome: Record<SiteLocale, ReleaseHomeCopy> = {
         "Um renderizador nativo renovado",
         "Skia Graphite desenha terminais, imagens de temas e efeitos, com Vulkan no Android. Reduzir movimento mantém transições simples.",
       ],
+      stage: [
+        "O início como palco",
+        "O Stage transforma a arte do teu tema num mundo 3D que se move com o telemóvel, com o estado dos teus agentes por baixo. Escolhe-o ao lado de Classic e Editorial; o mapa de computadores ganha também uma vista 3D.",
+      ],
       pad: [
         "Espaço para todo o trabalho",
         "Em tablets, a arte do tema e o campo inicial ficam ao lado do trabalho. Telas detalhadas aproveitam a área; escolhas rápidas continuam compactas.",
@@ -509,6 +546,10 @@ export const releaseHome: Record<SiteLocale, ReleaseHomeCopy> = {
       renderer: [
         "Обновлённый нативный рендерер",
         "Skia Graphite рисует терминалы, темы и эффекты; на Android используется Vulkan. Уменьшение движения сохраняет простые переходы.",
+      ],
+      stage: [
+        "Главный экран как сцена",
+        "Stage показывает иллюстрацию темы как 3D-мир, который движется вместе с телефоном, а под ним — состояние агентов. Выберите его рядом с Classic и Editorial; карта компьютеров тоже получает 3D-вид.",
       ],
       pad: [
         "Место для всей работы",
@@ -560,6 +601,10 @@ export const releaseHome: Record<SiteLocale, ReleaseHomeCopy> = {
         "Bộ kết xuất gốc được làm mới",
         "Skia Graphite vẽ terminal, ảnh chủ đề và hiệu ứng, dùng Vulkan trên Android. Giảm chuyển động giữ các chuyển cảnh đơn giản.",
       ],
+      stage: [
+        "Màn hình chính như một sân khấu",
+        "Stage biến tranh của chủ đề thành thế giới 3D chuyển động theo điện thoại, bên dưới là trạng thái các agent. Chọn nó bên cạnh Classic và Editorial; bản đồ máy tính cũng có thêm góc nhìn 3D.",
+      ],
       pad: [
         "Chỗ cho cả không gian làm việc",
         "Trên máy tính bảng, ảnh chủ đề và ô nhập Trang chủ nằm cạnh công việc. Bảng chi tiết tận dụng màn hình; lựa chọn nhanh vẫn gọn.",
@@ -609,6 +654,10 @@ export const releaseHome: Record<SiteLocale, ReleaseHomeCopy> = {
       renderer: [
         "ตัวเรนเดอร์เนทีฟที่ปรับใหม่",
         "Skia Graphite วาดเทอร์มินัล ภาพธีม และเอฟเฟกต์ โดยใช้ Vulkan บน Android ลดการเคลื่อนไหวจะคงการเปลี่ยนฉากแบบเรียบง่ายไว้",
+      ],
+      stage: [
+        "หน้าแรกเป็นเวที",
+        "Stage แสดงภาพธีมเป็นโลก 3D ที่ขยับตามมือถือ พร้อมสถานะของผู้ช่วยอยู่ด้านล่าง เลือกได้ควบคู่กับ Classic และ Editorial และแผนที่คอมพิวเตอร์ก็มีมุมมอง 3D เพิ่มเข้ามา",
       ],
       pad: [
         "ที่ว่างสำหรับทั้งพื้นที่ทำงาน",

@@ -38,6 +38,7 @@ export function getFeatures(locale: SiteLocale): Feature[] {
     { id: "files", icon: "≡", group: "tools", status: "available" },
     { id: "serve", icon: "◎", group: "tools", status: "available" },
     { id: "away", icon: "◷", group: "tools", status: "available" },
+    { id: "stage", icon: "◈", group: "appearance", status: "available" },
     {
       id: "themes",
       icon: "✳",

@@ -16,13 +16,13 @@ for (const locale of locales) {
       assert.ok(html.includes(`href="${href}"`), `${locale}/${page}: missing language destination ${href}`);
     }
     if (!page) {
-      assert.equal((html.match(/id="feature-[^"]+"/g)||[]).length, 22);
+      assert.equal((html.match(/id="feature-[^"]+"/g)||[]).length, 23);
       assert.ok(html.includes('https://apps.apple.com/app/muqun/id6793419283'));
       assert.ok(html.includes('https://play.google.com/store/apps/details?id=dev.osuki.muqun'));
       assert.match(html,/data-copy/);
       assert.match(html, /MUQUN \/ 4\.0\.0/);
       for (const group of ['work', 'tools', 'appearance']) assert.ok(html.includes(`id="features-${group}"`));
-      for (const id of ['composer','tasks','voice','media','worktrees','storage','updates']) assert.ok(html.includes(`id="feature-${id}"`));
+      for (const id of ['composer','tasks','voice','media','worktrees','storage','updates','stage']) assert.ok(html.includes(`id="feature-${id}"`));
       for (const href of ['/favicon-32.png','/favicon-dark-32.png','/apple-touch-icon.png','/og-muqun.png']) assert.ok(html.includes(href), `${locale}: missing ${href}`);
       assert.doesNotMatch(html, /pocket-icon|MUQUN \/ 3\.0/);
       assert.doesNotMatch(html,/<select\b|world-controls|world-poster|pocket-poster|\/pull\/58/);
