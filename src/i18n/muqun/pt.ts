@@ -189,7 +189,7 @@ export const copy: MuqunCopy = {
     lines: [
       'O teu telemóvel emparelha diretamente com a tua própria máquina.',
       'Sem conta Muqun e sem nenhum relay nosso pelo meio.',
-      'Sem anúncios, sem analytics, sem SDKs de rastreio de terceiros.',
+      'Sem publicidade nem rastreio publicitário. A IA e a voz usam os serviços que configuras.',
       'Uma só compra; todas as atualizações seguintes são gratuitas.',
       'Peça uma funcionalidade ou reporte o que falhou: é daí que sai a versão seguinte.',
     ],

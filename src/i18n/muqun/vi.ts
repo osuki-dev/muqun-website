@@ -44,7 +44,7 @@ export const copy: MuqunCopy = {
       lines: [
         "Điện thoại kết nối đến thiết bị của bạn.",
         "Không cần tài khoản Muqun hay máy chủ chuyển tiếp của chúng tôi.",
-        "Không quảng cáo, phân tích hay SDK theo dõi bên thứ ba.",
+        "Không quảng cáo hay theo dõi quảng cáo. AI và giọng nói dùng dịch vụ bạn cấu hình.",
         "Mua một lần, các bản cập nhật sau đều miễn phí.",
       ],
       link: "Đọc chính sách quyền riêng tư",

@@ -189,7 +189,7 @@ export const copy: MuqunCopy = {
     lines: [
       'Your phone pairs directly with your own machine.',
       'No Muqun account, and no relay of ours in between.',
-      'No ads, no analytics, no third-party tracking SDKs.',
+      'No ads or advertising tracking. AI and voice use your configured services.',
       'One purchase, and every update after it is free.',
       'Ask for a feature or report what broke; the issue tracker is where the next version comes from.',
     ],

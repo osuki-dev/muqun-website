@@ -189,7 +189,7 @@ export const copy: MuqunCopy = {
     lines: [
       'Tu teléfono se vincula directamente con tu propia máquina.',
       'Sin cuenta de Muqun y sin ningún relay nuestro en medio.',
-      'Sin anuncios, sin analíticas, sin SDK de rastreo de terceros.',
+      'Sin anuncios ni seguimiento publicitario. La IA y la voz usan tus servicios configurados.',
       'Una sola compra; todas las actualizaciones posteriores son gratuitas.',
       'Pide una función o cuenta qué se rompió: de ahí sale la siguiente versión.',
     ],
