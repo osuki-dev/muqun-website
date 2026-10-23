@@ -491,20 +491,18 @@ function HeaderButton({
   paint,
   icon,
   name,
-  editorial = false,
   bare = false,
 }: {
   paint: Paint;
   icon: string[];
   name?: string;
-  editorial?: boolean;
   bare?: boolean;
 }) {
   const { colors } = paint;
   return (
     <span
-      className={`dm-home__control${editorial ? ' dm-home__control--editorial' : ''}${bare ? ' dm-home__control--bare' : ''}`}
-      style={bare ? undefined : { background: paint.fill(colors.surface), borderColor: editorial ? colors.borderStrong : undefined }}>
+      className={`dm-home__control${bare ? ' dm-home__control--bare' : ''}`}
+      style={bare ? undefined : { background: paint.fill(colors.surface) }}>
       {!bare ? <Art art={paint.art('navigation.background', colors.surface)} /> : null}
       {name ? (
         <Glyph paint={paint} name={name} size={20} color={colors.textMuted} fallback={icon} />
@@ -539,160 +537,14 @@ function EditorialSection({ paint, title, children }: { paint: Paint; title: str
   );
 }
 
-function EditorialTarget({ paint }: { paint: Paint }) {
-  const { colors } = paint;
-  return (
-    <div className="dm-editorial__target" style={{ background: paint.fill(colors.surface), borderColor: colors.borderStrong }}>
-      <span className="dm-editorial__target-copy"><strong style={{ color: colors.text }}>studio</strong></span>
-      <Lucide icon={ICON.chevronDown} size={16} color={colors.primary} />
-    </div>
-  );
-}
-
-function EditorialLaunches({ paint, rail = false }: { paint: Paint; rail?: boolean }) {
-  const { colors } = paint;
-  const tile = ({ title, caption, icon, marker, primary = false, compact = false }: {
-    title: string;
-    caption?: string;
-    icon: string[];
-    marker: string;
-    primary?: boolean;
-    compact?: boolean;
-  }) => {
-    const ink = primary ? colors.onPrimary : colors.text;
-    return (
-      <div
-        className={`dm-editorial__launch${primary ? ' dm-editorial__launch--primary' : ''}${compact ? ' dm-editorial__launch--compact' : ''}`}
-        style={{ background: primary ? colors.primary : paint.fill(colors.surface), borderColor: primary ? colors.primary : colors.borderStrong }}>
-        <div className="dm-editorial__launch-header">
-          <Lucide icon={icon} size={compact ? 16 : 22} color={ink} />
-          <span className="dm-editorial__launch-marker" style={{ color: primary ? ink : colors.textMuted }}>{marker}</span>
-        </div>
-        <strong style={{ color: ink }}>{title}</strong>
-        {caption ? <span style={{ color: primary ? ink : colors.textMuted }}>{caption}</span> : null}
-        <Lucide icon={ICON.arrowUpRight} size={18} color={ink} />
-      </div>
-    );
-  };
-  const cards = (
-    <div className="dm-editorial__launch-grid">
-      <div className="dm-editorial__launch-primary">
-        {tile({ title: 'OpenCode', caption: 'New session', icon: ICON.panelsTopLeft, marker: '01', primary: true })}
-      </div>
-      <div className="dm-editorial__launch-stack">
-        {tile({ title: 'Sessions', icon: ICON.panelsTopLeft, marker: '02', compact: true })}
-        {tile({ title: 'Terminal', icon: ICON.squareTerminal, marker: '03', compact: true })}
-      </div>
-      <div className="dm-editorial__launch-secondary">
-        {tile({ title: 'New terminal', icon: ICON.squareTerminal, marker: '04' })}
-        {tile({ title: 'SSH', caption: 'SSH hosts', icon: ICON.link, marker: '05' })}
-      </div>
-    </div>
-  );
-  if (rail) return <CoverLaunchRail paint={paint}>{cards}</CoverLaunchRail>;
-  return (
-    <div className="dm-editorial__launches">
-      <CoverLaunchRail paint={paint}>{cards}</CoverLaunchRail>
-    </div>
-  );
-}
-
-function CoverLaunchRail({ paint, children }: { paint: Paint; children: ReactNode }) {
-  const rail = useRef<HTMLDivElement>(null);
-  const [edges, setEdges] = useState({ left: false, right: true });
-  useEffect(() => {
-    const element = rail.current;
-    if (!element) return;
-    const measure = () => setEdges({
-      left: element.scrollLeft > 1,
-      right: element.scrollLeft + element.clientWidth < element.scrollWidth - 1,
-    });
-    measure();
-    const observer = new ResizeObserver(measure);
-    observer.observe(element);
-    return () => observer.disconnect();
-  }, []);
-  return (
-    <div className="dm-editorial-cover__rail-wrap">
-      <div ref={rail} className="dm-editorial-cover__rail" onScroll={() => {
-        const element = rail.current;
-        if (element) setEdges({
-          left: element.scrollLeft > 1,
-          right: element.scrollLeft + element.clientWidth < element.scrollWidth - 1,
-        });
-      }}>{children}</div>
-      {edges.left ? <span className="dm-editorial-cover__edge dm-editorial-cover__edge--left" style={{ backgroundColor: paint.colors.background }} /> : null}
-      {edges.right ? <span className="dm-editorial-cover__edge dm-editorial-cover__edge--right" style={{ backgroundColor: paint.colors.background }} /> : null}
-    </div>
-  );
-}
-
-function EditorialRecent({ paint }: { paint: Paint }) {
-  const { colors } = paint;
-  const rows = [
-    ['claude · ~/project', 'OpenCode session', 'studio'],
-    ['bun test --watch', 'Terminal', 'studio'],
-    ['ops@build-box', 'SSH host', 'saved host'],
-  ];
-  return (
-    <div className="dm-editorial__rows">
-      {rows.map(([title, kind, context], index) => (
-        <div
-          key={title}
-          className="dm-editorial__row"
-          style={{ background: paint.fill(colors.surface), borderColor: colors.border }}
-        >
-          <span className="dm-editorial__row-number" style={{ color: colors.primary }}>
-            {String(index + 1).padStart(2, '0')}
-          </span>
-          <span className="dm-editorial__row-copy">
-            <strong style={{ color: colors.text }}>{title}</strong>
-            <span style={{ color: colors.textMuted }}>{kind} · {context}</span>
-          </span>
-          <Glyph paint={paint} name="home.arrow" size={16} color={colors.primary} fallback={ICON.chevronRight} />
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function EditorialConnections({ paint }: { paint: Paint }) {
-  const { colors } = paint;
-  return (
-    <div className="dm-editorial__rows">
-      <div className="dm-editorial__row" style={{ background: paint.fill(colors.surface), borderColor: colors.border }}>
-        <Lucide icon={ICON.server} size={20} color={colors.primary} />
-        <span className="dm-editorial__row-copy">
-          <strong style={{ color: colors.text }}>studio</strong>
-          <span style={{ color: colors.textMuted }}>Online</span>
-        </span>
-        <Glyph paint={paint} name="home.arrow" size={16} color={colors.textMuted} fallback={ICON.chevronRight} />
-      </div>
-      <div className="dm-editorial__row" style={{ background: paint.fill(colors.surface), borderColor: colors.border }}>
-        <Lucide icon={ICON.server} size={20} color={colors.primary} />
-        <span className="dm-editorial__row-copy">
-          <strong style={{ color: colors.text }}>build-box</strong>
-          <span style={{ color: colors.textMuted }}>Offline, not answering</span>
-        </span>
-        <Glyph paint={paint} name="home.arrow" size={16} color={colors.textMuted} fallback={ICON.chevronRight} />
-      </div>
-      <div className="dm-editorial__row" style={{ background: paint.fill(colors.surface), borderColor: colors.border }}>
-        <Lucide icon={ICON.link} size={20} color={colors.primary} />
-        <span className="dm-editorial__row-copy">
-          <strong style={{ color: colors.text }}>ops@build-box</strong>
-          <span style={{ color: colors.textMuted }}>Saved SSH host</span>
-        </span>
-        <Glyph paint={paint} name="home.arrow" size={16} color={colors.textMuted} fallback={ICON.chevronRight} />
-      </div>
-      <div className="dm-editorial__manage">
-        <span style={{ color: colors.primary }}>Manage connections</span>
-        <Glyph paint={paint} name="home.arrow" size={16} color={colors.primary} fallback={ICON.chevronRight} />
-      </div>
-    </div>
-  );
-}
-
-function HomeEditorialContent({ paint, pad, top, logicalWidth }: { paint: Paint; pad: boolean; top: number; logicalWidth: number }) {
+/**
+ * Editorial Home (4.0): the masthead with the mark and the name, the square
+ * controls, the artwork, the launch tiles, then Computers, Recent and
+ * Connections as the app's sections, and the Home composer dock at the foot
+ * (`home-editorial-layout.tsx`). A cover theme draws its title over the
+ * artwork with the controls under it and the tiles on the cover.
+ */
+function HomeEditorialContent({ paint, top, bottom }: { paint: Paint; top: number; bottom: number }) {
   const { colors } = paint;
   const identity = resolveHomeIdentity(paint.manifest);
   const scene = paint.art('home.wallpaper', null, 'shell.wallpaper');
@@ -701,99 +553,74 @@ function HomeEditorialContent({ paint, pad, top, logicalWidth }: { paint: Paint;
   const bareToolbar = paint.manifest.homePresentation?.toolbarBackground === false;
   const coverTitle = identity.name;
   const [coverTitleHeight, setCoverTitleHeight] = useState(0);
-  const gutter = logicalWidth >= 752 ? 24 : 12;
-  const innerWidth = Math.max(0, logicalWidth - gutter * 2);
-  const actionsWide = innerWidth >= 560;
-  const coverSplit = cover && logicalWidth >= 752;
-  const homeClassName = [
-    'dm-home',
-    'dm-home--editorial',
-    cover ? 'dm-home--editorial-cover' : '',
-    coverSplit ? 'dm-home--editorial-cover-split' : '',
-    pad ? 'dm-home--pad' : '',
-    actionsWide ? 'dm-home--editorial-actions-wide' : '',
-  ].filter(Boolean).join(' ');
-  const headerActions = (
-    <>
-      <HeaderButton paint={paint} name="chrome.scan" icon={ICON.scanLine} editorial bare={bareToolbar} />
-      <HeaderButton paint={paint} name="chrome.settings" icon={ICON.settings} editorial bare={bareToolbar} />
-    </>
+  const tools = (
+    <div className="dm-editorial__tools">
+      {[
+        { name: 'chrome.scan', icon: ICON.scanLine },
+        { name: 'chrome.settings', icon: ICON.slidersHorizontal },
+      ].map((tool) =>
+        bareToolbar ? (
+          <span key={tool.name} className="dm-square dm-square--bare" style={{ width: 44, height: 44 }}>
+            <Glyph paint={paint} name={tool.name} size={20} color={colors.text} fallback={tool.icon} />
+          </span>
+        ) : (
+          <SquareButton key={tool.name} paint={paint} name={tool.name} icon={tool.icon} />
+        ),
+      )}
+    </div>
+  );
+  const sections = (
+    <main className="dm-editorial__main">
+      <EditorialSection paint={paint} title="Computers">
+        <ServerCard paint={paint} server={SERVERS[0]!} layout={HOME_LAYOUT.phone} />
+      </EditorialSection>
+      <EditorialSection paint={paint} title="Recent">
+        <RecentRows paint={paint} />
+      </EditorialSection>
+      <EditorialSection paint={paint} title="Connections">
+        <ConnectionRows paint={paint} />
+      </EditorialSection>
+    </main>
   );
   return (
-    <div className={homeClassName} style={{ background: paint.fill(colors.background) }}>
+    <div className={`dm-home dm-home--editorial${cover ? ' dm-home--editorial-cover' : ''}`} style={{ background: paint.fill(colors.background) }}>
       <Art art={scene} />
-      <div
-        className="dm-editorial__page"
-        style={{
-          paddingInline: pad ? 24 : 12,
-          paddingTop: cover ? (pad ? 12 : top + 12) : pad ? 24 : top + NAV_HEADER_TOP_GAP,
-        }}
-      >
+      <div className="dm-editorial__page" style={{ paddingInline: 12, paddingTop: cover ? top + 12 : top + NAV_HEADER_TOP_GAP }}>
         {cover ? (
           <section className="dm-editorial-cover">
             {coverTitle ? <CoverTitle text={coverTitle} color={colors.text} onHeight={setCoverTitleHeight} /> : null}
-            <div
-              className="dm-editorial-cover__art"
-              style={pad ? undefined : { top: -(top + 12), left: -12, right: -12, bottom: 0 }}
-            >
+            <div className="dm-editorial-cover__art" style={{ top: -(top + 12), left: -12, right: -12, bottom: 0 }}>
               <Art art={banner} cover />
             </div>
-            <div className="dm-editorial-cover__utilities" style={{ top: coverTitle ? coverTitleHeight + 8 : 16 }}>{headerActions}</div>
+            <div className="dm-editorial-cover__utilities" style={{ top: coverTitle ? coverTitleHeight + 8 : 16 }}>{tools}</div>
             <div className="dm-editorial-cover__launches">
-              <EditorialLaunches paint={paint} rail />
+              <LaunchTiles paint={paint} />
             </div>
           </section>
-        ) : null}
-        <header className="dm-editorial__masthead" style={{ borderColor: colors.border }}>
-          {!cover && banner ? (
-            <>
-              <div className="dm-editorial__masthead-top">
-                <EditorialTarget paint={paint} />
-                <div className="dm-editorial__masthead-actions dm-editorial__masthead-actions--inline">{headerActions}</div>
-              </div>
+        ) : (
+          <header className="dm-editorial__masthead" style={{ borderColor: colors.border }}>
+            <div className="dm-editorial__masthead-top">
               {identity.showBrand && (identity.logo || identity.name) ? (
-                <div className="dm-editorial__identity" style={{ color: colors.textMuted }}>
-                  {identity.logo ? <Logo paint={paint} size={44} className="dm-editorial__identity-logo" /> : null}
-                  {identity.name ? <span>{identity.name}</span> : null}
+                <div className="dm-editorial__identity" style={{ color: colors.text }}>
+                  {identity.logo ? (
+                    <span className="dm-brand__tile dm-brand__tile--small" style={{ background: paint.fill(colors.surfaceRaised) }}>
+                      <Logo paint={paint} size={34} className="dm-editorial__identity-logo" />
+                    </span>
+                  ) : null}
+                  {identity.name ? <span className="dm-editorial__identity-name">{identity.name}</span> : null}
                 </div>
-              ) : null}
-            </>
-          ) : null}
-          {!cover && !banner ? (
-            <>
-              <div className="dm-editorial__masthead-top">
-                <EditorialTarget paint={paint} />
-                <div className="dm-editorial__masthead-actions dm-editorial__masthead-actions--inline">{headerActions}</div>
-              </div>
-              {identity.showBrand && (identity.logo || identity.name) ? (
-                <div className="dm-editorial__identity dm-editorial__identity--compact" style={{ color: colors.textMuted }}>
-                  {identity.logo ? <Logo paint={paint} size={44} className="dm-editorial__identity-logo" /> : null}
-                  {identity.name ? <span>{identity.name}</span> : null}
-                </div>
-              ) : null}
-            </>
-          ) : null}
-        </header>
+              ) : (
+                <span />
+              )}
+              {tools}
+            </div>
+          </header>
+        )}
         {!cover && banner ? <div className="dm-editorial__hero"><Art art={banner} /></div> : null}
-        {!cover ? <EditorialLaunches paint={paint} /> : null}
-        <div className="dm-editorial__grid">
-          <main className="dm-editorial__main">
-            <EditorialSection paint={paint} title="Continue">
-              <EditorialRecent paint={paint} />
-            </EditorialSection>
-            {!pad && (
-              <EditorialSection paint={paint} title="Connections">
-                <EditorialConnections paint={paint} />
-              </EditorialSection>
-            )}
-          </main>
-          {pad && <aside className="dm-editorial__aside">
-            <EditorialSection paint={paint} title="Connections">
-              <EditorialConnections paint={paint} />
-            </EditorialSection>
-          </aside>}
-        </div>
+        {!cover ? <LaunchTiles paint={paint} /> : null}
+        {sections}
       </div>
+      <HomeComposer paint={paint} agent="OpenCode" pad={false} bottom={bottom} />
     </div>
   );
 }
@@ -1456,7 +1283,7 @@ export default function DeviceMock({ pack, mode, device, screen, layout = DEFAUL
       ) : layout === 'stage' ? (
         <HomeStageContent paint={paint} top={spec.top} bottom={spec.bottom} />
       ) : layout === 'editorial' ? (
-        <HomeEditorialContent paint={paint} pad={false} top={spec.top} logicalWidth={spec.width} />
+        <HomeEditorialContent paint={paint} top={spec.top} bottom={spec.bottom} />
       ) : (
         <HomeContent paint={paint} pad={false} top={spec.top} bottom={spec.bottom} />
       )
