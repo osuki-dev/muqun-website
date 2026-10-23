@@ -278,3 +278,33 @@ test('effect options obey count budgets, palette and unsupported settings', () =
   const circuits = renderToStaticMarkup(<AmbientEffect effect="scanlines" density={0.5} palette={['success']} colors={colors} />);
   expect(circuits.match(/<path /g)).toHaveLength(5);
 });
+
+describe('4.0 Home preview contract', () => {
+  const render = (device: 'phone' | 'tablet', layout?: 'stage' | 'classic' | 'editorial') =>
+    renderToStaticMarkup(
+      <DeviceMock pack={previewPackage()} mode="dark" device={device} screen="home" layout={layout} label="Home preview" />,
+    );
+
+  test('a phone defaults to Stage: HUD, subtitle plate, agent chips, session strip and the composer dock', () => {
+    const markup = render('phone');
+    expect(markup).toContain('dm-home--stage');
+    expect(markup).toContain('dm-stage__kicker');
+    expect(markup.match(/dm-stage__plate/g)).toHaveLength(1);
+    expect(markup.match(/dm-stage__chip"/g)).toHaveLength(3);
+    expect(markup).toContain('dm-stage__strip');
+    expect(markup).toContain('dm-hcomposer__field');
+    expect(markup).toContain('https://example.com/artwork.png');
+    expect(markup).not.toContain('dm-rail');
+  });
+
+  test('the tablet draws one Home for every layout, without the 3.x rail', () => {
+    const stage = render('tablet', 'stage');
+    expect(stage).toContain('dm-pad-home');
+    expect(stage).not.toContain('dm-rail');
+    expect(stage).toContain('dm-hcomposer--pad');
+    expect(stage.match(/dm-rows__row--numbered/g)).toHaveLength(3);
+    expect(stage).toContain('/muqun-mark.png');
+    expect(render('tablet', 'classic')).toBe(stage);
+    expect(render('tablet', 'editorial')).toBe(stage);
+  });
+});

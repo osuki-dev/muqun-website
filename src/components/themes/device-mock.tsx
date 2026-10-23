@@ -89,7 +89,7 @@ interface Props {
   mode: ThemeMode;
   device: DeviceKind;
   screen: ScreenKind;
-  /** Home composition only; Classic remains the default for all callers. */
+  /** Home composition, phones only: the tablet draws one Home for all three. Stage is the default. */
   layout?: ThemePreviewLayout;
   /** Accessible name of the whole picture. */
   label: string;
@@ -340,6 +340,19 @@ const ICON = {
   check: ['M20 6 9 17l-5-5'],
   checkCheck: ['M18 6 7 17l-5-5', 'm22 10-7.5 7.5L13 16'],
   x: ['M18 6 6 18', 'm6 6 12 12'],
+  slidersHorizontal: ['M10 5H3', 'M12 19H3', 'M14 3v4', 'M16 17v4', 'M21 12h-9', 'M21 19h-3', 'M21 5h-5', 'M8 12H3'],
+  monitor: ['M4 3h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z', 'M8 21h8', 'M12 17v4'],
+  bot: ['M12 8V4H8', 'M4 8h16a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2z', 'M2 14h2', 'M20 14h2', 'M15 13v2', 'M9 13v2'],
+  folder: ['M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z'],
+  keyboard: ['M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z', 'M6 8h.01', 'M10 8h.01', 'M14 8h.01', 'M18 8h.01', 'M8 12h.01', 'M12 12h.01', 'M16 12h.01', 'M7 16h10'],
+  arrowUpDown: ['m21 16-4 4-4-4', 'M17 20V4', 'm3 8 4-4 4 4', 'M7 4v16'],
+  layers: ['M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z', 'M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12', 'M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17'],
+  square: ['M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z'],
+  plus: ['M5 12h14', 'M12 5v14'],
+  play: ['m6 3 14 9-14 9V3z'],
+  fileText: ['M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z', 'M14 2v4a2 2 0 0 0 2 2h4', 'M10 9H8', 'M16 13H8', 'M16 17H8'],
+  terminalPrompt: ['m4 17 6-6-6-6', 'M12 19h8'],
+  refresh: ['M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8', 'M21 3v5h-5', 'M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16', 'M8 16H3v5'],
 };
 
 /**
@@ -1104,6 +1117,268 @@ function TerminalContent({ paint, pad, top, bottom }: { paint: Paint; pad: boole
 }
 
 /* --------------------------------------------------------------------------
+   4.0 Home: the composer dock, the square controls, and the Stage
+   -------------------------------------------------------------------------- */
+
+/**
+ * The 4.0 header control: a rounded square on `surface` with a muted glyph,
+ * the shape every Home layout and the tablet rail use since the kit's 2.0.
+ * Replaces the 3.x circle on Editorial, Stage and the tablet; Classic keeps
+ * its circles.
+ */
+function SquareButton({ paint, icon, name, size = 44 }: { paint: Paint; icon: string[]; name?: string; size?: number }) {
+  const { colors } = paint;
+  return (
+    <span className="dm-square" style={{ width: size, height: size, background: paint.fill(colors.surface), borderColor: colors.border }}>
+      <Art art={paint.art('navigation.background', colors.surface)} />
+      {name ? <Glyph paint={paint} name={name} size={20} color={colors.text} fallback={icon} /> : <Lucide icon={icon} size={20} color={colors.text} />}
+    </span>
+  );
+}
+
+/**
+ * `HomeComposerDock`: the field every Home layout ends on since 4.0 -- the
+ * placeholder names the agent a send would start, the toolbar under it holds
+ * Task options (computer, agent, folder, mode and model) and the attach
+ * control, and Send sits at the end. On a phone it is the dock at the
+ * bottom edge; on the tablet it is a card in the cover column.
+ */
+function HomeComposer({ paint, agent, pad, bottom = 0 }: { paint: Paint; agent: string; pad: boolean; bottom?: number }) {
+  const { colors } = paint;
+  return (
+    <div className={`dm-hcomposer${pad ? ' dm-hcomposer--pad' : ''}`} style={{ marginBottom: pad ? 0 : bottom + 8 }}>
+      <div className="dm-hcomposer__field" style={{ background: paint.fill(colors.surface), borderColor: colors.border, color: colors.textDisabled }}>
+        <Art art={paint.art('composer.background', colors.surface)} />
+        <span className="dm-hcomposer__placeholder">New conversation with {agent}</span>
+        <div className="dm-hcomposer__bar">
+          <Glyph paint={paint} name="chrome.attach" size={18} color={colors.textMuted} fallback={ICON.paperclip} />
+          <Glyph paint={paint} name="chrome.parameters" size={18} color={colors.textMuted} fallback={ICON.slidersHorizontal} />
+          <span className="dm-hcomposer__send">
+            <Glyph paint={paint} name="chrome.send" size={20} color={colors.textMuted} fallback={ICON.send} />
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** `StageAgentRow`: a dot in the agent's state colour, its name, and the word only when it is not idle. */
+const STAGE_CHIPS: { name: string; mark: 'working' | 'needs-you' | 'idle' }[] = [
+  { name: 'codex', mark: 'working' },
+  { name: 'claude', mark: 'needs-you' },
+  { name: 'nvim', mark: 'idle' },
+];
+
+/** `StageSessionStrip`: the selected computer's sessions as cards, then All sessions. */
+const STAGE_SESSIONS = ['Dark variant', 'bun test --watch'];
+
+/**
+ * Stage Home, as a flat composition. In the app the theme's artwork is a 3D
+ * world that moves with the phone (`home-stage/gpu-stage`); here it is the
+ * artwork itself, standing on the foot: the computer HUD at the top, then the
+ * subtitle plate in the agent chips' place, the chips, the pull handle, the
+ * session strip and the composer dock, each read from `home-stage-layout.tsx`.
+ */
+function HomeStageContent({ paint, top, bottom }: { paint: Paint; top: number; bottom: number }) {
+  const { colors } = paint;
+  const scene = paint.art('home.wallpaper', null, 'shell.wallpaper');
+  const frost = withAlpha(colors.surfaceRaised, 0.78);
+  return (
+    <div className="dm-home dm-home--stage" style={{ background: paint.fill(colors.background) }}>
+      <Art art={scene} />
+      <div className="dm-stage__world">
+        <HomeArtwork paint={paint} className="dm-stage__artwork" />
+      </div>
+      <span className="dm-stage__scrim dm-stage__scrim--top" style={{ height: top + 150, backgroundImage: `linear-gradient(${paint.fill(colors.background)}, ${withAlpha(colors.background, 0)})` }} />
+      <span className="dm-stage__scrim dm-stage__scrim--bottom" style={{ backgroundImage: `linear-gradient(${withAlpha(colors.background, 0)}, ${paint.fill(colors.background)} 55%)` }} />
+      <div className="dm-stage__top" style={{ paddingTop: top + 10 }}>
+        <div className="dm-stage__hud">
+          <span className="dm-stage__kicker" style={{ color: colors.primary }}>Computer</span>
+          <span className="dm-stage__name" style={{ color: colors.text }}>studio</span>
+          <span className="dm-stage__status" style={{ color: colors.text }}>
+            <Dot color={colors.primary} size={7} /> Agent working
+          </span>
+        </div>
+        <div className="dm-stage__tools">
+          <SquareButton paint={paint} name="chrome.scan" icon={ICON.scanLine} />
+          <SquareButton paint={paint} name="chrome.settings" icon={ICON.slidersHorizontal} />
+        </div>
+      </div>
+      <div className="dm-stage__dashes" style={{ top: top + 86 }}>
+        <span style={{ width: 30, background: colors.primary }} />
+        <span style={{ background: withAlpha(colors.text, 0.32) }} />
+      </div>
+      <div className="dm-stage__foot">
+        <div className="dm-stage__subtitles">
+          <span className="dm-stage__plate" style={{ background: frost, color: colors.textMuted }}>
+            <b style={{ color: colors.primary }}>Codex</b> · Working&nbsp; Reading <code className="dm-mono" style={{ color: colors.text }}>theme.json</code> and the contrast report
+          </span>
+        </div>
+        <ul className="dm-stage__chips">
+          {STAGE_CHIPS.map((chip) => {
+            const tone = chip.mark === 'needs-you' ? colors.warning : chip.mark === 'working' ? colors.primary : colors.textMuted;
+            return (
+              <li key={chip.name} className="dm-stage__chip" style={{ background: frost, color: colors.text }}>
+                <Dot color={tone} size={7} />
+                {chip.name}
+                {chip.mark !== 'idle' && <span style={{ color: tone }}>{chip.mark === 'working' ? 'Working' : 'Needs you'}</span>}
+              </li>
+            );
+          })}
+        </ul>
+        <div className="dm-stage__handle">
+          <span className="dm-grabber" style={{ background: withAlpha(colors.text, 0.3) }} />
+          <span style={{ color: colors.warning }}>Needs you</span>
+        </div>
+        <div className="dm-stage__strip">
+          {STAGE_SESSIONS.map((title, index) => (
+            <span key={title} className="dm-stage__card" style={{ background: frost, color: colors.text }}>
+              <Lucide icon={index === 0 ? ICON.bot : ICON.squareTerminal} size={14} color={index === 0 ? colors.primary : colors.textMuted} />
+              {title}
+            </span>
+          ))}
+          <span className="dm-stage__card" style={{ background: frost, color: colors.textMuted }}>All sessions</span>
+        </div>
+        <HomeComposer paint={paint} agent="Codex" pad={false} bottom={bottom} />
+      </div>
+    </div>
+  );
+}
+
+/* --------------------------------------------------------------------------
+   4.0 tablet Home: one composition for every layout
+   -------------------------------------------------------------------------- */
+
+interface RecentRow { title: string; agent: string; where: string; status?: { word: string; tone: 'working' | 'running' } }
+const RECENT: RecentRow[] = [
+  { title: 'Dark variant for the cover', agent: 'Codex', where: 'studio · ~/project', status: { word: 'Working', tone: 'working' } },
+  { title: 'Contrast report', agent: 'Codex', where: 'studio · ~/project', status: { word: 'Running', tone: 'running' } },
+  { title: 'bun test --watch', agent: 'Terminal', where: 'studio' },
+];
+
+function RecentRows({ paint }: { paint: Paint }) {
+  const { colors } = paint;
+  return (
+    <div className="dm-rows" style={{ background: paint.fill(colors.surface), borderColor: colors.border }}>
+      {RECENT.map((row, index) => (
+        <div key={row.title} className="dm-rows__row dm-rows__row--numbered" style={{ borderColor: colors.border }}>
+          <span className="dm-rows__number" style={{ color: colors.primary }}>{String(index + 1).padStart(2, '0')}</span>
+          <span className="dm-rows__copy">
+            <strong style={{ color: colors.text }}>
+              <Lucide icon={row.agent === 'Terminal' ? ICON.squareTerminal : ICON.bot} size={16} color={row.agent === 'Terminal' ? colors.textMuted : colors.primary} />
+              {row.title}
+            </strong>
+            <span style={{ color: colors.textMuted }}>
+              {row.agent} · {row.where}
+              {row.status && (
+                <>
+                  {' · '}
+                  <Dot color={row.status.tone === 'working' ? colors.primary : colors.info} size={6} />{' '}
+                  <span style={{ color: row.status.tone === 'working' ? colors.primary : colors.info }}>{row.status.word}</span>
+                </>
+              )}
+              {' · Seen just now'}
+            </span>
+          </span>
+          <Glyph paint={paint} name="home.arrow" size={16} color={colors.primary} fallback={ICON.chevronRight} />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function ConnectionRows({ paint }: { paint: Paint }) {
+  const { colors } = paint;
+  const rows: [string[], string, string][] = [
+    [ICON.monitor, 'studio', 'Online'],
+    [ICON.monitor, 'build-box', 'Offline, not answering'],
+    [ICON.squareTerminal, 'ops@build-box', 'Saved SSH host'],
+  ];
+  return (
+    <>
+      <div className="dm-rows" style={{ background: paint.fill(colors.surface), borderColor: colors.border }}>
+        {rows.map(([icon, title, caption]) => (
+          <div key={title} className="dm-rows__row" style={{ borderColor: colors.border }}>
+            <Lucide icon={icon} size={20} color={colors.primary} />
+            <span className="dm-rows__copy">
+              <strong style={{ color: colors.text }}>{title}</strong>
+              <span style={{ color: colors.textMuted }}>{caption}</span>
+            </span>
+            <Glyph paint={paint} name="home.arrow" size={16} color={colors.primary} fallback={ICON.chevronRight} />
+          </div>
+        ))}
+      </div>
+      <span className="dm-rows__manage" style={{ color: colors.primary }}>
+        Manage connections <Lucide icon={ICON.chevronRight} size={14} color={colors.primary} />
+      </span>
+    </>
+  );
+}
+
+/** The launch tiles: the default agent on `primary`, a new terminal beside it. */
+function LaunchTiles({ paint }: { paint: Paint }) {
+  const { colors } = paint;
+  return (
+    <div className="dm-tiles">
+      <span className="dm-tile dm-tile--primary" style={{ background: colors.primary, color: colors.onPrimary }}>
+        <Art art={paint.art('buttons.primary.background', colors.primary)} />
+        <Lucide icon={ICON.bot} size={18} color={colors.onPrimary} />
+        OpenCode
+      </span>
+      <span className="dm-tile" style={{ background: paint.fill(colors.surface), borderColor: colors.border, color: colors.text }}>
+        <Lucide icon={ICON.squareTerminal} size={16} color={colors.primary} />
+        New terminal
+        <span className="dm-tile__marker" style={{ color: colors.textMuted }}>04</span>
+        <Lucide icon={ICON.arrowUpRight} size={16} color={colors.primary} />
+      </span>
+    </div>
+  );
+}
+
+/**
+ * The tablet's Home, the same on every layout (`home-overview.tsx` draws
+ * Stage only on phones; the pad shares Editorial's geometry): the cover
+ * column pairs the theme's artwork and name with the launch tiles and the
+ * composer, and the work column lists connections and recent work.
+ */
+function HomePadContent({ paint, top }: { paint: Paint; top: number }) {
+  const { colors } = paint;
+  const identity = resolveHomeIdentity(paint.manifest);
+  const scene = paint.art('home.wallpaper', null, 'shell.wallpaper');
+  const [titleHeight, setTitleHeight] = useState(0);
+  void titleHeight;
+  return (
+    <div className="dm-home dm-home--pad dm-pad-home" style={{ background: paint.fill(colors.background), paddingTop: top + 16 }}>
+      <Art art={scene} />
+      <div className="dm-pad-home__bar">
+        {identity.logo ? <Logo paint={paint} size={36} className="dm-pad-home__mark" /> : <span />}
+        <div className="dm-pad-home__tools">
+          <SquareButton paint={paint} name="chrome.scan" icon={ICON.scanLine} size={48} />
+          <SquareButton paint={paint} icon={ICON.squareTerminal} size={48} />
+          <SquareButton paint={paint} name="chrome.settings" icon={ICON.slidersHorizontal} size={48} />
+        </div>
+      </div>
+      <div className="dm-pad-home__columns">
+        <div className="dm-pad-home__cover">
+          <div className="dm-pad-home__art">
+            <HomeArtwork paint={paint} className="dm-pad-home__artwork" />
+            {identity.name ? <CoverTitle text={identity.name} color={colors.text} onHeight={setTitleHeight} /> : null}
+          </div>
+          <LaunchTiles paint={paint} />
+          <HomeComposer paint={paint} agent="OpenCode" pad />
+        </div>
+        <div className="dm-pad-home__work">
+          <h3 style={{ color: colors.text }}>Connections</h3>
+          <ConnectionRows paint={paint} />
+          <h3 style={{ color: colors.text }}>Recent</h3>
+          <RecentRows paint={paint} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* --------------------------------------------------------------------------
    The device
    -------------------------------------------------------------------------- */
 
@@ -1132,10 +1407,14 @@ export default function DeviceMock({ pack, mode, device, screen, layout = DEFAUL
 
   const content =
     screen === 'home' ? (
-      layout === 'editorial' ? (
-        <HomeEditorialContent paint={paint} pad={pad} top={spec.top} logicalWidth={pad ? spec.width - RAIL_WIDTH - 36 : spec.width} />
+      pad ? (
+        <HomePadContent paint={paint} top={spec.top} />
+      ) : layout === 'stage' ? (
+        <HomeStageContent paint={paint} top={spec.top} bottom={spec.bottom} />
+      ) : layout === 'editorial' ? (
+        <HomeEditorialContent paint={paint} pad={false} top={spec.top} logicalWidth={spec.width} />
       ) : (
-        <HomeContent paint={paint} pad={pad} top={spec.top} />
+        <HomeContent paint={paint} pad={false} top={spec.top} />
       )
     ) : screen === 'conversation' ? (
       <ConversationContent paint={paint} pad={pad} top={spec.top} bottom={spec.bottom} />
@@ -1193,9 +1472,9 @@ export default function DeviceMock({ pack, mode, device, screen, layout = DEFAUL
               colors={colors}
             />
           )}
-          {pad ? (
+          {pad && screen !== 'home' ? (
             <div className="dm-split" style={{ paddingTop: spec.top + 12, paddingBottom: spec.bottom }}>
-              <Rail paint={paint} editorial={layout === 'editorial'} selected={screen === 'home' ? undefined : { server: 'studio', pane: 'claude' }} />
+              <Rail paint={paint} editorial={layout === 'editorial'} selected={{ server: 'studio', pane: 'claude' }} />
               <div className="dm-split__detail">{content}</div>
             </div>
           ) : (

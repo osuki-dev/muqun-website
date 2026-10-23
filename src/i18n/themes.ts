@@ -76,6 +76,7 @@ export interface ThemesCopy {
     layout: string;
     classic: string;
     editorial: string;
+    stage: string;
     tokens: string;
     phone: string;
     tablet: string;
@@ -172,6 +173,7 @@ const en: ThemesCopy = {
     layout: 'Home layout',
     classic: 'Classic',
     editorial: 'Editorial',
+    stage: 'Stage',
     tokens: 'The tokens',
     phone: 'Phone',
     tablet: 'Tablet',
@@ -268,6 +270,7 @@ const zhCN: ThemesCopy = {
     layout: '首页布局',
     classic: '经典',
     editorial: '编辑版',
+    stage: '舞台',
     tokens: '色彩令牌',
     phone: '手机',
     tablet: '平板',
@@ -364,6 +367,7 @@ const zhTW: ThemesCopy = {
     layout: '首頁版面',
     classic: '經典',
     editorial: '編輯版',
+    stage: '舞台',
     tokens: '色彩權杖',
     phone: '手機',
     tablet: '平板',
@@ -460,6 +464,7 @@ const ja: ThemesCopy = {
     layout: 'ホームレイアウト',
     classic: 'クラシック',
     editorial: 'エディトリアル',
+    stage: 'ステージ',
     tokens: 'トークン',
     phone: 'スマートフォン',
     tablet: 'タブレット',
@@ -556,6 +561,7 @@ const ko: ThemesCopy = {
     layout: '홈 레이아웃',
     classic: '클래식',
     editorial: '에디토리얼',
+    stage: '스테이지',
     tokens: '토큰',
     phone: '휴대폰',
     tablet: '태블릿',
@@ -652,6 +658,7 @@ const de: ThemesCopy = {
     layout: 'Home-Layout',
     classic: 'Klassisch',
     editorial: 'Editorial',
+    stage: 'Bühne',
     tokens: 'Die Tokens',
     phone: 'Telefon',
     tablet: 'Tablet',
@@ -748,6 +755,7 @@ const fr: ThemesCopy = {
     layout: 'Mise en page de l’accueil',
     classic: 'Classique',
     editorial: 'Éditorial',
+    stage: 'Scène',
     tokens: 'Les jetons',
     phone: 'Téléphone',
     tablet: 'Tablette',
@@ -844,6 +852,7 @@ const es: ThemesCopy = {
     layout: 'Diseño de inicio',
     classic: 'Clásico',
     editorial: 'Editorial',
+    stage: 'Escenario',
     tokens: 'Los tokens',
     phone: 'Teléfono',
     tablet: 'Tableta',
@@ -940,6 +949,7 @@ const pt: ThemesCopy = {
     layout: 'Layout inicial',
     classic: 'Clássico',
     editorial: 'Editorial',
+    stage: 'Palco',
     tokens: 'Os tokens',
     phone: 'Celular',
     tablet: 'Tablet',
@@ -1036,6 +1046,7 @@ const ru: ThemesCopy = {
     layout: 'Макет главной',
     classic: 'Классический',
     editorial: 'Редакционный',
+    stage: 'Сцена',
     tokens: 'Токены',
     phone: 'Телефон',
     tablet: 'Планшет',
@@ -1132,6 +1143,7 @@ const vi: ThemesCopy = {
     layout: 'Bố cục trang chủ',
     classic: 'Cổ điển',
     editorial: 'Biên tập',
+    stage: 'Sân khấu',
     tokens: 'Các token',
     phone: 'Điện thoại',
     tablet: 'Máy tính bảng',
@@ -1228,6 +1240,7 @@ const th: ThemesCopy = {
     "layout": "เลย์เอาต์หน้าหลัก",
     "classic": "คลาสสิก",
     "editorial": "บทบรรณาธิการ",
+    "stage": "เวที",
     "tokens": "ค่าสีของธีม",
     "phone": "มือถือ",
     "tablet": "แท็บเล็ต",
