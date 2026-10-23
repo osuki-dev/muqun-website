@@ -3050,3 +3050,54 @@
   font-size: 14px;
   font-weight: 500;
 }
+
+/* Classic 4.0: the brand tile, the tagline, the card's tasks line. */
+.dm-brand__tile {
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 auto;
+  inline-size: 60px;
+  block-size: 60px;
+  border-radius: 16px;
+}
+.dm-brand__tagline {
+  display: block;
+  margin-block-start: 2px;
+  font-size: 13px;
+  font-weight: 400;
+}
+.dm-card__identity > .dm-icon,
+.dm-card__identity > svg:last-child {
+  margin-inline-start: auto;
+}
+.dm-card__tasks {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.dm-card__tasks-line {
+  display: block;
+  font-size: 12px;
+  line-height: 1.4;
+}
+.dm-card__progress {
+  display: block;
+  block-size: 4px;
+  border-radius: 2px;
+  overflow: hidden;
+}
+.dm-card__progress > span {
+  display: block;
+  block-size: 100%;
+  border-radius: 2px;
+}
+.dm-home--classic-cover .dm-hcomposer,
+.dm-home:not(.dm-home--stage):not(.dm-home--pad) > .dm-hcomposer {
+  margin-block-start: auto;
+}
+
+.dm-brand__copy {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+}

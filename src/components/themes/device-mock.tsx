@@ -431,14 +431,22 @@ function PaneRows({ paint, server, selected, compact, minHeight, style }: { pain
   );
 }
 
+/**
+ * `HomeComputerCard` (4.0): the computer as an entry point, not a pane list
+ * -- its name and reachability, what the agents on it are doing, and the
+ * tasks line with its progress. The panes live in Recent now.
+ */
 function ServerCard({ paint, server, layout }: { paint: Paint; server: Server; layout: (typeof HOME_LAYOUT)[DeviceKind] }) {
   const { colors } = paint;
-  const status = server.reachability === 'live' ? colors.success : colors.textSubtle;
+  const live = server.reachability === 'live';
+  const status = live ? colors.success : colors.textSubtle;
+  const working = server.panes.filter((pane) => pane.status === 'working').length;
+  const blocked = server.panes.filter((pane) => pane.status === 'blocked').length;
   return (
     <Surface paint={paint} slot="cards.decoration" base={colors.surface} className="dm-card" style={{ borderRadius: layout.cardRadius, padding: layout.cardPadding }}>
       <div className="dm-card__identity">
         <span className="dm-card__avatar" style={{ background: paint.fill(colors.surfaceRaised) }}>
-          <Lucide icon={ICON.server} size={19} color={colors.textMuted} />
+          <Lucide icon={ICON.monitor} size={19} color={colors.textMuted} />
         </span>
         <div className="dm-card__copy">
           <span className="dm-card__name" style={{ color: colors.text }}>{server.name}</span>
@@ -447,8 +455,33 @@ function ServerCard({ paint, server, layout }: { paint: Paint; server: Server; l
             {REACHABILITY[server.reachability]}
           </span>
         </div>
+        <Glyph paint={paint} name="home.arrow" size={16} color={colors.textMuted} fallback={ICON.chevronRight} />
       </div>
-      <PaneRows paint={paint} server={server} compact={false} minHeight={layout.rowMinHeight} style={{ marginTop: layout.listGap }} />
+      {live ? (
+        <div className="dm-card__tasks" style={{ marginTop: layout.listGap - 8 }}>
+          <span className="dm-card__tasks-line" style={{ color: colors.textMuted }}>
+            <span style={{ color: colors.text, fontWeight: 600 }}>Tasks</span>
+            {' · '}
+            <span style={{ color: colors.primary }}>{working} working</span>
+            {blocked > 0 && (
+              <>
+                {' · '}
+                <span style={{ color: colors.warning }}>{blocked} needs you</span>
+              </>
+            )}
+          </span>
+          <span className="dm-card__progress" style={{ background: withAlpha(colors.text, 0.1) }}>
+            <span style={{ width: '62%', background: colors.primary }} />
+          </span>
+          <span className="dm-card__tasks-line" style={{ color: colors.textSubtle }}>
+            codex · Dark variant for the cover · Working
+          </span>
+        </div>
+      ) : (
+        <span className="dm-card__tasks-line" style={{ color: colors.textSubtle, marginTop: layout.listGap - 8 }}>
+          Last known activity · tmux · main
+        </span>
+      )}
     </Surface>
   );
 }
@@ -795,7 +828,12 @@ function CoverTitle({ text, color, onHeight }: { text: string; color: string; on
   );
 }
 
-function HomeContent({ paint, pad, top }: { paint: Paint; pad: boolean; top: number }) {
+/**
+ * Classic Home (4.0): the circles in the bar, the brand block with the
+ * tagline, the artwork, the computer cards as entry points, and the Home
+ * composer dock at the foot like every layout since 4.0.
+ */
+function HomeContent({ paint, pad, top, bottom = 0 }: { paint: Paint; pad: boolean; top: number; bottom?: number }) {
   const { colors } = paint;
   const identity = resolveHomeIdentity(paint.manifest);
   const layout = HOME_LAYOUT[pad ? 'tablet' : 'phone'];
@@ -831,11 +869,16 @@ function HomeContent({ paint, pad, top }: { paint: Paint; pad: boolean; top: num
             page with no tile; the name takes a plate only over a wallpaper. */}
         {!pad && identity.showBrand && (
           <div className="dm-brand">
-            <Logo paint={paint} size={46} />
+            {identity.logo && (
+              <span className="dm-brand__tile" style={{ background: paint.fill(colors.surfaceRaised) }}>
+                <Logo paint={paint} size={46} />
+              </span>
+            )}
             {identity.name && (
               <span className="dm-brand__copy" style={hasScene ? { background: paint.fill(colors.background) } : undefined}>
                 {hasScene && <Art art={paint.art('navigation.background', colors.background)} />}
                 <span className="dm-brand__name" style={{ color: colors.text }}>{identity.name}</span>
+                <span className="dm-brand__tagline" style={{ color: colors.textMuted }}>Your agents, anywhere</span>
               </span>
             )}
           </div>
@@ -845,6 +888,7 @@ function HomeContent({ paint, pad, top }: { paint: Paint; pad: boolean; top: num
           <ServerCard key={server.name} paint={paint} server={server} layout={layout} />
         ))}
       </div>
+      {!pad && <HomeComposer paint={paint} agent="Codex" pad={false} bottom={bottom} />}
     </div>
   );
 }
@@ -1414,7 +1458,7 @@ export default function DeviceMock({ pack, mode, device, screen, layout = DEFAUL
       ) : layout === 'editorial' ? (
         <HomeEditorialContent paint={paint} pad={false} top={spec.top} logicalWidth={spec.width} />
       ) : (
-        <HomeContent paint={paint} pad={false} top={spec.top} />
+        <HomeContent paint={paint} pad={false} top={spec.top} bottom={spec.bottom} />
       )
     ) : screen === 'conversation' ? (
       <ConversationContent paint={paint} pad={pad} top={spec.top} bottom={spec.bottom} />
