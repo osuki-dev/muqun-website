@@ -215,7 +215,19 @@ unless a 4.0 cut replaces it.]
     capture; new social art; themes mock Stage; dead copy in `muqun/*.ts`;
     `osuki.dev` mirror comment. (4, 5, 2.4, 1.14, 1.9)
 
-## 8. Decisions for the owner
+## 8. Status after the owner's decision (2026-10-23)
+
+The owner chose the information-architecture restructure only, with the
+Pocket mascot, the relabelled film and the existing design system kept. It is
+on `feat/website-4.0`: hero (one-line definition), film, how it works (three
+steps), New in 4.0 (six tiles), agents, everyday workspace (ten rows),
+themes, the deal, download. Cut: the chapter-01 repeat with the illustrative
+terminal, the Gateway command reference, the requirements list, and the
+simulator, transitions, renderer, tablet-spread, away and themes tiles. The
+privacy rewrite is merged. Lighthouse desktop on the home page after: 84–86 /
+96 / 100 / 100 over three runs (baseline 86 / 92 / 100 / 100, one run).
+
+## 9. Decisions for the owner (as of the audit)
 
 - **Mascot vs Neon.** Keep the Pocket companion as the site's character while
   the app icon is the Neon ribbon, or rebuild the hero around Neon and the Stage
