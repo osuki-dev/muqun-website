@@ -109,7 +109,7 @@ export interface UserGuide {
     /** Two entries: a terminal, then an agent session. */
     versus: readonly GuideEntry[];
     supportedHeading: string;
-    /** Codex, OpenCode, DeepSeek Harness, T3 Code, in the Gateway's preference order. */
+    /** Antigravity, Claude Code, Antigravity, Claude Code, Codex, Cursor, DeepSeek Harness, FX, OpenCode, Pi, Qoder CLI Cursor  FX  Pi Qoder CLI T3 Code, in the Gateway's preference order. */
     supported: readonly GuideAgent[];
     cliHeading: string;
     cliBody: string;

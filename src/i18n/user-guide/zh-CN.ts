@@ -3,11 +3,11 @@ import type { UserGuide } from './types';
 export const zhCN: UserGuide = {
   metaTitle: '牧群 用户指南与参考手册',
   metaDescription:
-    '安装 Gateway、手机配对、工作区管理、终端按键行、编程 AI 助手（Codex、OpenCode、DeepSeek Harness、T3 Code）、主题定制及连接排错的完整指南。',
+    '安装 Gateway、手机配对、工作区管理、终端按键行、编程 AI 助手（Antigravity、Claude Code、Antigravity、Claude Code、Codex、Cursor、DeepSeek Harness、FX、OpenCode、Pi、Qoder CLI CursorFXPiQoder CLI T3 Code）、主题定制及连接排错的完整指南。',
   hero: {
     badge: '用户指南 · 参考手册',
     heading: '触手可及，掌控你的每一台机器。',
-    lead: '牧群将手机与你自己的电脑或服务器直接相连。了解如何安装与配置 Gateway、管理终端工作区、接入并使用编程 AI 助手（Codex、OpenCode、DeepSeek Harness 和 T3 Code）、安装主题并排查连接故障。',
+    lead: '牧群将手机与你自己的电脑或服务器直接相连。了解如何安装与配置 Gateway、管理终端工作区、接入并使用编程 AI 助手（Antigravity、Claude Code、Codex、Cursor、DeepSeek Harness、FX、OpenCode、Pi、Qoder CLI 和 T3 Code）、安装主题并排查连接故障。',
     startCta: '开始使用 ↓',
     diagnosticsCta: '故障排查 ↓',
     issueCta: '反馈问题',
@@ -32,7 +32,7 @@ export const zhCN: UserGuide = {
       id: 'agents',
       label: "AI 助手",
       nav: "助手",
-      meta: "codex · opencode · deepseek · t3",
+      meta: "antigravity · claude code · codex · cursor · deepseek · fx · opencode · pi · qoder cli · t3",
       desc: "AI 助手会话和终端的区别、4.0 支持的四个助手，以及在电脑上怎样接入。",
     },
     {
@@ -129,7 +129,7 @@ export const zhCN: UserGuide = {
   agents: {
     eyebrow: "muqun-gateway agent",
     heading: "AI 助手。",
-    lead: "终端是你敲命令的 shell。AI 助手会话则是和电脑上运行的编程助手——Codex、OpenCode、DeepSeek Harness 或 T3 Code——的一段对话，App 把它画成消息、工具卡片和提问，而不是一屏文字。两者走的是同一台 Gateway、同一次配对，区别只在于 Gateway 替你和谁说话。",
+    lead: "终端是你敲命令的 shell。AI 助手会话则是和电脑上运行的编程助手——Antigravity、Claude Code、Codex、Cursor、DeepSeek Harness、FX、OpenCode、Pi、Qoder CLI 或 T3 Code——的一段对话，App 把它画成消息、工具卡片和提问，而不是一屏文字。两者走的是同一台 Gateway、同一次配对，区别只在于 Gateway 替你和谁说话。",
     versus: [
       { term: "终端", detail: "电脑上的 tmux 或 Herdr。窗格里有什么，App 就显示什么；你发出的按键，就是程序收到的按键。所以任何程序都能用，包括跑在终端里的命令行助手，比如 Claude Code。" },
       { term: "AI 助手会话", detail: "Gateway 通过助手自己的 API 与它对话。每个会话属于一个助手，也总会回到这个助手。工作台——模式、模型、斜杠命令、技能、附件、撤销、压缩、后台任务——只显示这个助手支持的部分。" },
