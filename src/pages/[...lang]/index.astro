@@ -37,6 +37,11 @@ const agents = { ...agentsHome[locale], facts: [...agentsHome[locale].facts.slic
 const fresh = features.filter((feature) => feature.group === "new");
 const everyday = features.filter((feature) => feature.group === "everyday");
 
+/** Every agent the 4.0 Gateway ships a native adapter for, as the app names them. */
+const supportedAgents = ['Claude Code', 'Codex', 'Cursor', 'OpenCode', 'Antigravity', 'DeepSeek Harness', 'T3 Code', 'FX', 'Qoder CLI', 'Pi'];
+/** The two the hero highlights, as before. */
+const featuredAgents = ['Codex', 'OpenCode'];
+
 /**
  * The agents chapter's link, which is an anchor on another page.
  *
@@ -77,10 +82,11 @@ const agentsGuideHref = `${localizedPath("/support", locale)}#agents`;
           </div>
           <div class="hero-agents-strip">
             <span class="hero-agents-label"><span class="signal-dot mini"></span>{world.native}</span>
-            <span class="hero-agent-pill hero-agent-pill--highlight">✦ Codex</span>
-            <span class="hero-agent-pill hero-agent-pill--highlight">✦ OpenCode</span>
-            <span class="hero-agent-pill">DeepSeek Harness</span>
-            <span class="hero-agent-pill">T3 Code</span>
+            {supportedAgents.map((name) => (
+              <span class={`hero-agent-pill ${featuredAgents.includes(name) ? 'hero-agent-pill--highlight' : ''}`}>
+                {featuredAgents.includes(name) ? '✦ ' : ''}{name}
+              </span>
+            ))}
           </div>
         </div>
         <a class="hero-coordinate hero-scroll" href="#connect">
@@ -170,6 +176,11 @@ const agentsGuideHref = `${localizedPath("/support", locale)}#agents`;
               ))}
             </div>
           )}
+          <div class="hero-agents-strip agent-all-strip" aria-label={agents.eyebrow}>
+            {supportedAgents.map((name) => (
+              <span class="hero-agent-pill">{name}</span>
+            ))}
+          </div>
           <ul class="world-requirements">
             {agents.facts.map((fact) => (
               <li>{fact}</li>
