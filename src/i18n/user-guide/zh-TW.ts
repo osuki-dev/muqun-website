@@ -3,11 +3,11 @@ import type { UserGuide } from './types';
 export const zhTW: UserGuide = {
   metaTitle: '牧群 使用者指南與參考手冊',
   metaDescription:
-    '安裝 Gateway、手機配對、工作区管理、終端機按鍵列、程式 AI 助手（Codex、OpenCode、DeepSeek Harness、T3 Code）、主題客製化及連線疑難排解的完整手冊。',
+    '安裝 Gateway、手機配對、工作区管理、終端機按鍵列、程式 AI 助手（Antigravity、Claude Code、Antigravity、Claude Code、Codex、Cursor、DeepSeek Harness、FX、OpenCode、Pi、Qoder CLI CursorFXPiQoder CLI T3 Code）、主題客製化及連線疑難排解的完整手冊。',
   hero: {
     badge: '使用者指南 · 參考手冊',
     heading: '觸手可及，掌控你的每一台電腦。',
-    lead: '牧群將手機與你自己的電腦或伺服器直接相連。了解如何安裝與設定 Gateway、切換終端機工作區、接上並操控程式 AI 助手（Codex、OpenCode、DeepSeek Harness 與 T3 Code）、安裝主題並排解連線問題。',
+    lead: '牧群將手機與你自己的電腦或伺服器直接相連。了解如何安裝與設定 Gateway、切換終端機工作區、接上並操控程式 AI 助手（Antigravity、Claude Code、Codex、Cursor、DeepSeek Harness、FX、OpenCode、Pi、Qoder CLI 與 T3 Code）、安裝主題並排解連線問題。',
     startCta: '開始使用 ↓',
     diagnosticsCta: '問題排解 ↓',
     issueCta: '回報問題',
@@ -32,7 +32,7 @@ export const zhTW: UserGuide = {
       id: 'agents',
       label: "AI 助手",
       nav: "助手",
-      meta: "codex · opencode · deepseek · t3",
+      meta: "antigravity · claude code · codex · cursor · deepseek · fx · opencode · pi · qoder cli · t3",
       desc: "AI 助手工作階段與終端機的差別、4.0 支援的四個助手，以及如何在電腦上接上它們。",
     },
     {
@@ -130,7 +130,7 @@ export const zhTW: UserGuide = {
   agents: {
     eyebrow: "muqun-gateway agent",
     heading: "AI 助手。",
-    lead: "終端機是你輸入指令的 shell。AI 助手工作階段則是與電腦上執行的程式助手——Codex、OpenCode、DeepSeek Harness 或 T3 Code——的一段對話，App 會把它畫成訊息、工具卡片與提問，而不是一整頁文字。兩者走同一台 Gateway、同一次配對，差別只在 Gateway 替你和誰溝通。",
+    lead: "終端機是你輸入指令的 shell。AI 助手工作階段則是與電腦上執行的程式助手——Antigravity、Claude Code、Codex、Cursor、DeepSeek Harness、FX、OpenCode、Pi、Qoder CLI 或 T3 Code——的一段對話，App 會把它畫成訊息、工具卡片與提問，而不是一整頁文字。兩者走同一台 Gateway、同一次配對，差別只在 Gateway 替你和誰溝通。",
     versus: [
       { term: "終端機", detail: "電腦上的 tmux 或 Herdr。窗格裡有什麼，App 就顯示什麼；你送出的按鍵，就是程式收到的按鍵。所以任何程式都能用，包括在終端機裡執行的命令列助手，例如 Claude Code。" },
       { term: "AI 助手工作階段", detail: "Gateway 透過助手自己的 API 與它溝通。每個工作階段屬於一個助手，也一定回到該助手。工作台——模式、模型、斜線指令、技能、附件、復原、壓縮、背景執行——只顯示該助手支援的部分。" },

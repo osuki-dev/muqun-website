@@ -3,11 +3,11 @@ import type { UserGuide } from './types';
 export const en: UserGuide = {
   metaTitle: 'Muqun User Guide & Reference',
   metaDescription:
-    'Complete guide to installing the Gateway, pairing your phone, workspaces, terminal controls, coding agents (Codex, OpenCode, DeepSeek Harness, T3 Code), themes, and troubleshooting.',
+    'Complete guide to installing the Gateway, pairing your phone, workspaces, terminal controls, coding agents (Antigravity, Claude Code, Antigravity, Claude Code, Codex, Cursor, DeepSeek Harness, FX, OpenCode, Pi, Qoder CLI Cursor  FX  Pi Qoder CLI T3 Code), themes, and troubleshooting.',
   hero: {
     badge: 'USER GUIDE · REFERENCE MANUAL',
     heading: 'Everything you need to keep your machine in reach.',
-    lead: 'Muqun connects your phone directly to your own computer or server. Learn how to install and configure the Gateway, navigate terminal workspaces, set up and drive your coding agents — Codex, OpenCode, DeepSeek Harness and T3 Code, install themes, and troubleshoot connections.',
+    lead: 'Muqun connects your phone directly to your own computer or server. Learn how to install and configure the Gateway, navigate terminal workspaces, set up and drive your coding agents — Antigravity, Claude Code, Codex, Cursor, DeepSeek Harness, FX, OpenCode, Pi, Qoder CLI and T3 Code, install themes, and troubleshoot connections.',
     startCta: 'Get started ↓',
     diagnosticsCta: 'Diagnostics ↓',
     issueCta: 'Open an issue',
@@ -32,7 +32,7 @@ export const en: UserGuide = {
       id: 'agents',
       label: "Agents",
       nav: "agents",
-      meta: "codex · opencode · deepseek · t3",
+      meta: "antigravity · claude code · codex · cursor · deepseek · fx · opencode · pi · qoder cli · t3",
       desc: "Agent sessions versus terminals, the four agents 4.0 supports, and setting each up on the host.",
     },
     {
@@ -130,7 +130,7 @@ export const en: UserGuide = {
   agents: {
     eyebrow: "muqun-gateway agent",
     heading: "Agents.",
-    lead: "A terminal is a shell you type into. An agent session is a conversation with a coding agent running on your computer — Codex, OpenCode, DeepSeek Harness or T3 Code — which the app draws as messages, tool cards and questions rather than as a screen of text. Both go through the same Gateway and the same pairing; they differ in what the Gateway talks to on your behalf.",
+    lead: "A terminal is a shell you type into. An agent session is a conversation with a coding agent running on your computer — Antigravity, Claude Code, Codex, Cursor, DeepSeek Harness, FX, OpenCode, Pi, Qoder CLI or T3 Code — which the app draws as messages, tool cards and questions rather than as a screen of text. Both go through the same Gateway and the same pairing; they differ in what the Gateway talks to on your behalf.",
     versus: [
       { term: "A terminal", detail: "tmux or Herdr on the host. The app shows what the pane shows, and the keys you send are the keys the program receives — so any program works, including CLI agents that live directly in a terminal, such as Claude Code." },
       { term: "An agent session", detail: "An agent the Gateway talks to over its own API. Every session belongs to one agent and always goes back to it. The workbench — modes, models, slash commands, skills, attachments, undo, compaction, background runs — shows only what that agent supports." },

@@ -3,11 +3,11 @@ import type { UserGuide } from './types';
 export const ja: UserGuide = {
   metaTitle: '牧群 ユーザーガイドとリファレンス',
   metaDescription:
-    'Gateway のインストール、スマートフォンとのペアリング、ワークスペース管理、端末キーバー、コーディングエージェント（Codex、OpenCode、DeepSeek Harness、T3 Code）、テーマ、接続トラブルシューティングの完全ガイド。',
+    'Gateway のインストール、スマートフォンとのペアリング、ワークスペース管理、端末キーバー、コーディングエージェント（Antigravity、Claude Code、Antigravity、Claude Code、Codex、Cursor、DeepSeek Harness、FX、OpenCode、Pi、Qoder CLI CursorFXPiQoder CLI T3 Code）、テーマ、接続トラブルシューティングの完全ガイド。',
   hero: {
     badge: 'ユーザーガイド · リファレンスマニュアル',
     heading: '手のひらから、いつでもマシンへ。',
-    lead: '牧群は、スマートフォンをご自身のコンピューターやサーバーへ直接接続します。Gateway のセットアップ、端末ワークスペースの操作、コーディングエージェント（Codex、OpenCode、DeepSeek Harness、T3 Code）の設定と操作、テーマの追加、接続トラブルの診断手順を解説します。',
+    lead: '牧群は、スマートフォンをご自身のコンピューターやサーバーへ直接接続します。Gateway のセットアップ、端末ワークスペースの操作、コーディングエージェント（Antigravity、Claude Code、Antigravity、Claude Code、Codex、Cursor、DeepSeek Harness、FX、OpenCode、Pi、Qoder CLI CursorFXPiQoder CLI T3 Code）の設定と操作、テーマの追加、接続トラブルの診断手順を解説します。',
     startCta: '使ってみる ↓',
     diagnosticsCta: 'トラブル診断 ↓',
     issueCta: '問題を報告',
@@ -32,7 +32,7 @@ export const ja: UserGuide = {
       id: 'agents',
       label: "エージェント",
       nav: "エージェント",
-      meta: "codex · opencode · deepseek · t3",
+      meta: "antigravity · claude code · codex · cursor · deepseek · fx · opencode · pi · qoder cli · t3",
       desc: "エージェントのセッションとターミナルの違い、4.0 が対応する 4 つのエージェント、ホストでの設定方法。",
     },
     {
@@ -130,7 +130,7 @@ export const ja: UserGuide = {
   agents: {
     eyebrow: "muqun-gateway agent",
     heading: "エージェント。",
-    lead: "ターミナルは入力するためのシェルです。エージェントのセッションは、あなたのコンピューターで動くコーディングエージェント——Codex、OpenCode、DeepSeek Harness、T3 Code——との会話で、アプリはそれを文字の画面ではなく、メッセージ、ツールカード、質問として描きます。どちらも同じ Gateway、同じペアリングを通ります。違うのは、Gateway があなたの代わりに話す相手です。",
+    lead: "ターミナルは入力するためのシェルです。エージェントのセッションは、あなたのコンピューターで動くコーディングエージェント——Antigravity、Claude Code、Antigravity、Claude Code、Codex、Cursor、DeepSeek Harness、FX、OpenCode、Pi、Qoder CLI CursorFXPiQoder CLI T3 Code——との会話で、アプリはそれを文字の画面ではなく、メッセージ、ツールカード、質問として描きます。どちらも同じ Gateway、同じペアリングを通ります。違うのは、Gateway があなたの代わりに話す相手です。",
     versus: [
       { term: "ターミナル", detail: "ホストの tmux か Herdr。ペインに映っているものをそのまま表示し、送ったキーはそのままプログラムに届きます。だからどんなプログラムでも動き、Claude Code のようにターミナルで直接動く CLI エージェントも使えます。" },
       { term: "エージェントのセッション", detail: "Gateway がエージェント自身の API で話す相手です。各セッションはひとつのエージェントに属し、必ずそこへ戻ります。ワークベンチ——モード、モデル、スラッシュコマンド、スキル、添付、取り消し、コンパクション、バックグラウンド実行——は、そのエージェントが対応するものだけを表示します。" },

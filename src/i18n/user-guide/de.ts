@@ -3,11 +3,11 @@ import type { UserGuide } from './types';
 export const de: UserGuide = {
   metaTitle: 'Muqun Benutzerhandbuch & Referenz',
   metaDescription:
-    'Vollständige Anleitung zu Gateway-Installation, Handy-Kopplung, Workspaces, Terminal-Bedienelementen, Coding-Agenten (Codex, OpenCode, DeepSeek Harness, T3 Code), Themes und Fehlerdiagnose.',
+    'Vollständige Anleitung zu Gateway-Installation, Handy-Kopplung, Workspaces, Terminal-Bedienelementen, Coding-Agenten (Antigravity, Claude Code, Antigravity, Claude Code, Codex, Cursor, DeepSeek Harness, FX, OpenCode, Pi, Qoder CLI Cursor  FX  Pi Qoder CLI T3 Code), Themes und Fehlerdiagnose.',
   hero: {
     badge: 'BENUTZERHANDBUCH · REFERENZMANUAL',
     heading: 'Alles, was du brauchst, um deinen Rechner stets griffbereit zu haben.',
-    lead: 'Muqun verbindet dein Smartphone direkt mit deinem eigenen Rechner oder Server. Erfahre, wie du das Gateway installierst und einrichtest, Terminal-Workspaces bedienst, deine Coding-Agenten einrichtest und steuerst — Codex, OpenCode, DeepSeek Harness und T3 Code, Themes installierst und Verbindungsfehler behebst.',
+    lead: 'Muqun verbindet dein Smartphone direkt mit deinem eigenen Rechner oder Server. Erfahre, wie du das Gateway installierst und einrichtest, Terminal-Workspaces bedienst, deine Coding-Agenten einrichtest und steuerst — Antigravity, Claude Code, Antigravity, Claude Code, Codex, Cursor, DeepSeek Harness, FX, OpenCode, Pi, Qoder CLI Cursor  FX  Pi Qoder CLI und T3 Code, Themes installierst und Verbindungsfehler behebst.',
     startCta: 'Erste Schritte ↓',
     diagnosticsCta: 'Fehlerdiagnose ↓',
     issueCta: 'Issue eröffnen',
@@ -32,7 +32,7 @@ export const de: UserGuide = {
       id: 'agents',
       label: "Agenten",
       nav: "Agenten",
-      meta: "codex · opencode · deepseek · t3",
+      meta: "antigravity · claude code · codex · cursor · deepseek · fx · opencode · pi · qoder cli · t3",
       desc: "Agentensitzungen gegenüber Terminals, die vier Agenten, die 4.0 unterstützt, und ihre Einrichtung auf dem Host.",
     },
     {
@@ -130,7 +130,7 @@ export const de: UserGuide = {
   agents: {
     eyebrow: "muqun-gateway agent",
     heading: "Agenten.",
-    lead: "Ein Terminal ist eine Shell, in die du tippst. Eine Agentensitzung ist ein Gespräch mit einem Coding-Agenten auf deinem Rechner — Codex, OpenCode, DeepSeek Harness oder T3 Code —, das die App als Nachrichten, Tool-Karten und Fragen zeichnet statt als Bildschirm voller Text. Beide laufen über dasselbe Gateway und dieselbe Kopplung; sie unterscheiden sich darin, mit wem das Gateway für dich spricht.",
+    lead: "Ein Terminal ist eine Shell, in die du tippst. Eine Agentensitzung ist ein Gespräch mit einem Coding-Agenten auf deinem Rechner — Antigravity, Claude Code, Codex, Cursor, DeepSeek Harness, FX, OpenCode, Pi, Qoder CLI oder T3 Code —, das die App als Nachrichten, Tool-Karten und Fragen zeichnet statt als Bildschirm voller Text. Beide laufen über dasselbe Gateway und dieselbe Kopplung; sie unterscheiden sich darin, mit wem das Gateway für dich spricht.",
     versus: [
       { term: "Ein Terminal", detail: "tmux oder Herdr auf dem Host. Die App zeigt, was der Bereich zeigt, und die Tasten, die du sendest, sind die Tasten, die das Programm bekommt — also läuft jedes Programm, auch CLI-Agenten, die direkt im Terminal leben, wie Claude Code." },
       { term: "Eine Agentensitzung", detail: "Ein Agent, mit dem das Gateway über dessen eigene API spricht. Jede Sitzung gehört einem Agenten und geht immer an ihn zurück. Die Werkbank — Modi, Modelle, Slash-Befehle, Skills, Anhänge, Rückgängig, Komprimierung, Hintergrundläufe — zeigt nur, was dieser Agent unterstützt." },

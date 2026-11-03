@@ -3,11 +3,11 @@ import type { UserGuide } from './types';
 export const vi: UserGuide = {
   metaTitle: 'Hướng dẫn sử dụng & Tài liệu tham khảo Muqun',
   metaDescription:
-    'Hướng dẫn toàn diện về cài đặt Gateway, ghép nối điện thoại, không gian làm việc, điều khiển terminal, các trợ lý lập trình (Codex, OpenCode, DeepSeek Harness, T3 Code), chủ đề và khắc phục sự cố.',
+    'Hướng dẫn toàn diện về cài đặt Gateway, ghép nối điện thoại, không gian làm việc, điều khiển terminal, các trợ lý lập trình (Antigravity, Claude Code, Antigravity, Claude Code, Codex, Cursor, DeepSeek Harness, FX, OpenCode, Pi, Qoder CLI Cursor  FX  Pi Qoder CLI T3 Code), chủ đề và khắc phục sự cố.',
   hero: {
     badge: 'HƯỚNG DẪN SỬ DỤNG · TÀI LIỆU THAM KHẢO',
     heading: 'Mọi thứ bạn cần để giữ máy tính luôn trong tầm tay.',
-    lead: 'Muqun kết nối điện thoại trực tiếp với máy tính hoặc máy chủ của bạn. Tìm hiểu cách cài đặt và cấu hình Gateway, điều hướng không gian làm việc terminal, thiết lập và điều khiển các trợ lý lập trình (Codex, OpenCode, DeepSeek Harness và T3 Code), cài đặt chủ đề và khắc phục sự cố kết nối.',
+    lead: 'Muqun kết nối điện thoại trực tiếp với máy tính hoặc máy chủ của bạn. Tìm hiểu cách cài đặt và cấu hình Gateway, điều hướng không gian làm việc terminal, thiết lập và điều khiển các trợ lý lập trình (Antigravity, Claude Code, Antigravity, Claude Code, Codex, Cursor, DeepSeek Harness, FX, OpenCode, Pi, Qoder CLI Cursor  FX  Pi Qoder CLI và T3 Code), cài đặt chủ đề và khắc phục sự cố kết nối.',
     startCta: 'Bắt đầu ↓',
     diagnosticsCta: 'Chẩn đoán ↓',
     issueCta: 'Tạo issue',
@@ -32,7 +32,7 @@ export const vi: UserGuide = {
       id: 'agents',
       label: "Trợ lý",
       nav: "Trợ lý",
-      meta: "codex · opencode · deepseek · t3",
+      meta: "antigravity · claude code · codex · cursor · deepseek · fx · opencode · pi · qoder cli · t3",
       desc: "Phiên trợ lý so với terminal, bốn trợ lý mà 4.0 hỗ trợ, và cách thiết lập từng trợ lý trên máy chủ.",
     },
     {
@@ -130,7 +130,7 @@ export const vi: UserGuide = {
   agents: {
     eyebrow: "muqun-gateway agent",
     heading: "Trợ lý.",
-    lead: "Terminal là shell để bạn gõ lệnh. Phiên trợ lý là cuộc trò chuyện với một trợ lý lập trình chạy trên máy tính của bạn — Codex, OpenCode, DeepSeek Harness hoặc T3 Code — được ứng dụng vẽ thành tin nhắn, thẻ công cụ và câu hỏi thay vì một màn hình chữ. Cả hai đi qua cùng một Gateway và cùng một lần ghép nối; khác nhau ở chỗ Gateway thay bạn nói chuyện với ai.",
+    lead: "Terminal là shell để bạn gõ lệnh. Phiên trợ lý là cuộc trò chuyện với một trợ lý lập trình chạy trên máy tính của bạn — Antigravity, Claude Code, Codex, Cursor, DeepSeek Harness, FX, OpenCode, Pi, Qoder CLI hoặc T3 Code — được ứng dụng vẽ thành tin nhắn, thẻ công cụ và câu hỏi thay vì một màn hình chữ. Cả hai đi qua cùng một Gateway và cùng một lần ghép nối; khác nhau ở chỗ Gateway thay bạn nói chuyện với ai.",
     versus: [
       { term: "Terminal", detail: "tmux hoặc Herdr trên máy chủ. Ứng dụng hiển thị đúng những gì ô đang hiện, và phím bạn gửi chính là phím chương trình nhận được — nên chương trình nào cũng chạy được, kể cả các trợ lý CLI chạy trực tiếp trong terminal như Claude Code." },
       { term: "Phiên trợ lý", detail: "Một trợ lý mà Gateway trò chuyện qua API riêng của nó. Mỗi phiên thuộc về một trợ lý và luôn quay về trợ lý đó. Bàn làm việc — chế độ, mô hình, lệnh gạch chéo, kỹ năng, tệp đính kèm, hoàn tác, nén ngữ cảnh, tác vụ nền — chỉ hiện những gì trợ lý đó hỗ trợ." },
