@@ -16,7 +16,6 @@ export interface DesktopCopy {
   remote: Entry;
   ready: string;
   guideTitle: string;
-  installation: string;
   compatibility: string;
   start: string;
   shortcuts: string;
@@ -75,7 +74,6 @@ export const desktopCopy: Record<SiteLocale, DesktopCopy> = {
     ],
     ready: "Make room for your next project.",
     guideTitle: "Desktop, from setup to everyday use.",
-    installation: "Choose the right starting point.",
     compatibility:
       "Windows and Intel macOS packages are not included in the preview targets. Linux needs a compatible GPU stack and session D-Bus; embedded web content also needs WebKitGTK 4.1. Optional remote features depend on the connected Gateway and agent capabilities.",
     start: "Your first session.",
@@ -153,7 +151,6 @@ export const desktopCopy: Record<SiteLocale, DesktopCopy> = {
     ],
     ready: "为下一个项目留出空间。",
     guideTitle: "Desktop：从安装到日常使用。",
-    installation: "选择适合的起点。",
     compatibility:
       "预览目标不包含 Windows 和 Intel macOS 安装包。Linux 需要兼容的 GPU 驱动和会话 D-Bus，嵌入式网页还需要 WebKitGTK 4.1。远程可选功能取决于所连接的 Gateway 和智能体能力。",
     start: "开始第一个会话。",
@@ -231,7 +228,6 @@ export const desktopCopy: Record<SiteLocale, DesktopCopy> = {
     ],
     ready: "為下一個專案留出空間。",
     guideTitle: "Desktop：從安裝到日常使用。",
-    installation: "選擇適合的起點。",
     compatibility:
       "預覽目標不包含 Windows 與 Intel macOS 套件。Linux 需要相容的 GPU 驅動與工作階段 D-Bus，內嵌網頁還需要 WebKitGTK 4.1。遠端選用功能取決於所連接的 Gateway 與智慧體能力。",
     start: "開始第一個工作階段。",
@@ -309,7 +305,6 @@ export const desktopCopy: Record<SiteLocale, DesktopCopy> = {
     ],
     ready: "次のプロジェクトのための場所を。",
     guideTitle: "Desktop の設定から日々の使い方まで。",
-    installation: "適した始め方を選ぶ。",
     compatibility:
       "Windows と Intel macOS のパッケージは対象外です。Linux には対応 GPU 環境とセッション D-Bus、埋め込み Web コンテンツには WebKitGTK 4.1 が必要です。リモートの追加機能は接続先 Gateway とエージェントに依存します。",
     start: "最初のセッション。",
@@ -387,7 +382,6 @@ export const desktopCopy: Record<SiteLocale, DesktopCopy> = {
     ],
     ready: "다음 프로젝트를 위한 공간.",
     guideTitle: "Desktop 설정부터 일상적인 사용까지.",
-    installation: "적합한 시작점 선택.",
     compatibility:
       "Windows와 Intel macOS 패키지는 프리뷰 대상에 포함되지 않습니다. Linux에는 호환 GPU 환경과 세션 D-Bus가 필요하며 내장 웹 콘텐츠에는 WebKitGTK 4.1도 필요합니다. 원격 선택 기능은 연결된 Gateway와 에이전트의 기능에 따라 달라집니다.",
     start: "첫 번째 세션.",
@@ -465,7 +459,6 @@ export const desktopCopy: Record<SiteLocale, DesktopCopy> = {
     ],
     ready: "Platz für dein nächstes Projekt.",
     guideTitle: "Desktop: Einrichtung und tägliche Arbeit.",
-    installation: "Den richtigen Einstieg wählen.",
     compatibility:
       "Windows und Intel macOS gehören nicht zu den Preview-Paketen. Linux benötigt einen kompatiblen GPU-Stack und Sitzungs-D-Bus; eingebettete Webinhalte benötigen WebKitGTK 4.1. Optionale Remote-Funktionen hängen von Gateway und Agent ab.",
     start: "Deine erste Sitzung.",
@@ -543,7 +536,6 @@ export const desktopCopy: Record<SiteLocale, DesktopCopy> = {
     ],
     ready: "Une place pour votre prochain projet.",
     guideTitle: "Desktop, de la configuration au quotidien.",
-    installation: "Choisir le bon départ.",
     compatibility:
       "Windows et macOS Intel ne font pas partie des paquets de préversion. Linux nécessite un environnement GPU compatible et un D-Bus de session ; le Web intégré nécessite WebKitGTK 4.1. Les fonctions distantes optionnelles dépendent du Gateway et de l’agent.",
     start: "Votre première session.",
@@ -621,7 +613,6 @@ export const desktopCopy: Record<SiteLocale, DesktopCopy> = {
     ],
     ready: "Haz sitio a tu próximo proyecto.",
     guideTitle: "Desktop, de la instalación al día a día.",
-    installation: "Elige cómo empezar.",
     compatibility:
       "Windows y macOS Intel no están incluidos en los paquetes preliminares. Linux necesita una GPU compatible y D-Bus de sesión; el contenido web integrado requiere WebKitGTK 4.1. Las funciones remotas opcionales dependen del Gateway y del agente.",
     start: "Tu primera sesión.",
@@ -699,7 +690,6 @@ export const desktopCopy: Record<SiteLocale, DesktopCopy> = {
     ],
     ready: "Abra espaço para seu próximo projeto.",
     guideTitle: "Desktop, da configuração ao dia a dia.",
-    installation: "Escolha por onde começar.",
     compatibility:
       "Windows e macOS Intel não estão incluídos nos pacotes da prévia. Linux precisa de GPU compatível e D-Bus de sessão; conteúdo web integrado requer WebKitGTK 4.1. Recursos remotos opcionais dependem do Gateway e do agente.",
     start: "Sua primeira sessão.",
@@ -777,7 +767,6 @@ export const desktopCopy: Record<SiteLocale, DesktopCopy> = {
     ],
     ready: "Место для следующего проекта.",
     guideTitle: "Desktop: от настройки до ежедневной работы.",
-    installation: "Выберите способ начать.",
     compatibility:
       "Пакеты Windows и Intel macOS не входят в превью. Linux требует совместимую графическую среду и сеансовую D-Bus; встроенный веб-контент требует WebKitGTK 4.1. Дополнительные удалённые функции зависят от Gateway и агента.",
     start: "Ваша первая сессия.",
@@ -855,7 +844,6 @@ export const desktopCopy: Record<SiteLocale, DesktopCopy> = {
     ],
     ready: "เตรียมพื้นที่ให้โปรเจกต์ถัดไป",
     guideTitle: "Desktop ตั้งแต่เริ่มต้นจนถึงทุกวัน",
-    installation: "เลือกจุดเริ่มต้นที่เหมาะสม",
     compatibility:
       "พรีวิวไม่รวมแพ็กเกจ Windows และ Intel macOS Linux ต้องมีระบบ GPU ที่รองรับและ D-Bus ของเซสชัน เนื้อหาเว็บแบบฝังต้องใช้ WebKitGTK 4.1 ฟีเจอร์ระยะไกลเพิ่มเติมขึ้นอยู่กับ Gateway และเอเจนต์ที่เชื่อมต่อ",
     start: "เซสชันแรกของคุณ",
@@ -933,7 +921,6 @@ export const desktopCopy: Record<SiteLocale, DesktopCopy> = {
     ],
     ready: "Dành chỗ cho dự án tiếp theo.",
     guideTitle: "Desktop, từ thiết lập đến sử dụng hằng ngày.",
-    installation: "Chọn cách bắt đầu phù hợp.",
     compatibility:
       "Gói Windows và Intel macOS không nằm trong mục tiêu xem trước. Linux cần GPU tương thích và D-Bus phiên; nội dung web nhúng cần WebKitGTK 4.1. Tính năng từ xa tùy chọn phụ thuộc vào Gateway và agent được kết nối.",
     start: "Phiên đầu tiên của bạn.",

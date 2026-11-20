@@ -48,13 +48,6 @@
   max-width: 54ch;
   margin-top: 1.75rem;
 }
-.desktop-actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 1.5rem;
-  margin-top: 2rem;
-}
 .desktop-text-link {
   display: inline-flex;
   align-items: center;
@@ -332,27 +325,9 @@
   color: var(--mq-text-muted);
   font-size: 0.9375rem;
 }
-.desktop-guide-platform {
-  margin-top: 2.5rem;
-}
-.desktop-guide-platform h4 span {
-  margin-left: 0.6rem;
-  font: 0.75rem var(--mq-font-mono);
-  color: var(--mq-text-muted);
-}
-.desktop-guide-platform .mq-code {
-  margin-top: 1.25rem;
-}
-.desktop-guide-platform > .desktop-mono {
-  font-size: 0.6875rem;
-  margin-top: 1rem;
-}
-.desktop-guide-footnote {
-  border-top: 1px solid var(--mq-hairline);
-  padding-top: 1.5rem;
-  margin-top: 2rem;
-  font-size: 0.8125rem !important;
-}
+.desktop-requirements { margin: 1rem 0 1.5rem; }
+.desktop-requirements summary { cursor: pointer; font-weight: 500; }
+.desktop-requirements p { margin-top: .6rem; }
 .desktop-guide-steps {
   list-style: none;
   padding: 0;

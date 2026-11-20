@@ -16,6 +16,38 @@ function jsonError(status: number, message: string, headers: Headers): Response 
   return Response.json({ error: message }, { status, headers });
 }
 
+async function desktopArchiveMetadata(
+  request: Request, bucket: R2Bucket, headers: Headers, tag: string, version: string, archive: string,
+): Promise<Response> {
+  const object = await bucket.get(`desktop/releases/${tag}/manifest.json`);
+  if (!object) return jsonError(404, 'release manifest not found', headers);
+  if (object.size > 64 * 1024) throw new Error('oversized release manifest');
+  const manifest = await object.json<{ tag?: unknown; version?: unknown; channel?: unknown; assets?: unknown }>();
+  const channel = version.includes('-preview.') ? 'preview' : 'stable';
+  if (manifest?.tag !== tag || manifest.version !== version || manifest.channel !== channel || !Array.isArray(manifest.assets)) {
+    throw new Error('invalid release manifest');
+  }
+  const fields: string[] = [];
+  for (const name of [archive, archive + '.sha256']) {
+    const entries = manifest.assets.filter(entry => entry?.name === name);
+    const entry = entries[0];
+    const limit = name === archive ? 512 * 1024 ** 2 : 1024;
+    if (entries.length !== 1 || !Number.isSafeInteger(entry.size) || entry.size < 1 || entry.size > limit ||
+        typeof entry.sha256 !== 'string' || entry.sha256.length !== 64 || !/^[a-f0-9]+$/.test(entry.sha256)) {
+      throw new Error('invalid release asset');
+    }
+    fields.push(String(entry.size), entry.sha256);
+  }
+  const body = fields.join(' ') + '\n';
+  const etag = `"${object.etag}-${archive}"`;
+  headers.set('ETag', etag);
+  headers.set('Cache-Control', 'public, max-age=31536000, immutable');
+  if (request.headers.get('If-None-Match') === etag) return new Response(null, { status: 304, headers });
+  headers.set('Content-Type', 'text/plain; charset=utf-8');
+  headers.set('Content-Length', String(body.length));
+  return new Response(request.method === 'HEAD' ? null : body, { headers });
+}
+
 export async function serveRelease(product: Product, request: Request, bucket: R2Bucket, headers: Headers): Promise<Response> {
   if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers });
   if (request.method !== 'GET' && request.method !== 'HEAD') {
@@ -25,7 +57,7 @@ export async function serveRelease(product: Product, request: Request, bucket: R
   const path = new URL(request.url).pathname.slice(`/api/releases/${product}/`.length);
   const head = request.method === 'HEAD';
   try {
-    const plainVersion = product === 'gateway' && (path === 'stable/version' || path === 'preview/version');
+    const plainVersion = path === 'stable/version' || path === 'preview/version';
     const channel = plainVersion ? path.split('/')[0] : path;
     if (channel === 'stable' || channel === 'preview') {
       const object = await bucket.get(`${product}/channels/${channel}.json`);
@@ -54,6 +86,11 @@ export async function serveRelease(product: Product, request: Request, bucket: R
     const prefix = product === 'desktop' ? 'desktop-v' : 'v';
     const version = tag?.startsWith(prefix) ? tag.slice(prefix.length) : '';
     if (extra.length || !filename || !versionPattern.test(version)) return jsonError(404, 'not found', headers);
+    if (product === 'desktop' && filename.endsWith('.metadata')) {
+      const archive = filename.slice(0, -'.metadata'.length);
+      if (!archiveContentType(product, version, archive)) return jsonError(404, 'not found', headers);
+      return await desktopArchiveMetadata(request, bucket, headers, tag, version, archive);
+    }
     const archive = filename.replace(/\.sha256$/, '');
     const manifest = filename === 'manifest.json';
     const archiveType = archiveContentType(product, version, archive);

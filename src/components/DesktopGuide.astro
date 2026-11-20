@@ -1,16 +1,7 @@
 ---
-import CodeBlock from "@/components/CodeBlock.astro";
 import { desktopCopy } from "@/i18n/desktop";
 import { desktopInstallation } from "@/i18n/desktop-installation";
-import { worldCopy } from "@/i18n/world";
-import { getMuqunCopy } from "@/i18n/muqun";
 import { localizedPath, type SiteLocale } from "@/lib/locales";
-import {
-  desktopInstallCommand,
-  desktopPreviewInstallCommand,
-  desktopWithoutGatewayInstallCommand,
-  gatewayPreviewInstallCommand,
-} from "@/lib/muqun-links";
 
 interface Props {
   locale: SiteLocale;
@@ -19,7 +10,7 @@ const { locale } = Astro.props;
 const copy = desktopCopy[locale];
 const installation = desktopInstallation[locale];
 const sections = [
-  { id: "install", label: copy.installation },
+  { id: "install", label: installation.title },
   { id: "first-session", label: copy.start },
   { id: "shortcuts", label: copy.shortcuts },
   { id: "help", label: copy.troubleshooting },
@@ -32,21 +23,12 @@ const keys = [
   "Enter",
   "Shift + Enter",
 ];
-const options = installation.options;
-const installCommands = [
-  { copy: options[0], product: 'desktop', channel: 'stable', command: desktopInstallCommand },
-  { copy: options[1], product: 'desktop', channel: 'preview', command: desktopPreviewInstallCommand },
-  { copy: options[2], product: 'desktop', channel: 'stable', command: desktopWithoutGatewayInstallCommand },
-  { copy: options[2], product: 'desktop', channel: 'preview', command: desktopPreviewInstallCommand + ' --without-gateway', fallback: true },
-  { copy: ['Gateway · Preview', ''], product: 'gateway', channel: 'preview', command: gatewayPreviewInstallCommand },
-];
 ---
 
 <section id="guide" class="desktop-guide" aria-labelledby="desktop-guide-title">
   <header class="desktop-guide-header">
     <p class="desktop-eyebrow">MUQUN DESKTOP / GUIDE</p>
     <h2 id="desktop-guide-title">{copy.guideTitle}</h2>
-    <p class="desktop-intro">{installation.intro}</p>
     <nav class="desktop-guide-chapters" aria-label={copy.guide}>
       {sections.map(({ id, label }, index) => (
         <a href={`#${id}`}>
@@ -67,42 +49,6 @@ const installCommands = [
       </nav>
     </aside>
     <div class="desktop-guide-content">
-      <section id="install">
-        <p class="desktop-eyebrow">01 / INSTALLATION</p>
-        <h3>{copy.installation}</h3>
-        <article class="desktop-guide-platform">
-          <h4>{installation.installer[0]}</h4>
-          <p>{installation.installer[1]}</p>
-          <a class="desktop-text-link" href="https://github.com/osuki-dev/muqun-gateway/releases">GitHub Releases ↗</a>
-        </article>
-        {installCommands.map(({ copy: [title, body], product, channel, command, fallback }) => (
-          <article class="desktop-guide-platform" data-install-product={product} data-channel={channel} data-fallback={fallback} hidden>
-            <h4>{title} <a class="desktop-text-link" data-install-version></a></h4>
-            {body && <p>{body}</p>}
-            <CodeBlock
-              code={command}
-              label={product + ".sh"}
-              copy
-              copyLabel={worldCopy[locale].copyLabel}
-              copiedLabel={getMuqunCopy(locale).hero.copiedLabel}
-              wrap
-            />
-          </article>
-        ))}
-        <article class="desktop-guide-platform">
-          <h4>
-            Linux <span>x86_64</span>
-          </h4>
-          <p>{installation.platforms[0]}</p>
-        </article>
-        <article class="desktop-guide-platform">
-          <h4>
-            macOS <span>Apple Silicon</span>
-          </h4>
-          <p>{installation.platforms[1]}</p>
-        </article>
-        <p class="desktop-guide-footnote">{copy.compatibility}</p>
-      </section>
       <section id="first-session">
         <p class="desktop-eyebrow">02 / FIRST SESSION</p>
         <h3>{copy.start}</h3>
@@ -147,6 +93,11 @@ const installCommands = [
       <section id="help">
         <p class="desktop-eyebrow">04 / HELP</p>
         <h3>{copy.troubleshooting}</h3>
+        <details class="desktop-requirements">
+          <summary>{installation.requirements}</summary>
+          <p>{installation.details}</p>
+          <p>{copy.compatibility}</p>
+        </details>
         <div class="desktop-guide-fixes">
           {copy.fixes.map(([title, body]) => (
             <article>
@@ -159,35 +110,3 @@ const installCommands = [
     </div>
   </div>
 </section>
-
-<script>
-  // Channel pointers are advanced only after all downloads have been verified.
-  // Show install commands for published versions even when the other channel is empty.
-  const cards = [...document.querySelectorAll<HTMLElement>('[data-install-product]')];
-  for (const product of ['desktop', 'gateway']) {
-    const productCards = cards.filter(card => card.dataset.installProduct === product);
-    const channels = new Set(productCards.map(card => card.dataset.channel!));
-    const versions = new Map<string, string>();
-    await Promise.all([...channels].map(async channel => {
-      try {
-        const response = await fetch(`/api/releases/${product}/${channel}`);
-        if (!response.ok) return;
-        const data = await response.json() as { channel?: unknown; version?: unknown } | null;
-        if (data?.channel === channel && typeof data.version === 'string' && data.version) {
-          versions.set(channel, data.version);
-        }
-      } catch {
-        // The public releases link remains available when metadata is unavailable.
-      }
-    }));
-    for (const card of productCards) {
-      const version = versions.get(card.dataset.channel!);
-      if (!version || (card.hasAttribute('data-fallback') && versions.has('stable'))) continue;
-      const link = card.querySelector<HTMLAnchorElement>('[data-install-version]')!;
-      const tag = (product === 'desktop' ? 'desktop-v' : 'v') + version;
-      link.href = 'https://github.com/osuki-dev/muqun-gateway/releases/tag/' + encodeURIComponent(tag);
-      link.textContent = version;
-      card.hidden = false;
-    }
-  }
-</script>

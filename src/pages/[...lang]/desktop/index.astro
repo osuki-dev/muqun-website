@@ -2,6 +2,7 @@
 import Layout from "@/layouts/Layout.astro";
 import Button from "@/components/Button.astro";
 import Container from "@/components/Container.astro";
+import DesktopInstall from "@/components/DesktopInstall.astro";
 import DesktopGuide from "@/components/DesktopGuide.astro";
 import { desktopCopy } from "@/i18n/desktop";
 import { defaultLocale, localizedPath, siteLocaleCodes } from "@/lib/locales";
@@ -51,14 +52,7 @@ const agents = [
             <span>{copy.accent}</span>
           </h1>
           <p class="desktop-intro">{copy.intro}</p>
-          <div class="desktop-actions">
-            <Button href={guide} variant="primary" size="lg" arrow>
-              {copy.guide}
-            </Button>
-            <a class="desktop-text-link" href="#workspace">
-              {copy.back} <span aria-hidden="true">↓</span>
-            </a>
-          </div>
+          <DesktopInstall locale={locale} />
         </div>
         <figure class="desktop-hero-shot">
           <a
