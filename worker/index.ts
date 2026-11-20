@@ -1,9 +1,4 @@
-/**
- * The only server-side code on muqun.dev, and it exists for three reasons the
- * static files cannot cover: one redirect that must never chain, a set of
- * headers that must be on every response, and the themes API, which reads an
- * R2 bucket that is nowhere else reachable.
- */
+/** Static site, installer routes and read-only APIs for the shared R2 bucket. */
 import {
   THEME_ID,
   describeEntry,
@@ -15,10 +10,12 @@ import {
   type IndexEntry,
   type PageQuery,
 } from './themes-catalogue';
+import { serveRelease } from './releases';
+import { desktopInstallerResponse } from '../src/lib/desktop-installer';
 
 interface Env {
   ASSETS: Fetcher;
-  /** The `muqun-themes` bucket: `index.json`, `dist/<id>.muqun-theme` and `dist/previews/<id>.<ext>`. */
+  /** The `muqun-themes` bucket holds the theme catalogue and versioned Gateway and Desktop releases. */
   THEMES: R2Bucket;
 }
 
@@ -309,11 +306,30 @@ export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
 
+    for (const product of ['desktop', 'gateway'] as const) {
+      const base = `/api/releases/${product}`;
+      if (url.pathname === base || url.pathname.startsWith(`${base}/`)) {
+        return serveRelease(product, request, env.THEMES, apiHeaders());
+      }
+    }
+
     if (url.pathname === '/gateway.sh') {
       return new Response(null, {
         status: 302,
         headers: { Location: GATEWAY_INSTALL_SCRIPT, ...SECURITY_HEADERS },
       });
+    }
+
+    if (url.pathname === '/desktop.sh') {
+      let script: string | null = null;
+      if (request.method === 'GET' || request.method === 'HEAD') {
+        const asset = await env.ASSETS.fetch(new Request(new URL('/desktop.sh', url), { method: 'GET' }));
+        if (asset.status === 200) script = await asset.text();
+      }
+      const response = desktopInstallerResponse(request, script);
+      const headers = new Headers(response.headers);
+      for (const [name, value] of Object.entries(SECURITY_HEADERS)) headers.set(name, value);
+      return new Response(response.body, { status: response.status, headers });
     }
 
     if (url.pathname === '/api/themes') {
