@@ -66,7 +66,7 @@ export const desktopCopy: Record<SiteLocale, DesktopCopy> = {
     connection: "At home on your computer. Connected to your others.",
     local: [
       "Work locally",
-      "Desktop can run the agents plane in process. A separate Gateway service is not required for local coding-agent sessions.",
+      "Open a project on this computer and start a session with a local coding agent.",
     ],
     remote: [
       "Reach another computer",
@@ -143,7 +143,7 @@ export const desktopCopy: Record<SiteLocale, DesktopCopy> = {
     connection: "立足本机，连接你的其他电脑。",
     local: [
       "在本机工作",
-      "Desktop 可在进程内运行智能体服务。本机编程会话不需要独立的 Gateway 服务。",
+      "打开这台电脑上的项目，使用本机的编程智能体开始会话。",
     ],
     remote: [
       "连接其他电脑",
@@ -220,7 +220,7 @@ export const desktopCopy: Record<SiteLocale, DesktopCopy> = {
     connection: "立足本機，連接你的其他電腦。",
     local: [
       "在本機工作",
-      "Desktop 可在程序內執行智慧體服務。本機程式開發工作階段不需要獨立的 Gateway 服務。",
+      "開啟這台電腦上的專案，使用本機的程式設計代理開始工作階段。",
     ],
     remote: [
       "連接其他電腦",
@@ -297,7 +297,7 @@ export const desktopCopy: Record<SiteLocale, DesktopCopy> = {
     connection: "このコンピュータを拠点に、ほかのコンピュータへ。",
     local: [
       "ローカルで作業",
-      "Desktop はプロセス内でエージェント機能を実行できます。ローカルのコーディングセッションに別の Gateway サービスは不要です。",
+      "このコンピュータのプロジェクトを開き、ローカルのコーディングエージェントとセッションを開始できます。",
     ],
     remote: [
       "別のコンピュータへ",
@@ -374,7 +374,7 @@ export const desktopCopy: Record<SiteLocale, DesktopCopy> = {
     connection: "내 컴퓨터를 중심으로, 다른 컴퓨터까지.",
     local: [
       "로컬에서 작업",
-      "Desktop은 프로세스 안에서 에이전트 기능을 실행할 수 있습니다. 로컬 코딩 세션에는 별도 Gateway 서비스가 필요하지 않습니다.",
+      "이 컴퓨터의 프로젝트를 열고 로컬 코딩 에이전트와 세션을 시작하세요.",
     ],
     remote: [
       "다른 컴퓨터 연결",
@@ -451,7 +451,7 @@ export const desktopCopy: Record<SiteLocale, DesktopCopy> = {
     connection: "Auf deinem Computer zu Hause. Mit deinen anderen verbunden.",
     local: [
       "Lokal arbeiten",
-      "Desktop kann die Agenten direkt im Prozess betreiben. Für lokale Coding-Sitzungen ist kein separater Gateway-Dienst erforderlich.",
+      "Öffne ein Projekt auf diesem Computer und starte eine Sitzung mit einem lokalen Coding-Agenten.",
     ],
     remote: [
       "Andere Computer erreichen",
@@ -528,7 +528,7 @@ export const desktopCopy: Record<SiteLocale, DesktopCopy> = {
     connection: "Chez vous sur votre ordinateur. Relié à vos autres machines.",
     local: [
       "Travailler en local",
-      "Desktop peut exécuter les agents dans son propre processus. Aucun service Gateway séparé n’est nécessaire pour les sessions de développement locales.",
+      "Ouvrez un projet sur cet ordinateur et démarrez une session avec un agent de développement local.",
     ],
     remote: [
       "Accéder à un autre ordinateur",
@@ -605,7 +605,7 @@ export const desktopCopy: Record<SiteLocale, DesktopCopy> = {
     connection: "En tu ordenador. Conectado a tus otros equipos.",
     local: [
       "Trabaja en local",
-      "Desktop puede ejecutar los agentes en su propio proceso. Las sesiones de programación locales no necesitan un servicio Gateway independiente.",
+      "Abre un proyecto en este equipo e inicia una sesión con un agente de programación local.",
     ],
     remote: [
       "Accede a otro ordenador",
@@ -682,7 +682,7 @@ export const desktopCopy: Record<SiteLocale, DesktopCopy> = {
     connection: "Em casa no seu computador. Conectado aos demais.",
     local: [
       "Trabalhe localmente",
-      "O Desktop pode executar os agentes no próprio processo. Sessões locais de programação não precisam de um serviço Gateway separado.",
+      "Abra um projeto neste computador e inicie uma sessão com um agente de programação local.",
     ],
     remote: [
       "Acesse outro computador",
@@ -759,7 +759,7 @@ export const desktopCopy: Record<SiteLocale, DesktopCopy> = {
     connection: "Дома на вашем компьютере. На связи с остальными.",
     local: [
       "Работайте локально",
-      "Desktop может выполнять агентную часть внутри процесса. Для локальных сессий разработки отдельная служба Gateway не нужна.",
+      "Откройте проект на этом компьютере и начните сессию с локальным агентом для разработки.",
     ],
     remote: [
       "Подключите другой компьютер",
@@ -836,7 +836,7 @@ export const desktopCopy: Record<SiteLocale, DesktopCopy> = {
     connection: "ทำงานบนเครื่องคุณ เชื่อมถึงเครื่องอื่นของคุณ",
     local: [
       "ทำงานในเครื่อง",
-      "Desktop เรียกใช้ส่วนเอเจนต์ภายในโปรเซสได้ เซสชันเขียนโค้ดในเครื่องไม่จำเป็นต้องมีบริการ Gateway แยก",
+      "เปิดโปรเจกต์บนคอมพิวเตอร์เครื่องนี้ แล้วเริ่มเซสชันกับเอเจนต์เขียนโค้ดในเครื่อง",
     ],
     remote: [
       "เข้าถึงคอมพิวเตอร์อื่น",
@@ -913,7 +913,7 @@ export const desktopCopy: Record<SiteLocale, DesktopCopy> = {
     connection: "Tại máy của bạn. Kết nối các máy khác.",
     local: [
       "Làm việc cục bộ",
-      "Desktop có thể chạy phần agent ngay trong tiến trình. Phiên lập trình cục bộ không cần dịch vụ Gateway riêng.",
+      "Mở một dự án trên máy tính này và bắt đầu phiên làm việc với một tác nhân lập trình cục bộ.",
     ],
     remote: [
       "Truy cập máy khác",

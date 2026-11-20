@@ -4,7 +4,7 @@ set -eu
 case "${1:-}" in
   --help|-h)
     cat <<'USAGE'
-Usage: sh install-desktop.sh [--channel stable|preview] [--tag desktop-vVERSION] [--without-gateway]
+Usage: sh install-desktop.sh [--channel stable|preview] [--tag desktop-vVERSION]
        sh /path/to/packaged/install-desktop.sh --gateway-only
 
 Install a released Linux x86_64 or macOS arm64 Desktop package. The default
@@ -16,7 +16,16 @@ USAGE
     [ "$#" -eq 1 ] || { echo '--gateway-only takes no other arguments' >&2; exit 2; }
     # An explicitly configured, stopped or externally managed instance keeps its owner.
     existing() {
-      [ -n "${MUQUN_LOCAL_GATEWAY:-}${MUQUN_GATEWAY_CONFIG_DIR:-}${MUQUN_GATEWAY_STATE_DIR:-}${HERDR_PLUGIN_CONFIG_DIR:-}${HERDR_PLUGIN_STATE_DIR:-}" ] && return 0
+      if [ -n "${MUQUN_LOCAL_GATEWAY:-}" ] && [ -f "$MUQUN_LOCAL_GATEWAY" ]; then return 0; fi
+      has_gateway_state() {
+        for item in config.json local-client.json pairing.json gateway.lock; do
+          [ ! -e "$1/$item" ] || return 0
+        done
+        return 1
+      }
+      for dir in "${MUQUN_GATEWAY_CONFIG_DIR:-}" "${MUQUN_GATEWAY_STATE_DIR:-}" "${HERDR_PLUGIN_CONFIG_DIR:-}" "${HERDR_PLUGIN_STATE_DIR:-}"; do
+        if [ -n "$dir" ] && has_gateway_state "$dir"; then return 0; fi
+      done
       for binary in muqun-gateway herdr-gateway; do
         command -v "$binary" >/dev/null 2>&1 && return 0
       done
@@ -30,9 +39,7 @@ USAGE
       done
       for base in "$config" "$data" "$support"; do
         for name in muqun-gateway herdr-gateway herdr/plugins/config/herdr.gateway herdr/plugins/herdr.gateway; do
-          for item in config.json local-client.json pairing.json gateway.lock; do
-            [ ! -e "$base/$name/$item" ] || return 0
-          done
+          if has_gateway_state "$base/$name"; then return 0; fi
         done
       done
       if command -v pgrep >/dev/null && pgrep -u "$(id -u)" -x "muqun-gateway|herdr-gateway" >/dev/null 2>&1; then return 0; fi
@@ -77,35 +84,72 @@ die() { printf 'Muqun installer: %s\n' "$*" >&2; exit 1; }
 api=https://muqun.dev/api/releases/desktop
 channel=
 tag=
-without_gateway=false
 while [ "$#" -gt 0 ]; do
   case "$1" in
     --channel) [ "$#" -ge 2 ] || die 'Expected a channel'; channel=$2; shift 2
       case "$channel" in stable|preview) ;; *) die 'Expected stable or preview';; esac ;;
     --tag) [ "$#" -ge 2 ] || die 'Expected a Desktop tag'; tag=$2; shift 2
       [ -n "$tag" ] || die 'Expected a Desktop tag' ;;
-    --without-gateway) without_gateway=true; shift ;;
+    --without-gateway) shift ;; # Older CLI spelling; every installation is Desktop-only.
     *) die "Unknown argument: $1" ;;
   esac
 done
 system=$(uname -s)
 case "$system/$(uname -m)" in
-  Linux/x86_64) dest=${PREFIX:-"$HOME/.local"}; config=${XDG_CONFIG_HOME:-"$HOME/.config"} ;;
+  Linux/x86_64) dest=${PREFIX:-"$HOME/.local"} ;;
   Darwin/arm64) dest="$HOME/Applications"
     [ ! -e '/Applications/Muqun Desktop.app' ] || dest=/Applications
-    dest=${MUQUN_DESKTOP_APPLICATIONS_DIR:-"$dest"}; config="$HOME/Library/Application Support" ;;
+    dest=${MUQUN_DESKTOP_APPLICATIONS_DIR:-"$dest"} ;;
   *) die "Unsupported Desktop platform: $system $(uname -m)" ;;
 esac
 umask 077
 tmp=$(mktemp -d "${TMPDIR:-/tmp}/muqun-desktop.XXXXXXXX")
 trap 'rm -rf "$tmp"' EXIT
-trap 'exit 1' HUP INT TERM
+transfer=
+cancel() {
+  if [ -n "$transfer" ]; then
+    kill "$transfer" 2>/dev/null || :
+    wait "$transfer" 2>/dev/null || :
+  fi
+  exit 1
+}
+trap cancel HUP INT TERM
+progress() {
+  if [ "${MUQUN_INSTALL_PROGRESS:-}" = 1 ]; then
+    printf 'MUQUN_PROGRESS %s\n' "$*" >&2
+  fi
+}
+download_sample() {
+  received=0
+  if [ -f "$1" ]; then received=$(wc -c < "$1"); fi
+  received=$((received + 0))
+  if [ "$received" != "$previous" ]; then
+    progress download "$received" "$2"
+    previous=$received
+  fi
+}
 fetch() {
   meter=--silent
   if [ -t 2 ] && [ "${4:-}" = package ]; then meter=--progress-bar; fi
-  curl -fSL "$meter" --proto '=https' --proto-redir '=https' --retry 2 --connect-timeout 15 \
-    --max-time 300 --max-filesize "$3" -o "$2" "$1" || die "Cannot download $1"
-  [ "$(wc -c < "$2")" -le "$3" ] || die "Download exceeds size limit: $1"
+  url=$1 output=$2 limit=$3 kind=${4:-}
+  set -- -fSL "$meter" --proto '=https' --proto-redir '=https' --retry 2 --connect-timeout 15 \
+    --max-time 300 --max-filesize "$limit" -o "$output" "$url"
+  if [ "${MUQUN_INSTALL_PROGRESS:-}" = 1 ] && [ "$kind" = package ]; then
+    previous=
+    download_sample "$output" "$limit"
+    curl "$@" &
+    transfer=$!
+    while kill -0 "$transfer" 2>/dev/null; do
+      download_sample "$output" "$limit"
+      sleep 0.25
+    done
+    wait "$transfer" || die "Cannot download $url"
+    transfer=
+    download_sample "$output" "$limit"
+  else
+    curl "$@" || die "Cannot download $url"
+  fi
+  [ "$(wc -c < "$output")" -le "$limit" ] || die "Download exceeds size limit: $url"
 }
 if [ -z "$tag" ]; then
   channel=${channel:-stable}
@@ -151,8 +195,10 @@ LC_ALL=C awk -v digest="$digest" -v file="$archive" '
   END {exit !(NR == 1 && !bad)}' "$tmp/checksum" || die "Checksum verification failed for $archive"
 printf 'Downloading %s (%s bytes)\n' "$archive" "$bytes"
 fetch "$base/$archive" "$tmp/$archive" "$bytes" package
+progress verify
 verify "$tmp/$archive" "$bytes" "$digest"
 printf '%s  %s  SHA-256 verified: %s\n' "$tag" "$archive" "$measured"
+progress install
 # Extract only the installer executable to a private file. The verified
 # executable validates all archive members before staging the package.
 if [ "$system" = Linux ]; then
@@ -161,10 +207,5 @@ else
   unzip -p "$tmp/$archive" 'Muqun Desktop.app/Contents/Helpers/muqun-desktop-install' > "$tmp/install"
 fi
 chmod 700 "$tmp/install"
-"$tmp/install" "$system" "$tmp/$archive" "$dest"
+"$tmp/install" "$system" "$tmp/$archive" "$dest" "${tag#desktop-v}"
 printf 'Installed Muqun Desktop %s under %s.\n' "$tag" "$dest"
-marker="$config/muqun-desktop/gateway-auto-install.disabled"
-if [ "$without_gateway" = true ]; then
-  mkdir -p "$(dirname "$marker")"
-  touch "$marker"
-fi
