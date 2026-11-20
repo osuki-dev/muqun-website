@@ -1,0 +1,51 @@
+---
+import CodeBlock from "@/components/CodeBlock.astro";
+import { desktopInstallation } from "@/i18n/desktop-installation";
+import { getMuqunCopy } from "@/i18n/muqun";
+import { worldCopy } from "@/i18n/world";
+import type { SiteLocale } from "@/lib/locales";
+import { desktopPreviewInstallCommand } from "@/lib/muqun-links";
+
+interface Props { locale: SiteLocale }
+const { locale } = Astro.props;
+const copy = desktopInstallation[locale];
+---
+
+<section id="install" aria-labelledby="desktop-install-title">
+  <h2 id="desktop-install-title">{copy.title}</h2>
+  <CodeBlock
+    code={desktopPreviewInstallCommand}
+    label="Linux x86_64 · macOS arm64"
+    copy
+    copyLabel={worldCopy[locale].copyLabel}
+    copiedLabel={getMuqunCopy(locale).hero.copiedLabel}
+    wrap
+  />
+  <a data-preview-release data-pending={copy.pending} href="https://github.com/osuki-dev/muqun-gateway/releases">{copy.preview} ↗</a>
+</section>
+
+<script>
+  const link = document.querySelector<HTMLAnchorElement>('[data-preview-release]');
+  if (link) {
+    try {
+      const response = await fetch('/api/releases/desktop/preview');
+      if (response.ok) {
+        const pointer = await response.json() as {channel?: unknown; version?: unknown};
+        if (pointer.channel === 'preview' && typeof pointer.version === 'string') {
+          link.href += '/tag/desktop-v' + encodeURIComponent(pointer.version);
+          link.textContent = pointer.version + ' ↗';
+        } else if (pointer.channel === 'preview' && pointer.version === null) {
+          link.textContent = link.dataset.pending + ' ↗';
+        }
+      }
+    } catch {
+      // A release lookup only enriches the static command and release link.
+    }
+  }
+</script>
+
+<style>
+  section { margin-top: 1.5rem; max-width: 50rem; scroll-margin-top: calc(var(--mq-sticky-header-height, 6rem) + 1rem); }
+  h2 { margin: 0 0 .6rem; color: var(--mq-text); font-size: 1.125rem; font-weight: 600; }
+  a { display: inline-block; margin-top: .4rem; color: var(--mq-text-muted); font-size: .8125rem; text-underline-offset: .2em; }
+</style>
