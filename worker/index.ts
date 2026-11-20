@@ -35,7 +35,7 @@ const GATEWAY_INSTALL_SCRIPT =
   'https://raw.githubusercontent.com/osuki-dev/muqun-gateway/main/install.sh';
 // Pin the preview bootstrap while the stable installer tracks main.
 const GATEWAY_PREVIEW_INSTALL_SCRIPT =
-  'https://raw.githubusercontent.com/osuki-dev/muqun-gateway/df16b00ac99a6ebfc0eecefac4ef7d744b87392a/install.sh';
+  'https://raw.githubusercontent.com/osuki-dev/muqun-gateway/eaefc939f8888781b5c5446529a3f24efbe513f7/install.sh';
 
 /**
  * Sent on every response, including the assets.
