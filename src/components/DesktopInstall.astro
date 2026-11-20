@@ -22,6 +22,7 @@ const copy = desktopInstallation[locale];
     wrap
   />
   <a data-preview-release data-pending={copy.pending} href="https://github.com/osuki-dev/muqun-gateway/releases">{copy.preview} ↗</a>
+  <p>{copy.setup}</p>
 </section>
 
 <script>
@@ -48,4 +49,5 @@ const copy = desktopInstallation[locale];
   section { margin-top: 1.5rem; max-width: 50rem; scroll-margin-top: calc(var(--mq-sticky-header-height, 6rem) + 1rem); }
   h2 { margin: 0 0 .6rem; color: var(--mq-text); font-size: 1.125rem; font-weight: 600; }
   a { display: inline-block; margin-top: .4rem; color: var(--mq-text-muted); font-size: .8125rem; text-underline-offset: .2em; }
+  p { margin-top: .5rem; color: var(--mq-text-muted); font-size: .875rem; }
 </style>
