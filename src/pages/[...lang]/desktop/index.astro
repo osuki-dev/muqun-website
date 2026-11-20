@@ -1,0 +1,220 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Button from "@/components/Button.astro";
+import Container from "@/components/Container.astro";
+import DesktopGuide from "@/components/DesktopGuide.astro";
+import { desktopCopy } from "@/i18n/desktop";
+import { defaultLocale, localizedPath, siteLocaleCodes } from "@/lib/locales";
+import "@/styles/desktop.css";
+
+export function getStaticPaths() {
+  return siteLocaleCodes.map((locale) => ({
+    params: { lang: locale === defaultLocale ? undefined : locale },
+    props: { locale },
+  }));
+}
+const { locale } = Astro.props;
+const copy = desktopCopy[locale];
+const desktop = localizedPath("/desktop", locale);
+const guide = `${desktop}#install`;
+const agents = [
+  "Codex",
+  "Claude Code",
+  "OpenCode",
+  "Cursor",
+  "Antigravity",
+  "DeepSeek",
+  "T3 Code",
+  "FX",
+  "Qoder",
+  "Pi",
+];
+---
+
+<Layout
+  lang={locale}
+  title={`Muqun Desktop — ${copy.lead} ${copy.accent}`}
+  description={copy.intro}
+  ogImage="/shots/desktop/review.webp"
+>
+  <div class="desktop-page">
+    <Container>
+      <section class="desktop-hero" aria-labelledby="desktop-title">
+        <div class="desktop-eyebrow">
+          <span class="desktop-signal" aria-hidden="true"></span> MUQUN /
+          DESKTOP
+        </div>
+        <div>
+          <h1 id="desktop-title">
+            {copy.lead}
+            <br />
+            <span>{copy.accent}</span>
+          </h1>
+          <p class="desktop-intro">{copy.intro}</p>
+          <div class="desktop-actions">
+            <Button href={guide} variant="primary" size="lg" arrow>
+              {copy.guide}
+            </Button>
+            <a class="desktop-text-link" href="#workspace">
+              {copy.back} <span aria-hidden="true">↓</span>
+            </a>
+          </div>
+        </div>
+        <figure class="desktop-hero-shot">
+          <a
+            href="/shots/desktop/review.webp"
+            target="_blank"
+            rel="noopener"
+            aria-label={copy.features[0][0]}
+          >
+            <img
+              src="/shots/desktop/review.webp"
+              width="1600"
+              height="1000"
+              alt={copy.features[0][0]}
+              fetchpriority="high"
+            />
+          </a>
+        </figure>
+      </section>
+      <section class="desktop-agents" aria-label={copy.agents}>
+        <p class="desktop-mono">{copy.agents}</p>
+        <ul>
+          {agents.map((agent) => (
+            <li>{agent}</li>
+          ))}
+        </ul>
+      </section>
+      <section
+        id="workspace"
+        class="desktop-workspace"
+        aria-labelledby="workspace-title"
+      >
+        <div class="desktop-section-heading">
+          <p class="desktop-eyebrow">01 / WORKSPACE</p>
+          <h2 id="workspace-title">{copy.workspace}</h2>
+        </div>
+        <div class="desktop-feature-intro">
+          <span class="desktop-feature-index" aria-hidden="true">
+            01
+          </span>
+          <h3>{copy.features[0][0]}</h3>
+          <p>{copy.features[0][1]}</p>
+        </div>
+        <div class="desktop-feature-row">
+          <div class="desktop-feature-copy">
+            <span class="desktop-feature-index" aria-hidden="true">
+              02
+            </span>
+            <h3>{copy.features[1][0]}</h3>
+            <p>{copy.features[1][1]}</p>
+            <span class="desktop-keyhint" aria-hidden="true">
+              <kbd>Ctrl</kbd> / <kbd>⌘</kbd> + <kbd>\</kbd>
+            </span>
+          </div>
+          <figure class="desktop-detail-shot">
+            <a
+              href="/shots/desktop/workspace.webp"
+              target="_blank"
+              rel="noopener"
+              aria-label={copy.features[1][0]}
+            >
+              <img
+                src="/shots/desktop/workspace.webp"
+                width="1600"
+                height="1000"
+                alt={copy.features[1][0]}
+                loading="lazy"
+                decoding="async"
+              />
+            </a>
+          </figure>
+        </div>
+        <div class="desktop-feature-row desktop-feature-row--reverse">
+          <div class="desktop-feature-copy">
+            <span class="desktop-feature-index" aria-hidden="true">
+              03
+            </span>
+            <h3>{copy.features[2][0]}</h3>
+            <p>{copy.features[2][1]}</p>
+            <a class="desktop-text-link" href={`${desktop}#shortcuts`}>
+              {copy.shortcuts} →
+            </a>
+          </div>
+          <figure class="desktop-detail-shot">
+            <a
+              href="/shots/desktop/commands.webp"
+              target="_blank"
+              rel="noopener"
+              aria-label={copy.features[2][0]}
+            >
+              <img
+                src="/shots/desktop/commands.webp"
+                width="1600"
+                height="1000"
+                alt={copy.features[2][0]}
+                loading="lazy"
+                decoding="async"
+              />
+            </a>
+          </figure>
+        </div>
+      </section>
+    </Container>
+    <section class="desktop-routine" aria-labelledby="routine-title">
+      <Container>
+        <div class="desktop-section-heading">
+          <p class="desktop-eyebrow">02 / EVERYDAY</p>
+          <h2 id="routine-title">{copy.routine}</h2>
+        </div>
+        <ol class="desktop-steps">
+          {copy.steps.map(([title, body], index) => (
+            <li>
+              <span class="desktop-mono">0{index + 1}</span>
+              <h3>{title}</h3>
+              <p>{body}</p>
+            </li>
+          ))}
+        </ol>
+      </Container>
+    </section>
+    <Container>
+      <section class="desktop-connections" aria-labelledby="connection-title">
+        <div class="desktop-section-heading">
+          <p class="desktop-eyebrow">03 / YOUR COMPUTERS</p>
+          <h2 id="connection-title">{copy.connection}</h2>
+        </div>
+        <div class="desktop-connection-grid">
+          {[copy.local, copy.remote].map(([title, body], index) => (
+            <article>
+              <div class="desktop-connection-line" aria-hidden="true">
+                <span>DESKTOP</span>
+                <span>{index === 0 ? "→" : "↔"}</span>
+                <span>{index === 0 ? "LOCAL AGENTS" : "GATEWAY"}</span>
+              </div>
+              <h3>{title}</h3>
+              <p>{body}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+      <DesktopGuide locale={locale} />
+      <section class="desktop-next" aria-labelledby="next-title">
+        <img
+          src="/app-icon-512.png"
+          width="64"
+          height="64"
+          alt=""
+          loading="lazy"
+        />
+        <div>
+          <p class="desktop-eyebrow">MUQUN DESKTOP</p>
+          <h2 id="next-title">{copy.ready}</h2>
+        </div>
+        <Button href={guide} variant="primary" size="lg" arrow>
+          {copy.guide}
+        </Button>
+      </section>
+    </Container>
+  </div>
+</Layout>

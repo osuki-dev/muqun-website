@@ -38,7 +38,8 @@ body {
   /* `a.` and not just the class: Button's own scoped `.mq-btn[data-astro-cid]`
      is (0,2,0) and later in the cascade, so a bare class would tie and lose. */
   .mq-page-header__controls > a:last-child,
-  .mq-page-header__controls > a.mq-header-themes {
+  .mq-page-header__controls > a.mq-header-themes,
+  .mq-page-header__controls > a.mq-header-support {
     display: none;
   }
   .mq-page-header__controls {
@@ -46,6 +47,11 @@ body {
   }
   .mq-page-header__controls > a {
     padding-inline: 8px;
+  }
+}
+@media (max-width: 380px) {
+  .mq-page-header__controls .header-language summary > span:first-of-type {
+    display: none;
   }
 }
 

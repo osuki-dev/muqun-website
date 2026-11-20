@@ -1,0 +1,117 @@
+---
+import Button from "@/components/Button.astro";
+import Container from "@/components/Container.astro";
+import { desktopCopy } from "@/i18n/desktop";
+import { localizedPath, type SiteLocale } from "@/lib/locales";
+
+interface Props {
+  locale: SiteLocale;
+}
+const { locale } = Astro.props;
+const copy = desktopCopy[locale];
+---
+
+<section class="desktop-callout" aria-label="Muqun Desktop">
+  <Container>
+    <div class="desktop-callout-inner">
+      <a
+        class="desktop-callout-image"
+        href={localizedPath("/desktop", locale)}
+        tabindex="-1"
+        aria-hidden="true"
+      >
+        <img
+          src="/shots/desktop/workspace.webp"
+          width="1600"
+          height="1000"
+          alt=""
+          loading="lazy"
+          decoding="async"
+        />
+      </a>
+      <div>
+        <p class="desktop-callout-label">MUQUN DESKTOP</p>
+        <h2>
+          {copy.lead} <span>{copy.accent}</span>
+        </h2>
+        <p>{copy.intro}</p>
+        <div class="desktop-callout-actions">
+          <Button
+            href={localizedPath("/desktop", locale)}
+            variant="primary"
+            arrow
+          >
+            {copy.back}
+          </Button>
+          <Button
+            href={`${localizedPath("/desktop", locale)}#install`}
+            variant="quiet"
+          >
+            {copy.guide} →
+          </Button>
+        </div>
+      </div>
+    </div>
+  </Container>
+</section>
+
+<style>
+  .desktop-callout {
+    position: relative;
+    padding-block: 4rem;
+    background: var(--mq-recessed);
+    color: var(--mq-text);
+    border-block: 1px solid var(--mq-hairline);
+  }
+  .desktop-callout-inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    gap: 3rem;
+  }
+  .desktop-callout-image {
+    display: block;
+  }
+  .desktop-callout-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  .desktop-callout-label {
+    color: var(--mq-text-muted);
+    font: 0.625rem/1.6 var(--mq-font-mono);
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+  h2 {
+    font: 600 clamp(1.875rem, 3.25vw, 3rem)/1.1 var(--mq-font-body);
+    letter-spacing: -0.025em;
+    max-width: 22ch;
+  }
+  h2 span {
+    color: var(--mq-text-accent);
+  }
+  h2 + p {
+    font-size: 0.9375rem;
+    line-height: 1.65;
+    color: var(--mq-text-muted);
+    margin-top: 1.25rem;
+    max-width: 54ch;
+  }
+  .desktop-callout-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+  }
+  @media (max-width: 699px) {
+    .desktop-callout {
+      padding-block: 2.5rem;
+    }
+    .desktop-callout-inner {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+  }
+</style>

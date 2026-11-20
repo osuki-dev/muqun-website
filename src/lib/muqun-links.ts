@@ -82,6 +82,13 @@ export const gatewayInstallSourceUrl = `https://raw.githubusercontent.com/${GITH
 export const gatewayInstallUrl = 'https://muqun.dev/gateway.sh';
 
 export const gatewayInstallCommand = `curl -fsSL ${gatewayInstallUrl} | sh`;
+export const gatewayPreviewInstallCommand = `curl -fsSL '${gatewayInstallUrl}?channel=preview' | sh -s -- --channel preview`;
+
+/** The website build bundles the Desktop installer under its canonical URL. */
+export const desktopInstallUrl = 'https://muqun.dev/desktop.sh';
+export const desktopInstallCommand = `curl -fsSL ${desktopInstallUrl} | sh`;
+export const desktopPreviewInstallCommand = `curl -fsSL ${desktopInstallUrl} | sh -s -- --channel preview`;
+export const desktopWithoutGatewayInstallCommand = `curl -fsSL ${desktopInstallUrl} | sh -s -- --without-gateway`;
 
 /**
  * Download, read, then run — the same file all three times.

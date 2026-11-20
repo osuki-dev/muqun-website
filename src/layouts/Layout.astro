@@ -37,6 +37,7 @@ import SiteFooter from '@/components/SiteFooter.astro';
 
 import type { LocaleOption, StatusLineItem } from '@/components/types';
 import { getChrome } from '@/i18n/chrome';
+import { desktopCopy } from '@/i18n/desktop';
 import { appRepoUrl } from '@/lib/muqun-links';
 import {
   localizedPath,
@@ -82,6 +83,8 @@ const chrome = getChrome(locale);
 const home = localizedPath('/', locale);
 const themes = localizedPath('/themes', locale);
 const support = localizedPath('/support', locale);
+const desktop = localizedPath('/desktop', locale);
+const desktopGuide = `${desktop}#install`;
 const privacy = localizedPath('/privacy', locale);
 
 /**
@@ -127,11 +130,12 @@ const year = new Date().getFullYear();
 
   <PageHeader slot="header" homeHref={home} homeLabel={chrome.site.name}>
     <HeaderLanguage locales={locales} current={locale} label={chrome.header.aria.language} />
-    {/* Hidden under 600px along with the GitHub link (`site-theme.css`):
+    <Button href={desktop} variant="quiet">Desktop</Button>
+    {/* Hidden under 600px along with Support and the GitHub link (`site-theme.css`):
         with it the controls overrun a 390px viewport in every Latin locale
         and the page scrolls sideways. The footer carries it everywhere. */}
     <Button href={themes} variant="quiet" class="mq-header-themes">{chrome.nav.themes}</Button>
-    <Button href={support} variant="quiet">{chrome.nav.support}</Button>
+    <Button href={support} variant="quiet" class="mq-header-support">{chrome.nav.support}</Button>
     <Button href={appRepoUrl} variant="quiet">GitHub ↗</Button>
   </PageHeader>
 
@@ -142,6 +146,8 @@ const year = new Date().getFullYear();
     <LocaleMenu locales={locales} current={locale} label={chrome.header.aria.language} />
 
     <Fragment slot="meta">
+      <Button href={desktop} variant="quiet">Desktop</Button>
+      <Button href={desktopGuide} variant="quiet">{desktopCopy[locale].guide}</Button>
       <Button href={themes} variant="quiet">{chrome.nav.themes}</Button>
       <Button href={support} variant="quiet">{chrome.nav.support}</Button>
       <Button href={privacy} variant="quiet">{chrome.nav.privacy}</Button>
