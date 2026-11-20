@@ -221,6 +221,12 @@ Gateway downloads are named `muqun-gateway-{target}` and
 `muqun-gateway-{target}.sha256`. The four supported targets are x86_64
 or aarch64 on apple-darwin or unknown-linux-musl.
 
+The POSIX Desktop installer reads `/api/releases/desktop/{channel}/version`
+and the versioned `{archive}.metadata` route. The latter reads the same
+manifest as the JSON API and returns one line containing four space-separated
+fields: archive length, archive SHA-256, checksum file length, checksum file
+SHA-256. Missing, duplicated or invalid entries fail the request.
+
 ### Rollout order
 
 1. Deploy these read-only Worker routes with the existing `THEMES` binding.

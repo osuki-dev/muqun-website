@@ -8,7 +8,7 @@ function fixture(files: Record<string, string>, productUrl = base) {
   const bucket = {
     async head(key: string) {
       if (!Object.hasOwn(files, key)) return null;
-      return { size: new TextEncoder().encode(files[key]).length, httpEtag: '"fixture"' };
+      return { size: new TextEncoder().encode(files[key]).length, etag: 'fixture', httpEtag: '"fixture"' };
     },
     async get(key: string) {
       const info = await this.head(key);
@@ -40,17 +40,24 @@ test('installer can resolve the channel, pinned manifest, archive and matching c
   const archive = 'muqun-desktop-linux-x86_64.tar.gz';
   const payload = 'desktop-fixture';
   const sha256 = new Bun.CryptoHasher('sha256').update(payload).digest('hex');
-  const manifest = { ...channel, tag, assets: [{ name: archive, size: payload.length, sha256 }] };
+  const sidecar = sha256 + '  ' + archive;
+  const sidecarHash = new Bun.CryptoHasher('sha256').update(sidecar).digest('hex');
+  const manifest = { ...channel, tag, assets: [
+    { name: archive, size: payload.length, sha256 },
+    { name: archive + '.sha256', size: sidecar.length, sha256: sidecarHash },
+  ] };
   const request = fixture({
     'desktop/channels/preview.json': JSON.stringify(channel),
     [`desktop/releases/${tag}/manifest.json`]: JSON.stringify(manifest),
     [`desktop/releases/${tag}/${archive}`]: payload,
-    [`desktop/releases/${tag}/${archive}.sha256`]: sha256 + '  ' + archive,
+    [`desktop/releases/${tag}/${archive}.sha256`]: sidecar,
     [`desktop/releases/${tag}/secrets.json`]: 'hidden',
   });
   const latest = await (await request('preview')).json() as typeof channel;
+  expect(await (await request('preview/version')).text()).toBe(channel.version + '\n');
   const pinned = await (await request(`desktop-v${latest.version}/manifest.json`)).json() as typeof manifest;
   const url = `${pinned.tag}/${pinned.assets[0].name}`;
+  expect(await (await request(url + '.metadata')).text()).toBe(`${payload.length} ${sha256} ${sidecar.length} ${sidecarHash}\n`);
   const binary = await request(url);
   expect(binary.status).toBe(200);
   expect(binary.headers.get('Content-Type')).toBe('application/gzip');
@@ -62,6 +69,23 @@ test('installer can resolve the channel, pinned manifest, archive and matching c
   expect((await request(url, { headers: { 'If-None-Match': head.headers.get('ETag')! } })).status).toBe(304);
   expect((await request(`${tag}/secrets.json`)).status).toBe(404);
   expect((await request(`${tag}/muqun-desktop-1.3.0-macos-arm64.zip`)).status).toBe(404);
+});
+
+test('shell metadata rejects conflicting manifest entries and preserves product boundaries', async () => {
+  const archive = 'muqun-desktop-linux-x86_64.tar.gz';
+  const asset = { name: archive, size: 1024, sha256: 'a'.repeat(64) };
+  const checksum = { name: archive + '.sha256', size: 97, sha256: 'a'.repeat(64) };
+  const manifest = { tag, channel: 'preview', version: tag.slice(9), assets: [asset, checksum] };
+  for (const invalid of [
+    { ...manifest, tag: 'desktop-v2.0.0' }, { ...manifest, channel: 'stable' },
+    { ...manifest, assets: [asset] }, { ...manifest, assets: [asset, checksum, checksum] },
+    { ...manifest, assets: [asset, { ...checksum, size: 1025 }] },
+    { ...manifest, assets: [{ ...asset, sha256: 'malformed' }, checksum] },
+  ]) {
+    const request = fixture({ [`desktop/releases/${tag}/manifest.json`]: JSON.stringify(invalid) });
+    expect((await request(`${tag}/${archive}.metadata`)).status).toBe(502);
+  }
+  expect((await fixture({})(`${tag}/not-an-archive.metadata`)).status).toBe(404);
 });
 
 test('Gateway channels resolve independently and expose only Gateway release objects', async () => {
