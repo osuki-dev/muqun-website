@@ -1,5 +1,6 @@
 ---
 import FilmPanel from "@/components/FilmPanel.astro";
+import DesktopCallout from "@/components/DesktopCallout.astro";
 import { introVideoSrc, introVideoPoster, introVideoPortraitSrc, introVideoPortraitPoster } from "@/lib/muqun-assets";
 import Layout from "@/layouts/Layout.astro";
 import PocketWorld from "@/components/world/PocketWorld";
@@ -102,6 +103,7 @@ const agentsGuideHref = `${localizedPath("/support", locale)}#agents`;
         <p class="world-eyebrow">MUQUN / FILM · 0:20</p>
         <FilmPanel src={introVideoSrc} poster={introVideoPoster} portraitSrc={introVideoPortraitSrc} portraitPoster={introVideoPortraitPoster} alt={copy.footer.heading} playLabel={copy.hero.videoPlayLabel} length="0:20" />
       </section>
+      <DesktopCallout locale={locale} />
       {/* How it works, straight after the film: the half of the setup a
           visitor does not expect is the one command on their own computer,
           so it is the first thing after the pitch rather than the sixth. */}

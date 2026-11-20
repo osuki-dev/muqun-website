@@ -33,6 +33,9 @@ interface Env {
  */
 const GATEWAY_INSTALL_SCRIPT =
   'https://raw.githubusercontent.com/osuki-dev/muqun-gateway/main/install.sh';
+// Pin the preview bootstrap while the stable installer tracks main.
+const GATEWAY_PREVIEW_INSTALL_SCRIPT =
+  'https://raw.githubusercontent.com/osuki-dev/muqun-gateway/df16b00ac99a6ebfc0eecefac4ef7d744b87392a/install.sh';
 
 /**
  * Sent on every response, including the assets.
@@ -316,7 +319,10 @@ export default {
     if (url.pathname === '/gateway.sh') {
       return new Response(null, {
         status: 302,
-        headers: { Location: GATEWAY_INSTALL_SCRIPT, ...SECURITY_HEADERS },
+        headers: {
+          Location: url.searchParams.get('channel') === 'preview' ? GATEWAY_PREVIEW_INSTALL_SCRIPT : GATEWAY_INSTALL_SCRIPT,
+          ...SECURITY_HEADERS,
+        },
       });
     }
 

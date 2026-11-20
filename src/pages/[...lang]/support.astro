@@ -17,6 +17,7 @@
  * - High-density parameter matrices, comparison decks, and diagnostic cards.
  */
 import Layout from '@/layouts/Layout.astro';
+import DesktopCallout from '@/components/DesktopCallout.astro';
 import Band from '@/components/Band.astro';
 import Button from '@/components/Button.astro';
 import CodeBlock from '@/components/CodeBlock.astro';
@@ -149,6 +150,8 @@ const sections: StatusLineItem[] = guide.contents.map((item, index) => ({
       </nav>
     </div>
   </Band>
+
+  <DesktopCallout locale={locale} />
 
   <Band tone="cream" id="release-4">
     <SectionHeading eyebrow="MUQUN / 4.0.0" title={release.heading} level={2}>

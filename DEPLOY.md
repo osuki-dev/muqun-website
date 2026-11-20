@@ -177,6 +177,9 @@ The entry point is `worker/index.ts`.
   is published at `osuki.dev/muqun/gateway.sh`, which keeps its own direct
   302. Neither redirects to the other: a cross-domain hop inside a pipeline
   that ends in `sh` means the reader is trusting a domain they never typed.
+- **`/gateway.sh?channel=preview`** — the verified R2-aware Gateway installer
+  at a pinned source commit. Pass `--channel preview` to the script. The
+  Desktop guide links each installation command to its published channel version.
 - **Security headers** on every response, including the static assets. HSTS
   and `nosniff` are not optional on a domain that serves a shell installer.
 

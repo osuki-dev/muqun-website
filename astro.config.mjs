@@ -3,6 +3,7 @@ import react from '@astrojs/react';
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'astro/config';
 import { muqunThemesDevSource } from './scripts/themes-dev-source.mjs';
+import { localizedPath, siteLocaleCodes } from './src/lib/locales.ts';
 
 /**
  * Static output, on purpose.
@@ -26,6 +27,10 @@ export default defineConfig({
   site: 'https://muqun.dev',
   integrations: [react()],
   trailingSlash: 'always',
+  redirects: Object.fromEntries(siteLocaleCodes.map((locale) => [
+    localizedPath('/desktop/guide', locale),
+    `${localizedPath('/desktop', locale)}#install`,
+  ])),
   i18n: {
     defaultLocale: 'en',
     locales: ['en', 'zh-CN', 'zh-TW', 'ja', 'ko', 'de', 'fr', 'es', 'pt', 'ru', 'vi', 'th'],
