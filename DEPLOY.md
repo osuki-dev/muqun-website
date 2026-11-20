@@ -19,6 +19,15 @@ Cloudflare Static Assets routes `Accept: text/html` differently; the
 `assets.run_worker_first` setting in `wrangler.jsonc` is what keeps browser
 navigations from bypassing the redirect Worker and landing on the static 404.
 
+`/desktop.sh` serves the reviewed installer bundled by `astro build`, rather
+than redirecting to unpublished GitHub source. Update
+`src/installers/install-desktop.sh` verbatim from the Gateway repository's
+root installer. Local Astro and the production Worker serve the same script;
+the Worker rejects missing assets and HTML fallbacks before sending shell
+content. Verify both ordinary curl and `Accept: text/html` requests, and run
+the pipe with `sh -s -- --help` from an empty temporary directory. Preparing
+this route does not deploy it or publish Desktop release assets.
+
 ## Cloudflare Workers Builds
 
 Connect the repository and set **one** build variable, under
@@ -159,9 +168,10 @@ bunx wrangler r2 object put muqun-themes/dist/previews/sample.png --local --file
 
 ## What the Worker is for
 
-Three things, all in `worker/index.ts`:
+The entry point is `worker/index.ts`.
 
 - **`/api/themes/`** — the themes catalogue and packages, above.
+- **`/api/releases/desktop/` and `/api/releases/gateway/`** — Product versions, manifests and packages, below.
 
 - **`/gateway.sh`** — a 302 straight to the installer on GitHub. The same file
   is published at `osuki.dev/muqun/gateway.sh`, which keeps its own direct
@@ -169,3 +179,54 @@ Three things, all in `worker/index.ts`:
   that ends in `sh` means the reader is trusting a domain they never typed.
 - **Security headers** on every response, including the static assets. HSTS
   and `nosniff` are not optional on a domain that serves a shell installer.
+
+## Release metadata and downloads
+
+The website Worker reads the `desktop/` and `gateway/` prefixes of the existing
+`muqun-themes` R2 bucket through its `THEMES` binding. Each release workflow writes
+the archives, their checksum files and the tagged manifest, then updates the
+channel pointer. Keep the bucket private. Its write credentials belong in
+release CI. Website deployment uses its existing R2 binding.
+
+| Website path | R2 object key |
+| --- | --- |
+| `/api/releases/desktop/{channel}` | `desktop/channels/{channel}.json` |
+| `/api/releases/desktop/{tag}/manifest.json` | `desktop/releases/{tag}/manifest.json` |
+| `/api/releases/desktop/{tag}/{filename}` | `desktop/releases/{tag}/{filename}` |
+
+A channel is `stable` or `preview`. The pointer contains `channel` and
+`version`, for example `{"channel":"preview","version":"1.2.3-preview.12"}`.
+A channel without a pointer returns HTTP 200 with a null version. A corrupt
+pointer or storage failure returns HTTP 502. Clients may cache a successful
+version check for 60 seconds.
+
+Tags take the form `desktop-vX.Y.Z` or `desktop-vX.Y.Z-preview.N`. A tagged
+manifest describes its channel, version, tag and assets. Each asset records
+its filename, byte size and SHA-256. Downloads use the same URL prefix as the
+manifest. The four allowed filenames are the Linux x86_64 tarball
+`muqun-desktop-linux-x86_64.tar.gz`, the macOS arm64
+`muqun-desktop-{version}-macos-arm64.zip`, and their respective `.sha256`
+files. Tagged objects are immutable, and GET and HEAD support ETag
+revalidation. Release CI must finish uploading and verifying these objects
+before advancing the corresponding channel.
+
+Gateway follows the same layout under `/api/releases/gateway/` and the
+`gateway/` bucket prefix. Its tags are `vX.Y.Z` or `vX.Y.Z-preview.N`.
+The Gateway installer also reads `/api/releases/gateway/{channel}/version`
+for the plain-text version with a trailing newline (404 when unpublished).
+Gateway downloads are named `muqun-gateway-{target}` and
+`muqun-gateway-{target}.sha256`. The four supported targets are x86_64
+or aarch64 on apple-darwin or unknown-linux-musl.
+
+### Rollout order
+
+1. Deploy these read-only Worker routes with the existing `THEMES` binding.
+2. Run the Gateway mirror for the current published stable tag and current
+   published preview tag. For each channel, request its version through the
+   public route, fetch the matching tagged manifest and all four binaries,
+   and verify each downloaded SHA-256 against the manifest, checksum file,
+   and original GitHub Release digest.
+3. Once both channels resolve correctly, distribute the Gateway installer and
+   clients that switch their update checks to these routes.
+4. Advertise each Desktop channel after its release workflow has published the
+   corresponding version and the public route serves the verified packages.
